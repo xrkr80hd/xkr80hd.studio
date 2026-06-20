@@ -151,74 +151,78 @@ export default function HubTracksPlayer({ tracks }) {
 
   return (
     <>
-      <div className="hub-now-playing-shell">
-        <div className={`hub-now-playing-cover ${isPlaying ? 'is-playing' : ''}`.trim()}>
-          {activeTrack?.cover_image_url ? (
-            <img src={activeTrack.cover_image_url} alt={`${activeTrack?.title || 'Track'} cover art`} />
-          ) : (
-            <div className="hub-now-playing-fallback" aria-hidden="true">
-              <strong>XRKR</strong>
-              <span>NO COVER ART</span>
+      <div className="hub-player-layout">
+        <div className="hub-now-playing-shell">
+          <div className={`hub-now-playing-cover ${isPlaying ? 'is-playing' : ''}`.trim()}>
+            {activeTrack?.cover_image_url ? (
+              <img src={activeTrack.cover_image_url} alt={`${activeTrack?.title || 'Track'} cover art`} />
+            ) : (
+              <div className="hub-now-playing-fallback" aria-hidden="true">
+                <strong>XRKR</strong>
+                <span>NO COVER ART</span>
+              </div>
+            )}
+            <span className="hub-now-playing-badge">{isPlaying ? 'Now Playing' : 'Track Ready'}</span>
+          </div>
+        </div>
+        <div className="hub-player-controls-pane">
+          <p className="hub-now-playing">
+            <strong id="hub-current-track">{activeTrack?.title || 'No track loaded'}</strong>{' '}
+            <span className="meta">{activeTrack?.artist_name}</span>
+            <span className="meta">{`  TRK ${trackNumber}/${totalTracks}`}</span>
+          </p>
+          <audio
+            ref={audioRef}
+            key={activeTrack?.audio_url || activeTrack?.id}
+            id="hub-main-player"
+            className="hub-main-player"
+            src={activeTrack?.audio_url || ''}
+            onPlay={() => setIsPlaying(true)}
+            onPause={() => setIsPlaying(false)}
+            onEnded={() => setTrackIndex((currentIndex) => randomIndex(items.length, currentIndex), { autoplay: true })}
+          />
+          <div className="hub-icon-controls" role="group" aria-label="Hub track controls">
+            <button type="button" className="icon-control" aria-label="Back 10 seconds" onClick={() => seekCurrent(-10)}>
+              {'<<'}
+            </button>
+            <button type="button" className="icon-control" aria-label="Previous track" onClick={() => setTrackIndex((currentIndex) => currentIndex - 1, { autoplay: true })}>
+              {'<'}
+            </button>
+            <button type="button" className="icon-control" aria-label="Play" onClick={playCurrent}>
+              {'\u25B6'}
+            </button>
+            <button type="button" className="icon-control" aria-label="Stop" onClick={stopCurrent}>
+              {'\u25A0'}
+            </button>
+            <button type="button" className="icon-control" aria-label="Next track" onClick={() => setTrackIndex((currentIndex) => currentIndex + 1, { autoplay: true })}>
+              {'>'}
+            </button>
+            <button type="button" className="icon-control" aria-label="Forward 10 seconds" onClick={() => seekCurrent(10)}>
+              {'>>'}
+            </button>
+          </div>
+          <div className="digital-volume-wrap">
+            <span className="digital-volume-label">VOL {String(volume).padStart(2, '0')}</span>
+            <div className="digital-volume-meter" aria-hidden="true">
+              <span className="digital-volume-fill" style={{ width: `${volume}%` }} />
             </div>
-          )}
-          <span className="hub-now-playing-badge">{isPlaying ? 'Now Playing' : 'Track Ready'}</span>
+            <input
+              type="range"
+              className="digital-volume-input"
+              min="0"
+              max="100"
+              step="1"
+              value={volume}
+              aria-label="Volume"
+              onChange={(event) => {
+                const next = Number.parseInt(event.target.value, 10);
+                if (Number.isFinite(next)) {
+                  setVolume(Math.min(100, Math.max(0, next)));
+                }
+              }}
+            />
+          </div>
         </div>
-        <p className="hub-now-playing">
-          <strong id="hub-current-track">{activeTrack?.title || 'No track loaded'}</strong>{' '}
-          <span className="meta">{activeTrack?.artist_name}</span>
-          <span className="meta">{`  TRK ${trackNumber}/${totalTracks}`}</span>
-        </p>
-      </div>
-      <audio
-        ref={audioRef}
-        key={activeTrack?.audio_url || activeTrack?.id}
-        id="hub-main-player"
-        className="hub-main-player"
-        src={activeTrack?.audio_url || ''}
-        onPlay={() => setIsPlaying(true)}
-        onPause={() => setIsPlaying(false)}
-        onEnded={() => setTrackIndex((currentIndex) => randomIndex(items.length, currentIndex), { autoplay: true })}
-      />
-      <div className="hub-icon-controls" role="group" aria-label="Hub track controls">
-        <button type="button" className="icon-control" aria-label="Back 10 seconds" onClick={() => seekCurrent(-10)}>
-          {'<<'}
-        </button>
-        <button type="button" className="icon-control" aria-label="Previous track" onClick={() => setTrackIndex((currentIndex) => currentIndex - 1, { autoplay: true })}>
-          {'<'}
-        </button>
-        <button type="button" className="icon-control" aria-label="Play" onClick={playCurrent}>
-          {'\u25B6'}
-        </button>
-        <button type="button" className="icon-control" aria-label="Stop" onClick={stopCurrent}>
-          {'\u25A0'}
-        </button>
-        <button type="button" className="icon-control" aria-label="Next track" onClick={() => setTrackIndex((currentIndex) => currentIndex + 1, { autoplay: true })}>
-          {'>'}
-        </button>
-        <button type="button" className="icon-control" aria-label="Forward 10 seconds" onClick={() => seekCurrent(10)}>
-          {'>>'}
-        </button>
-      </div>
-      <div className="digital-volume-wrap">
-        <span className="digital-volume-label">VOL {String(volume).padStart(2, '0')}</span>
-        <div className="digital-volume-meter" aria-hidden="true">
-          <span className="digital-volume-fill" style={{ width: `${volume}%` }} />
-        </div>
-        <input
-          type="range"
-          className="digital-volume-input"
-          min="0"
-          max="100"
-          step="1"
-          value={volume}
-          aria-label="Volume"
-          onChange={(event) => {
-            const next = Number.parseInt(event.target.value, 10);
-            if (Number.isFinite(next)) {
-              setVolume(Math.min(100, Math.max(0, next)));
-            }
-          }}
-        />
       </div>
     </>
   );

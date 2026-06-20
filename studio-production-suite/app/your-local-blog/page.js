@@ -3,14 +3,37 @@ import SharePostLinkButton from '../../components/SharePostLinkButton';
 import { getPublishedPosts } from '../../lib/content';
 import { formatDate } from '../../lib/format';
 
-export default async function BlogPage() {
+export default async function YourLocalBlogPage() {
   const posts = await getPublishedPosts();
 
   return (
     <>
-      <section className="card hero">
-        <h1>YourLocal Blog</h1>
-        <p>Thoughts on music, creative process, faith, and building with purpose.</p>
+      <section className="card hero band-hero">
+        <span className="tag-badge">Stories and Updates</span>
+        <h1>
+          <span className="hero-accent">YourLocal</span> Blog
+        </h1>
+        <p>News, stories, and updates from the artists, businesses, and creators around your local scene.</p>
+        <div className="actions">
+          <Link className="button" href="/local-legends-archive">
+            YourLocal Legends
+          </Link>
+          <Link className="button" href="/your-local-scene">
+            YourLocal Scene
+          </Link>
+          <Link className="button" href="/your-local-artists">
+            YourLocal Artists
+          </Link>
+          <Link className="button primary" href="/your-local-blog">
+            YourLocal Blog
+          </Link>
+          <Link className="button" href="/podcast">
+            YourLocal Podcast
+          </Link>
+          <Link className="button" href="/your-local-business">
+            YourLocal Business
+          </Link>
+        </div>
       </section>
 
       <section className="stack-grid section-space">

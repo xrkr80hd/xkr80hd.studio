@@ -32,6 +32,12 @@ export default async function YourLocalBusinessPage() {
           <Link className="button" href="/your-local-scene">
             YourLocal Scene
           </Link>
+          <Link className="button" href="/your-local-artists">
+            YourLocal Artists
+          </Link>
+          <Link className="button" href="/your-local-blog">
+            YourLocal Blog
+          </Link>
           <Link className="button" href="/podcast">
             YourLocal Podcast
           </Link>

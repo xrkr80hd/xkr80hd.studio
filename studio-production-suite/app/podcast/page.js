@@ -1,6 +1,6 @@
 import Link from 'next/link';
-import { formatDate } from '../../lib/format';
 import { getPodcastEpisodesForPodcast, getPublishedPodcasts } from '../../lib/content';
+import { formatDate } from '../../lib/format';
 
 export default async function PodcastPage() {
   const podcasts = await getPublishedPodcasts();
@@ -28,6 +28,12 @@ export default async function PodcastPage() {
           </Link>
           <Link className="button" href="/your-local-scene">
             YourLocal Scene
+          </Link>
+          <Link className="button" href="/your-local-artists">
+            YourLocal Artists
+          </Link>
+          <Link className="button" href="/your-local-blog">
+            YourLocal Blog
           </Link>
           <Link className="button primary" href="/podcast">
             YourLocal Podcast

@@ -39,6 +39,16 @@ const publicNavItems = [
     ),
   },
   {
+    href: '/your-local-blog',
+    label: (
+      <span className="split-label">
+        <span className="split-cool">YourLocal</span>
+        <span className="split-space"> </span>
+        <span className="split-white">Blog</span>
+      </span>
+    ),
+  },
+  {
     href: '/podcast',
     label: (
       <span className="split-label">

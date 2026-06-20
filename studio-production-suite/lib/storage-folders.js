@@ -1,6 +1,7 @@
 export const STORAGE_FOLDER_PRESETS = [
   'images/bands',
   'images/artists',
+  'images/business',
   'images/posts',
   'audio/tracks',
   'video/clips',

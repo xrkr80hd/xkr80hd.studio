@@ -16,6 +16,12 @@ export default function BandGridPage({ badge, headlineAccent, headlineRest, subt
           <Link className={`button ${era === 'scene' ? 'primary' : ''}`.trim()} href="/your-local-scene">
             YourLocal Scene
           </Link>
+          <Link className="button" href="/your-local-artists">
+            YourLocal Artists
+          </Link>
+          <Link className="button" href="/your-local-blog">
+            YourLocal Blog
+          </Link>
           <Link className="button" href="/podcast">
             YourLocal Podcast
           </Link>

@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { clampText, toBoolean, toInteger, isValidMediaUrl } from '../../../../../../lib/admin-crud-utils';
+import { clampText, isValidMediaUrl, toBoolean, toInteger } from '../../../../../../lib/admin-crud-utils';
 import { getSupabaseAdmin } from '../../../../../../lib/supabase-admin';
 
 export const runtime = 'nodejs';
@@ -125,6 +125,19 @@ export async function POST(request, { params }) {
   const parsed = buildBandTrackPayload(body);
   if (!parsed.ok) {
     return NextResponse.json({ error: parsed.error }, { status: 400 });
+  }
+
+  const existingCount = await supabase
+    .from('band_tracks')
+    .select('id', { count: 'exact', head: true })
+    .eq('band_id', band.data.id);
+
+  if (existingCount.error) {
+    return NextResponse.json({ error: existingCount.error.message }, { status: 500 });
+  }
+
+  if (Number(existingCount.count || 0) >= 3) {
+    return NextResponse.json({ error: 'Bands can only publish up to 3 top tracks.' }, { status: 400 });
   }
 
   const insert = await supabase

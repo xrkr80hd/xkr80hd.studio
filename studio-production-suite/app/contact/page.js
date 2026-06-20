@@ -1,3 +1,4 @@
+import SubmissionIntakeForm from '../../components/SubmissionIntakeForm';
 import { getSiteProfile } from '../../lib/content';
 
 export default async function ContactPage() {
@@ -14,17 +15,25 @@ export default async function ContactPage() {
       </section>
 
       <section className="card section-space contact-card">
-        <h3 className="section-title">Submit Your Project</h3>
-        <p>Send your band/artist/podcast name, genre, city, short bio, and links to your best tracks or episodes.</p>
+        <h3 className="section-title">Need a Site That Hits Hard?</h3>
+        <p>
+          We build bold local-first web experiences for bands, artists, podcasts, and businesses. If you want clean UX, fast pages,
+          media integration, and a brand presence that stands out, book a web build.
+        </p>
         <div className="actions">
-          <a className="button primary" href={`mailto:${email}`}>
-            Email {email}
+          <a className="button primary" href={`mailto:${email}?subject=Web%20Development%20Service%20Inquiry`}>
+            Book Web Development
+          </a>
+          <a className="button" href={`mailto:${email}`}>
+            General Contact
           </a>
         </div>
         <p className="meta">
-          Recommended assets: banner image 2560x1440, profile image 1080x1080, member photos 1080x1350.
+          Service focus: full web builds, landing pages, media hubs, artist/business profiles, and content systems.
         </p>
       </section>
+
+      <SubmissionIntakeForm />
     </>
   );
 }

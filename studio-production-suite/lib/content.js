@@ -1,5 +1,6 @@
 import { getSupabaseAdmin } from './supabase-admin';
 import { parseBandProfilePayload } from './band-profile';
+import { normalizeMediaPayload } from './media-url';
 import { unstable_noStore as noStore } from 'next/cache';
 
 const DEFAULT_GENRES = [
@@ -35,7 +36,7 @@ async function runQuery(label, callback, fallbackValue) {
       return fallbackValue;
     }
 
-    return response.data ?? fallbackValue;
+    return normalizeMediaPayload(response.data ?? fallbackValue);
   } catch (error) {
     console.error(`[content:${label}]`, error);
     return fallbackValue;
@@ -78,7 +79,7 @@ async function fetchTracksOrdered({ featuredOnly = false, limit = null } = {}) {
   try {
     const ordered = await run(true);
     if (!ordered.error) {
-      return ordered.data || [];
+      return normalizeMediaPayload(ordered.data || []);
     }
 
     const message = String(ordered.error.message || '');
@@ -93,7 +94,7 @@ async function fetchTracksOrdered({ featuredOnly = false, limit = null } = {}) {
       return [];
     }
 
-    return (fallback.data || []).map((item) => ({ ...item, sort_order: 0 }));
+    return normalizeMediaPayload((fallback.data || []).map((item) => ({ ...item, sort_order: 0 })));
   } catch (error) {
     console.error('[content:tracks]', error);
     return [];
@@ -237,17 +238,17 @@ export async function getHomeTracks(limit = 12) {
 
     if (!combined.length) {
       const legacy = await fetchTracksOrdered({ featuredOnly: true, limit: safeLimit });
-      return legacy.map((item) => ({
+      return normalizeMediaPayload(legacy.map((item) => ({
         ...item,
         source_type: 'legacy',
-      }));
+      })));
     }
 
     if (safeLimit === null) {
-      return combined;
+      return normalizeMediaPayload(combined);
     }
 
-    return combined.slice(0, Math.max(0, safeLimit));
+    return normalizeMediaPayload(combined.slice(0, Math.max(0, safeLimit)));
   } catch (error) {
     console.error('[content:radio_pool]', error);
     return [];
@@ -300,9 +301,9 @@ export async function getBandBySlug(slug) {
   const genres = Array.isArray(band.genres_json)
     ? band.genres_json.map((item) => String(item || '').trim()).filter(Boolean)
     : String(band.genre || '')
-        .split(',')
-        .map((item) => item.trim())
-        .filter(Boolean);
+      .split(',')
+      .map((item) => item.trim())
+      .filter(Boolean);
 
   return {
     ...band,
@@ -367,9 +368,9 @@ export async function getBandBySlugForAdmin(slug) {
   const genres = Array.isArray(band.genres_json)
     ? band.genres_json.map((item) => String(item || '').trim()).filter(Boolean)
     : String(band.genre || '')
-        .split(',')
-        .map((item) => item.trim())
-        .filter(Boolean);
+      .split(',')
+      .map((item) => item.trim())
+      .filter(Boolean);
 
   return {
     ...band,
@@ -406,7 +407,7 @@ async function fetchBandTracksByBandId(bandId, { publishedOnly = false } = {}) {
   try {
     const ordered = await run(true);
     if (!ordered.error) {
-      return ordered.data || [];
+      return normalizeMediaPayload(ordered.data || []);
     }
 
     const message = String(ordered.error.message || '');
@@ -423,7 +424,7 @@ async function fetchBandTracksByBandId(bandId, { publishedOnly = false } = {}) {
       return [];
     }
 
-    return (fallback.data || []).map((item) => ({ ...item, sort_order: 0 }));
+    return normalizeMediaPayload((fallback.data || []).map((item) => ({ ...item, sort_order: 0 })));
   } catch (error) {
     console.error('[content:band_tracks_error]', error);
     return [];
@@ -451,7 +452,7 @@ async function fetchPodcasts({ publishedOnly = false } = {}) {
   try {
     const ordered = await run(true);
     if (!ordered.error) {
-      return ordered.data || [];
+      return normalizeMediaPayload(ordered.data || []);
     }
 
     const message = String(ordered.error.message || '');
@@ -468,7 +469,7 @@ async function fetchPodcasts({ publishedOnly = false } = {}) {
       return [];
     }
 
-    return (fallback.data || []).map((item) => ({ ...item, sort_order: 0 }));
+    return normalizeMediaPayload((fallback.data || []).map((item) => ({ ...item, sort_order: 0 })));
   } catch (error) {
     console.error('[content:podcasts_error]', error);
     return [];
@@ -502,7 +503,7 @@ async function fetchPodcastEpisodesByPodcastId(podcastId, { publishedOnly = fals
   try {
     const ordered = await run(true);
     if (!ordered.error) {
-      return ordered.data || [];
+      return normalizeMediaPayload(ordered.data || []);
     }
 
     const message = String(ordered.error.message || '');
@@ -519,7 +520,7 @@ async function fetchPodcastEpisodesByPodcastId(podcastId, { publishedOnly = fals
       return [];
     }
 
-    return (fallback.data || []).map((item) => ({ ...item, sort_order: 0 }));
+    return normalizeMediaPayload((fallback.data || []).map((item) => ({ ...item, sort_order: 0 })));
   } catch (error) {
     console.error('[content:podcast_episodes_error]', error);
     return [];
@@ -592,7 +593,7 @@ async function fetchLocalBusinesses({ publishedOnly = false } = {}) {
   try {
     const ordered = await run(true);
     if (!ordered.error) {
-      return ordered.data || [];
+      return normalizeMediaPayload(ordered.data || []);
     }
 
     const message = String(ordered.error.message || '');
@@ -609,7 +610,7 @@ async function fetchLocalBusinesses({ publishedOnly = false } = {}) {
       return [];
     }
 
-    return (fallback.data || []).map((item) => ({ ...item, sort_order: 0 }));
+    return normalizeMediaPayload((fallback.data || []).map((item) => ({ ...item, sort_order: 0 })));
   } catch (error) {
     console.error('[content:local_businesses_error]', error);
     return [];

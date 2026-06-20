@@ -1,9 +1,9 @@
 'use client';
 
-import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import MediaUrlInput from './MediaUrlInput';
+import { useMemo, useState } from 'react';
 import AdminAccordionSection from './AdminAccordionSection';
+import MediaUrlInput from './MediaUrlInput';
 
 function emptyTrack() {
   return {
@@ -111,6 +111,7 @@ export default function AdminBandTracksManager({ bandSlug, bandName = '', initia
         <p className="meta">
           Upload tracks for <strong>{bandName || bandSlug}</strong>. Published + included tracks feed XRKR Radio.
         </p>
+        <p className="meta">Bands are limited to 3 top tracks.</p>
 
         <AdminAccordionSection title="Track Basics" note="Title, description and ordering." defaultOpen>
           <div className="grid cols-3">

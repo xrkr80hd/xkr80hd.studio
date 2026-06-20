@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { formatDate } from '../../../lib/format';
 import { getPodcastEpisodesForPodcast, getPublishedPodcastBySlug } from '../../../lib/content';
+import { formatDate } from '../../../lib/format';
 
 export default async function PodcastDetailPage({ params }) {
   const podcast = await getPublishedPodcastBySlug(params.slug);
@@ -24,6 +24,12 @@ export default async function PodcastDetailPage({ params }) {
           </Link>
           <Link className="button" href="/your-local-scene">
             YourLocal Scene
+          </Link>
+          <Link className="button" href="/your-local-artists">
+            YourLocal Artists
+          </Link>
+          <Link className="button" href="/your-local-blog">
+            YourLocal Blog
           </Link>
         </div>
       </section>

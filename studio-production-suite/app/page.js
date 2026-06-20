@@ -1,7 +1,7 @@
 import Link from 'next/link';
-import HomeTracksPlayer from '../components/HomeTracksPlayer';
 import HomeBioModal from '../components/HomeBioModal';
 import HomeBlogNotice from '../components/HomeBlogNotice';
+import HomeTracksPlayer from '../components/HomeTracksPlayer';
 import { getHomeTracks, getLatestPublishedPost, getSiteProfile } from '../lib/content';
 
 function Headline({ value }) {
@@ -47,6 +47,22 @@ const guideCardDefaults = [
     href: '/your-local-scene',
     cta: 'Open Scene',
     image: '/assets/cards/local-scene-card.png',
+  },
+  {
+    key: 'artists',
+    title: 'YourLocal Artists',
+    body: 'Solo artists and creators actively releasing, posting, and performing in your local scene.',
+    href: '/your-local-artists',
+    cta: 'Open Artists',
+    image: '/assets/cards/local-scene-card.png',
+  },
+  {
+    key: 'blog',
+    title: 'YourLocal Blog',
+    body: 'Stories, releases, writeups, and local updates from the community.',
+    href: '/your-local-blog',
+    cta: 'Open Blog',
+    image: '/assets/cards/local-podcast-card.png',
   },
   {
     key: 'podcast',
