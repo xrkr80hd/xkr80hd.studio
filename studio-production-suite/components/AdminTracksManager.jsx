@@ -4,6 +4,21 @@ import { useMemo, useState } from 'react';
 import AdminAccordionSection from './AdminAccordionSection';
 import MediaUrlInput from './MediaUrlInput';
 
+const COMMON_TRACK_GENRES = [
+  'metalcore',
+  'djent',
+  'mathcore',
+  'progressive',
+  'cinematic',
+  'soundtrack',
+  'metal',
+  'rock',
+  'ambient',
+  'electronic',
+  'instrumental',
+  'other',
+];
+
 function emptyTrack() {
   return {
     id: null,
@@ -57,7 +72,7 @@ function buildTrackPayload(form) {
   };
 }
 
-function TrackEditorSections({ form, setForm, idPrefix, isEdit }) {
+function TrackEditorSections({ form, setForm, idPrefix, isEdit, genreListId }) {
   const fieldId = (name) => `${idPrefix}-${name}`;
   const replaceAudioKey = isEdit && form.id ? `audio/tracks/${String(form.id)}/main` : '';
   const replaceCoverKey = isEdit && form.id ? `images/posts/tracks/${String(form.id)}/cover` : '';
@@ -90,9 +105,10 @@ function TrackEditorSections({ form, setForm, idPrefix, isEdit }) {
             <input
               id={fieldId('genre')}
               type="text"
+              list={genreListId}
               value={form.genre}
               onChange={(event) => setForm((current) => ({ ...current, genre: event.target.value }))}
-              placeholder="metalcore"
+              placeholder="Start typing (ex: metalcore, djent, soundtrack)..."
             />
           </div>
         </div>
@@ -186,6 +202,7 @@ function TrackEditorSections({ form, setForm, idPrefix, isEdit }) {
 }
 
 export default function AdminTracksManager({ initialTracks = [] }) {
+  const genreListId = 'admin-track-genre-options';
   const [tracks, setTracks] = useState(initialTracks.map((track) => normalizeTrack(track)));
   const [createForm, setCreateForm] = useState(emptyTrack());
   const [createStatus, setCreateStatus] = useState('');
@@ -212,6 +229,15 @@ export default function AdminTracksManager({ initialTracks = [] }) {
       });
     });
     return items;
+  }, [tracks]);
+
+  const genreOptions = useMemo(() => {
+    const fromTracks = tracks
+      .map((track) => String(track.genre || '').trim())
+      .filter(Boolean);
+    return Array.from(new Set([...COMMON_TRACK_GENRES, ...fromTracks])).sort((a, b) =>
+      a.localeCompare(b, undefined, { sensitivity: 'base' })
+    );
   }, [tracks]);
 
   const resetCreateForm = () => setCreateForm(emptyTrack());
@@ -254,6 +280,12 @@ export default function AdminTracksManager({ initialTracks = [] }) {
 
   return (
     <>
+      <datalist id={genreListId}>
+        {genreOptions.map((genre) => (
+          <option key={genre} value={genre} />
+        ))}
+      </datalist>
+
       <form
         className="card section-space"
         onSubmit={async (event) => {
@@ -295,7 +327,7 @@ export default function AdminTracksManager({ initialTracks = [] }) {
           Owner-only. Add XRKR tracks with audio, set order, and choose if they appear in the Hub player.
         </p>
 
-        <TrackEditorSections form={createForm} setForm={setCreateForm} idPrefix="create-track" isEdit={false} />
+        <TrackEditorSections form={createForm} setForm={setCreateForm} idPrefix="create-track" isEdit={false} genreListId={genreListId} />
 
         <AdminAccordionSection title="Save Track" note="Create a new track in the library." defaultOpen>
           <div className="actions">
@@ -427,6 +459,7 @@ export default function AdminTracksManager({ initialTracks = [] }) {
                         setForm={setEditForm}
                         idPrefix={`edit-track-${String(track.id)}`}
                         isEdit
+                        genreListId={genreListId}
                       />
 
                       <AdminAccordionSection title="Save Changes" note="Update this track only." defaultOpen>
