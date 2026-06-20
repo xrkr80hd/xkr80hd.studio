@@ -213,6 +213,7 @@ export default function HomeTracksPlayer({ tracks }) {
 
   const loopButtonLabel = loopMode === 'one' ? 'Loop one' : loopMode === 'all' ? 'Loop continuously' : 'Loop off';
   const loopButtonIcon = loopMode === 'one' ? '1' : loopMode === 'all' ? '\u221E' : '\u27F3';
+  const loopButtonIconClass = loopMode === 'one' ? 'loop-icon-normal' : 'loop-icon-large';
 
   return (
     <div className="xrkr-radio-shell">
@@ -292,7 +293,7 @@ export default function HomeTracksPlayer({ tracks }) {
               title={loopButtonLabel}
               onClick={cycleLoopMode}
             >
-              {loopButtonIcon}
+              <span className={loopButtonIconClass}>{loopButtonIcon}</span>
             </button>
           </div>
           <div className="digital-volume-wrap">

@@ -27,8 +27,8 @@ export default async function BlogPostPage({ params }) {
         <span aria-hidden="true">/</span>
         <span>{post.title}</span>
       </nav>
-      <div className="actions">
-        <Link className="button" href="/your-local-blog">
+      <div className="blog-back-wrap">
+        <Link className="button blog-back-button" href="/your-local-blog">
           Back to YourLocal Blog
         </Link>
       </div>

@@ -1,6 +1,7 @@
 import { unstable_noStore as noStore } from 'next/cache';
 import { getAdminOwnerUsername, isOwnerUsername } from './admin-auth';
 import { parseBandProfilePayload } from './band-profile';
+import { normalizeBlogChannelName, toBlogChannelSlug } from './blog-channels';
 import { normalizeMediaPayload } from './media-url';
 import { getSupabaseAdmin } from './supabase-admin';
 
@@ -712,6 +713,106 @@ function normalizePublishedBlogAuthor(post) {
 
 function normalizePublishedBlogAuthors(posts) {
   return Array.isArray(posts) ? posts.map((post) => normalizePublishedBlogAuthor(post)) : [];
+}
+
+function normalizeBlogChannelCard(setting, authorUsername) {
+  const safeAuthor = normalizeAdminUsername(authorUsername);
+  const safeName = normalizeBlogChannelName(setting?.channel_name, safeAuthor);
+  return {
+    author_username: safeAuthor,
+    channel_name: safeName,
+    channel_slug: toBlogChannelSlug(setting?.channel_slug || safeName, safeAuthor),
+    card_image_url: String(setting?.card_image_url || '').trim() || null,
+  };
+}
+
+export async function getBlogChannelForUser(authorUsername) {
+  const safeAuthor = normalizeAdminUsername(authorUsername);
+  if (!safeAuthor) {
+    return null;
+  }
+
+  const settings = await runQuery(
+    `blog_channel_${safeAuthor}`,
+    (supabase) => supabase.from('blog_channels').select('*').eq('username', safeAuthor).limit(1).maybeSingle(),
+    null
+  );
+
+  return normalizeBlogChannelCard(settings || {}, safeAuthor);
+}
+
+export async function getPublishedBlogChannels() {
+  const posts = await getPublishedPosts();
+  const grouped = new Map();
+
+  for (const post of posts) {
+    const safeAuthor = normalizeAdminUsername(post.author_username);
+    if (!safeAuthor) {
+      continue;
+    }
+
+    const existing = grouped.get(safeAuthor) || { count: 0, latest_slug: '' };
+    existing.count += 1;
+    if (!existing.latest_slug) {
+      existing.latest_slug = String(post.slug || '');
+    }
+    grouped.set(safeAuthor, existing);
+  }
+
+  const authors = Array.from(grouped.keys());
+  if (!authors.length) {
+    return [];
+  }
+
+  const settings = await runQuery(
+    'blog_channels_public',
+    (supabase) => supabase.from('blog_channels').select('*').in('username', authors),
+    []
+  );
+
+  const settingMap = new Map((settings || []).map((item) => [normalizeAdminUsername(item.username), item]));
+
+  const channels = authors.map((author) => {
+    const base = normalizeBlogChannelCard(settingMap.get(author) || {}, author);
+    const counts = grouped.get(author) || { count: 0, latest_slug: '' };
+    return {
+      ...base,
+      count: counts.count,
+      latest_slug: counts.latest_slug,
+    };
+  });
+
+  channels.sort((a, b) => {
+    if (isOwnerUsername(a.author_username) && !isOwnerUsername(b.author_username)) {
+      return -1;
+    }
+    if (!isOwnerUsername(a.author_username) && isOwnerUsername(b.author_username)) {
+      return 1;
+    }
+    return String(a.channel_name || '').localeCompare(String(b.channel_name || ''));
+  });
+
+  return channels;
+}
+
+export async function getPublishedBlogChannelFeed(channelSlug) {
+  const safeSlug = String(channelSlug || '').trim().toLowerCase();
+  if (!safeSlug) {
+    return null;
+  }
+
+  const channels = await getPublishedBlogChannels();
+  const channel = channels.find((item) => item.channel_slug === safeSlug);
+  if (!channel) {
+    return null;
+  }
+
+  const posts = (await getPublishedPosts()).filter((post) => normalizeAdminUsername(post.author_username) === channel.author_username);
+
+  return {
+    channel,
+    posts,
+  };
 }
 
 export async function getPostsForAdmin() {

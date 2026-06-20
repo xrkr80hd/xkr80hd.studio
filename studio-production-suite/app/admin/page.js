@@ -16,9 +16,12 @@ export default function AdminPage({ searchParams }) {
   const error = String(searchParams?.error || '');
   const deniedPath = String(searchParams?.from || '');
   const ownerActions = [
+    { href: '/admin/users', label: 'Admin Manager', detail: 'Owner-only manager for admin accounts and access control.' },
     { href: '/admin/home', label: 'Homepage Controls', detail: 'Landing profile and Site Guide card photos.' },
     { href: '/admin/tracks', label: 'XRKR Hub Tracks', detail: 'Upload and manage owner-only tracks for the Hub player.' },
-    { href: '/admin/users', label: 'Manage Admin Users', detail: 'Create/remove lower-tier admins.' },
+  ];
+  const editorActions = [
+    { href: '/admin/blog', label: 'My Blog Manager', detail: 'Manage only your own posts, channel name, and card graphic.' },
   ];
   const publicQaLinks = [
     { href: '/', label: 'Home', detail: 'Confirm hero content, radio, and cards.' },
@@ -58,15 +61,20 @@ export default function AdminPage({ searchParams }) {
             require <strong>{ownerUsername}</strong>.
           </p>
         ) : null}
+        {error === 'scope' ? (
+          <p className="alert">
+            Access limited for <strong>{actingUser || 'unknown'}</strong>. This account currently has Blog Manager only.
+          </p>
+        ) : null}
 
         <details className="admin-accordion" open>
           <summary>
             <span className="admin-accordion-title">Edit Panels</span>
-            <span className="admin-accordion-note">Admin Guide, Blog, Bands, Podcasts, Business, Password</span>
+            <span className="admin-accordion-note">{ownerMode ? 'Admin Guide, Blog, Bands, Podcasts, Business, Password' : 'Blog only access'}</span>
           </summary>
           <div className="admin-accordion-body">
             <div className="admin-action-grid">
-              {commonActions.map((item) => (
+              {(ownerMode ? commonActions : editorActions).map((item) => (
                 <Link key={item.href} className="admin-action-tile" href={item.href} prefetch={false}>
                   <strong>{item.label}</strong>
                   <span>{item.detail}</span>
@@ -81,49 +89,57 @@ export default function AdminPage({ searchParams }) {
                 ))
                 : null}
             </div>
-            <p className="meta" style={{ marginTop: '0.7rem' }}>Media upload should happen directly inside band/podcast edit forms.</p>
+            <p className="meta" style={{ marginTop: '0.7rem' }}>
+              {ownerMode
+                ? 'Media upload should happen directly inside band/podcast edit forms.'
+                : 'Your media uploads are available in your blog post editor and blog channel card settings.'}
+            </p>
           </div>
         </details>
 
-        <details className="admin-accordion">
-          <summary>
-            <span className="admin-accordion-title">Supabase Tools</span>
-            <span className="admin-accordion-note">Table Editor, Storage, Project</span>
-          </summary>
-          <div className="admin-accordion-body">
-            <div className="admin-action-grid compact">
-              <a className="admin-action-tile" href={links.tableEditor} target="_blank" rel="noreferrer">
-                <strong>Table Editor</strong>
-                <span>Open DB rows/columns.</span>
-              </a>
-              <a className="admin-action-tile" href={links.storage} target="_blank" rel="noreferrer">
-                <strong>Storage</strong>
-                <span>Open files and buckets.</span>
-              </a>
-              <a className="admin-action-tile" href={links.project} target="_blank" rel="noreferrer">
-                <strong>Project</strong>
-                <span>Open Supabase project settings.</span>
-              </a>
+        {ownerMode ? (
+          <details className="admin-accordion">
+            <summary>
+              <span className="admin-accordion-title">Supabase Tools</span>
+              <span className="admin-accordion-note">Table Editor, Storage, Project</span>
+            </summary>
+            <div className="admin-accordion-body">
+              <div className="admin-action-grid compact">
+                <a className="admin-action-tile" href={links.tableEditor} target="_blank" rel="noreferrer">
+                  <strong>Table Editor</strong>
+                  <span>Open DB rows/columns.</span>
+                </a>
+                <a className="admin-action-tile" href={links.storage} target="_blank" rel="noreferrer">
+                  <strong>Storage</strong>
+                  <span>Open files and buckets.</span>
+                </a>
+                <a className="admin-action-tile" href={links.project} target="_blank" rel="noreferrer">
+                  <strong>Project</strong>
+                  <span>Open Supabase project settings.</span>
+                </a>
+              </div>
             </div>
-          </div>
-        </details>
+          </details>
+        ) : null}
 
-        <details className="admin-accordion">
-          <summary>
-            <span className="admin-accordion-title">Public QA Links</span>
-            <span className="admin-accordion-note">Home, Legends, Scene, Podcast, Business, Contact</span>
-          </summary>
-          <div className="admin-accordion-body">
-            <div className="admin-action-grid compact">
-              {publicQaLinks.map((item) => (
-                <Link key={item.href} className="admin-action-tile" href={item.href} prefetch={false}>
-                  <strong>{item.label}</strong>
-                  <span>{item.detail}</span>
-                </Link>
-              ))}
+        {ownerMode ? (
+          <details className="admin-accordion">
+            <summary>
+              <span className="admin-accordion-title">Public QA Links</span>
+              <span className="admin-accordion-note">Home, Legends, Scene, Podcast, Business, Contact</span>
+            </summary>
+            <div className="admin-accordion-body">
+              <div className="admin-action-grid compact">
+                {publicQaLinks.map((item) => (
+                  <Link key={item.href} className="admin-action-tile" href={item.href} prefetch={false}>
+                    <strong>{item.label}</strong>
+                    <span>{item.detail}</span>
+                  </Link>
+                ))}
+              </div>
             </div>
-          </div>
-        </details>
+          </details>
+        ) : null}
       </section>
     </>
   );

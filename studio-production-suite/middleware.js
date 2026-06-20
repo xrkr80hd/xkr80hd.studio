@@ -19,22 +19,15 @@ function isProtectedPath(pathname) {
   );
 }
 
-function isOwnerOnlyPath(pathname) {
+function isNonOwnerAllowedPath(pathname) {
   return (
-    pathname === '/hub' ||
-    pathname.startsWith('/hub/') ||
-    pathname === '/admin/users' ||
-    pathname.startsWith('/admin/users/') ||
-    pathname === '/admin/home' ||
-    pathname.startsWith('/admin/home/') ||
-    pathname === '/admin/tracks' ||
-    pathname.startsWith('/admin/tracks/') ||
-    pathname === '/api/admin/users' ||
-    pathname.startsWith('/api/admin/users/') ||
-    pathname === '/api/admin/site-profile' ||
-    pathname.startsWith('/api/admin/site-profile/') ||
-    pathname === '/api/admin/tracks' ||
-    pathname.startsWith('/api/admin/tracks/')
+    pathname === '/admin' ||
+    pathname === '/admin/blog' ||
+    pathname.startsWith('/admin/blog/') ||
+    pathname === '/api/admin/blog' ||
+    pathname.startsWith('/api/admin/blog/') ||
+    pathname === '/api/upload' ||
+    pathname.startsWith('/api/upload/')
   );
 }
 
@@ -60,15 +53,17 @@ export function middleware(request) {
   const sessionCookie = request.cookies.get(ADMIN_SESSION_COOKIE)?.value || '';
 
   if (isAdminSessionValid(sessionCookie)) {
-    if (isOwnerOnlyPath(pathname)) {
-      const sessionUser = request.cookies.get(ADMIN_SESSION_USER_COOKIE)?.value || '';
-      if (!isOwnerUsername(sessionUser)) {
-        const adminUrl = request.nextUrl.clone();
-        adminUrl.pathname = '/admin';
-        adminUrl.searchParams.set('error', 'owner');
-        adminUrl.searchParams.set('from', pathname);
-        return NextResponse.redirect(adminUrl);
+    const sessionUser = request.cookies.get(ADMIN_SESSION_USER_COOKIE)?.value || '';
+    if (!isOwnerUsername(sessionUser) && !isNonOwnerAllowedPath(pathname)) {
+      if (pathname.startsWith('/api/')) {
+        return NextResponse.json({ error: 'Only owner can access this route.' }, { status: 403 });
       }
+
+      const adminUrl = request.nextUrl.clone();
+      adminUrl.pathname = '/admin';
+      adminUrl.searchParams.set('error', 'scope');
+      adminUrl.searchParams.set('from', pathname);
+      return NextResponse.redirect(adminUrl);
     }
 
     return NextResponse.next();

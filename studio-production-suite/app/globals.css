@@ -993,6 +993,20 @@ img.cover {
   text-decoration: underline;
 }
 
+.blog-back-wrap {
+  margin: 0.28rem 0 0.72rem;
+}
+
+.blog-back-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.56rem;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  line-height: 1.15;
+}
+
 .blog-cover-image {
   display: block;
   width: min(100%, 920px);
@@ -1939,6 +1953,21 @@ label {
   box-shadow: inset 0 0 0 1px rgba(255, 240, 164, 0.42), 0 0 18px rgba(255, 213, 74, 0.34);
 }
 
+.icon-control .loop-icon-normal,
+.icon-control .loop-icon-large {
+  display: inline-block;
+  line-height: 1;
+}
+
+.icon-control .loop-icon-normal {
+  font-size: 1rem;
+}
+
+.icon-control .loop-icon-large {
+  font-size: 1.28rem;
+  transform: translateY(-0.02em);
+}
+
 .xrkr-radio-picker {
   margin-top: 0.55rem;
   display: grid;
@@ -2672,6 +2701,26 @@ label {
   margin: 0;
   color: #f4fbff;
   font-size: 1rem;
+}
+
+.blog-channel-card-image {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 10px;
+  border: 1px solid rgba(127, 216, 255, 0.22);
+  background: rgba(8, 13, 24, 0.75);
+  object-fit: cover;
+  display: block;
+  margin-bottom: 0.48rem;
+}
+
+.blog-channel-card-image-fallback {
+  display: grid;
+  place-items: center;
+  text-align: center;
+  padding: 0.65rem;
+  color: #d7e8ff;
+  font-size: 0.85rem;
 }
 
 .hub-blog-read {

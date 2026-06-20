@@ -1,5 +1,6 @@
 import { cookies } from 'next/headers';
 import Link from 'next/link';
+import AdminBlogChannelSettings from '../../../components/AdminBlogChannelSettings';
 import { ADMIN_SESSION_USER_COOKIE, isOwnerUsername } from '../../../lib/admin-auth';
 import { getPostsForAdminByUser } from '../../../lib/content';
 import { formatDate } from '../../../lib/format';
@@ -30,6 +31,8 @@ export default async function AdminBlogPage() {
       </section>
 
       <section className="section-space">
+        <AdminBlogChannelSettings />
+
         {posts.length ? (
           <div className="grid">
             {posts.map((post) => (

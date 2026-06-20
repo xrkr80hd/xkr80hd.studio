@@ -1,0 +1,141 @@
+import { NextResponse } from 'next/server';
+import { ADMIN_SESSION_USER_COOKIE } from '../../../../../lib/admin-auth';
+import { isValidMediaUrl } from '../../../../../lib/admin-crud-utils';
+import { normalizeAdminUsername } from '../../../../../lib/admin-users';
+import { getDefaultBlogChannelName, normalizeBlogChannelName, toBlogChannelSlug } from '../../../../../lib/blog-channels';
+import { getSupabaseAdmin } from '../../../../../lib/supabase-admin';
+
+export const runtime = 'nodejs';
+
+function getActingUser(request) {
+  return normalizeAdminUsername(request.cookies.get(ADMIN_SESSION_USER_COOKIE)?.value || '');
+}
+
+function isMissingChannelTableError(error) {
+  return String(error?.message || '').includes('public.blog_channels') && String(error?.message || '').includes('Could not find the table');
+}
+
+function toSettingsPayload(raw, username) {
+  const channelName = normalizeBlogChannelName(raw?.channel_name, username);
+  const cardImageUrl = String(raw?.card_image_url || '').trim();
+
+  if (!isValidMediaUrl(cardImageUrl)) {
+    return { ok: false, error: 'Card image URL must start with https:// or /' };
+  }
+
+  return {
+    ok: true,
+    payload: {
+      username,
+      channel_name: channelName,
+      channel_slug: toBlogChannelSlug(channelName, username),
+      card_image_url: cardImageUrl || null,
+      updated_at: new Date().toISOString(),
+    },
+  };
+}
+
+async function ensureUniqueChannelSlug(supabase, slug, username) {
+  let counter = 1;
+  let candidate = slug;
+
+  while (counter < 200) {
+    const existing = await supabase.from('blog_channels').select('username').eq('channel_slug', candidate).limit(1).maybeSingle();
+
+    if (existing.error) {
+      return { ok: false, error: existing.error.message };
+    }
+
+    const matchedUser = normalizeAdminUsername(existing?.data?.username || '');
+    if (!matchedUser || matchedUser === username) {
+      return { ok: true, slug: candidate };
+    }
+
+    counter += 1;
+    candidate = `${slug}-${counter}`;
+  }
+
+  return { ok: false, error: 'Could not generate a unique channel URL slug.' };
+}
+
+function defaultChannelItem(username) {
+  const channelName = getDefaultBlogChannelName(username);
+  return {
+    username,
+    channel_name: channelName,
+    channel_slug: toBlogChannelSlug(channelName, username),
+    card_image_url: null,
+  };
+}
+
+export async function GET(request) {
+  const actingUser = getActingUser(request);
+  if (!actingUser) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  const supabase = getSupabaseAdmin();
+  if (!supabase) {
+    return NextResponse.json({ error: 'Missing Supabase server credentials.' }, { status: 500 });
+  }
+
+  const response = await supabase.from('blog_channels').select('*').eq('username', actingUser).limit(1).maybeSingle();
+
+  if (response.error) {
+    if (isMissingChannelTableError(response.error)) {
+      return NextResponse.json({
+        ok: true,
+        item: defaultChannelItem(actingUser),
+        warning: 'Blog channel settings table is not set up yet. Run latest schema SQL to persist settings.',
+      });
+    }
+
+    return NextResponse.json({ error: response.error.message }, { status: 500 });
+  }
+
+  const item = response.data || defaultChannelItem(actingUser);
+  return NextResponse.json({ ok: true, item });
+}
+
+export async function PUT(request) {
+  const actingUser = getActingUser(request);
+  if (!actingUser) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  const supabase = getSupabaseAdmin();
+  if (!supabase) {
+    return NextResponse.json({ error: 'Missing Supabase server credentials.' }, { status: 500 });
+  }
+
+  const body = await request.json().catch(() => ({}));
+  const parsed = toSettingsPayload(body, actingUser);
+  if (!parsed.ok) {
+    return NextResponse.json({ error: parsed.error }, { status: 400 });
+  }
+
+  const uniqueSlug = await ensureUniqueChannelSlug(supabase, parsed.payload.channel_slug, actingUser);
+  if (!uniqueSlug.ok) {
+    return NextResponse.json({ error: uniqueSlug.error }, { status: 500 });
+  }
+
+  const upsert = await supabase
+    .from('blog_channels')
+    .upsert({
+      ...parsed.payload,
+      channel_slug: uniqueSlug.slug,
+      created_at: new Date().toISOString(),
+    }, { onConflict: 'username' })
+    .select('*')
+    .limit(1)
+    .maybeSingle();
+
+  if (upsert.error) {
+    if (isMissingChannelTableError(upsert.error)) {
+      return NextResponse.json({ error: 'Blog channel settings table is missing. Run latest schema SQL first.' }, { status: 500 });
+    }
+    return NextResponse.json({ error: upsert.error.message }, { status: 500 });
+  }
+
+  return NextResponse.json({ ok: true, item: upsert.data || defaultChannelItem(actingUser) });
+}
