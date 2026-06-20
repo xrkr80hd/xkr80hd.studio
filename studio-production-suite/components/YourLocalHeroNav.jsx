@@ -1,13 +1,13 @@
 import Link from 'next/link';
 
-const NAV_ITEMS = [
-  { key: 'legends', label: 'Legends', href: '/local-legends-archive' },
-  { key: 'scene', label: 'Scene', href: '/your-local-scene' },
-  { key: 'artists', label: 'Artists', href: '/your-local-artists' },
-  { key: 'business', label: 'Business', href: '/your-local-business' },
-  { key: 'podcast', label: 'Podcast', href: '/podcast' },
-  { key: 'blog', label: 'Blog', href: '/your-local-blog' },
-];
+const SECTION_LABELS = {
+  legends: 'Legends',
+  scene: 'Scene',
+  artists: 'Artists',
+  business: 'Business',
+  podcast: 'Podcast',
+  blog: 'Blog',
+};
 
 const SUBTITLES = {
   legends: 'Legendary local bands that shaped the scene — no longer active, never forgotten.',
@@ -19,39 +19,22 @@ const SUBTITLES = {
 };
 
 export default function YourLocalHeroNav({ activeKey = '' }) {
-  const activeItem = NAV_ITEMS.find((i) => i.key === activeKey);
+  const activeLabel = SECTION_LABELS[activeKey] || '';
   const subtitle = SUBTITLES[activeKey] || 'Explore everything local.';
-  const visibleItems = NAV_ITEMS.filter((i) => i.key !== activeKey);
 
   return (
     <section className="card hero yourlocal-unified-hero">
       <nav className="yourlocal-breadcrumb" aria-label="YourLocal breadcrumb">
         <Link href="/" className="yourlocal-breadcrumb-link">Home</Link>
         <span className="yourlocal-breadcrumb-sep" aria-hidden="true">/</span>
-        <span className="yourlocal-breadcrumb-current">YourLocal {activeItem?.label || ''}</span>
+        <span className="yourlocal-breadcrumb-current">YourLocal {activeLabel}</span>
       </nav>
 
       <h1 className="yourlocal-hero-heading">
         <span className="hero-accent">YourLocal</span>
-        {activeItem ? ` ${activeItem.label}` : ''}
+        {activeLabel ? ` ${activeLabel}` : ''}
       </h1>
       <p className="yourlocal-hero-subtitle">{subtitle}</p>
-
-      <nav className="yourlocal-hero-nav-wrap" aria-label="YourLocal section navigation">
-        <span className="yourlocal-hero-nav-title">Explore</span>
-        <div className="yourlocal-hero-nav">
-          {visibleItems.map((item) => (
-            <Link
-              key={item.key}
-              className="button yourlocal-hero-link"
-              href={item.href}
-              prefetch={false}
-            >
-              {item.label}
-            </Link>
-          ))}
-        </div>
-      </nav>
     </section>
   );
 }

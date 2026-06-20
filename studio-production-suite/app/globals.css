@@ -798,6 +798,10 @@ main>.container>*:nth-child(4) {
 /* ── YourLocal Unified Hero ─────────────────────────────── */
 .yourlocal-unified-hero {
   padding: 1.3rem 1.15rem 1.15rem;
+  min-height: 250px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
 }
 
 .yourlocal-breadcrumb {
@@ -835,42 +839,12 @@ main>.container>*:nth-child(4) {
 }
 
 .yourlocal-hero-subtitle {
-  margin: 0 0 1.1rem;
+  margin: 0;
   color: var(--muted);
   max-width: 70ch;
   font-size: 0.97rem;
   line-height: 1.6;
-}
-
-.yourlocal-hero-nav-wrap {
-  display: flex;
-  flex-direction: column;
-  gap: 0.42rem;
-}
-
-.yourlocal-hero-nav-title {
-  font-family: "Syne", "Space Grotesk", sans-serif;
-  font-size: 0.72rem;
-  font-weight: 800;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: rgba(168, 201, 235, 0.6);
-}
-
-.yourlocal-hero-nav {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.45rem;
-}
-
-.yourlocal-hero-link.button {
-  flex: 0 0 auto;
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  font-weight: 700;
-  font-size: 0.88rem;
-  letter-spacing: 0.01em;
-  background: linear-gradient(165deg, rgba(14, 20, 34, 0.9), rgba(8, 13, 23, 0.94));
+  min-height: 3.2em;
 }
 
 .share-link-wrap {
@@ -2161,9 +2135,6 @@ label {
     width: 100%;
   }
 
-  .yourlocal-hero-nav {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
 }
 
 .business-logo-wrap {
