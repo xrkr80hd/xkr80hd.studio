@@ -31,21 +31,31 @@ export default async function BlogChannelPage({ params }) {
         </div>
       </section>
 
-      <section className="stack-grid section-space">
+      <section className="blog-channel-post-flow section-space">
         {posts.length ? (
           posts.map((post) => (
-            <article key={post.id} className="card">
-              <Link className="blog-card-thumb" href={`/your-local-blog/${post.slug}`}>
-                {post.cover_image_url ? <img src={post.cover_image_url} alt={`${post.title} cover`} /> : <span className="image-placeholder">[ Blog Cover ]</span>}
+            <article key={post.id} className="blog-channel-post-row">
+              <Link
+                className={`blog-channel-post-media ${post.cover_image_url ? '' : 'blog-channel-post-media-fallback'}`.trim()}
+                href={`/your-local-blog/${post.slug}`}
+                style={post.cover_image_url ? { backgroundImage: `url('${post.cover_image_url}')` } : undefined}
+                prefetch={false}
+              >
+                {!post.cover_image_url ? <span className="blog-channel-post-fallback-text">No Cover Image</span> : null}
               </Link>
-              <h3 className="section-title">
-                <Link href={`/your-local-blog/${post.slug}`}>{post.title}</Link>
-              </h3>
-              <div className="actions">
-                <Link className="button" href={`/your-local-blog/${post.slug}`} prefetch={false}>
-                  Open Post
-                </Link>
-                <SharePostLinkButton path={`/your-local-blog/${post.slug}`} title={post.title} />
+
+              <div className="blog-channel-post-copy">
+                <p className="blog-channel-post-kicker">{channel.channel_name}</p>
+                <h4>
+                  <Link href={`/your-local-blog/${post.slug}`} prefetch={false}>{post.title}</Link>
+                </h4>
+                <p>{post.excerpt || 'Open the post to read the full write-up and latest updates.'}</p>
+                <div className="actions blog-channel-post-actions">
+                  <Link className="button" href={`/your-local-blog/${post.slug}`} prefetch={false}>
+                    Open Post
+                  </Link>
+                  <SharePostLinkButton path={`/your-local-blog/${post.slug}`} title={post.title} />
+                </div>
               </div>
             </article>
           ))

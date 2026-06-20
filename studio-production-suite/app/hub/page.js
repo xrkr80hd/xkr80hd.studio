@@ -28,10 +28,6 @@ export default async function HubPage() {
       </section>
 
       <HubMediaGallery photos={photos.slice(0, 8)} videos={videos.slice(0, 8)} />
-
-      <section className="card section-space">
-        <p className="meta">Hub media uploads are independent from blog channels and stay in XRKR80HD Hub media only.</p>
-      </section>
     </>
   );
 }

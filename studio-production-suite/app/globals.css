@@ -1075,6 +1075,83 @@ img.cover {
   line-height: 1.15;
 }
 
+.blog-channel-post-flow {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.blog-channel-post-row {
+  display: flex;
+  align-items: stretch;
+  gap: 0.9rem;
+  border: 1px solid rgba(127, 216, 255, 0.2);
+  border-radius: 12px;
+  background: rgba(10, 16, 27, 0.84);
+  padding: 0.6rem;
+}
+
+.blog-channel-post-row:nth-child(even) {
+  flex-direction: row-reverse;
+}
+
+.blog-channel-post-media {
+  flex: 0 0 300px;
+  max-width: 340px;
+  min-height: 190px;
+  border-radius: 10px;
+  border: 1px solid rgba(127, 216, 255, 0.24);
+  background-size: cover;
+  background-position: center;
+  background-color: rgba(8, 13, 24, 0.75);
+  text-decoration: none;
+}
+
+.blog-channel-post-media-fallback {
+  display: grid;
+  place-items: center;
+}
+
+.blog-channel-post-fallback-text {
+  color: #d7e8ff;
+  font-size: 0.84rem;
+  text-align: center;
+  padding: 0.5rem;
+}
+
+.blog-channel-post-copy {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.blog-channel-post-copy h4 {
+  margin: 0;
+  font-size: 1.16rem;
+}
+
+.blog-channel-post-copy p {
+  margin: 0.4rem 0 0.66rem;
+  color: #cddcf2;
+  max-width: 68ch;
+  font-size: 1rem;
+  line-height: 1.55;
+}
+
+.blog-channel-post-kicker {
+  margin: 0 0 0.3rem;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #9dd6ff;
+}
+
+.blog-channel-post-actions {
+  margin-top: auto;
+}
+
 .blog-cover-image {
   display: block;
   width: min(100%, 920px);
@@ -3672,6 +3749,35 @@ label {
 }
 
 @media (max-width: 860px) {
+
+  .blog-channel-post-row,
+  .blog-channel-post-row:nth-child(even) {
+    flex-direction: column;
+    gap: 0.58rem;
+    padding: 0.5rem;
+  }
+
+  .blog-channel-post-media {
+    flex: 0 0 auto;
+    width: 100%;
+    max-width: 100%;
+    min-height: 140px;
+  }
+
+  .blog-channel-post-copy h4 {
+    font-size: 0.98rem;
+  }
+
+  .blog-channel-post-copy p {
+    margin: 0.32rem 0 0.52rem;
+    font-size: 0.88rem;
+    line-height: 1.5;
+  }
+
+  .blog-channel-post-actions .button {
+    padding: 0.34rem 0.56rem;
+    font-size: 0.78rem;
+  }
 
   .grid.cols-2,
   .grid.cols-3 {

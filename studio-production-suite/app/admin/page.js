@@ -86,11 +86,6 @@ export default function AdminPage({ searchParams }) {
                 ))
                 : null}
             </div>
-            <p className="meta" style={{ marginTop: '0.7rem' }}>
-              {ownerMode
-                ? 'Media upload should happen directly inside band/podcast edit forms.'
-                : 'Your media uploads are available in your blog post editor and blog channel card settings.'}
-            </p>
           </div>
         </details>
 
