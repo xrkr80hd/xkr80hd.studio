@@ -6,68 +6,13 @@ import { useState } from 'react';
 
 const publicNavItems = [
   { href: '/', label: 'Home', className: 'nav-cool' },
-  {
-    href: '/hub',
-    label: (
-      <span className="split-label">
-        <span className="split-cool">XRKR</span>
-        <span className="split-80">80</span>
-        <span className="split-cool">HD</span>
-        <span className="split-space"> </span>
-        <span className="split-white">Hub</span>
-      </span>
-    ),
-  },
-  {
-    href: '/local-legends-archive',
-    label: (
-      <span className="split-label">
-        <span className="split-cool">YourLocal</span>
-        <span className="split-space"> </span>
-        <span className="split-white">Legends</span>
-      </span>
-    ),
-  },
-  {
-    href: '/your-local-scene',
-    label: (
-      <span className="split-label">
-        <span className="split-cool">YourLocal</span>
-        <span className="split-space"> </span>
-        <span className="split-white">Scene</span>
-      </span>
-    ),
-  },
-  {
-    href: '/your-local-blog',
-    label: (
-      <span className="split-label">
-        <span className="split-cool">YourLocal</span>
-        <span className="split-space"> </span>
-        <span className="split-white">Blog</span>
-      </span>
-    ),
-  },
-  {
-    href: '/podcast',
-    label: (
-      <span className="split-label">
-        <span className="split-cool">YourLocal</span>
-        <span className="split-space"> </span>
-        <span className="split-white">Podcast</span>
-      </span>
-    ),
-  },
-  {
-    href: '/your-local-business',
-    label: (
-      <span className="split-label">
-        <span className="split-cool">YourLocal</span>
-        <span className="split-space"> </span>
-        <span className="split-white">Business</span>
-      </span>
-    ),
-  },
+  { href: '/hub', label: 'XRKR80HD Hub', className: 'nav-cool' },
+  { href: '/local-legends-archive', label: 'Legends', className: 'nav-cool' },
+  { href: '/your-local-scene', label: 'Scene', className: 'nav-cool' },
+  { href: '/your-local-artists', label: 'Artists', className: 'nav-cool' },
+  { href: '/your-local-blog', label: 'Blog', className: 'nav-cool' },
+  { href: '/podcast', label: 'Podcast', className: 'nav-cool' },
+  { href: '/your-local-business', label: 'Business', className: 'nav-cool' },
   { href: '/contact', label: 'Contact', className: 'nav-cool' },
 ];
 

@@ -103,9 +103,24 @@ h4 {
 
 .nav-links {
   display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
+  flex-wrap: nowrap;
+  gap: 0.8rem;
   align-items: center;
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(81, 240, 255, 0.34) transparent;
+}
+
+.nav-links::-webkit-scrollbar {
+  height: 6px;
+}
+
+.nav-links::-webkit-scrollbar-thumb {
+  background: rgba(81, 240, 255, 0.34);
+  border-radius: 999px;
 }
 
 .nav-links a {
@@ -117,6 +132,7 @@ h4 {
   border-bottom: 2px solid transparent;
   transition: all 0.2s ease;
   letter-spacing: 0.015em;
+  flex: 0 0 auto;
 }
 
 .nav-links a:hover,

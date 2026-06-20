@@ -11,12 +11,19 @@ function formatContent(text) {
     .filter(Boolean);
 }
 
+function isVideoMediaUrl(value) {
+  const raw = String(value || '').trim().split('?')[0].toLowerCase();
+  return /\.(mp4|webm|mov|m4v|ogv)$/i.test(raw);
+}
+
 export default async function BlogPostPage({ params }) {
   const post = await getPostBySlug(params.slug);
 
   if (!post) {
     notFound();
   }
+
+  const coverMediaIsVideo = isVideoMediaUrl(post.cover_image_url);
 
   return (
     <article className="card blog-post-card">
@@ -37,7 +44,13 @@ export default async function BlogPostPage({ params }) {
       <div className="actions">
         <SharePostLinkButton path={`/blog/${post.slug}`} title={post.title} label="Share Post" />
       </div>
-      {post.cover_image_url ? <img className="blog-cover-image" src={post.cover_image_url} alt={post.title} /> : null}
+      {post.cover_image_url ? (
+        coverMediaIsVideo ? (
+          <video className="blog-cover-image blog-cover-video" src={post.cover_image_url} controls playsInline preload="metadata" />
+        ) : (
+          <img className="blog-cover-image" src={post.cover_image_url} alt={post.title} />
+        )
+      ) : null}
       {formatContent(post.content).map((paragraph, index) => (
         <p key={index}>{paragraph}</p>
       ))}

@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import YourLocalHeroNav from '../../components/YourLocalHeroNav';
 import { getPublishedLocalBusinesses } from '../../lib/content';
 
