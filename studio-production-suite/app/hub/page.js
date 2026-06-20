@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import HubMediaGallery from '../../components/HubMediaGallery';
 import HubTracksPlayer from '../../components/HubTracksPlayer';
 import { getHubData } from '../../lib/content';

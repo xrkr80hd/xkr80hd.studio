@@ -85,7 +85,7 @@ export function matchEnvAdminCredentials(username, password) {
 }
 
 export function getAdminOwnerUsername() {
-  return getEnv('ADMIN_OWNER_USERNAME', 'xrkradmin').toLowerCase();
+  return getEnv('ADMIN_OWNER_USERNAME', 'xrkr80hdadmin').toLowerCase();
 }
 
 export function isOwnerUsername(username) {

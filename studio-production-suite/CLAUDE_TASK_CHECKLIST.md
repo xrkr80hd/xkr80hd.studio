@@ -122,7 +122,7 @@ You are sharp, but disciplined.
 Fix admin UX + media handling issues fast, with clean mobile behavior and no broken routes.
 
 ## Constraints
-- Keep owner-only restrictions in place (`xrkradmin` for owner tools).
+- Keep owner-only restrictions in place (`xrkr80hdadmin` for owner tools).
 - Do not expose backend CRUD on public pages.
 - Build must pass (`npm run build`).
 - Keep existing data safe; use additive SQL changes.
