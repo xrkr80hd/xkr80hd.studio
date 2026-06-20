@@ -18,20 +18,20 @@ composer install --no-interaction --prefer-dist
 php artisan key:generate
 ```
 
-2. Install JS dependencies and build assets
+1. Install JS dependencies and build assets
 
 ```bash
 npm ci
 npm run dev   # or `npm run build` for production
 ```
 
-3. Run database migrations (if applicable)
+1. Run database migrations (if applicable)
 
 ```bash
 php artisan migrate
 ```
 
-4. Start the local server
+1. Start the local server
 
 ```bash
 php artisan serve
