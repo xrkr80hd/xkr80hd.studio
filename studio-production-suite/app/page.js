@@ -54,7 +54,7 @@ const guideCardDefaults = [
     body: 'Solo artists and creators actively releasing, posting, and performing in your local scene.',
     href: '/your-local-artists',
     cta: 'Open Artists',
-    image: '/assets/cards/local-scene-card.png',
+    image: '/assets/cards/local-artists.png',
   },
   {
     key: 'blog',
@@ -62,7 +62,7 @@ const guideCardDefaults = [
     body: 'Stories, releases, writeups, and local updates from the community.',
     href: '/your-local-blog',
     cta: 'Open Blog',
-    image: '/assets/cards/local-podcast-card.png',
+    image: '/assets/cards/local-blog.png',
   },
   {
     key: 'podcast',
