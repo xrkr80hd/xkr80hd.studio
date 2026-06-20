@@ -280,6 +280,53 @@ export async function getBandsByEra(era) {
   );
 }
 
+function collectArtistGalleryImages(artist, members) {
+  const imageSet = new Set();
+
+  const pushImage = (value) => {
+    const safe = String(value || '').trim();
+    if (safe) {
+      imageSet.add(safe);
+    }
+  };
+
+  pushImage(artist?.band_photo_url);
+  pushImage(artist?.image_url);
+  pushImage(artist?.banner_image_url);
+
+  if (Array.isArray(members)) {
+    for (const member of members) {
+      pushImage(member?.image_url);
+    }
+  }
+
+  return Array.from(imageSet);
+}
+
+export async function getPublishedArtists() {
+  const artists = await runQuery(
+    'artists_published',
+    (supabase) =>
+      supabase
+        .from('bands')
+        .select('*')
+        .eq('is_solo_artist', true)
+        .eq('is_published', true)
+        .order('sort_order', { ascending: true })
+        .order('name', { ascending: true }),
+    []
+  );
+
+  return artists.map((artist) => {
+    const profile = parseBandProfilePayload(artist.members_json);
+    return {
+      ...artist,
+      members: profile.members,
+      gallery_images: collectArtistGalleryImages(artist, profile.members),
+    };
+  });
+}
+
 export async function getBandBySlug(slug) {
   const band = await runQuery(
     `band_${slug}`,
