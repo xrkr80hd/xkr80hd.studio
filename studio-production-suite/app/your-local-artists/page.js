@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import YourLocalHeroNav from '../../components/YourLocalHeroNav';
 import { getPublishedArtists } from '../../lib/content';
 
 export default async function YourLocalArtistsPage() {
@@ -12,26 +13,7 @@ export default async function YourLocalArtistsPage() {
           <span className="hero-accent">YourLocal</span> Artists
         </h1>
         <p>Solo artists in the local community. Each card includes a dedicated artist gallery and a link to the full profile.</p>
-        <div className="actions">
-          <Link className="button" href="/local-legends-archive">
-            YourLocal Legends
-          </Link>
-          <Link className="button" href="/your-local-scene">
-            YourLocal Scene
-          </Link>
-          <Link className="button primary" href="/your-local-artists">
-            YourLocal Artists
-          </Link>
-          <Link className="button" href="/your-local-blog">
-            YourLocal Blog
-          </Link>
-          <Link className="button" href="/podcast">
-            YourLocal Podcast
-          </Link>
-          <Link className="button" href="/your-local-business">
-            YourLocal Business
-          </Link>
-        </div>
+        <YourLocalHeroNav activeKey="artists" />
       </section>
 
       <section className="section-space">

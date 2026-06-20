@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import YourLocalHeroNav from '../../components/YourLocalHeroNav';
 import { getPodcastEpisodesForPodcast, getPublishedPodcasts } from '../../lib/content';
 import { formatDate } from '../../lib/format';
 
@@ -22,26 +23,7 @@ export default async function PodcastPage() {
           <span className="hero-accent">YourLocal</span> Podcasts
         </h1>
         <p>Local podcast profiles. Open each page to hear the latest drops and learn who they are.</p>
-        <div className="actions">
-          <Link className="button" href="/local-legends-archive">
-            YourLocal Legends
-          </Link>
-          <Link className="button" href="/your-local-scene">
-            YourLocal Scene
-          </Link>
-          <Link className="button" href="/your-local-artists">
-            YourLocal Artists
-          </Link>
-          <Link className="button" href="/your-local-blog">
-            YourLocal Blog
-          </Link>
-          <Link className="button primary" href="/podcast">
-            YourLocal Podcast
-          </Link>
-          <Link className="button" href="/your-local-business">
-            YourLocal Business
-          </Link>
-        </div>
+        <YourLocalHeroNav activeKey="podcast" />
       </section>
 
       <section className="section-space">

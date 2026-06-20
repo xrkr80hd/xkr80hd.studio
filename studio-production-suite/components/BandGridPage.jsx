@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import YourLocalHeroNav from './YourLocalHeroNav';
 
 export default function BandGridPage({ badge, headlineAccent, headlineRest, subtitle, era, bands }) {
   return (
@@ -9,26 +10,7 @@ export default function BandGridPage({ badge, headlineAccent, headlineRest, subt
           <span className="hero-accent">{headlineAccent}</span> {headlineRest}
         </h1>
         <p>{subtitle}</p>
-        <div className="actions">
-          <Link className={`button ${era === 'archive' ? 'primary' : ''}`.trim()} href="/local-legends-archive">
-            YourLocal Legends
-          </Link>
-          <Link className={`button ${era === 'scene' ? 'primary' : ''}`.trim()} href="/your-local-scene">
-            YourLocal Scene
-          </Link>
-          <Link className="button" href="/your-local-artists">
-            YourLocal Artists
-          </Link>
-          <Link className="button" href="/your-local-blog">
-            YourLocal Blog
-          </Link>
-          <Link className="button" href="/podcast">
-            YourLocal Podcast
-          </Link>
-          <Link className="button" href="/your-local-business">
-            YourLocal Business
-          </Link>
-        </div>
+        <YourLocalHeroNav activeKey={era === 'archive' ? 'legends' : ''} />
       </section>
 
       <section className="section-space">

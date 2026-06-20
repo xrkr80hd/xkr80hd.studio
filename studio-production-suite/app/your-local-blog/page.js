@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import YourLocalHeroNav from '../../components/YourLocalHeroNav';
 import { getPublishedBlogChannels } from '../../lib/content';
 
 export default async function YourLocalBlogPage() {
@@ -12,26 +13,7 @@ export default async function YourLocalBlogPage() {
           <span className="hero-accent">YourLocal</span> Blog
         </h1>
         <p>News, stories, and updates from the artists, businesses, and creators around your local scene.</p>
-        <div className="actions">
-          <Link className="button" href="/local-legends-archive">
-            YourLocal Legends
-          </Link>
-          <Link className="button" href="/your-local-scene">
-            YourLocal Scene
-          </Link>
-          <Link className="button" href="/your-local-artists">
-            YourLocal Artists
-          </Link>
-          <Link className="button primary" href="/your-local-blog">
-            YourLocal Blog
-          </Link>
-          <Link className="button" href="/podcast">
-            YourLocal Podcast
-          </Link>
-          <Link className="button" href="/your-local-business">
-            YourLocal Business
-          </Link>
-        </div>
+        <YourLocalHeroNav activeKey="blog" />
       </section>
 
       {channels.length ? (

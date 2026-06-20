@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import YourLocalHeroNav from '../../../components/YourLocalHeroNav';
 import { getPodcastEpisodesForPodcast, getPublishedPodcastBySlug } from '../../../lib/content';
 import { formatDate } from '../../../lib/format';
 
@@ -18,20 +19,7 @@ export default async function PodcastDetailPage({ params }) {
         <h1>{podcast.title}</h1>
         {podcast.hosts ? <p>Hosts: {podcast.hosts}</p> : null}
         {podcast.summary ? <p>{podcast.summary}</p> : null}
-        <div className="actions">
-          <Link className="button" href="/podcast">
-            Back to Podcasts
-          </Link>
-          <Link className="button" href="/your-local-scene">
-            YourLocal Scene
-          </Link>
-          <Link className="button" href="/your-local-artists">
-            YourLocal Artists
-          </Link>
-          <Link className="button" href="/your-local-blog">
-            YourLocal Blog
-          </Link>
-        </div>
+        <YourLocalHeroNav activeKey="podcast" />
       </section>
 
       <section className="section-space">
