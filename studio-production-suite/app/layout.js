@@ -1,6 +1,8 @@
 import { Space_Grotesk, Syne } from 'next/font/google';
 import { cookies } from 'next/headers';
+import { Suspense } from 'react';
 import BackgroundRotator from '../components/BackgroundRotator';
+import GoogleAnalytics from '../components/GoogleAnalytics';
 import SiteHeader from '../components/SiteHeader';
 import { ADMIN_SESSION_COOKIE, ADMIN_SESSION_USER_COOKIE, isAdminSessionValid, isOwnerUsername } from '../lib/admin-auth';
 import './globals.css';
@@ -44,6 +46,9 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={`${space.variable} ${syne.variable} page-standard`}>
+        <Suspense fallback={null}>
+          <GoogleAnalytics />
+        </Suspense>
         <BackgroundRotator />
         <SiteHeader adminMode={adminMode} ownerMode={ownerMode} adminUser={adminMode ? sessionUser : ''} />
         <main>
