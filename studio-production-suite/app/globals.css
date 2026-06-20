@@ -1073,6 +1073,326 @@ img.cover {
   border-radius: 12px;
 }
 
+.blog-composer {
+  max-width: 1320px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.blog-composer-head {
+  margin-bottom: 0.9rem;
+}
+
+.blog-composer-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(300px, 0.8fr);
+  gap: 1rem;
+  align-items: start;
+}
+
+.blog-composer-main,
+.blog-composer-side {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.blog-title-row {
+  margin-bottom: 0.95rem;
+}
+
+.blog-title-input {
+  min-height: 68px;
+  font-family: "Syne", "Space Grotesk", sans-serif;
+  font-size: clamp(1.8rem, 3vw, 2.8rem);
+  font-weight: 700;
+  line-height: 1.08;
+  padding: 0.85rem 0.95rem;
+}
+
+.blog-excerpt-input {
+  min-height: 120px;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.blog-composer-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.2rem;
+}
+
+.blog-editor-shell {
+  position: relative;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.blog-editor-shell.has-ambient-media {
+  height: 560px;
+}
+
+.blog-editor-ambient {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.blog-editor-ambient-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.13;
+  transition: opacity 1.4s ease;
+  animation: ambientBreath 9s ease-in-out infinite;
+}
+
+.blog-editor-ambient-video.fading {
+  opacity: 0 !important;
+  animation: none;
+}
+
+@keyframes ambientBreath {
+
+  0%,
+  100% {
+    opacity: 0.08;
+  }
+
+  50% {
+    opacity: 0.18;
+  }
+}
+
+/* Ambient library manager UI */
+.ambient-library-list {
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.ambient-library-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.55rem 0.75rem;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 8px;
+  border: 1px solid var(--line);
+}
+
+.ambient-library-thumb {
+  width: 80px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: 5px;
+  flex-shrink: 0;
+  background: #0a0f1a;
+}
+
+.ambient-library-filename {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.82rem;
+}
+
+/* ── Submissions Inbox ─────────────────────────────────── */
+.submissions-filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.submissions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  margin-top: 0.5rem;
+}
+
+.submission-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem 1.1rem;
+}
+
+.submission-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.submission-type-badge {
+  display: inline-block;
+  padding: 0.18rem 0.55rem;
+  border-radius: 20px;
+  background: rgba(81, 240, 255, 0.1);
+  color: #51f0ff;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 0.35rem;
+}
+
+.submission-name {
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.submission-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.submission-summary {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  opacity: 0.88;
+}
+
+.submission-details-toggle > summary {
+  cursor: pointer;
+  user-select: none;
+}
+
+.submission-details-body {
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  opacity: 0.8;
+}
+
+.submission-links ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.submission-links a {
+  font-size: 0.85rem;
+  word-break: break-all;
+}
+
+.submission-files-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
+.submission-file-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  text-decoration: none;
+  max-width: 110px;
+}
+
+.submission-file-thumb {
+  width: 100px;
+  height: 68px;
+  object-fit: cover;
+  border-radius: 6px;
+  background: #0a0f1a;
+  border: 1px solid var(--line);
+}
+
+.submission-file-icon {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.submission-file-name {
+  font-size: 0.72rem;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100px;
+}
+
+.submission-date {
+  opacity: 0.45;
+  font-size: 0.78rem;
+}
+
+.blog-editor-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(to bottom,
+      rgba(8, 13, 23, 0.55) 0%,
+      rgba(8, 13, 23, 0.4) 50%,
+      rgba(8, 13, 23, 0.55) 100%);
+  pointer-events: none;
+}
+
+.blog-content-editor {
+  min-height: 560px;
+  font-size: 1rem;
+  line-height: 1.8;
+  padding: 1rem 1.05rem;
+  resize: vertical;
+}
+
+.blog-editor-shell.has-ambient-media .blog-content-editor {
+  position: relative;
+  z-index: 2;
+  background: transparent;
+  border: none;
+  outline: none;
+  resize: none;
+  height: 100%;
+  width: 100%;
+  overflow-y: auto;
+  min-height: unset;
+  color: #eef4ff;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.7);
+}
+
+.blog-editor-shell.has-ambient-media .blog-content-editor:focus {
+  outline: none;
+}
+
+.blog-composer-panel {
+  padding: 0.95rem;
+}
+
+.blog-preview-panel {
+  position: sticky;
+  top: 1rem;
+}
+
+.blog-preview-card {
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.blog-preview-excerpt {
+  color: #d6e4f5;
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
 input,
 select,
 textarea {
@@ -1094,6 +1414,11 @@ textarea:focus {
 
 textarea {
   min-height: 120px;
+}
+
+textarea[spellcheck="true"],
+input[spellcheck="true"] {
+  -webkit-text-size-adjust: 100%;
 }
 
 label {

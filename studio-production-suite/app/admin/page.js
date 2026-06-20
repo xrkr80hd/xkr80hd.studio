@@ -1,5 +1,6 @@
 import { cookies } from 'next/headers';
 import Link from 'next/link';
+import AdminAmbientLibrary from '../../components/AdminAmbientLibrary';
 import AdminLogoutButton from '../../components/AdminLogoutButton';
 import { ADMIN_SESSION_USER_COOKIE, getAdminOwnerUsername, isOwnerUsername } from '../../lib/admin-auth';
 import { getSupabaseAdminLinks } from '../../lib/admin-links';
@@ -19,6 +20,7 @@ export default function AdminPage({ searchParams }) {
     { href: '/admin/users', label: 'Admin Manager', detail: 'Owner-only manager for admin accounts and access control.' },
     { href: '/admin/home', label: 'Homepage Controls', detail: 'Landing profile and Site Guide card photos.' },
     { href: '/admin/tracks', label: 'XRKR Hub Tracks', detail: 'Upload and manage owner-only tracks for the Hub player.' },
+    { href: '/admin/submissions', label: 'Submissions Inbox', detail: 'Review public submissions by type — bands, artists, podcasts, blog, and more.' },
   ];
   const editorActions = [
     { href: '/admin/blog', label: 'My Blog Manager', detail: 'Manage only your own posts, channel name, and card graphic.' },
@@ -113,6 +115,18 @@ export default function AdminPage({ searchParams }) {
                   <span>Open Supabase project settings.</span>
                 </a>
               </div>
+            </div>
+          </details>
+        ) : null}
+
+        {ownerMode ? (
+          <details className="admin-accordion">
+            <summary>
+              <span className="admin-accordion-title">Ambient Video Library</span>
+              <span className="admin-accordion-note">Background videos that cycle while writing posts</span>
+            </summary>
+            <div className="admin-accordion-body">
+              <AdminAmbientLibrary />
             </div>
           </details>
         ) : null}
