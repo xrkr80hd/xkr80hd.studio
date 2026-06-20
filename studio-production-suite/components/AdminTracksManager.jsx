@@ -1,8 +1,8 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import MediaUrlInput from './MediaUrlInput';
 import AdminAccordionSection from './AdminAccordionSection';
+import MediaUrlInput from './MediaUrlInput';
 
 function emptyTrack() {
   return {
@@ -198,19 +198,18 @@ export default function AdminTracksManager({ initialTracks = [] }) {
   const sortedTracks = useMemo(() => {
     const items = [...tracks];
     items.sort((a, b) => {
-      const orderA = Number.isFinite(Number(a.sort_order)) ? Number(a.sort_order) : 0;
-      const orderB = Number.isFinite(Number(b.sort_order)) ? Number(b.sort_order) : 0;
-      if (orderA !== orderB) {
-        return orderA - orderB;
+      const titleCompare = String(a.title || '').localeCompare(String(b.title || ''), undefined, {
+        numeric: true,
+        sensitivity: 'base',
+      });
+      if (titleCompare !== 0) {
+        return titleCompare;
       }
 
-      const dateA = String(a.release_date || '');
-      const dateB = String(b.release_date || '');
-      if (dateA !== dateB) {
-        return dateB.localeCompare(dateA);
-      }
-
-      return String(a.title || '').localeCompare(String(b.title || ''));
+      return String(a.artist_name || '').localeCompare(String(b.artist_name || ''), undefined, {
+        numeric: true,
+        sensitivity: 'base',
+      });
     });
     return items;
   }, [tracks]);
@@ -311,24 +310,30 @@ export default function AdminTracksManager({ initialTracks = [] }) {
       <section className="card section-space">
         <AdminAccordionSection
           title={`Track Library (${sortedTracks.length})`}
-          note="Ordered by sort order, then release date."
+          note="Alphabetized by track title. New uploads auto-slot in order."
           defaultOpen={false}
         >
           {sortedTracks.length ? (
-            <div className="grid">
+            <div className="admin-track-library-stack">
               {sortedTracks.map((track) => (
-                <article key={track.id} className="card">
-                  {track.cover_image_url ? (
-                    <img className="admin-track-cover-preview" src={track.cover_image_url} alt={`${track.title} cover art`} />
-                  ) : (
-                    <div className="admin-track-cover-fallback">No cover art uploaded yet.</div>
-                  )}
-                  <h4>{track.title}</h4>
-                  <p className="meta">
-                    {track.artist_name || 'xrkr80hd'} | {track.genre || 'other'} | {formatReleaseDate(track.release_date)} | sort {track.sort_order}
-                  </p>
-                  <p className="meta">Hub player: {track.is_featured ? 'on' : 'off'}</p>
-                  {track.audio_url ? <audio controls src={track.audio_url} style={{ width: '100%' }} /> : null}
+                <article key={track.id} className="card admin-track-library-item">
+                  <div className="admin-track-library-main">
+                    {track.cover_image_url ? (
+                      <img className="admin-track-thumb" src={track.cover_image_url} alt={`${track.title} cover art`} />
+                    ) : (
+                      <div className="admin-track-thumb-fallback">No cover</div>
+                    )}
+
+                    <div className="admin-track-library-copy">
+                      <h4 className="admin-track-title">{track.title}</h4>
+                      <p className="meta">
+                        {track.artist_name || 'xrkr80hd'} | {track.genre || 'other'} | {formatReleaseDate(track.release_date)} | sort {track.sort_order}
+                      </p>
+                      <p className="meta">Hub player: {track.is_featured ? 'on' : 'off'}</p>
+                    </div>
+                  </div>
+
+                  {track.audio_url ? <audio controls src={track.audio_url} className="admin-track-audio" /> : null}
                   <div className="actions">
                     <button
                       className="button primary"
