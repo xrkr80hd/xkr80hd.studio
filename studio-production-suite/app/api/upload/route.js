@@ -1,9 +1,13 @@
 import { randomUUID } from 'crypto';
 import { NextResponse } from 'next/server';
+import { ADMIN_SESSION_USER_COOKIE, isOwnerUsername } from '../../../lib/admin-auth';
+import { normalizeAdminUsername } from '../../../lib/admin-users';
 import { getSupabaseAdmin } from '../../../lib/supabase-admin';
 import { STORAGE_FOLDER_PRESETS, isAllowedFolder, normalizeFolder } from '../../../lib/storage-folders';
 
 export const runtime = 'nodejs';
+
+const NON_OWNER_UPLOAD_FOLDERS = ['images/posts'];
 
 function cleanFilename(value) {
   return String(value || 'file')
@@ -81,6 +85,22 @@ function inferContentType(file) {
   return 'application/octet-stream';
 }
 
+function getActingAdmin(request) {
+  const actingUser = normalizeAdminUsername(request.cookies.get(ADMIN_SESSION_USER_COOKIE)?.value || '');
+  return {
+    actingUser,
+    ownerMode: isOwnerUsername(actingUser),
+  };
+}
+
+function getRoleAwareAllowedFolders(allowedFolders, ownerMode) {
+  if (ownerMode) {
+    return allowedFolders;
+  }
+
+  return NON_OWNER_UPLOAD_FOLDERS.filter((folder) => isAllowedFolder(folder, allowedFolders));
+}
+
 export async function POST(request) {
   const supabase = getSupabaseAdmin();
 
@@ -100,8 +120,23 @@ export async function POST(request) {
     .split(',')
     .map((value) => normalizeFolder(value, ''))
     .filter(Boolean);
-  const activeAllowedFolders = allowedFolders.length ? allowedFolders : STORAGE_FOLDER_PRESETS;
+  const baselineAllowedFolders = allowedFolders.length ? allowedFolders : STORAGE_FOLDER_PRESETS;
+  const { actingUser, ownerMode } = getActingAdmin(request);
+  const activeAllowedFolders = getRoleAwareAllowedFolders(baselineAllowedFolders, ownerMode);
   const folder = normalizeFolder(formData.get('folder') || 'misc');
+
+  if (!ownerMode && !actingUser) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  if (!activeAllowedFolders.length) {
+    return NextResponse.json(
+      {
+        error: 'No upload folders are available for this admin account.',
+      },
+      { status: 403 }
+    );
+  }
 
   if (!(file instanceof File)) {
     return NextResponse.json({ error: 'No file uploaded.' }, { status: 400 });
