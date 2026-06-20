@@ -1,17 +1,10 @@
 import Link from 'next/link';
 import YourLocalHeroNav from './YourLocalHeroNav';
 
-export default function BandGridPage({ badge, headlineAccent, headlineRest, subtitle, era, bands }) {
+export default function BandGridPage({ era, bands }) {
   return (
     <>
-      <section className="card hero band-hero">
-        <span className="tag-badge">{badge}</span>
-        <h1>
-          <span className="hero-accent">{headlineAccent}</span> {headlineRest}
-        </h1>
-        <p>{subtitle}</p>
-        <YourLocalHeroNav activeKey={era === 'archive' ? 'legends' : ''} />
-      </section>
+      <YourLocalHeroNav activeKey={era === 'archive' ? 'legends' : 'scene'} />
 
       <section className="section-space">
         <div className="band-grid" id="band-grid">

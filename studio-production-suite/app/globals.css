@@ -795,41 +795,82 @@ main>.container>*:nth-child(4) {
   gap: 0.55rem;
 }
 
+/* ── YourLocal Unified Hero ─────────────────────────────── */
+.yourlocal-unified-hero {
+  padding: 1.3rem 1.15rem 1.15rem;
+}
+
+.yourlocal-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.9rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.yourlocal-breadcrumb-link {
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.18s ease;
+}
+
+.yourlocal-breadcrumb-link:hover {
+  color: #eef4ff;
+}
+
+.yourlocal-breadcrumb-sep {
+  opacity: 0.4;
+}
+
+.yourlocal-breadcrumb-current {
+  color: #c8ddf5;
+}
+
+.yourlocal-hero-heading {
+  margin: 0 0 0.45rem;
+  font-size: clamp(2rem, 4.2vw, 3.2rem);
+  line-height: 1.05;
+}
+
+.yourlocal-hero-subtitle {
+  margin: 0 0 1.1rem;
+  color: var(--muted);
+  max-width: 70ch;
+  font-size: 0.97rem;
+  line-height: 1.6;
+}
+
 .yourlocal-hero-nav-wrap {
-  margin-top: 0.95rem;
-  display: grid;
-  gap: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.42rem;
 }
 
 .yourlocal-hero-nav-title {
   font-family: "Syne", "Space Grotesk", sans-serif;
-  font-size: 0.84rem;
+  font-size: 0.72rem;
   font-weight: 800;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: #a8c9eb;
+  color: rgba(168, 201, 235, 0.6);
 }
 
 .yourlocal-hero-nav {
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 0.48rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
 }
 
 .yourlocal-hero-link.button {
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-  padding: 0.62rem 0.5rem;
+  flex: 0 0 auto;
+  padding: 0.5rem 1rem;
   border-radius: 8px;
-  font-weight: 800;
+  font-weight: 700;
+  font-size: 0.88rem;
   letter-spacing: 0.01em;
   background: linear-gradient(165deg, rgba(14, 20, 34, 0.9), rgba(8, 13, 23, 0.94));
-}
-
-.yourlocal-hero-link.button.is-active {
-  border-color: rgba(255, 122, 60, 0.62);
-  box-shadow: 0 10px 24px rgba(255, 122, 60, 0.24);
 }
 
 .share-link-wrap {
@@ -1262,7 +1303,7 @@ img.cover {
   opacity: 0.88;
 }
 
-.submission-details-toggle > summary {
+.submission-details-toggle>summary {
   cursor: pointer;
   user-select: none;
 }

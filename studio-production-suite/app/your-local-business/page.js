@@ -19,14 +19,7 @@ export default async function YourLocalBusinessPage() {
 
   return (
     <>
-      <section className="card hero band-hero">
-        <span className="tag-badge">Support Local</span>
-        <h1>
-          <span className="hero-accent">YourLocal</span> Business
-        </h1>
-        <p>Local businesses we support across services, production, food, and the community.</p>
-        <YourLocalHeroNav activeKey="business" />
-      </section>
+      <YourLocalHeroNav activeKey="business" />
 
       <section className="section-space">
         <div className="band-grid">

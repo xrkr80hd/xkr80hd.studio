@@ -17,14 +17,7 @@ export default async function PodcastPage() {
 
   return (
     <>
-      <section className="card hero band-hero">
-        <span className="tag-badge">Podcast Channel</span>
-        <h1>
-          <span className="hero-accent">YourLocal</span> Podcasts
-        </h1>
-        <p>Local podcast profiles. Open each page to hear the latest drops and learn who they are.</p>
-        <YourLocalHeroNav activeKey="podcast" />
-      </section>
+      <YourLocalHeroNav activeKey="podcast" />
 
       <section className="section-space">
         <div className="band-grid">

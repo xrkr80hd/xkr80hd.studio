@@ -7,14 +7,7 @@ export default async function YourLocalArtistsPage() {
 
   return (
     <>
-      <section className="card hero band-hero">
-        <span className="tag-badge">Solo Artists</span>
-        <h1>
-          <span className="hero-accent">YourLocal</span> Artists
-        </h1>
-        <p>Solo artists in the local community. Each card includes a dedicated artist gallery and a link to the full profile.</p>
-        <YourLocalHeroNav activeKey="artists" />
-      </section>
+      <YourLocalHeroNav activeKey="artists" />
 
       <section className="section-space">
         <div className="band-grid">

@@ -7,14 +7,7 @@ export default async function YourLocalBlogPage() {
 
   return (
     <>
-      <section className="card hero band-hero">
-        <span className="tag-badge">Stories and Updates</span>
-        <h1>
-          <span className="hero-accent">YourLocal</span> Blog
-        </h1>
-        <p>News, stories, and updates from the artists, businesses, and creators around your local scene.</p>
-        <YourLocalHeroNav activeKey="blog" />
-      </section>
+      <YourLocalHeroNav activeKey="blog" />
 
       {channels.length ? (
         <section className="card section-space blog-channel-section">
