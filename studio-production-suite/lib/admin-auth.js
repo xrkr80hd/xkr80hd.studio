@@ -89,6 +89,10 @@ export function getAdminOwnerUsername() {
   return getEnv('ADMIN_OWNER_USERNAME', MASTER_OWNER_USERNAME).toLowerCase();
 }
 
+export function getConfiguredAdminUsernames() {
+  return getAdminAccounts().map((account) => String(account.username || '').trim().toLowerCase()).filter(Boolean);
+}
+
 export function isOwnerUsername(username) {
   const safeUser = String(username || '').trim().toLowerCase();
   if (!safeUser) {

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
-import { ADMIN_SESSION_USER_COOKIE, isOwnerUsername } from '../../../../lib/admin-auth';
-import { adminUsersBootstrapSql, createAdminUser, listAdminUsers } from '../../../../lib/admin-users';
+import { ADMIN_SESSION_USER_COOKIE, getConfiguredAdminUsernames, isOwnerUsername } from '../../../../lib/admin-auth';
+import { isConfiguredManagedUsername } from '../../../../lib/admin-user-groups.mjs';
+import { adminUsersBootstrapSql, createAdminUser, listAdminUsers, normalizeAdminUsername } from '../../../../lib/admin-users';
 
 export const runtime = 'nodejs';
 
@@ -30,8 +31,14 @@ export async function POST(request) {
   }
 
   const body = await request.json().catch(() => ({}));
+  const requestedUsername = normalizeAdminUsername(body.username);
+
+  if (isConfiguredManagedUsername(requestedUsername, getConfiguredAdminUsernames())) {
+    return NextResponse.json({ error: 'That username already exists as a secure environment account.' }, { status: 400 });
+  }
+
   const result = await createAdminUser({
-    username: body.username,
+    username: requestedUsername,
     password: body.password,
     displayName: body.displayName,
   });

@@ -1,7 +1,7 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import AdminUsersManager from '../../../components/AdminUsersManager';
-import { ADMIN_SESSION_USER_COOKIE, getAdminOwnerUsername, isOwnerUsername } from '../../../lib/admin-auth';
+import { ADMIN_SESSION_USER_COOKIE, getAdminOwnerUsername, getConfiguredAdminUsernames, isOwnerUsername } from '../../../lib/admin-auth';
 import { adminUsersBootstrapSql, listAdminUsers, normalizeAdminUsername } from '../../../lib/admin-users';
 
 export const metadata = {
@@ -21,8 +21,8 @@ export default async function AdminUsersPage() {
   return (
     <>
       <section className="card hero">
-        <h1>Admin User Manager</h1>
-        <p>Add or remove editor/admin accounts from the site without editing Vercel env vars each time.</p>
+        <h1>Manage Users</h1>
+        <p>Add blog users, review access categories, and manage login details from one owner-only screen.</p>
       </section>
 
       <AdminUsersManager
@@ -31,6 +31,7 @@ export default async function AdminUsersPage() {
         initialError={result.error || ''}
         sqlSnippet={result.missingTable ? adminUsersBootstrapSql() : ''}
         ownerUsername={ownerUsername}
+        configuredUsernames={getConfiguredAdminUsernames()}
       />
     </>
   );
