@@ -6,7 +6,7 @@
 - [x] Exclude `/admin` routes from analytics.
 - [x] Test public/admin route selection.
 - [x] Verify the production build.
-- [ ] Publish only the analytics changes without including unrelated local edits.
+- [x] Publish only the analytics changes without including unrelated local edits.
 
 ## Current publish
 

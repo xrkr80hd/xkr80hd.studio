@@ -41,5 +41,5 @@
 
 - [x] Run the analytics unit test.
 - [x] Run `npm run build`.
-- [ ] Inspect the diff and stage only analytics and agent-system records.
+- [x] Inspect the diff and stage only analytics and agent-system records.
 - [x] Record verification in `completed_work.md`.
