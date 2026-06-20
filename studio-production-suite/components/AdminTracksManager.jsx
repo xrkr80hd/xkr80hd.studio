@@ -329,14 +329,12 @@ export default function AdminTracksManager({ initialTracks = [] }) {
 
         <TrackEditorSections form={createForm} setForm={setCreateForm} idPrefix="create-track" isEdit={false} genreListId={genreListId} />
 
-        <AdminAccordionSection title="Save Track" note="Create a new track in the library." defaultOpen>
-          <div className="actions">
-            <button className="button primary" type="submit" disabled={creating}>
-              {creating ? 'Saving...' : 'Create Track'}
-            </button>
-          </div>
-          {createStatus ? <p className="meta">{createStatus}</p> : null}
-        </AdminAccordionSection>
+        <div className="actions" style={{ marginTop: '0.95rem' }}>
+          <button className="button primary" type="submit" disabled={creating}>
+            {creating ? 'Saving...' : 'Create Track'}
+          </button>
+        </div>
+        {createStatus ? <p className="meta">{createStatus}</p> : null}
       </form>
 
       <section className="card section-space">
