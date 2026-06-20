@@ -61,11 +61,6 @@ export default function AdminPage({ searchParams }) {
             require <strong>{ownerUsername}</strong>.
           </p>
         ) : null}
-        {error === 'scope' ? (
-          <p className="alert">
-            Access limited for <strong>{actingUser || 'unknown'}</strong>. This account currently has Blog Manager only.
-          </p>
-        ) : null}
 
         <details className="admin-accordion" open>
           <summary>

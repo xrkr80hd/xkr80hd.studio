@@ -1,5 +1,6 @@
 export const ADMIN_SESSION_COOKIE = 'xrkr_admin_session';
 export const ADMIN_SESSION_USER_COOKIE = 'xrkr_admin_user';
+const MASTER_OWNER_USERNAME = 'xrkr80hdadmin';
 
 function getEnv(name, fallback = '') {
   return String(process.env[name] || fallback || '').trim();
@@ -85,10 +86,14 @@ export function matchEnvAdminCredentials(username, password) {
 }
 
 export function getAdminOwnerUsername() {
-  return getEnv('ADMIN_OWNER_USERNAME', 'xrkr80hdadmin').toLowerCase();
+  return getEnv('ADMIN_OWNER_USERNAME', MASTER_OWNER_USERNAME).toLowerCase();
 }
 
 export function isOwnerUsername(username) {
   const safeUser = String(username || '').trim().toLowerCase();
-  return safeUser !== '' && safeUser === getAdminOwnerUsername();
+  if (!safeUser) {
+    return false;
+  }
+
+  return safeUser === MASTER_OWNER_USERNAME || safeUser === getAdminOwnerUsername();
 }
