@@ -87,7 +87,7 @@ export default function SubmissionIntakeForm() {
 
   return (
     <form
-      className="card section-space contact-submit-form"
+      className="contact-submit-form"
       onSubmit={async (event) => {
         event.preventDefault();
         setSubmitting(true);

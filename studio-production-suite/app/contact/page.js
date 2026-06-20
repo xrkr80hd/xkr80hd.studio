@@ -33,7 +33,15 @@ export default async function ContactPage() {
         </p>
       </section>
 
-      <SubmissionIntakeForm />
+      <details className="card section-space contact-submit-accordion">
+        <summary>
+          <span className="section-title">Submit Your Project</span>
+          <span className="meta">Drag-and-drop uploader and intake form</span>
+        </summary>
+        <div className="contact-submit-accordion-body">
+          <SubmissionIntakeForm />
+        </div>
+      </details>
     </>
   );
 }

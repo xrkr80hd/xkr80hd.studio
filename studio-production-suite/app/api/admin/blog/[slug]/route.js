@@ -1,8 +1,22 @@
 import { NextResponse } from 'next/server';
-import { slugify, clampText, toBoolean, isValidMediaUrl } from '../../../../../lib/admin-crud-utils';
+import { ADMIN_SESSION_USER_COOKIE, isOwnerUsername } from '../../../../../lib/admin-auth';
+import { clampText, isValidMediaUrl, slugify, toBoolean } from '../../../../../lib/admin-crud-utils';
+import { normalizeAdminUsername } from '../../../../../lib/admin-users';
 import { getSupabaseAdmin } from '../../../../../lib/supabase-admin';
 
 export const runtime = 'nodejs';
+
+function isMissingAuthorColumnError(error) {
+  return String(error?.message || '').toLowerCase().includes('author_username');
+}
+
+function getActingAdmin(request) {
+  const actingUser = normalizeAdminUsername(request.cookies.get(ADMIN_SESSION_USER_COOKIE)?.value || '');
+  return {
+    actingUser,
+    ownerMode: isOwnerUsername(actingUser),
+  };
+}
 
 function formatDateTimeForDb(value) {
   const raw = String(value || '').trim();
@@ -56,8 +70,12 @@ function buildPostPayload(raw) {
   };
 }
 
-async function findPostBySlug(supabase, slug) {
-  return supabase.from('blog_posts').select('*').eq('slug', slug).limit(1).maybeSingle();
+async function findPostBySlug(supabase, slug, actingUser, ownerMode) {
+  let query = supabase.from('blog_posts').select('*').eq('slug', slug);
+  if (!ownerMode) {
+    query = query.eq('author_username', actingUser);
+  }
+  return query.limit(1).maybeSingle();
 }
 
 async function ensureUniqueSlugForUpdate(supabase, baseSlug, id) {
@@ -86,13 +104,24 @@ export async function GET(request, { params }) {
     return NextResponse.json({ error: 'Missing Supabase server credentials.' }, { status: 500 });
   }
 
+  const { actingUser, ownerMode } = getActingAdmin(request);
+  if (!actingUser) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
   const slug = String(params.slug || '').trim();
   if (!slug) {
     return NextResponse.json({ error: 'Post slug is required.' }, { status: 400 });
   }
 
-  const response = await findPostBySlug(supabase, slug);
+  const response = await findPostBySlug(supabase, slug, actingUser, ownerMode);
   if (response.error) {
+    if (!ownerMode && isMissingAuthorColumnError(response.error)) {
+      return NextResponse.json(
+        { error: 'Blog ownership is not configured yet. Add blog_posts.author_username in Supabase schema before using non-owner blog managers.' },
+        { status: 500 }
+      );
+    }
     return NextResponse.json({ error: response.error.message }, { status: 500 });
   }
   if (!response.data) {
@@ -108,13 +137,24 @@ export async function PUT(request, { params }) {
     return NextResponse.json({ error: 'Missing Supabase server credentials.' }, { status: 500 });
   }
 
+  const { actingUser, ownerMode } = getActingAdmin(request);
+  if (!actingUser) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
   const slug = String(params.slug || '').trim();
   if (!slug) {
     return NextResponse.json({ error: 'Post slug is required.' }, { status: 400 });
   }
 
-  const existing = await findPostBySlug(supabase, slug);
+  const existing = await findPostBySlug(supabase, slug, actingUser, ownerMode);
   if (existing.error) {
+    if (!ownerMode && isMissingAuthorColumnError(existing.error)) {
+      return NextResponse.json(
+        { error: 'Blog ownership is not configured yet. Add blog_posts.author_username in Supabase schema before using non-owner blog managers.' },
+        { status: 500 }
+      );
+    }
     return NextResponse.json({ error: existing.error.message }, { status: 500 });
   }
   if (!existing.data) {
@@ -156,13 +196,24 @@ export async function DELETE(request, { params }) {
     return NextResponse.json({ error: 'Missing Supabase server credentials.' }, { status: 500 });
   }
 
+  const { actingUser, ownerMode } = getActingAdmin(request);
+  if (!actingUser) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
   const slug = String(params.slug || '').trim();
   if (!slug) {
     return NextResponse.json({ error: 'Post slug is required.' }, { status: 400 });
   }
 
-  const existing = await findPostBySlug(supabase, slug);
+  const existing = await findPostBySlug(supabase, slug, actingUser, ownerMode);
   if (existing.error) {
+    if (!ownerMode && isMissingAuthorColumnError(existing.error)) {
+      return NextResponse.json(
+        { error: 'Blog ownership is not configured yet. Add blog_posts.author_username in Supabase schema before using non-owner blog managers.' },
+        { status: 500 }
+      );
+    }
     return NextResponse.json({ error: existing.error.message }, { status: 500 });
   }
   if (!existing.data) {

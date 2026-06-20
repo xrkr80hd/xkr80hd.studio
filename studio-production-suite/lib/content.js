@@ -1,7 +1,8 @@
-import { getSupabaseAdmin } from './supabase-admin';
+import { unstable_noStore as noStore } from 'next/cache';
+import { getAdminOwnerUsername, isOwnerUsername } from './admin-auth';
 import { parseBandProfilePayload } from './band-profile';
 import { normalizeMediaPayload } from './media-url';
-import { unstable_noStore as noStore } from 'next/cache';
+import { getSupabaseAdmin } from './supabase-admin';
 
 const DEFAULT_GENRES = [
   'metal',
@@ -653,7 +654,7 @@ export async function getProjects() {
 }
 
 export async function getPublishedPosts() {
-  return runQuery(
+  const posts = await runQuery(
     'blog_posts',
     (supabase) =>
       supabase
@@ -663,6 +664,8 @@ export async function getPublishedPosts() {
         .order('published_at', { ascending: false, nullsFirst: false }),
     []
   );
+
+  return normalizePublishedBlogAuthors(posts);
 }
 
 export async function getLatestPublishedPost() {
@@ -682,7 +685,7 @@ export async function getLatestPublishedPost() {
 }
 
 export async function getPostBySlug(slug) {
-  return runQuery(
+  const post = await runQuery(
     `post_${slug}`,
     (supabase) =>
       supabase
@@ -694,31 +697,84 @@ export async function getPostBySlug(slug) {
         .maybeSingle(),
     null
   );
+
+  return post ? normalizePublishedBlogAuthor(post) : null;
+}
+
+function normalizePublishedBlogAuthor(post) {
+  const ownerUsername = getAdminOwnerUsername();
+  const raw = normalizeAdminUsername(post?.author_username);
+  return {
+    ...post,
+    author_username: raw || ownerUsername,
+  };
+}
+
+function normalizePublishedBlogAuthors(posts) {
+  return Array.isArray(posts) ? posts.map((post) => normalizePublishedBlogAuthor(post)) : [];
 }
 
 export async function getPostsForAdmin() {
+  return getPostsForAdminByUser(getAdminOwnerUsername());
+}
+
+export async function getPostBySlugForAdmin(slug) {
+  return getPostBySlugForAdminByUser(slug, getAdminOwnerUsername());
+}
+
+function normalizeAdminUsername(value) {
+  return String(value || '')
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9._-]/g, '')
+    .slice(0, 48);
+}
+
+function isBlogOwnerMode(actingUser) {
+  const safeUser = normalizeAdminUsername(actingUser);
+  return isOwnerUsername(safeUser);
+}
+
+export async function getPostsForAdminByUser(actingUser) {
+  const safeUser = normalizeAdminUsername(actingUser);
+  const ownerMode = isBlogOwnerMode(safeUser);
+
   return runQuery(
-    'blog_posts_admin',
-    (supabase) =>
-      supabase
-        .from('blog_posts')
-        .select('*')
+    `blog_posts_admin_${ownerMode ? 'owner' : safeUser || 'anon'}`,
+    (supabase) => {
+      let query = supabase.from('blog_posts').select('*');
+      if (!ownerMode) {
+        if (!safeUser) {
+          return supabase.from('blog_posts').select('*').eq('id', -1);
+        }
+        query = query.eq('author_username', safeUser);
+      }
+
+      return query
         .order('published_at', { ascending: false, nullsFirst: false })
-        .order('created_at', { ascending: false }),
+        .order('created_at', { ascending: false });
+    },
     []
   );
 }
 
-export async function getPostBySlugForAdmin(slug) {
+export async function getPostBySlugForAdminByUser(slug, actingUser) {
+  const safeUser = normalizeAdminUsername(actingUser);
+  const ownerMode = isBlogOwnerMode(safeUser);
+
   return runQuery(
-    `blog_post_admin_${slug}`,
-    (supabase) =>
-      supabase
-        .from('blog_posts')
-        .select('*')
-        .eq('slug', slug)
-        .limit(1)
-        .maybeSingle(),
+    `blog_post_admin_${slug}_${ownerMode ? 'owner' : safeUser || 'anon'}`,
+    (supabase) => {
+      let query = supabase.from('blog_posts').select('*').eq('slug', slug);
+      if (!ownerMode) {
+        if (!safeUser) {
+          return supabase.from('blog_posts').select('*').eq('id', -1).limit(1).maybeSingle();
+        }
+        query = query.eq('author_username', safeUser);
+      }
+
+      return query.limit(1).maybeSingle();
+    },
     null
   );
 }
@@ -737,10 +793,9 @@ export async function getMediaByType(type) {
 }
 
 export async function getHubData() {
-  const [tracks, projects, posts, photos, videos, media] = await Promise.all([
+  const [tracks, projects, photos, videos, media] = await Promise.all([
     getTracks(),
     getProjects(),
-    getPublishedPosts(),
     getMediaByType('photo'),
     getMediaByType('video'),
     runQuery(
@@ -753,14 +808,12 @@ export async function getHubData() {
   return {
     tracks,
     projects,
-    posts,
     photos,
     videos,
     media,
     counts: {
       tracks: tracks.length,
       projects: projects.length,
-      posts: posts.length,
       media: media.length,
     },
   };

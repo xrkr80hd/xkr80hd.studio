@@ -1,8 +1,22 @@
 import { NextResponse } from 'next/server';
-import { slugify, clampText, toBoolean, isValidMediaUrl } from '../../../../lib/admin-crud-utils';
+import { ADMIN_SESSION_USER_COOKIE, isOwnerUsername } from '../../../../lib/admin-auth';
+import { clampText, isValidMediaUrl, slugify, toBoolean } from '../../../../lib/admin-crud-utils';
+import { normalizeAdminUsername } from '../../../../lib/admin-users';
 import { getSupabaseAdmin } from '../../../../lib/supabase-admin';
 
 export const runtime = 'nodejs';
+
+function isMissingAuthorColumnError(error) {
+  return String(error?.message || '').toLowerCase().includes('author_username');
+}
+
+function getActingAdmin(request) {
+  const actingUser = normalizeAdminUsername(request.cookies.get(ADMIN_SESSION_USER_COOKIE)?.value || '');
+  return {
+    actingUser,
+    ownerMode: isOwnerUsername(actingUser),
+  };
+}
 
 function formatDateTimeForDb(value) {
   const raw = String(value || '').trim();
@@ -76,19 +90,31 @@ async function ensureUniqueSlug(supabase, baseSlug) {
   return { ok: false, error: 'Could not generate a unique slug.' };
 }
 
-export async function GET() {
+export async function GET(request) {
   const supabase = getSupabaseAdmin();
   if (!supabase) {
     return NextResponse.json({ error: 'Missing Supabase server credentials.' }, { status: 500 });
   }
 
-  const response = await supabase
-    .from('blog_posts')
-    .select('*')
-    .order('published_at', { ascending: false, nullsFirst: false })
-    .order('created_at', { ascending: false });
+  const { actingUser, ownerMode } = getActingAdmin(request);
+  if (!actingUser) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  let query = supabase.from('blog_posts').select('*');
+  if (!ownerMode) {
+    query = query.eq('author_username', actingUser);
+  }
+
+  const response = await query.order('published_at', { ascending: false, nullsFirst: false }).order('created_at', { ascending: false });
 
   if (response.error) {
+    if (!ownerMode && isMissingAuthorColumnError(response.error)) {
+      return NextResponse.json(
+        { error: 'Blog ownership is not configured yet. Add blog_posts.author_username in Supabase schema before using non-owner blog managers.' },
+        { status: 500 }
+      );
+    }
     return NextResponse.json({ error: response.error.message }, { status: 500 });
   }
 
@@ -99,6 +125,11 @@ export async function POST(request) {
   const supabase = getSupabaseAdmin();
   if (!supabase) {
     return NextResponse.json({ error: 'Missing Supabase server credentials.' }, { status: 500 });
+  }
+
+  const { actingUser, ownerMode } = getActingAdmin(request);
+  if (!actingUser) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   const body = await request.json().catch(() => ({}));
@@ -117,12 +148,19 @@ export async function POST(request) {
     .insert({
       ...parsed.payload,
       slug: slugResult.slug,
+      author_username: ownerMode ? null : actingUser,
     })
     .select('id, slug')
     .limit(1)
     .maybeSingle();
 
   if (insert.error) {
+    if (!ownerMode && isMissingAuthorColumnError(insert.error)) {
+      return NextResponse.json(
+        { error: 'Blog ownership is not configured yet. Add blog_posts.author_username in Supabase schema before using non-owner blog managers.' },
+        { status: 500 }
+      );
+    }
     return NextResponse.json({ error: insert.error.message }, { status: 500 });
   }
 

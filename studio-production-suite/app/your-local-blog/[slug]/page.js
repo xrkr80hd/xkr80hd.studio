@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import SharePostLinkButton from '../../../components/SharePostLinkButton';
 import { getPostBySlug } from '../../../lib/content';
@@ -19,6 +20,18 @@ export default async function YourLocalBlogPostPage({ params }) {
 
   return (
     <article className="card blog-post-card">
+      <nav className="blog-breadcrumbs" aria-label="Breadcrumb">
+        <Link href="/">Home</Link>
+        <span aria-hidden="true">/</span>
+        <Link href="/your-local-blog">YourLocal Blog</Link>
+        <span aria-hidden="true">/</span>
+        <span>{post.title}</span>
+      </nav>
+      <div className="actions">
+        <Link className="button" href="/your-local-blog">
+          Back to YourLocal Blog
+        </Link>
+      </div>
       <h1 className="section-title">{post.title}</h1>
       <p className="meta">{formatDate(post.published_at)}</p>
       <div className="actions">

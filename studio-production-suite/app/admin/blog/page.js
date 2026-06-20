@@ -1,6 +1,8 @@
+import { cookies } from 'next/headers';
 import Link from 'next/link';
+import { ADMIN_SESSION_USER_COOKIE, isOwnerUsername } from '../../../lib/admin-auth';
+import { getPostsForAdminByUser } from '../../../lib/content';
 import { formatDate } from '../../../lib/format';
-import { getPostsForAdmin } from '../../../lib/content';
 
 export const metadata = {
   title: 'Blog Manager | Admin',
@@ -8,13 +10,15 @@ export const metadata = {
 export const dynamic = 'force-dynamic';
 
 export default async function AdminBlogPage() {
-  const posts = await getPostsForAdmin();
+  const actingUser = cookies().get(ADMIN_SESSION_USER_COOKIE)?.value || '';
+  const ownerMode = isOwnerUsername(actingUser);
+  const posts = await getPostsForAdminByUser(actingUser);
 
   return (
     <>
       <section className="card hero">
         <h1>Blog Manager</h1>
-        <p>Write, edit, and publish posts for xrkr80hd.studio from admin.</p>
+        <p>{ownerMode ? 'Write, edit, and publish posts for xrkr80hd.studio from admin.' : 'Manage only your own blog posts and share your links.'}</p>
         <div className="actions">
           <Link className="button primary" href="/admin/blog/new" prefetch={false}>
             New Blog Post
@@ -41,6 +45,9 @@ export default async function AdminBlogPage() {
                   </Link>
                   <Link className="button" href={`/blog/${post.slug}`} prefetch={false}>
                     View Post
+                  </Link>
+                  <Link className="button" href={`/your-local-blog/${post.slug}`} prefetch={false}>
+                    Share Link
                   </Link>
                 </div>
               </article>

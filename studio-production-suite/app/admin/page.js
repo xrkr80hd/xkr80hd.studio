@@ -1,9 +1,8 @@
-import Link from 'next/link';
 import { cookies } from 'next/headers';
-import { getSupabaseAdminLinks } from '../../lib/admin-links';
+import Link from 'next/link';
 import AdminLogoutButton from '../../components/AdminLogoutButton';
-import AdminMediaGuide from '../../components/AdminMediaGuide';
 import { ADMIN_SESSION_USER_COOKIE, getAdminOwnerUsername, isOwnerUsername } from '../../lib/admin-auth';
+import { getSupabaseAdminLinks } from '../../lib/admin-links';
 
 export const metadata = {
   title: 'Admin | xrkr80hd Studio',
@@ -41,6 +40,13 @@ export default function AdminPage({ searchParams }) {
   return (
     <>
       <section className="card hero">
+        <div className="actions" style={{ marginTop: 0, marginBottom: '0.65rem', justifyContent: 'space-between', alignItems: 'center' }}>
+          <p className="meta" style={{ margin: 0 }}>
+            Signed in as: <strong>{actingUser || 'unknown'}</strong>
+            {ownerMode ? ' · Owner tools enabled' : ' · Standard admin mode'}
+          </p>
+          <AdminLogoutButton />
+        </div>
         <h1>Admin Dashboard</h1>
         <p>Use this panel to manage uploads and open your Supabase admin tools.</p>
       </section>
@@ -52,67 +58,73 @@ export default function AdminPage({ searchParams }) {
             require <strong>{ownerUsername}</strong>.
           </p>
         ) : null}
-        <h3 className="section-title">Edit Panels</h3>
-        <div className="admin-action-grid">
-          {commonActions.map((item) => (
-            <Link key={item.href} className="admin-action-tile" href={item.href} prefetch={false}>
-              <strong>{item.label}</strong>
-              <span>{item.detail}</span>
-            </Link>
-          ))}
-          {ownerMode
-            ? ownerActions.map((item) => (
-                <Link key={item.href} className="admin-action-tile owner" href={item.href} prefetch={false}>
+
+        <details className="admin-accordion" open>
+          <summary>
+            <span className="admin-accordion-title">Edit Panels</span>
+            <span className="admin-accordion-note">Admin Guide, Blog, Bands, Podcasts, Business, Password</span>
+          </summary>
+          <div className="admin-accordion-body">
+            <div className="admin-action-grid">
+              {commonActions.map((item) => (
+                <Link key={item.href} className="admin-action-tile" href={item.href} prefetch={false}>
                   <strong>{item.label}</strong>
                   <span>{item.detail}</span>
                 </Link>
-              ))
-            : null}
-        </div>
+              ))}
+              {ownerMode
+                ? ownerActions.map((item) => (
+                  <Link key={item.href} className="admin-action-tile owner" href={item.href} prefetch={false}>
+                    <strong>{item.label}</strong>
+                    <span>{item.detail}</span>
+                  </Link>
+                ))
+                : null}
+            </div>
+            <p className="meta" style={{ marginTop: '0.7rem' }}>Media upload should happen directly inside band/podcast edit forms.</p>
+          </div>
+        </details>
 
-        <h3 className="section-title" style={{ marginTop: '1rem' }}>
-          Supabase Tools
-        </h3>
-        <div className="admin-action-grid compact">
-          <a className="admin-action-tile" href={links.tableEditor} target="_blank" rel="noreferrer">
-            <strong>Table Editor</strong>
-            <span>Open DB rows/columns.</span>
-          </a>
-          <a className="admin-action-tile" href={links.storage} target="_blank" rel="noreferrer">
-            <strong>Storage</strong>
-            <span>Open files and buckets.</span>
-          </a>
-          <a className="admin-action-tile" href={links.project} target="_blank" rel="noreferrer">
-            <strong>Project</strong>
-            <span>Open Supabase project settings.</span>
-          </a>
-          <div className="admin-action-tile danger">
-            <strong>Session</strong>
-            <span>Sign out of admin mode.</span>
-            <div className="actions" style={{ marginTop: '0.55rem' }}>
-              <AdminLogoutButton />
+        <details className="admin-accordion">
+          <summary>
+            <span className="admin-accordion-title">Supabase Tools</span>
+            <span className="admin-accordion-note">Table Editor, Storage, Project</span>
+          </summary>
+          <div className="admin-accordion-body">
+            <div className="admin-action-grid compact">
+              <a className="admin-action-tile" href={links.tableEditor} target="_blank" rel="noreferrer">
+                <strong>Table Editor</strong>
+                <span>Open DB rows/columns.</span>
+              </a>
+              <a className="admin-action-tile" href={links.storage} target="_blank" rel="noreferrer">
+                <strong>Storage</strong>
+                <span>Open files and buckets.</span>
+              </a>
+              <a className="admin-action-tile" href={links.project} target="_blank" rel="noreferrer">
+                <strong>Project</strong>
+                <span>Open Supabase project settings.</span>
+              </a>
             </div>
           </div>
-        </div>
-        <h3 className="section-title" style={{ marginTop: '1rem' }}>
-          Public QA Links
-        </h3>
-        <div className="admin-action-grid compact">
-          {publicQaLinks.map((item) => (
-            <Link key={item.href} className="admin-action-tile" href={item.href} prefetch={false}>
-              <strong>{item.label}</strong>
-              <span>{item.detail}</span>
-            </Link>
-          ))}
-        </div>
-        <p className="meta" style={{ marginTop: '0.8rem', paddingTop: '0.5rem', borderTop: '1px solid rgba(138, 164, 196, 0.12)' }}>
-          Signed in as: <strong>{actingUser || 'unknown'}</strong>
-          {ownerMode ? ' · Owner tools enabled' : ' · Standard admin mode'}
-        </p>
-        <p className="meta">Media upload should happen directly inside band/podcast edit forms.</p>
-      </section>
+        </details>
 
-      <AdminMediaGuide />
+        <details className="admin-accordion">
+          <summary>
+            <span className="admin-accordion-title">Public QA Links</span>
+            <span className="admin-accordion-note">Home, Legends, Scene, Podcast, Business, Contact</span>
+          </summary>
+          <div className="admin-accordion-body">
+            <div className="admin-action-grid compact">
+              {publicQaLinks.map((item) => (
+                <Link key={item.href} className="admin-action-tile" href={item.href} prefetch={false}>
+                  <strong>{item.label}</strong>
+                  <span>{item.detail}</span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </details>
+      </section>
     </>
   );
 }

@@ -21,7 +21,9 @@ export default function HubTracksPlayer({ tracks }) {
   const [index, setIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [autoPlayOnChange, setAutoPlayOnChange] = useState(false);
+  const [loopMode, setLoopMode] = useState('off');
   const [volume, setVolume] = useState(82);
+  const [transportState, setTransportState] = useState(null);
   const audioRef = useRef(null);
   const hasRandomizedOnLoadRef = useRef(false);
   const hasTracks = items.length > 0;
@@ -33,6 +35,7 @@ export default function HubTracksPlayer({ tracks }) {
     if (!items.length) {
       setIndex(0);
       setIsPlaying(false);
+      setTransportState(null);
       hasRandomizedOnLoadRef.current = false;
       return;
     }
@@ -66,6 +69,7 @@ export default function HubTracksPlayer({ tracks }) {
       playResult
         .then(() => {
           setIsPlaying(true);
+          setTransportState('play');
         })
         .catch(() => {
           setIsPlaying(false);
@@ -77,6 +81,7 @@ export default function HubTracksPlayer({ tracks }) {
     }
 
     setIsPlaying(true);
+    setTransportState('play');
     setAutoPlayOnChange(false);
   }, [autoPlayOnChange, activeTrack?.audio_url]);
 
@@ -87,6 +92,15 @@ export default function HubTracksPlayer({ tracks }) {
     }
     audio.volume = Math.min(1, Math.max(0, volume / 100));
   }, [volume, activeTrack?.audio_url]);
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) {
+      return;
+    }
+
+    audio.loop = loopMode === 'one';
+  }, [loopMode, activeTrack?.audio_url]);
 
   if (!hasTracks) {
     return <p className="meta">No tracks yet.</p>;
@@ -119,6 +133,7 @@ export default function HubTracksPlayer({ tracks }) {
     try {
       await audioRef.current.play();
       setIsPlaying(true);
+      setTransportState('play');
     } catch {
       setIsPlaying(false);
     }
@@ -132,6 +147,7 @@ export default function HubTracksPlayer({ tracks }) {
     audioRef.current.pause();
     audioRef.current.currentTime = 0;
     setIsPlaying(false);
+    setTransportState('stop');
   }
 
   function seekCurrent(deltaSeconds) {
@@ -148,6 +164,34 @@ export default function HubTracksPlayer({ tracks }) {
 
     audio.currentTime = nextTime;
   }
+
+  function cycleLoopMode() {
+    setLoopMode((currentMode) => {
+      if (currentMode === 'off') {
+        return 'one';
+      }
+      if (currentMode === 'one') {
+        return 'all';
+      }
+      return 'off';
+    });
+  }
+
+  function handleTrackEnded() {
+    if (loopMode === 'one' || items.length <= 1) {
+      return;
+    }
+
+    if (loopMode === 'all') {
+      setTrackIndex((currentIndex) => currentIndex + 1, { autoplay: true });
+      return;
+    }
+
+    setTrackIndex((currentIndex) => randomIndex(items.length, currentIndex), { autoplay: true });
+  }
+
+  const loopButtonLabel = loopMode === 'one' ? 'Loop one' : loopMode === 'all' ? 'Loop continuously' : 'Loop off';
+  const loopButtonIcon = loopMode === 'one' ? '1' : loopMode === 'all' ? '\u221E' : '\u27F3';
 
   return (
     <>
@@ -177,9 +221,12 @@ export default function HubTracksPlayer({ tracks }) {
             id="hub-main-player"
             className="hub-main-player"
             src={activeTrack?.audio_url || ''}
-            onPlay={() => setIsPlaying(true)}
+            onPlay={() => {
+              setIsPlaying(true);
+              setTransportState('play');
+            }}
             onPause={() => setIsPlaying(false)}
-            onEnded={() => setTrackIndex((currentIndex) => randomIndex(items.length, currentIndex), { autoplay: true })}
+            onEnded={handleTrackEnded}
           />
           <div className="hub-icon-controls" role="group" aria-label="Hub track controls">
             <button type="button" className="icon-control" aria-label="Back 10 seconds" onClick={() => seekCurrent(-10)}>
@@ -188,10 +235,20 @@ export default function HubTracksPlayer({ tracks }) {
             <button type="button" className="icon-control" aria-label="Previous track" onClick={() => setTrackIndex((currentIndex) => currentIndex - 1, { autoplay: true })}>
               {'<'}
             </button>
-            <button type="button" className="icon-control" aria-label="Play" onClick={playCurrent}>
+            <button
+              type="button"
+              className={`icon-control ${transportState === 'play' ? 'is-playing' : ''}`.trim()}
+              aria-label="Play"
+              onClick={playCurrent}
+            >
               {'\u25B6'}
             </button>
-            <button type="button" className="icon-control" aria-label="Stop" onClick={stopCurrent}>
+            <button
+              type="button"
+              className={`icon-control ${transportState === 'stop' ? 'is-stopped' : ''}`.trim()}
+              aria-label="Stop"
+              onClick={stopCurrent}
+            >
               {'\u25A0'}
             </button>
             <button type="button" className="icon-control" aria-label="Next track" onClick={() => setTrackIndex((currentIndex) => currentIndex + 1, { autoplay: true })}>
@@ -199,6 +256,15 @@ export default function HubTracksPlayer({ tracks }) {
             </button>
             <button type="button" className="icon-control" aria-label="Forward 10 seconds" onClick={() => seekCurrent(10)}>
               {'>>'}
+            </button>
+            <button
+              type="button"
+              className={`icon-control ${loopMode !== 'off' ? 'is-loop-mode' : ''}`.trim()}
+              aria-label={loopButtonLabel}
+              title={loopButtonLabel}
+              onClick={cycleLoopMode}
+            >
+              {loopButtonIcon}
             </button>
           </div>
           <div className="digital-volume-wrap">
