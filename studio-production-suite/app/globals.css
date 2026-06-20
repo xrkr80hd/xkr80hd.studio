@@ -3117,14 +3117,14 @@ label {
 }
 
 .blog-channel-feature {
-  --channel-media-ratio: 16 / 9;
+  --channel-media-ratio: 4 / 3;
   display: grid;
-  grid-template-columns: minmax(220px, 320px) minmax(0, 1fr);
-  gap: 0.75rem;
-  align-items: stretch;
+  grid-template-columns: minmax(150px, 190px) minmax(0, 1fr);
+  gap: 0.62rem;
+  align-items: start;
   border: 1px solid rgba(127, 216, 255, 0.2);
   border-radius: 12px;
-  padding: 0.72rem;
+  padding: 0.6rem;
   background: rgba(10, 16, 27, 0.84);
 }
 
@@ -3137,13 +3137,13 @@ label {
 }
 
 .blog-channel-feature-media-wrap {
-  height: 100%;
+  width: 100%;
 }
 
 .blog-channel-feature-media {
   width: 100%;
-  height: 100%;
-  min-height: 150px;
+  height: 116px;
+  min-height: 116px;
   aspect-ratio: var(--channel-media-ratio);
   border-radius: 10px;
   border: 1px solid rgba(127, 216, 255, 0.22);
@@ -3179,17 +3179,24 @@ label {
 .blog-channel-title {
   margin: 0 0 0.35rem;
   color: #f4fbff;
-  font-size: 1.02rem;
+  font-size: 0.98rem;
 }
 
 .blog-channel-actions {
-  margin-top: auto;
+  margin-top: 0.32rem;
+}
+
+.blog-channel-actions .button {
+  padding: 0.4rem 0.66rem;
+  font-size: 0.82rem;
 }
 
 @media (max-width: 860px) {
   .blog-channel-feature {
-    grid-template-columns: 1fr;
-    gap: 0.66rem;
+    grid-template-columns: 92px minmax(0, 1fr) !important;
+    gap: 0.48rem !important;
+    padding: 0.46rem !important;
+    align-items: start !important;
   }
 
   .blog-channel-feature:nth-child(even) .blog-channel-feature-media-wrap,
@@ -3198,7 +3205,30 @@ label {
   }
 
   .blog-channel-feature-media {
-    min-height: 185px;
+    width: 92px !important;
+    height: 72px !important;
+    min-height: 72px !important;
+    max-height: 72px !important;
+    aspect-ratio: 4 / 3 !important;
+  }
+
+  .blog-channel-blogger {
+    font-size: 0.68rem;
+  }
+
+  .blog-channel-title {
+    font-size: 0.86rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .blog-channel-actions {
+    margin-top: 0.25rem;
+    gap: 0.4rem;
+  }
+
+  .blog-channel-actions .button {
+    padding: 0.3rem 0.48rem;
+    font-size: 0.74rem;
   }
 }
 

@@ -42,3 +42,12 @@ php artisan serve
 
 - This repository was initialized with standard Laravel `.gitignore` and an MIT license.
 - If you want me to push this repo to GitHub, tell me the owner/repo name or allow me to create it via the `gh` CLI.
+
+## Hard Responsive Rules (Do Not Break)
+
+- Mobile-first is mandatory. Any UI update must be tested for small screens before merge.
+- Cards and list items must stay compact on mobile. Do not let images expand card height unexpectedly.
+- Always define explicit mobile constraints for media (`width`, `height`, `min-height`, and `max-height`) in breakpoints.
+- When desktop and mobile differ, mobile must prioritize readability, compact density, and predictable spacing.
+- Do not ship layout changes that increase mobile card height without explicit approval.
+- For reactive/responsive components, verify behavior at common phone widths (320px, 375px, 390px, 430px) before pushing.
