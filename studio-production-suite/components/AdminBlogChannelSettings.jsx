@@ -272,8 +272,8 @@ export default function AdminBlogChannelSettings({ draftCount = 0, publishedCoun
               }}
               style={{ display: 'none' }}
             />
-            {coverImageUrl ? (
-              <img src={coverImageUrl} alt="Blog cover" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            {cardImageUrl ? (
+              <img src={cardImageUrl} alt="Blog cover" className="admin-blog-drop-preview" />
             ) : (
               <div className="admin-blog-cover-placeholder">Drop or click to upload 16:9 cover</div>
             )}

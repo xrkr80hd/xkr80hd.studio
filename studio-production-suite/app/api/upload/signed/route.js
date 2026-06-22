@@ -7,7 +7,7 @@ import { getSupabaseAdmin } from '../../../../lib/supabase-admin';
 
 export const runtime = 'nodejs';
 
-const NON_OWNER_UPLOAD_FOLDERS = ['images/posts'];
+const NON_OWNER_UPLOAD_FOLDERS = ['images/posts', 'images/blog-channels'];
 
 function cleanFilename(value) {
   return String(value || 'file')
