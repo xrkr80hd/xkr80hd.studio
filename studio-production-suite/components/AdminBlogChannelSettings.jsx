@@ -62,6 +62,7 @@ export default function AdminBlogChannelSettings({ draftCount = 0, publishedCoun
   const [channelName, setChannelName] = useState('');
   const [draftChannelName, setDraftChannelName] = useState('');
   const [channelBio, setChannelBio] = useState('');
+  const [avatarUrl, setAvatarUrl] = useState('');
   const [cardImageUrl, setCardImageUrl] = useState('');
   const [channelSlug, setChannelSlug] = useState('');
   const [status, setStatus] = useState('');
@@ -71,13 +72,14 @@ export default function AdminBlogChannelSettings({ draftCount = 0, publishedCoun
   const [dragActive, setDragActive] = useState(false);
   const [isEditingProfile, setIsEditingProfile] = useState(profilePage);
   const [isBioOpen, setIsBioOpen] = useState(false);
-  const [localPreviewUrl, setLocalPreviewUrl] = useState('');
-  const fileInputRef = useRef(null);
+  const [avatarPreviewUrl, setAvatarPreviewUrl] = useState('');
+  const [coverPreviewUrl, setCoverPreviewUrl] = useState('');
+  const profileFileInputRef = useRef(null);
+  const coverFileInputRef = useRef(null);
   const publicChannelHref = channelSlug ? `/blog/channel/${encodeURIComponent(channelSlug)}` : '/blog';
   const canEditProfile = profilePage || isEditingProfile;
-  const hasCustomImage = Boolean(cardImageUrl) && !isProfileFallbackCardImage(cardImageUrl);
-  const profileSquareImageUrl = hasCustomImage ? cardImageUrl : PROFILE_FALLBACK_CARD_IMAGE;
-  const displayImageUrl = localPreviewUrl || cardImageUrl;
+  const profileSquareImageUrl = avatarPreviewUrl || avatarUrl || PROFILE_FALLBACK_CARD_IMAGE;
+  const displayImageUrl = coverPreviewUrl || cardImageUrl;
 
   useEffect(() => {
     let cancelled = false;
@@ -99,8 +101,11 @@ export default function AdminBlogChannelSettings({ draftCount = 0, publishedCoun
       setChannelName(String(body?.item?.channel_name || ''));
       setDraftChannelName(String(body?.item?.channel_name || ''));
       setChannelBio(String(body?.item?.blogger_bio || ''));
+      setAvatarUrl(String(body?.item?.avatar_url || ''));
       setCardImageUrl(String(body?.item?.card_image_url || ''));
       setChannelSlug(String(body?.item?.channel_slug || ''));
+      setAvatarPreviewUrl('');
+      setCoverPreviewUrl('');
       setStatus('');
       setLoading(false);
     }
@@ -131,11 +136,11 @@ export default function AdminBlogChannelSettings({ draftCount = 0, publishedCoun
       if (!canEditProfile) {
         setIsEditingProfile(true);
       }
-      await handleImageUpload(files[0]);
+      await handleImageUpload(files[0], 'cover');
     }
   };
 
-  const handleImageUpload = async (file) => {
+  const handleImageUpload = async (file, target = 'cover') => {
     if (!file.type.startsWith('image/')) {
       setStatus('Please upload an image file.');
       return;
@@ -143,27 +148,36 @@ export default function AdminBlogChannelSettings({ draftCount = 0, publishedCoun
 
     // Show local preview immediately so the image is visible right away
     const blobUrl = URL.createObjectURL(file);
-    setLocalPreviewUrl(blobUrl);
+    if (target === 'avatar') {
+      setAvatarPreviewUrl(blobUrl);
+    } else {
+      setCoverPreviewUrl(blobUrl);
+    }
 
     setUploading(true);
-    setStatus('Uploading...');
+    setStatus(target === 'avatar' ? 'Uploading profile picture...' : 'Uploading cover image...');
 
     try {
       const payload = await uploadViaSignedUrl({
         file,
         folder: 'images/blog-channels',
         replaceMode: true,
-        replaceKey: `blog-channel-${channelUsername || 'channel'}`,
-        currentValue: cardImageUrl,
+        replaceKey: target === 'avatar' ? `blog-profile-${channelUsername || 'channel'}` : `blog-channel-${channelUsername || 'channel'}`,
+        currentValue: target === 'avatar' ? avatarUrl : cardImageUrl,
       });
 
       const nextUrl = String(payload.url || payload.canonical_url || '');
       if (nextUrl) {
         const cacheBustedUrl = withCacheBust(nextUrl);
-        setCardImageUrl(cacheBustedUrl);
-        setLocalPreviewUrl(''); // clear blob preview, use persisted URL
+        if (target === 'avatar') {
+          setAvatarUrl(cacheBustedUrl);
+          setAvatarPreviewUrl('');
+        } else {
+          setCardImageUrl(cacheBustedUrl);
+          setCoverPreviewUrl('');
+        }
         URL.revokeObjectURL(blobUrl);
-        setStatus('Cover image saved!');
+        setStatus(target === 'avatar' ? 'Profile image saved!' : 'Cover image saved!');
       } else {
         // Upload succeeded but no URL returned — keep local preview visible
         setStatus('Uploaded — save profile to persist.');
@@ -190,6 +204,7 @@ export default function AdminBlogChannelSettings({ draftCount = 0, publishedCoun
           headers: { 'content-type': 'application/json' },
           body: JSON.stringify({
             channel_name: draftChannelName,
+            avatar_url: avatarUrl,
             card_image_url: cardImageUrl,
           }),
         });
@@ -206,6 +221,7 @@ export default function AdminBlogChannelSettings({ draftCount = 0, publishedCoun
         setChannelName(String(body?.item?.channel_name || draftChannelName));
         setDraftChannelName(String(body?.item?.channel_name || draftChannelName));
         setChannelBio(String(body?.item?.blogger_bio || channelBio));
+        setAvatarUrl(String(body?.item?.avatar_url || avatarUrl));
         setCardImageUrl(String(body?.item?.card_image_url || cardImageUrl));
         setChannelSlug(String(body?.item?.channel_slug || channelSlug));
         setStatus('');
@@ -229,7 +245,7 @@ export default function AdminBlogChannelSettings({ draftCount = 0, publishedCoun
               if (!canEditProfile) {
                 setIsEditingProfile(true);
               }
-              fileInputRef.current?.click();
+              profileFileInputRef.current?.click();
             }}
           >
             {profileSquareImageUrl ? <img src={profileSquareImageUrl} alt="Profile" /> : <span>PROFILE PICTURE</span>}
@@ -240,11 +256,9 @@ export default function AdminBlogChannelSettings({ draftCount = 0, publishedCoun
             <Link className="button primary" href="/admin/blog/new" prefetch={false}>
               New Blog
             </Link>
-            {!canEditProfile ? (
-              <button className="button" type="button" onClick={() => setIsEditingProfile(true)}>
-                Edit Profile
-              </button>
-            ) : null}
+            <button className="button" type="button" onClick={() => setIsEditingProfile(true)}>
+              Edit Profile
+            </button>
             <Link className="button" href={publicChannelHref} prefetch={false}>
               View Blog
             </Link>
@@ -264,12 +278,12 @@ export default function AdminBlogChannelSettings({ draftCount = 0, publishedCoun
               if (!canEditProfile) {
                 setIsEditingProfile(true);
               }
-              fileInputRef.current?.click();
+              coverFileInputRef.current?.click();
             }}
             style={{ cursor: !uploading ? 'pointer' : 'default' }}
           >
             <input
-              ref={fileInputRef}
+              ref={profileFileInputRef}
               type="file"
               accept="image/*"
               disabled={uploading}
@@ -279,7 +293,22 @@ export default function AdminBlogChannelSettings({ draftCount = 0, publishedCoun
                 if (!canEditProfile) {
                   setIsEditingProfile(true);
                 }
-                handleImageUpload(file);
+                handleImageUpload(file, 'avatar');
+              }}
+              style={{ display: 'none' }}
+            />
+            <input
+              ref={coverFileInputRef}
+              type="file"
+              accept="image/*"
+              disabled={uploading}
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (!file) return;
+                if (!canEditProfile) {
+                  setIsEditingProfile(true);
+                }
+                handleImageUpload(file, 'cover');
               }}
               style={{ display: 'none' }}
             />

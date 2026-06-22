@@ -17,9 +17,13 @@ function isMissingChannelTableError(error) {
 
 function toSettingsPayload(raw, username) {
   const channelName = normalizeBlogChannelName(raw?.channel_name, username);
+  const avatarUrl = String(raw?.avatar_url || '').trim();
   const cardImageUrl = String(raw?.card_image_url || '').trim();
   const bloggerBio = String(raw?.blogger_bio || '').trim();
 
+  if (avatarUrl && !isValidMediaUrl(avatarUrl)) {
+    return { ok: false, error: 'Profile image URL must start with https:// or /' };
+  }
   if (!isValidMediaUrl(cardImageUrl)) {
     return { ok: false, error: 'Card image URL must start with https:// or /' };
   }
@@ -31,6 +35,7 @@ function toSettingsPayload(raw, username) {
       channel_name: channelName,
       channel_slug: toBlogChannelSlug(channelName, username),
       blogger_bio: bloggerBio || null,
+      avatar_url: avatarUrl || null,
       card_image_url: cardImageUrl || null,
       updated_at: new Date().toISOString(),
     },
@@ -67,6 +72,7 @@ function defaultChannelItem(username) {
     channel_name: channelName,
     channel_slug: toBlogChannelSlug(channelName, username),
     blogger_bio: null,
+    avatar_url: null,
     card_image_url: null,
   };
 }
@@ -146,6 +152,7 @@ export async function PUT(request) {
           username: parsed.payload.username,
           channel_name: parsed.payload.channel_name,
           channel_slug: uniqueSlug.slug,
+          avatar_url: parsed.payload.avatar_url,
           card_image_url: parsed.payload.card_image_url,
           updated_at: parsed.payload.updated_at,
           created_at: new Date().toISOString(),
@@ -160,8 +167,39 @@ export async function PUT(request) {
 
       return NextResponse.json({
         ok: true,
-        item: { ...(fallbackUpsert.data || defaultChannelItem(actingUser)), blogger_bio: parsed.payload.blogger_bio || null },
+        item: {
+          ...(fallbackUpsert.data || defaultChannelItem(actingUser)),
+          avatar_url: parsed.payload.avatar_url || null,
+          blogger_bio: parsed.payload.blogger_bio || null,
+        },
         warning: 'Blogger bio column is not available yet. Run latest schema SQL to persist bios.',
+      });
+    }
+
+    if (String(upsert.error?.message || '').includes('avatar_url') && String(upsert.error?.message || '').includes('column')) {
+      const fallbackUpsert = await supabase
+        .from('blog_channels')
+        .upsert({
+          username: parsed.payload.username,
+          channel_name: parsed.payload.channel_name,
+          channel_slug: uniqueSlug.slug,
+          blogger_bio: parsed.payload.blogger_bio,
+          card_image_url: parsed.payload.card_image_url,
+          updated_at: parsed.payload.updated_at,
+          created_at: new Date().toISOString(),
+        }, { onConflict: 'username' })
+        .select('*')
+        .limit(1)
+        .maybeSingle();
+
+      if (fallbackUpsert.error) {
+        return NextResponse.json({ error: fallbackUpsert.error.message }, { status: 500 });
+      }
+
+      return NextResponse.json({
+        ok: true,
+        item: { ...(fallbackUpsert.data || defaultChannelItem(actingUser)), avatar_url: parsed.payload.avatar_url || null },
+        warning: 'Profile image column is not available yet. Run latest schema SQL to persist profile photos.',
       });
     }
 

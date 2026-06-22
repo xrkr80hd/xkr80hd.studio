@@ -795,6 +795,7 @@ function normalizeBlogChannelCard(setting, authorUsername) {
     author_username: safeAuthor,
     channel_name: safeName,
     channel_slug: toBlogChannelSlug(setting?.channel_slug || safeName, safeAuthor),
+    avatar_url: String(setting?.avatar_url || '').trim() || null,
     card_image_url: String(setting?.card_image_url || '').trim() || null,
   };
 }
@@ -859,7 +860,7 @@ export async function getPublishedBlogChannels() {
     const counts = grouped.get(author) || { count: 0, latest_slug: '', latest_cover_image_url: null };
     return {
       ...base,
-      card_image_url: base.card_image_url || counts.latest_cover_image_url || BLOG_CHANNEL_DEFAULT_CARD_IMAGE,
+      card_image_url: base.card_image_url || BLOG_CHANNEL_DEFAULT_CARD_IMAGE,
       count: counts.count,
       latest_slug: counts.latest_slug,
     };

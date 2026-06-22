@@ -392,6 +392,7 @@ create table if not exists public.blog_channels (
   channel_name varchar(120) not null,
   channel_slug varchar(140) not null unique,
   blogger_bio text,
+  avatar_url text,
   card_image_url text,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
@@ -401,6 +402,7 @@ alter table public.blog_channels add column if not exists username text;
 alter table public.blog_channels add column if not exists channel_name varchar(120);
 alter table public.blog_channels add column if not exists channel_slug varchar(140);
 alter table public.blog_channels add column if not exists blogger_bio text;
+alter table public.blog_channels add column if not exists avatar_url text;
 alter table public.blog_channels add column if not exists card_image_url text;
 alter table public.blog_channels add column if not exists created_at timestamptz not null default now();
 alter table public.blog_channels add column if not exists updated_at timestamptz not null default now();
