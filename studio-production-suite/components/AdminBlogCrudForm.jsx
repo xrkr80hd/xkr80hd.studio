@@ -327,9 +327,22 @@ export default function AdminBlogCrudForm({ mode = 'create', initialPost = null 
               {excerpt ? <p className="blog-preview-excerpt">{excerpt}</p> : null}
               {coverImageUrl ? (
                 coverMediaIsVideo ? (
-                  <video className="blog-cover-image blog-cover-video" src={coverImageUrl} autoPlay muted loop playsInline controls preload="metadata" />
+                  <div className="blog-preview-cover-frame">
+                    <video
+                      className="blog-cover-image blog-cover-video blog-preview-cover-media"
+                      src={coverImageUrl}
+                      autoPlay
+                      muted
+                      loop
+                      playsInline
+                      controls
+                      preload="metadata"
+                    />
+                  </div>
                 ) : (
-                  <img className="blog-cover-image" src={coverImageUrl} alt={title || 'Cover preview'} />
+                  <div className="blog-preview-cover-frame">
+                    <img className="blog-cover-image blog-preview-cover-media" src={coverImageUrl} alt={title || 'Cover preview'} />
+                  </div>
                 )
               ) : null}
               {previewParagraphs.length ? previewParagraphs.map((paragraph, index) => <p key={index}>{paragraph}</p>) : <p className="meta">Your paragraphs will preview here as you write.</p>}

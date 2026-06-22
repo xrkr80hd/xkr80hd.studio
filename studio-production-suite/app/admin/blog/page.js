@@ -1,7 +1,7 @@
 import { cookies } from 'next/headers';
 import Link from 'next/link';
 import AdminBlogChannelSettings from '../../../components/AdminBlogChannelSettings';
-import { ADMIN_SESSION_USER_COOKIE, isOwnerUsername } from '../../../lib/admin-auth';
+import { ADMIN_SESSION_USER_COOKIE } from '../../../lib/admin-auth';
 import { getPostsForAdminByUser } from '../../../lib/content';
 import { formatDate } from '../../../lib/format';
 
@@ -12,55 +12,65 @@ export const dynamic = 'force-dynamic';
 
 export default async function AdminBlogPage() {
   const actingUser = cookies().get(ADMIN_SESSION_USER_COOKIE)?.value || '';
-  const ownerMode = isOwnerUsername(actingUser);
   const posts = await getPostsForAdminByUser(actingUser);
+  const draftCount = posts.filter((post) => !post.is_published).length;
+  const publishedCount = posts.filter((post) => post.is_published).length;
 
   return (
     <>
       <section className="card hero">
         <h1>Blog Manager</h1>
-        <p>{ownerMode ? 'Write, edit, and publish posts for xrkr80hd.studio from admin.' : 'Manage only your own blog posts and share your links.'}</p>
-        <div className="actions">
-          <Link className="button primary" href="/admin/blog/new" prefetch={false}>
-            New Blog Post
-          </Link>
-          <Link className="button" href="/blog" prefetch={false}>
-            View Public Blog
-          </Link>
-        </div>
+        <p>Write, edit, and publish posts for your own blog channel from admin.</p>
       </section>
 
       <section className="section-space">
-        <AdminBlogChannelSettings />
-
-        {posts.length ? (
-          <div className="grid">
-            {posts.map((post) => (
-              <article key={post.id} className="card">
-                <h3 className="section-title">{post.title}</h3>
-                <p className="meta">
-                  {post.is_published ? 'Published' : 'Draft'} {post.published_at ? `| ${formatDate(post.published_at)}` : ''}
-                </p>
-                {post.excerpt ? <p>{post.excerpt}</p> : null}
-                <div className="actions">
-                  <Link className="button primary" href={`/admin/blog/${post.slug}/edit`} prefetch={false}>
-                    Edit Post
-                  </Link>
-                  <Link className="button" href={`/blog/${post.slug}`} prefetch={false}>
-                    View Post
-                  </Link>
-                  <Link className="button" href={`/your-local-blog/${post.slug}`} prefetch={false}>
-                    Share Link
-                  </Link>
-                </div>
-              </article>
-            ))}
-          </div>
-        ) : (
-          <article className="card">
-            <p className="meta">No blog posts yet.</p>
+        <>
+          <article className="card section-space">
+            <AdminBlogChannelSettings draftCount={draftCount} publishedCount={publishedCount} />
           </article>
-        )}
+
+          <article className="card section-space admin-blog-posts-shell" style={{ marginTop: '1rem' }}>
+            <h2 className="section-title" style={{ marginBottom: '0.7rem' }}>
+              <span className="brand-yourlocal"><span className="brand-your">Your</span><span className="brand-local">Local</span></span>{' '}
+              <span className="brand-blog">Blog</span>{' '}
+              <span>Posts</span>
+            </h2>
+            {posts.length ? (
+              <div className="admin-blog-posts-scroll">
+                {posts.map((post) => (
+                  <article key={post.id} className="admin-blog-post-row">
+                    <div
+                      className={`admin-blog-post-thumb ${post.cover_image_url ? '' : 'is-empty'}`.trim()}
+                      style={post.cover_image_url ? { backgroundImage: `url('${post.cover_image_url}')` } : undefined}
+                    >
+                      {!post.cover_image_url ? <span>Blog Post Picture</span> : null}
+                    </div>
+                    <div className="admin-blog-post-preview">
+                      <h3 className="section-title">{post.title}</h3>
+                      <p className="meta">
+                        {post.is_published ? 'Published' : 'Draft'} {post.published_at ? `| ${formatDate(post.published_at)}` : ''}
+                      </p>
+                      <p>{post.excerpt || 'No preview yet. Add a short excerpt so readers know what this post is about.'}</p>
+                      <div className="actions">
+                        <Link className="button primary" href={`/admin/blog/${post.slug}/edit`} prefetch={false}>
+                          Edit Post
+                        </Link>
+                        <Link className="button" href={`/blog/${post.slug}`} prefetch={false}>
+                          View Post
+                        </Link>
+                        <Link className="button" href={`/blog/${post.slug}`} prefetch={false}>
+                          Share Link
+                        </Link>
+                      </div>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            ) : (
+              <p className="meta">No posts yet. Write your first one!</p>
+            )}
+          </article>
+        </>
       </section>
     </>
   );

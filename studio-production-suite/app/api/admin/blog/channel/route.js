@@ -18,6 +18,7 @@ function isMissingChannelTableError(error) {
 function toSettingsPayload(raw, username) {
   const channelName = normalizeBlogChannelName(raw?.channel_name, username);
   const cardImageUrl = String(raw?.card_image_url || '').trim();
+  const bloggerBio = String(raw?.blogger_bio || '').trim();
 
   if (!isValidMediaUrl(cardImageUrl)) {
     return { ok: false, error: 'Card image URL must start with https:// or /' };
@@ -29,6 +30,7 @@ function toSettingsPayload(raw, username) {
       username,
       channel_name: channelName,
       channel_slug: toBlogChannelSlug(channelName, username),
+      blogger_bio: bloggerBio || null,
       card_image_url: cardImageUrl || null,
       updated_at: new Date().toISOString(),
     },
@@ -64,8 +66,14 @@ function defaultChannelItem(username) {
     username,
     channel_name: channelName,
     channel_slug: toBlogChannelSlug(channelName, username),
+    blogger_bio: null,
     card_image_url: null,
   };
+}
+
+function isMissingBloggerBioColumnError(error) {
+  const msg = String(error?.message || '').toLowerCase();
+  return msg.includes('blogger_bio') && msg.includes('column');
 }
 
 export async function GET(request) {
@@ -131,6 +139,32 @@ export async function PUT(request) {
     .maybeSingle();
 
   if (upsert.error) {
+    if (isMissingBloggerBioColumnError(upsert.error)) {
+      const fallbackUpsert = await supabase
+        .from('blog_channels')
+        .upsert({
+          username: parsed.payload.username,
+          channel_name: parsed.payload.channel_name,
+          channel_slug: uniqueSlug.slug,
+          card_image_url: parsed.payload.card_image_url,
+          updated_at: parsed.payload.updated_at,
+          created_at: new Date().toISOString(),
+        }, { onConflict: 'username' })
+        .select('*')
+        .limit(1)
+        .maybeSingle();
+
+      if (fallbackUpsert.error) {
+        return NextResponse.json({ error: fallbackUpsert.error.message }, { status: 500 });
+      }
+
+      return NextResponse.json({
+        ok: true,
+        item: { ...(fallbackUpsert.data || defaultChannelItem(actingUser)), blogger_bio: parsed.payload.blogger_bio || null },
+        warning: 'Blogger bio column is not available yet. Run latest schema SQL to persist bios.',
+      });
+    }
+
     if (isMissingChannelTableError(upsert.error)) {
       return NextResponse.json({ error: 'Blog channel settings table is missing. Run latest schema SQL first.' }, { status: 500 });
     }

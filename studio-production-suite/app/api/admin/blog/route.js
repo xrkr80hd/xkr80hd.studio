@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { ADMIN_SESSION_USER_COOKIE, isOwnerUsername } from '../../../../lib/admin-auth';
+import { ADMIN_SESSION_USER_COOKIE, getAdminOwnerUsername, isOwnerUsername } from '../../../../lib/admin-auth';
 import { clampText, isValidMediaUrl, slugify, toBoolean } from '../../../../lib/admin-crud-utils';
 import { normalizeAdminUsername } from '../../../../lib/admin-users';
 import { getSupabaseAdmin } from '../../../../lib/supabase-admin';
@@ -12,10 +12,32 @@ function isMissingAuthorColumnError(error) {
 
 function getActingAdmin(request) {
   const actingUser = normalizeAdminUsername(request.cookies.get(ADMIN_SESSION_USER_COOKIE)?.value || '');
-  return {
-    actingUser,
-    ownerMode: isOwnerUsername(actingUser),
-  };
+  return { actingUser };
+}
+
+function getLegacyOwnerAuthorUsernames() {
+  const ownerUsername = normalizeAdminUsername(getAdminOwnerUsername());
+  return new Set([
+    normalizeAdminUsername(process.env.BLOG_OWNER_LEGACY_USERNAME),
+    normalizeAdminUsername(process.env.BLOG_OWNER_LEGACY_USERNAME_2),
+    normalizeAdminUsername(process.env.BLOG_OWNER_LEGACY_USERNAME_3),
+    normalizeAdminUsername('xrkr80hdadmin'),
+    ownerUsername,
+  ].filter(Boolean));
+}
+
+function matchesActingUser(postAuthorUsername, actingUser) {
+  const safeUser = normalizeAdminUsername(actingUser);
+  if (!safeUser) {
+    return false;
+  }
+
+  const rawAuthor = normalizeAdminUsername(postAuthorUsername);
+  if (isOwnerUsername(safeUser)) {
+    return !rawAuthor || getLegacyOwnerAuthorUsernames().has(rawAuthor);
+  }
+
+  return rawAuthor === safeUser;
 }
 
 function formatDateTimeForDb(value) {
@@ -96,20 +118,20 @@ export async function GET(request) {
     return NextResponse.json({ error: 'Missing Supabase server credentials.' }, { status: 500 });
   }
 
-  const { actingUser, ownerMode } = getActingAdmin(request);
+  const { actingUser } = getActingAdmin(request);
   if (!actingUser) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   let query = supabase.from('blog_posts').select('*');
-  if (!ownerMode) {
+  if (!isOwnerUsername(actingUser)) {
     query = query.eq('author_username', actingUser);
   }
 
   const response = await query.order('published_at', { ascending: false, nullsFirst: false }).order('created_at', { ascending: false });
 
   if (response.error) {
-    if (!ownerMode && isMissingAuthorColumnError(response.error)) {
+    if (isMissingAuthorColumnError(response.error)) {
       return NextResponse.json(
         { error: 'Blog ownership is not configured yet. Add blog_posts.author_username in Supabase schema before using non-owner blog managers.' },
         { status: 500 }
@@ -118,7 +140,7 @@ export async function GET(request) {
     return NextResponse.json({ error: response.error.message }, { status: 500 });
   }
 
-  return NextResponse.json({ items: response.data || [] });
+  return NextResponse.json({ items: (response.data || []).filter((post) => matchesActingUser(post?.author_username, actingUser)) });
 }
 
 export async function POST(request) {
@@ -127,7 +149,7 @@ export async function POST(request) {
     return NextResponse.json({ error: 'Missing Supabase server credentials.' }, { status: 500 });
   }
 
-  const { actingUser, ownerMode } = getActingAdmin(request);
+  const { actingUser } = getActingAdmin(request);
   if (!actingUser) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
@@ -148,14 +170,14 @@ export async function POST(request) {
     .insert({
       ...parsed.payload,
       slug: slugResult.slug,
-      author_username: ownerMode ? null : actingUser,
+      author_username: actingUser,
     })
     .select('id, slug')
     .limit(1)
     .maybeSingle();
 
   if (insert.error) {
-    if (!ownerMode && isMissingAuthorColumnError(insert.error)) {
+    if (isMissingAuthorColumnError(insert.error)) {
       return NextResponse.json(
         { error: 'Blog ownership is not configured yet. Add blog_posts.author_username in Supabase schema before using non-owner blog managers.' },
         { status: 500 }

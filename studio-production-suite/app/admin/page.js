@@ -23,7 +23,7 @@ export default function AdminPage({ searchParams }) {
     { href: '/admin/submissions', label: 'Submissions Inbox', detail: 'Review public submissions by type — bands, artists, podcasts, blog, and more.' },
   ];
   const editorActions = [
-    { href: '/admin/blog', label: 'My Blog Manager', detail: 'Manage only your own posts, channel name, and card graphic.' },
+    { href: '/admin/blog', label: 'My Blog Space', detail: 'Manage your own posts, profile image, channel name, and share links.' },
   ];
   const publicQaLinks = [
     { href: '/', label: 'Home', detail: 'Confirm hero content, radio, and cards.' },

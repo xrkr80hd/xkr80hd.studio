@@ -27,11 +27,14 @@ export default function YourLocalHeroNav({ activeKey = '' }) {
       <nav className="yourlocal-breadcrumb" aria-label="YourLocal breadcrumb">
         <Link href="/" className="yourlocal-breadcrumb-link">Home</Link>
         <span className="yourlocal-breadcrumb-sep" aria-hidden="true">/</span>
-        <span className="yourlocal-breadcrumb-current">YourLocal {activeLabel}</span>
+        <span className="yourlocal-breadcrumb-current">
+          <span className="brand-yourlocal"><span className="brand-your">Your</span><span className="brand-local">Local</span></span>
+          {activeLabel ? ` ${activeLabel}` : ''}
+        </span>
       </nav>
 
       <h1 className="yourlocal-hero-heading">
-        <span className="hero-accent">YourLocal</span>
+        <span className="brand-yourlocal"><span className="brand-your">Your</span><span className="brand-local">Local</span></span>
         {activeLabel ? ` ${activeLabel}` : ''}
       </h1>
       <p className="yourlocal-hero-subtitle">{subtitle}</p>

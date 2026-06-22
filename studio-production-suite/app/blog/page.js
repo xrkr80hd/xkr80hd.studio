@@ -7,7 +7,7 @@ export default async function BlogPage() {
   return (
     <>
       <section className="card hero">
-        <h1>YourLocal Blog</h1>
+        <h1><span className="brand-yourlocal"><span className="brand-your">Your</span><span className="brand-local">Local</span></span> Blog</h1>
         <p>Thoughts on music, creative process, faith, and building with purpose.</p>
       </section>
 
@@ -31,7 +31,7 @@ export default async function BlogPage() {
                     <Link className="button" href={`/blog/channel/${encodeURIComponent(channel.channel_slug)}`} prefetch={false}>
                       Open Channel
                     </Link>
-                    <Link className="button" href={`/your-local-blog/${channel.latest_slug}`} prefetch={false}>
+                    <Link className="button" href={`/blog/${channel.latest_slug}`} prefetch={false}>
                       Latest Post
                     </Link>
                   </div>

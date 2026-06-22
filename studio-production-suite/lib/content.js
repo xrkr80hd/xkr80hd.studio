@@ -19,6 +19,8 @@ const DEFAULT_GENRES = [
   'other',
 ];
 
+const BLOG_CHANNEL_DEFAULT_CARD_IMAGE = '/assets/cards/local-blog.png';
+
 async function runQuery(label, callback, fallbackValue) {
   noStore();
   const supabase = getSupabaseAdmin();
@@ -750,16 +752,40 @@ export async function getPostBySlug(slug) {
 }
 
 function normalizePublishedBlogAuthor(post) {
-  const ownerUsername = getAdminOwnerUsername();
+  const ownerUsername = normalizeAdminUsername(getAdminOwnerUsername());
   const raw = normalizeAdminUsername(post?.author_username);
+  const ownerAliases = new Set([
+    normalizeAdminUsername(process.env.BLOG_OWNER_LEGACY_USERNAME),
+    normalizeAdminUsername(process.env.BLOG_OWNER_LEGACY_USERNAME_2),
+    normalizeAdminUsername(process.env.BLOG_OWNER_LEGACY_USERNAME_3),
+    normalizeAdminUsername('xrkr80hdadmin'),
+    ownerUsername,
+  ].filter(Boolean));
+
+  const normalizedAuthor = !raw
+    ? ownerUsername
+    : ownerAliases.has(raw)
+      ? ownerUsername
+      : raw;
+
   return {
     ...post,
-    author_username: raw || ownerUsername,
+    author_username: normalizedAuthor,
   };
 }
 
 function normalizePublishedBlogAuthors(posts) {
   return Array.isArray(posts) ? posts.map((post) => normalizePublishedBlogAuthor(post)) : [];
+}
+
+function getFallbackBlogChannelAuthors() {
+  const owner = normalizeAdminUsername(getAdminOwnerUsername());
+  const configured = String(process.env.BLOG_CHANNEL_FALLBACK_USERS || '')
+    .split(',')
+    .map((item) => normalizeAdminUsername(item))
+    .filter(Boolean);
+
+  return Array.from(new Set([owner, ...configured].filter(Boolean)));
 }
 
 function normalizeBlogChannelCard(setting, authorUsername) {
@@ -798,32 +824,42 @@ export async function getPublishedBlogChannels() {
       continue;
     }
 
-    const existing = grouped.get(safeAuthor) || { count: 0, latest_slug: '' };
+    const existing = grouped.get(safeAuthor) || { count: 0, latest_slug: '', latest_cover_image_url: null };
     existing.count += 1;
     if (!existing.latest_slug) {
       existing.latest_slug = String(post.slug || '');
     }
+    if (!existing.latest_cover_image_url) {
+      const cover = String(post.cover_image_url || '').trim();
+      existing.latest_cover_image_url = cover || null;
+    }
     grouped.set(safeAuthor, existing);
-  }
-
-  const authors = Array.from(grouped.keys());
-  if (!authors.length) {
-    return [];
   }
 
   const settings = await runQuery(
     'blog_channels_public',
-    (supabase) => supabase.from('blog_channels').select('*').in('username', authors),
+    (supabase) => supabase.from('blog_channels').select('*'),
     []
   );
+
+  const authors = Array.from(new Set([
+    ...Array.from(grouped.keys()),
+    ...(settings || []).map((item) => normalizeAdminUsername(item.username)).filter(Boolean),
+    ...getFallbackBlogChannelAuthors(),
+  ]));
+
+  if (!authors.length) {
+    return [];
+  }
 
   const settingMap = new Map((settings || []).map((item) => [normalizeAdminUsername(item.username), item]));
 
   const channels = authors.map((author) => {
     const base = normalizeBlogChannelCard(settingMap.get(author) || {}, author);
-    const counts = grouped.get(author) || { count: 0, latest_slug: '' };
+    const counts = grouped.get(author) || { count: 0, latest_slug: '', latest_cover_image_url: null };
     return {
       ...base,
+      card_image_url: base.card_image_url || counts.latest_cover_image_url || BLOG_CHANNEL_DEFAULT_CARD_IMAGE,
       count: counts.count,
       latest_slug: counts.latest_slug,
     };
@@ -878,23 +914,43 @@ function normalizeAdminUsername(value) {
     .slice(0, 48);
 }
 
-function isBlogOwnerMode(actingUser) {
+function getLegacyOwnerAuthorUsernames() {
+  const ownerUsername = normalizeAdminUsername(getAdminOwnerUsername());
+  return new Set([
+    normalizeAdminUsername(process.env.BLOG_OWNER_LEGACY_USERNAME),
+    normalizeAdminUsername(process.env.BLOG_OWNER_LEGACY_USERNAME_2),
+    normalizeAdminUsername(process.env.BLOG_OWNER_LEGACY_USERNAME_3),
+    normalizeAdminUsername('xrkr80hdadmin'),
+    ownerUsername,
+  ].filter(Boolean));
+}
+
+function matchesAdminBlogAuthor(postAuthorUsername, actingUser) {
   const safeUser = normalizeAdminUsername(actingUser);
-  return isOwnerUsername(safeUser);
+  if (!safeUser) {
+    return false;
+  }
+
+  const rawAuthor = normalizeAdminUsername(postAuthorUsername);
+  if (isOwnerUsername(safeUser)) {
+    return !rawAuthor || getLegacyOwnerAuthorUsernames().has(rawAuthor);
+  }
+
+  return rawAuthor === safeUser;
 }
 
 export async function getPostsForAdminByUser(actingUser) {
   const safeUser = normalizeAdminUsername(actingUser);
-  const ownerMode = isBlogOwnerMode(safeUser);
 
-  return runQuery(
-    `blog_posts_admin_${ownerMode ? 'owner' : safeUser || 'anon'}`,
+  const posts = await runQuery(
+    `blog_posts_admin_${safeUser || 'anon'}`,
     (supabase) => {
+      if (!safeUser) {
+        return supabase.from('blog_posts').select('*').eq('id', -1);
+      }
+
       let query = supabase.from('blog_posts').select('*');
-      if (!ownerMode) {
-        if (!safeUser) {
-          return supabase.from('blog_posts').select('*').eq('id', -1);
-        }
+      if (!isOwnerUsername(safeUser)) {
         query = query.eq('author_username', safeUser);
       }
 
@@ -904,20 +960,22 @@ export async function getPostsForAdminByUser(actingUser) {
     },
     []
   );
+
+  return Array.isArray(posts) ? posts.filter((post) => matchesAdminBlogAuthor(post?.author_username, safeUser)) : [];
 }
 
 export async function getPostBySlugForAdminByUser(slug, actingUser) {
   const safeUser = normalizeAdminUsername(actingUser);
-  const ownerMode = isBlogOwnerMode(safeUser);
 
-  return runQuery(
-    `blog_post_admin_${slug}_${ownerMode ? 'owner' : safeUser || 'anon'}`,
+  const post = await runQuery(
+    `blog_post_admin_${slug}_${safeUser || 'anon'}`,
     (supabase) => {
+      if (!safeUser) {
+        return supabase.from('blog_posts').select('*').eq('id', -1).limit(1).maybeSingle();
+      }
+
       let query = supabase.from('blog_posts').select('*').eq('slug', slug);
-      if (!ownerMode) {
-        if (!safeUser) {
-          return supabase.from('blog_posts').select('*').eq('id', -1).limit(1).maybeSingle();
-        }
+      if (!isOwnerUsername(safeUser)) {
         query = query.eq('author_username', safeUser);
       }
 
@@ -925,6 +983,8 @@ export async function getPostBySlugForAdminByUser(slug, actingUser) {
     },
     null
   );
+
+  return post && matchesAdminBlogAuthor(post?.author_username, safeUser) ? post : null;
 }
 
 export async function getMediaByType(type) {

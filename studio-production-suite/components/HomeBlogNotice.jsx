@@ -113,7 +113,7 @@ export default function HomeBlogNotice({ latestPost = null, message = '' }) {
       <h3 className="section-title">{latestPost.title || 'Latest post'}</h3>
       {published ? <p className="meta">Published {published}</p> : null}
       <div className="actions">
-        <Link className="button primary" href={`/blog/${latestPost.slug}`} onClick={dismiss}>
+        <Link className="button primary" href={`/your-local-blog/${latestPost.slug}`} onClick={dismiss}>
           Read New Post
         </Link>
         <button className="button" type="button" onClick={dismiss}>

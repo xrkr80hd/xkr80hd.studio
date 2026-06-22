@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 const publicNavItems = [
   { href: '/', label: 'Home', className: 'nav-cool' },
@@ -53,10 +53,40 @@ function isActive(pathname, href) {
 export default function SiteHeader({ adminMode = false, ownerMode = false, adminUser = '' }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const headerRef = useRef(null);
   const navItems = adminMode ? getAdminNavItems(ownerMode) : publicNavItems;
 
+  useEffect(() => {
+    if (!open) {
+      return undefined;
+    }
+
+    const handlePointerDown = (event) => {
+      const header = headerRef.current;
+      if (!header || header.contains(event.target)) {
+        return;
+      }
+
+      setOpen(false);
+    };
+
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') {
+        setOpen(false);
+      }
+    };
+
+    document.addEventListener('pointerdown', handlePointerDown);
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.removeEventListener('pointerdown', handlePointerDown);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [open]);
+
   return (
-    <header className={`nav ${adminMode ? 'admin-mode' : ''}`.trim()}>
+    <header ref={headerRef} className={`nav ${adminMode ? 'admin-mode' : ''}`.trim()}>
       <div className="container nav-inner">
         <Link prefetch={false} href={adminMode ? '/admin' : '/'} className={`brand ${adminMode ? 'admin-brand' : ''}`.trim()} onClick={() => setOpen(false)}>
           xrkr80hd.studio

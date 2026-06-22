@@ -30,12 +30,12 @@ export default async function BlogPostPage({ params }) {
       <nav className="blog-breadcrumbs" aria-label="Breadcrumb">
         <Link href="/">Home</Link>
         <span aria-hidden="true">/</span>
-        <Link href="/your-local-blog">YourLocal Blog</Link>
+        <Link href="/blog">YourLocal Blog</Link>
         <span aria-hidden="true">/</span>
         <span>{post.title}</span>
       </nav>
       <div className="blog-back-wrap">
-        <Link className="button blog-back-button" href="/your-local-blog">
+        <Link className="button blog-back-button" href="/blog">
           Back to YourLocal Blog
         </Link>
       </div>
