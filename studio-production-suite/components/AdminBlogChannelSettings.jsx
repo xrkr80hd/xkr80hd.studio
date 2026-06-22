@@ -71,12 +71,13 @@ export default function AdminBlogChannelSettings({ draftCount = 0, publishedCoun
   const [dragActive, setDragActive] = useState(false);
   const [isEditingProfile, setIsEditingProfile] = useState(profilePage);
   const [isBioOpen, setIsBioOpen] = useState(false);
+  const [localPreviewUrl, setLocalPreviewUrl] = useState('');
   const fileInputRef = useRef(null);
   const publicChannelHref = channelSlug ? `/blog/channel/${encodeURIComponent(channelSlug)}` : '/blog';
   const canEditProfile = profilePage || isEditingProfile;
   const hasCustomImage = Boolean(cardImageUrl) && !isProfileFallbackCardImage(cardImageUrl);
   const profileSquareImageUrl = hasCustomImage ? cardImageUrl : PROFILE_FALLBACK_CARD_IMAGE;
-  const coverImageUrl = hasCustomImage ? cardImageUrl : '';
+  const displayImageUrl = localPreviewUrl || cardImageUrl;
 
   useEffect(() => {
     let cancelled = false;
@@ -140,27 +141,37 @@ export default function AdminBlogChannelSettings({ draftCount = 0, publishedCoun
       return;
     }
 
+    // Show local preview immediately so the image is visible right away
+    const blobUrl = URL.createObjectURL(file);
+    setLocalPreviewUrl(blobUrl);
+
     setUploading(true);
-    setStatus('Uploading your profile image...');
+    setStatus('Uploading...');
 
     try {
       const payload = await uploadViaSignedUrl({
         file,
         folder: 'images/blog-channels',
         replaceMode: true,
-        replaceKey: `blog-channel-${channelUsername}`,
+        replaceKey: `blog-channel-${channelUsername || 'channel'}`,
         currentValue: cardImageUrl,
       });
 
       const nextUrl = String(payload.url || payload.canonical_url || '');
-      const cacheBustedUrl = withCacheBust(nextUrl);
       if (nextUrl) {
+        const cacheBustedUrl = withCacheBust(nextUrl);
         setCardImageUrl(cacheBustedUrl);
-        setStatus('Profile image uploaded successfully!');
+        setLocalPreviewUrl(''); // clear blob preview, use persisted URL
+        URL.revokeObjectURL(blobUrl);
+        setStatus('Cover image saved!');
+      } else {
+        // Upload succeeded but no URL returned — keep local preview visible
+        setStatus('Uploaded — save profile to persist.');
       }
       setUploading(false);
     } catch (error) {
-      setStatus(error instanceof Error ? error.message : 'Upload failed.');
+      // Keep local preview visible even if upload fails so user sees their image
+      setStatus(`Upload error: ${error instanceof Error ? error.message : 'Unknown error'}`);
       setUploading(false);
     }
   };
@@ -272,8 +283,8 @@ export default function AdminBlogChannelSettings({ draftCount = 0, publishedCoun
               }}
               style={{ display: 'none' }}
             />
-            {cardImageUrl ? (
-              <img src={cardImageUrl} alt="Blog cover" className="admin-blog-drop-preview" />
+            {displayImageUrl ? (
+              <img src={displayImageUrl} alt="Blog cover" className="admin-blog-drop-preview" />
             ) : (
               <div className="admin-blog-cover-placeholder">Drop or click to upload 16:9 cover</div>
             )}
