@@ -238,8 +238,14 @@ export default function AdminBlogChannelSettings({ draftCount = 0, publishedCoun
 
       <div className="admin-blog-profile-top">
         <div className="admin-blog-profile-left">
-          <div
-            className={`admin-blog-profile-square ${canEditProfile ? 'is-editable' : ''}`}
+          <div className={`admin-blog-profile-square ${canEditProfile ? 'is-editable' : ''}`}>
+            {profileSquareImageUrl ? <img src={profileSquareImageUrl} alt="Profile" /> : <span>PROFILE PICTURE</span>}
+          </div>
+          <p className="admin-blog-profile-name">{channelName || 'Blog Name'}</p>
+
+          <button
+            className="button"
+            type="button"
             onClick={() => {
               if (uploading) return;
               if (!canEditProfile) {
@@ -248,9 +254,8 @@ export default function AdminBlogChannelSettings({ draftCount = 0, publishedCoun
               profileFileInputRef.current?.click();
             }}
           >
-            {profileSquareImageUrl ? <img src={profileSquareImageUrl} alt="Profile" /> : <span>PROFILE PICTURE</span>}
-          </div>
-          <p className="admin-blog-profile-name">{channelName || 'Blog Name'}</p>
+            Upload Profile Photo
+          </button>
 
           <div className="admin-blog-profile-actions-box">
             <Link className="button primary" href="/admin/blog/new" prefetch={false}>
@@ -267,6 +272,21 @@ export default function AdminBlogChannelSettings({ draftCount = 0, publishedCoun
         </div>
 
         <div className="admin-blog-profile-media-wrap">
+          <input
+            ref={profileFileInputRef}
+            type="file"
+            accept="image/*"
+            disabled={uploading}
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (!file) return;
+              if (!canEditProfile) {
+                setIsEditingProfile(true);
+              }
+              handleImageUpload(file, 'avatar');
+            }}
+            style={{ display: 'none' }}
+          />
           <div
             className={`admin-blog-drag-drop-zone ${dragActive ? 'active' : ''} ${uploading ? 'uploading' : ''}`}
             onDragEnter={handleDrag}
@@ -282,21 +302,6 @@ export default function AdminBlogChannelSettings({ draftCount = 0, publishedCoun
             }}
             style={{ cursor: !uploading ? 'pointer' : 'default' }}
           >
-            <input
-              ref={profileFileInputRef}
-              type="file"
-              accept="image/*"
-              disabled={uploading}
-              onChange={(e) => {
-                const file = e.target.files?.[0];
-                if (!file) return;
-                if (!canEditProfile) {
-                  setIsEditingProfile(true);
-                }
-                handleImageUpload(file, 'avatar');
-              }}
-              style={{ display: 'none' }}
-            />
             <input
               ref={coverFileInputRef}
               type="file"
