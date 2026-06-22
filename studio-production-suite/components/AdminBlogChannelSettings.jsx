@@ -238,14 +238,8 @@ export default function AdminBlogChannelSettings({ draftCount = 0, publishedCoun
 
       <div className="admin-blog-profile-top">
         <div className="admin-blog-profile-left">
-          <div className={`admin-blog-profile-square ${canEditProfile ? 'is-editable' : ''}`}>
-            {profileSquareImageUrl ? <img src={profileSquareImageUrl} alt="Profile" /> : <span>PROFILE PICTURE</span>}
-          </div>
-          <p className="admin-blog-profile-name">{channelName || 'Blog Name'}</p>
-
-          <button
-            className="button"
-            type="button"
+          <div
+            className={`admin-blog-profile-square ${canEditProfile ? 'is-editable' : ''}`}
             onClick={() => {
               if (uploading) return;
               if (!canEditProfile) {
@@ -254,8 +248,9 @@ export default function AdminBlogChannelSettings({ draftCount = 0, publishedCoun
               profileFileInputRef.current?.click();
             }}
           >
-            Upload Profile Photo
-          </button>
+            {profileSquareImageUrl ? <img src={profileSquareImageUrl} alt="Profile" /> : <span>PROFILE PICTURE</span>}
+          </div>
+          <p className="admin-blog-profile-name">{channelName || 'Blog Name'}</p>
 
           <div className="admin-blog-profile-actions-box">
             <Link className="button primary" href="/admin/blog/new" prefetch={false}>

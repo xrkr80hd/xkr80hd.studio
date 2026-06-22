@@ -2034,7 +2034,7 @@ label {
 
 .admin-blog-posts-scroll {
   max-height: 520px;
-  overflow-y: auto;
+  grid-template-columns: minmax(180px, 240px) minmax(0, 1fr);
   padding-right: 0.3rem;
   display: grid;
   gap: 0.95rem;
@@ -2043,7 +2043,9 @@ label {
 .admin-blog-post-row {
   display: grid;
   grid-template-columns: minmax(140px, 230px) minmax(0, 1fr);
-  gap: 0.9rem;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  min-height: 0;
   border: 1px solid rgba(127, 216, 255, 0.26);
   border-radius: 10px;
   padding: 0.75rem;
