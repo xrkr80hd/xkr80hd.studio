@@ -21,22 +21,11 @@ export default async function BlogChannelPage({ params }) {
             alt={`${channel.channel_name} cover`}
           />
         ) : null}
-        <div className="blog-channel-hero-content">
-          <span className="tag-badge">Channel Feed</span>
-          <h1>{channel.channel_name}</h1>
-          <p>Posts published to this dedicated blog channel.</p>
-          <nav className="blog-breadcrumbs" aria-label="Breadcrumb">
-            <Link href="/">Home</Link>
-            <span aria-hidden="true">/</span>
-            <Link href="/blog">YourLocal Blog</Link>
-            <span aria-hidden="true">/</span>
-            <span>{channel.channel_name}</span>
-          </nav>
-          <div className="blog-back-wrap">
-            <Link className="button blog-back-button" href="/blog" prefetch={false}>
-              Back to Blog Channels
-            </Link>
-          </div>
+        <div className="blog-channel-hero-controls">
+          <h1 className="blog-channel-hero-title">{channel.channel_name}</h1>
+          <Link className="button blog-back-button" href="/blog" prefetch={false}>
+            Back to Blog Channels
+          </Link>
         </div>
       </section>
 

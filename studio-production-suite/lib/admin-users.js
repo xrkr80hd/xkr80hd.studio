@@ -1,5 +1,6 @@
 import { getSupabaseAdmin } from './supabase-admin';
 import { hashPassword, verifyPassword } from './password-hash';
+import { provisionBlogChannel } from './blog-channel-provisioning.mjs';
 
 const TABLE = 'admin_users';
 
@@ -122,7 +123,25 @@ export async function createAdminUser({ username, password, displayName = '' }) 
     };
   }
 
-  return { ok: true, missingTable: false, error: null };
+  const provisioned = await provisionBlogChannel(safeUsername, { supabase });
+
+  if (!provisioned.ok) {
+    await supabase.from(TABLE).delete().eq('username', safeUsername);
+    return {
+      ok: false,
+      missingTable: provisioned.missingTable,
+      error: provisioned.missingTable
+        ? 'The shared blog channel table is not installed yet. Apply the current Supabase schema before creating blogger accounts.'
+        : provisioned.error || 'The blogger profile lane could not be created.',
+    };
+  }
+
+  return {
+    ok: true,
+    missingTable: false,
+    error: null,
+    channel: provisioned.channel,
+  };
 }
 
 export async function deleteAdminUser(username) {

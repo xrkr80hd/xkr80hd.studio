@@ -20,6 +20,7 @@ const DEFAULT_GENRES = [
 ];
 
 const BLOG_CHANNEL_DEFAULT_CARD_IMAGE = '/assets/cards/local-blog.png';
+const OWNER_BLOG_CHANNEL_COVER_IMAGE = '/assets/blog/xrkr80hdblog.png';
 
 async function runQuery(label, callback, fallbackValue) {
   noStore();
@@ -860,7 +861,9 @@ export async function getPublishedBlogChannels() {
     const counts = grouped.get(author) || { count: 0, latest_slug: '', latest_cover_image_url: null };
     return {
       ...base,
-      card_image_url: base.card_image_url || BLOG_CHANNEL_DEFAULT_CARD_IMAGE,
+      card_image_url:
+        base.card_image_url ||
+        (isOwnerUsername(author) ? OWNER_BLOG_CHANNEL_COVER_IMAGE : BLOG_CHANNEL_DEFAULT_CARD_IMAGE),
       count: counts.count,
       latest_slug: counts.latest_slug,
     };

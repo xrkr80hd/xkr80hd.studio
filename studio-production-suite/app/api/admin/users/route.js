@@ -54,5 +54,5 @@ export async function POST(request) {
     );
   }
 
-  return NextResponse.json({ ok: true });
+  return NextResponse.json({ ok: true, channel: result.channel || null });
 }

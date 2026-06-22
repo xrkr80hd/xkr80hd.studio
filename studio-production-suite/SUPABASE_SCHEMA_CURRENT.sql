@@ -376,6 +376,10 @@ alter table public.blog_posts add column if not exists is_published boolean not 
 alter table public.blog_posts add column if not exists created_at timestamptz not null default now();
 alter table public.blog_posts add column if not exists updated_at timestamptz not null default now();
 
+update public.blog_posts
+set author_username = 'xrkr80hdadmin'
+where nullif(trim(author_username), '') is null;
+
 create unique index if not exists idx_blog_posts_slug on public.blog_posts(slug);
 create index if not exists idx_blog_posts_published on public.blog_posts(is_published, published_at desc);
 create index if not exists idx_blog_posts_author on public.blog_posts(author_username, created_at desc);
@@ -410,10 +414,40 @@ alter table public.blog_channels add column if not exists updated_at timestamptz
 create unique index if not exists idx_blog_channels_username on public.blog_channels(username);
 create unique index if not exists idx_blog_channels_slug on public.blog_channels(channel_slug);
 
+alter table public.blog_channels enable row level security;
+
+grant select, insert, update, delete on table public.blog_channels to service_role;
+grant usage, select on sequence public.blog_channels_id_seq to service_role;
+
 drop trigger if exists trg_blog_channels_updated_at on public.blog_channels;
 create trigger trg_blog_channels_updated_at
 before update on public.blog_channels
 for each row execute function public.set_updated_at();
+
+insert into public.blog_channels (
+  username,
+  channel_name,
+  channel_slug,
+  blogger_bio,
+  avatar_url,
+  card_image_url
+)
+select
+  lower(trim(username)),
+  case
+    when lower(trim(username)) = 'xrkr80hdadmin' then 'xrkr80hdblog'
+    else regexp_replace(lower(trim(username)), '[^a-z0-9]', '', 'g') || 'blog'
+  end,
+  case
+    when lower(trim(username)) = 'xrkr80hdadmin' then 'xrkr80hdblog'
+    else regexp_replace(lower(trim(username)), '[^a-z0-9]', '', 'g') || 'blog'
+  end,
+  null,
+  null,
+  null
+from public.admin_users
+where nullif(trim(username), '') is not null
+on conflict (username) do nothing;
 
 -- projects (read on pages; legacy/admin support)
 create table if not exists public.projects (
