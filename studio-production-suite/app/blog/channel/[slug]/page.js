@@ -22,13 +22,6 @@ export default async function BlogChannelPage({ params }) {
 
       <section className="card blog-channel-top-bar">
         <div className="blog-channel-public-identity">
-          {channel.avatar_url ? (
-            <img
-              className="blog-channel-profile-image"
-              src={channel.avatar_url}
-              alt={`${channel.channel_name} profile`}
-            />
-          ) : null}
           <AutoFitChannelTitle title={channel.channel_name} />
         </div>
       </section>
@@ -39,6 +32,13 @@ export default async function BlogChannelPage({ params }) {
             className="blog-channel-hero-image"
             src={channel.card_image_url}
             alt={`${channel.channel_name} cover`}
+          />
+        ) : null}
+        {channel.avatar_url ? (
+          <img
+            className="blog-channel-profile-image"
+            src={channel.avatar_url}
+            alt={`${channel.channel_name} profile`}
           />
         ) : null}
       </section>

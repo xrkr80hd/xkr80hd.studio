@@ -1,5 +1,30 @@
 # Planned Work
 
+## Shared blog avatar cropper
+
+- [x] Keep homepage image data completely separate from blog avatar data.
+- [x] Keep the shared man-at-computer asset as a blog-only fallback when no channel avatar is saved.
+- [x] Add a reusable 1:1 crop dialog with drag positioning and zoom to the shared Blog Profile editor.
+- [x] Upload and save the cropped avatar only to the logged-in blogger's own `blog_channels.avatar_url`.
+- [x] Leave the 16:9 cover upload flow unchanged.
+- [x] Add crop-geometry and profile-editor regression tests.
+- [x] Verify responsive CSS behavior, production build, shared blogger tests, and restart the server.
+
+## Blog channel profile picture overlay
+
+- [x] Move the displayed channel owner's 1:1 profile picture from the separate title bar onto the upper-left of the cover photo.
+- [x] Keep the entire profile picture left of the cover photo's vertical center line.
+- [x] Preserve the shared per-blogger template so each channel automatically renders its own avatar and cover.
+- [x] Add a regression test for the avatar's placement inside the cover hero.
+- [x] Verify the focused tests and production build, then start the Node.js server for review.
+
+## Shared blog avatar source correction
+
+- [x] Reproduce the missing owner avatar against the running public channel.
+- [x] Use the same default avatar shown by the Blog Profile editor whenever any channel's saved avatar is empty.
+- [x] Preserve every blogger's saved channel avatar and leave cover images unchanged.
+- [x] Add an end-to-end regression test, rebuild, and restart the server for review.
+
 ## Manage Admin Users redesign
 
 - [x] Keep **Existing Admin Users** and show the protected owner account there.

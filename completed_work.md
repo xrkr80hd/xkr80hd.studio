@@ -1,5 +1,22 @@
 # Completed Work
 
+## 2026-06-27
+
+- Added one shared 1:1 blog-avatar cropper for the owner, Jessie, and every future blogger.
+- Added drag positioning, keyboard arrow positioning, 1x–3x zoom, Cancel, Escape, backdrop close, and Crop & Upload controls.
+- Cropped avatars export as 1000×1000 JPEG files and continue through the existing authenticated, username-scoped blog-channel upload path.
+- Kept homepage profile settings fully disconnected from blog avatar uploads; the cropper never reads or writes `/api/admin/site-profile`.
+- Preserved the direct 16:9 cover upload flow and the shared `/assets/cards/local-blog.png` fallback for channels without saved avatars.
+- Added seven crop geometry, wiring, accessibility, isolation, and cover-flow tests; verified the complete 23/23 test suite and a 50/50-page production build.
+- Moved each displayed blog channel owner's 1:1 profile picture from the separate title bar onto the upper-left of that channel's cover photo.
+- Kept the shared template data-driven through `channel.avatar_url`, so every current and future blogger automatically receives the same layout with their own image.
+- Constrained the desktop overlay to a 3% left inset and at most 22% cover width; mobile uses at most 24%, keeping the entire square safely left of the vertical midpoint.
+- Added regression coverage for hero placement and the strict left-half sizing rule.
+- Verified 15/15 relevant tests, a production build generating 50/50 static pages, and HTTP 200 from the running production server on port 3000.
+- Corrected the shared blogger template so a blank channel avatar uses the same default profile image shown in the Blog Profile editor, regardless of whether the blogger is the owner or a scoped user.
+- Confirmed the owner channel now renders `/assets/cards/local-blog.png` as its avatar while Jessie's channel continues rendering his saved `blog-profile-jessie_v.png` avatar; cover images remain independent.
+- Rebuilt the production app, restarted port 3000, and verified 16/16 relevant tests.
+
 ## 2026-06-20
 
 - Redesigned Manage Users with compact desktop and mobile cards.

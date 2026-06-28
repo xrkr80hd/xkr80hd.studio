@@ -1893,6 +1893,123 @@ label {
   object-fit: cover;
 }
 
+.blog-avatar-crop-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: grid;
+  place-items: center;
+  padding: clamp(0.8rem, 3vw, 1.5rem);
+  background: rgba(2, 6, 12, 0.82);
+  backdrop-filter: blur(10px);
+}
+
+.blog-avatar-crop-dialog {
+  width: min(470px, 100%);
+  max-height: calc(100vh - 2rem);
+  overflow-y: auto;
+  padding: clamp(0.85rem, 3vw, 1.25rem);
+  border: 1px solid rgba(127, 216, 255, 0.48);
+  border-radius: 16px;
+  background:
+    linear-gradient(150deg, rgba(81, 240, 255, 0.08), rgba(255, 122, 60, 0.08)),
+    rgba(8, 13, 24, 0.98);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.58);
+}
+
+.blog-avatar-crop-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.blog-avatar-crop-heading h3 {
+  margin: 0.36rem 0 0;
+  font-size: clamp(1.25rem, 5vw, 1.75rem);
+}
+
+.blog-avatar-crop-close {
+  width: 36px;
+  height: 36px;
+  flex: 0 0 auto;
+  border: 1px solid rgba(127, 216, 255, 0.34);
+  border-radius: 50%;
+  background: rgba(5, 10, 18, 0.9);
+  color: #f4f8ff;
+  font-size: 1.45rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.blog-avatar-crop-help {
+  margin: 0.55rem 0 0.8rem;
+}
+
+.blog-avatar-crop-canvas {
+  display: block;
+  width: min(360px, 100%);
+  aspect-ratio: 1;
+  margin: 0 auto;
+  border: 2px solid rgba(156, 239, 255, 0.72);
+  border-radius: 12px;
+  background: rgba(4, 8, 15, 0.94);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.46);
+  cursor: grab;
+  touch-action: none;
+  opacity: 0.55;
+}
+
+.blog-avatar-crop-canvas.is-ready {
+  opacity: 1;
+}
+
+.blog-avatar-crop-canvas:active {
+  cursor: grabbing;
+}
+
+.blog-avatar-crop-zoom {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) 3.6rem;
+  align-items: center;
+  gap: 0.65rem;
+  margin-top: 0.9rem;
+  color: #dcecff;
+  font-weight: 700;
+}
+
+.blog-avatar-crop-zoom input {
+  width: 100%;
+  accent-color: var(--accent);
+}
+
+.blog-avatar-crop-zoom output {
+  color: #9cefff;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.blog-avatar-crop-actions {
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+@media (max-width: 520px) {
+  .blog-avatar-crop-overlay {
+    align-items: end;
+    padding: 0.55rem;
+  }
+
+  .blog-avatar-crop-dialog {
+    max-height: calc(100vh - 1.1rem);
+    border-radius: 14px;
+  }
+
+  .blog-avatar-crop-actions .button {
+    flex: 1 1 0;
+  }
+}
+
 .admin-blog-profile-media-wrap {
   position: relative;
   align-self: stretch;
@@ -4860,14 +4977,17 @@ h4 {
 }
 
 .blog-channel-profile-image {
-  width: clamp(93px, 13vw, 151px);
+  position: absolute;
+  z-index: 2;
+  top: clamp(12px, 3%, 22px);
+  left: 3%;
+  width: min(22%, 168px);
   aspect-ratio: 1;
-  flex: 0 0 auto;
   object-fit: cover;
-  border: 1px solid rgba(127, 216, 255, 0.48);
+  border: 2px solid rgba(156, 239, 255, 0.74);
   border-radius: 10px;
   background: rgba(6, 11, 19, 0.88);
-  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.42);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.55);
 }
 
 .blog-channel-hero-title {
@@ -4930,7 +5050,9 @@ h4 {
   }
 
   .blog-channel-profile-image {
-    width: 81px;
+    top: clamp(8px, 3vw, 14px);
+    left: 3%;
+    width: min(24%, 112px);
     border-radius: 8px;
   }
 

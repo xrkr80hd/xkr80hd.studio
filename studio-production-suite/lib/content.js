@@ -20,6 +20,7 @@ const DEFAULT_GENRES = [
 ];
 
 const BLOG_CHANNEL_DEFAULT_CARD_IMAGE = '/assets/cards/local-blog.png';
+const BLOG_CHANNEL_DEFAULT_AVATAR_IMAGE = '/assets/cards/local-blog.png';
 const OWNER_BLOG_CHANNEL_COVER_IMAGE = '/assets/blog/xrkr80hdblog.png';
 
 async function runQuery(label, callback, fallbackValue) {
@@ -796,7 +797,7 @@ function normalizeBlogChannelCard(setting, authorUsername) {
     author_username: safeAuthor,
     channel_name: safeName,
     channel_slug: toBlogChannelSlug(setting?.channel_slug || safeName, safeAuthor),
-    avatar_url: String(setting?.avatar_url || '').trim() || null,
+    avatar_url: String(setting?.avatar_url || '').trim() || BLOG_CHANNEL_DEFAULT_AVATAR_IMAGE,
     card_image_url: String(setting?.card_image_url || '').trim() || null,
   };
 }

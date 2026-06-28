@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import AdminLogoutButton from './AdminLogoutButton';
+import BlogAvatarCropper from './BlogAvatarCropper';
 
 async function createSignedUploadIntent({ file, folder, replaceMode, replaceKey, currentValue }) {
   const response = await fetch('/api/upload/signed', {
@@ -74,6 +75,7 @@ export default function AdminBlogChannelSettings({ draftCount = 0, publishedCoun
   const [isBioOpen, setIsBioOpen] = useState(false);
   const [avatarPreviewUrl, setAvatarPreviewUrl] = useState('');
   const [coverPreviewUrl, setCoverPreviewUrl] = useState('');
+  const [avatarCropFile, setAvatarCropFile] = useState(null);
   const profileFileInputRef = useRef(null);
   const coverFileInputRef = useRef(null);
   const publicChannelHref = channelSlug ? `/blog/channel/${encodeURIComponent(channelSlug)}` : '/blog';
@@ -143,7 +145,7 @@ export default function AdminBlogChannelSettings({ draftCount = 0, publishedCoun
   const handleImageUpload = async (file, target = 'cover') => {
     if (!file.type.startsWith('image/')) {
       setStatus('Please upload an image file.');
-      return;
+      return false;
     }
 
     // Show local preview immediately so the image is visible right away
@@ -183,15 +185,18 @@ export default function AdminBlogChannelSettings({ draftCount = 0, publishedCoun
         setStatus('Uploaded — save profile to persist.');
       }
       setUploading(false);
+      return true;
     } catch (error) {
       // Keep local preview visible even if upload fails so user sees their image
       setStatus(`Upload error: ${error instanceof Error ? error.message : 'Unknown error'}`);
       setUploading(false);
+      return false;
     }
   };
 
   return (
-    <form
+    <>
+      <form
       className="admin-blog-profile-hero"
       onSubmit={async (event) => {
         event.preventDefault();
@@ -278,7 +283,8 @@ export default function AdminBlogChannelSettings({ draftCount = 0, publishedCoun
               if (!canEditProfile) {
                 setIsEditingProfile(true);
               }
-              handleImageUpload(file, 'avatar');
+              setAvatarCropFile(file);
+              e.target.value = '';
             }}
             style={{ display: 'none' }}
           />
@@ -376,6 +382,18 @@ export default function AdminBlogChannelSettings({ draftCount = 0, publishedCoun
       ) : null}
 
       {status ? <p className={`meta ${status.includes('Error') || status.includes('wrong') ? 'error' : ''}`}>{status}</p> : null}
-    </form>
+      </form>
+      {avatarCropFile ? (
+        <BlogAvatarCropper
+          file={avatarCropFile}
+          busy={uploading}
+          onCancel={() => setAvatarCropFile(null)}
+          onCrop={async (croppedFile) => {
+            const uploaded = await handleImageUpload(croppedFile, 'avatar');
+            if (uploaded) setAvatarCropFile(null);
+          }}
+        />
+      ) : null}
+    </>
   );
 }
