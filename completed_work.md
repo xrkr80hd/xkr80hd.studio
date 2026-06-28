@@ -2,6 +2,12 @@
 
 ## 2026-06-28
 
+- Standardized the top-level Blog, Legends, Scene, Artists, Podcasts, and Business listings with compact horizontal cards whose titles begin at the top-left and whose height is bounded by the image.
+- Kept Blog channel artwork at 16:9 and changed all other category-card artwork to 1:1, including matching admin upload guidance.
+- Kept the shared cards horizontal on mobile with compact, clamped copy instead of tall stacked containers.
+- Added podcast descriptions and public business controls for A-Z, Z-A, category ordering, and category filtering.
+- Preserved the existing ownership model: Blog remains multi-user while all other curated categories remain owner-managed.
+- Verified 19/19 focused tests and a production build generating 50/50 pages.
 - Traced the false avatar-save state to invalid signed-upload replacement keys that omitted the required `images/blog-channels/` storage prefix.
 - Corrected the shared avatar and cover upload paths for the owner, Jessie, and every current or future blogger profile.
 - Kept the crop dialog open on failures and made a successful avatar save persist the channel record before closing and confirming success.

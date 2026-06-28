@@ -1,11 +1,11 @@
 const MEDIA_SPECS = [
   { slot: 'Home Profile Image', ratio: '4:3', size: '1600x1200', note: 'Used in home hero avatar. Keep face/subject centered.' },
   { slot: 'Home Guide Cards (all cards)', ratio: '4:3', size: '1600x1200', note: 'Used as background-image cards. Safe crop in center area.' },
-  { slot: 'Band Card Image', ratio: '16:10', size: '1600x1000', note: 'Shown in archive/scene grids and podcast list card style.' },
+  { slot: 'Band Card Image', ratio: '1:1', size: '1200x1200', note: 'Shown in the square archive, scene, and artist listing cards.' },
   { slot: 'Band Banner Image', ratio: '3:1', size: '2400x800', note: 'Wide hero strip at top of band page.' },
   { slot: 'Band Profile Photo', ratio: '3:4', size: '1200x1600', note: 'Portrait image in band detail header.' },
   { slot: 'Band Member Photo', ratio: '1:1', size: '1000x1000', note: 'Circle avatar crop for current/past members.' },
-  { slot: 'Podcast Cover Image', ratio: '16:10', size: '1600x1000', note: 'Podcast card image in /podcast listing.' },
+  { slot: 'Podcast Cover Image', ratio: '1:1', size: '1200x1200', note: 'Square podcast card image in the public listing.' },
   { slot: 'Blog Cover Image', ratio: '16:9', size: '1600x900', note: 'Used with fixed-height cover blocks.' },
   {
     slot: 'Track Cover Image',

@@ -398,7 +398,7 @@ export default function AdminBandCrudForm({ mode = 'create', initialBand = null,
       </AdminAccordionSection>
 
       <AdminAccordionSection title="Band Images" note="Card, banner, and profile photo." defaultOpen={false}>
-        <p className="meta">Quick sizes: Card 1600x1000 (16:10), Banner 2400x800 (3:1), Profile 1200x1600 (3:4).</p>
+        <p className="meta">Quick sizes: Card 1200x1200 (1:1), Banner 2400x800 (3:1), Profile 1200x1600 (3:4).</p>
         <MediaUrlInput
           id="band-image-url"
           label="Card Image URL"
@@ -408,7 +408,7 @@ export default function AdminBandCrudForm({ mode = 'create', initialBand = null,
           replaceMode={isEdit}
           replaceKey={isEdit ? `images/bands/${stableSlug}/card` : ''}
           accept="image/*"
-          help="Recommended 16:10 at 1600x1000."
+          help="Recommended 1:1 at 1200x1200."
           compact
         />
 

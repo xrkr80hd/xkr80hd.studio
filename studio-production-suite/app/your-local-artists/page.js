@@ -10,21 +10,21 @@ export default async function YourLocalArtistsPage() {
       <YourLocalHeroNav activeKey="artists" />
 
       <section className="section-space">
-        <div className="band-grid">
+        <div className="band-grid public-listing-grid">
           {artists.length ? (
             artists.map((artist) => {
               const gallery = Array.isArray(artist.gallery_images) ? artist.gallery_images.slice(0, 6) : [];
 
               return (
-                <article key={artist.id} className="band-card artist-card">
-                  <div className="band-card-image">
+                <article key={artist.id} className="public-listing-card public-listing-card--square band-card artist-card">
+                  <div className="public-listing-card-media band-card-image">
                     {artist.image_url ? <img src={artist.image_url} alt={artist.name} /> : <span className="image-placeholder">[ Artist Photo ]</span>}
                   </div>
-                  <div className="band-card-content">
-                    <div className="band-card-year">{artist.years_active || 'Active Years'}</div>
+                  <div className="public-listing-card-content band-card-content">
                     <h3 className="band-card-name">{artist.name}</h3>
+                    <div className="band-card-year">{artist.years_active || 'Active Years'}</div>
                     <span className="band-card-genre">{artist.genre || 'Solo Artist'}</span>
-                    {artist.summary ? <p className="band-card-desc">{artist.summary}</p> : null}
+                    {artist.summary ? <p className="band-card-desc public-listing-card-description">{artist.summary}</p> : null}
 
                     <div className="artist-gallery-wrap">
                       <div className="artist-gallery-title">Artist Gallery</div>

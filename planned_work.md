@@ -1,5 +1,14 @@
 # Planned Work
 
+## Standardize top-level public listing cards
+
+- [x] Inventory Blog, Legends, Scene, Artists, Podcasts, and Business through the workspace agent system.
+- [x] Define one compact horizontal card contract with 16:9 blog media and 1:1 media everywhere else.
+- [x] Add regression tests for ratios, mobile horizontal layout, podcast descriptions, and business sorting.
+- [x] Implement the shared cards and business A-Z/Z-A/category controls.
+- [x] Verify tests and the production build.
+- [x] Push all completed changes directly to `main`.
+
 ## Fix permanent blog avatar persistence
 
 - [x] Trace the admin crop-save request through signed storage, the channel API, Supabase, and the public channel.

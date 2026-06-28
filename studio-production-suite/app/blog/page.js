@@ -17,23 +17,27 @@ export default async function BlogPage() {
           <div className="blog-channel-grid">
             {channels.map((channel) => {
               return (
-                <article key={channel.channel_slug} className="blog-channel-card">
-                  {channel.card_image_url ? (
-                    <img className="blog-channel-card-image" src={channel.card_image_url} alt={`${channel.channel_name} channel graphic`} />
-                  ) : (
-                    <div className="blog-channel-card-image blog-channel-card-image-fallback" aria-hidden="true">
-                      {channel.channel_name}
+                <article key={channel.channel_slug} className="public-listing-card public-listing-card--wide blog-channel-card">
+                  <div className="public-listing-card-media blog-channel-card-media">
+                    {channel.card_image_url ? (
+                      <img className="blog-channel-card-image" src={channel.card_image_url} alt={`${channel.channel_name} channel graphic`} />
+                    ) : (
+                      <div className="blog-channel-card-image blog-channel-card-image-fallback" aria-hidden="true">
+                        {channel.channel_name}
+                      </div>
+                    )}
+                  </div>
+                  <div className="public-listing-card-content blog-channel-card-content">
+                    <h3>{channel.channel_name}</h3>
+                    <p className="meta">{channel.count} post{channel.count === 1 ? '' : 's'}</p>
+                    <div className="actions">
+                      <Link className="button" href={`/blog/channel/${encodeURIComponent(channel.channel_slug)}`} prefetch={false}>
+                        Open Channel
+                      </Link>
+                      <Link className="button" href={`/blog/${channel.latest_slug}`} prefetch={false}>
+                        Latest Post
+                      </Link>
                     </div>
-                  )}
-                  <h3>{channel.channel_name}</h3>
-                  <p className="meta">{channel.count} post{channel.count === 1 ? '' : 's'}</p>
-                  <div className="actions">
-                    <Link className="button" href={`/blog/channel/${encodeURIComponent(channel.channel_slug)}`} prefetch={false}>
-                      Open Channel
-                    </Link>
-                    <Link className="button" href={`/blog/${channel.latest_slug}`} prefetch={false}>
-                      Latest Post
-                    </Link>
                   </div>
                 </article>
               );

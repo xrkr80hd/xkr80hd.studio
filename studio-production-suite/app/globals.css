@@ -1107,6 +1107,202 @@ img.cover {
   }
 }
 
+/* Shared compact cards for top-level public category listings. */
+.public-listing-grid {
+  grid-template-columns: minmax(0, 1fr);
+  width: min(1120px, 100%);
+  margin-inline: auto;
+}
+
+.public-listing-card,
+.public-listing-card.blog-channel-card,
+.public-listing-card.blog-channel-card:nth-child(even) {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-areas: none;
+  align-items: stretch;
+  width: 100%;
+  height: clamp(220px, 22vw, 280px);
+  min-height: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.public-listing-card--wide,
+.public-listing-card--wide.blog-channel-card,
+.public-listing-card--wide.blog-channel-card:nth-child(even) {
+  height: clamp(190px, 20vw, 260px);
+}
+
+.public-listing-card--square .public-listing-card-media {
+  height: 100%;
+  aspect-ratio: 1;
+}
+
+.public-listing-card--wide .public-listing-card-media {
+  height: 100%;
+  aspect-ratio: 16 / 9;
+}
+
+.public-listing-card .public-listing-card-media,
+.public-listing-card.blog-channel-card:nth-child(even) .public-listing-card-media {
+  width: auto;
+  max-width: none;
+  min-width: 0;
+  margin: 0;
+  border: 0;
+  border-right: 1px solid rgba(127, 216, 255, 0.2);
+  border-radius: 0;
+  justify-self: auto;
+  overflow: hidden;
+  background: rgba(8, 13, 24, 0.78);
+}
+
+.public-listing-card-media img,
+.public-listing-card-media .blog-channel-card-image,
+.public-listing-card-media .business-logo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  object-fit: cover;
+}
+
+.public-listing-card-media .business-logo {
+  object-fit: contain;
+  padding: 0.65rem;
+}
+
+.public-listing-card-content,
+.public-listing-card .band-card-content,
+.public-listing-card .blog-channel-card-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
+  min-height: 0;
+  padding: clamp(0.75rem, 1.8vw, 1.2rem);
+  overflow: hidden;
+}
+
+.public-listing-card-content h3,
+.public-listing-card-content .band-card-name {
+  margin: 0 0 0.4rem;
+  font-size: clamp(1rem, 2vw, 1.35rem);
+  line-height: 1.15;
+  text-align: left;
+}
+
+.public-listing-card-description {
+  display: -webkit-box;
+  margin: 0.55rem 0 0.35rem;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+}
+
+.public-listing-card .actions,
+.public-listing-card .band-card-arrow {
+  margin-top: auto;
+}
+
+.public-listing-card .artist-gallery-wrap {
+  display: none;
+}
+
+.public-directory-controls {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.75rem;
+  width: min(1120px, 100%);
+  margin: 0 auto 1rem;
+  padding: 0.75rem;
+  border: 1px solid rgba(127, 216, 255, 0.2);
+  border-radius: 12px;
+  background: rgba(10, 16, 27, 0.84);
+}
+
+.public-directory-controls label {
+  display: grid;
+  gap: 0.3rem;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.public-directory-controls select {
+  min-width: 150px;
+}
+
+@media (max-width: 620px) {
+  .public-listing-card,
+  .public-listing-card.blog-channel-card,
+  .public-listing-card.blog-channel-card:nth-child(even) {
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-areas: none;
+    height: 148px;
+  }
+
+  .public-listing-card--wide,
+  .public-listing-card--wide.blog-channel-card,
+  .public-listing-card--wide.blog-channel-card:nth-child(even) {
+    height: 120px;
+  }
+
+  .public-listing-card-content,
+  .public-listing-card .band-card-content,
+  .public-listing-card .blog-channel-card-content {
+    padding: 0.6rem;
+  }
+
+  .public-listing-card-content h3,
+  .public-listing-card-content .band-card-name {
+    margin-bottom: 0.25rem;
+    font-size: 0.92rem;
+    -webkit-line-clamp: 2;
+  }
+
+  .public-listing-card-description {
+    margin-top: 0.3rem;
+    font-size: 0.75rem;
+    line-height: 1.25;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+  }
+
+  .public-listing-card-secondary,
+  .public-listing-card .band-card-year {
+    display: none;
+  }
+
+  .public-listing-card .actions {
+    gap: 0.25rem;
+  }
+
+  .public-listing-card .actions .button,
+  .public-listing-card .band-card-arrow {
+    padding: 0.28rem 0.4rem;
+    font-size: 0.66rem;
+  }
+
+  .public-directory-controls {
+    align-items: stretch;
+    flex-wrap: wrap;
+  }
+
+  .public-directory-controls label {
+    flex: 1 1 120px;
+  }
+
+  .public-directory-controls select {
+    width: 100%;
+    min-width: 0;
+  }
+}
+
 .blog-post-card {
   max-width: 960px;
   margin-left: auto;
@@ -5140,4 +5336,16 @@ h4 {
     padding: 0.28rem 0.44rem;
     font-size: 0.68rem;
   }
+}
+
+/* Keep the shared horizontal shell authoritative over legacy band-card display rules. */
+.public-listing-card {
+  display: grid;
+  overflow: hidden;
+}
+
+.public-listing-card.band-card,
+.public-listing-card.band-card.artist-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
 }

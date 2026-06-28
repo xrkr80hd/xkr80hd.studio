@@ -20,24 +20,26 @@ export default async function PodcastPage() {
       <YourLocalHeroNav activeKey="podcast" />
 
       <section className="section-space">
-        <div className="band-grid">
+        <div className="band-grid public-listing-grid">
           {cards.length ? (
             cards.map(({ podcast, latest }) => (
-              <article key={podcast.id} className="band-card podcast-card">
-                <div className="band-card-image">
+              <article key={podcast.id} className="public-listing-card public-listing-card--square band-card podcast-card">
+                <div className="public-listing-card-media band-card-image">
                   {podcast.cover_image_url ? (
                     <img src={podcast.cover_image_url} alt={`${podcast.title} cover`} />
                   ) : (
                     <span className="image-placeholder">[ Podcast Cover ]</span>
                   )}
                 </div>
-                <div className="band-card-content">
-                  {latest?.published_at ? <div className="band-card-year">Latest: {formatDate(latest.published_at)}</div> : null}
+                <div className="public-listing-card-content band-card-content">
                   <h3 className="band-card-name">{podcast.title}</h3>
+                  {latest?.published_at ? <div className="band-card-year">Latest: {formatDate(latest.published_at)}</div> : null}
                   <span className="band-card-genre">{podcast.topic || 'Local Podcast'}</span>
-                  {podcast.hosts ? <p className="band-card-desc">Hosts: {podcast.hosts}</p> : null}
-                  {podcast.summary ? <p className="band-card-desc">{podcast.summary}</p> : null}
-                  {latest?.title ? <p className="band-card-desc">Current Episode: {latest.title}</p> : null}
+                  {podcast.hosts ? <p className="band-card-desc public-listing-card-secondary">Hosts: {podcast.hosts}</p> : null}
+                  {podcast.description || podcast.summary ? (
+                    <p className="band-card-desc public-listing-card-description">{podcast.description || podcast.summary}</p>
+                  ) : null}
+                  {latest?.title ? <p className="band-card-desc public-listing-card-secondary">Current Episode: {latest.title}</p> : null}
                   <div className="actions">
                     <Link className="button primary" href={`/podcast/${podcast.slug}`}>
                       Open Podcast Page
