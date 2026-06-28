@@ -29,3 +29,34 @@ test('keeps cropped blog avatars isolated from homepage profile settings', async
   assert.doesNotMatch(settingsSource, /\/api\/admin\/site-profile/);
   assert.match(settingsSource, /replaceKey: target === 'avatar' \? `blog-profile-\$\{channelUsername/);
 });
+
+test('persists a cropped avatar to the blog channel before reporting upload success', async () => {
+  const settingsSource = await readFile(new URL('../components/AdminBlogChannelSettings.jsx', import.meta.url), 'utf8');
+
+  assert.match(settingsSource, /async function persistBlogChannelProfile/);
+  assert.match(settingsSource, /method:\s*'PUT'/);
+  assert.match(
+    settingsSource,
+    /await persistBlogChannelProfile\(\{[\s\S]*?avatarUrl:\s*cacheBustedUrl,[\s\S]*?\}\)/
+  );
+  assert.match(settingsSource, /setStatus\('Profile image saved!'\)/);
+});
+
+test('closes the crop dialog only after the cropped avatar is persisted', async () => {
+  const settingsSource = await readFile(new URL('../components/AdminBlogChannelSettings.jsx', import.meta.url), 'utf8');
+
+  assert.match(
+    settingsSource,
+    /const persisted = await handleImageUpload\(croppedFile, 'avatar'\);[\s\S]*?if \(persisted\) setAvatarCropFile\(null\);/
+  );
+});
+
+test('shows avatar upload failures inside the crop dialog while it remains open', async () => {
+  const settingsSource = await readFile(new URL('../components/AdminBlogChannelSettings.jsx', import.meta.url), 'utf8');
+  const cropperSource = await readFile(new URL('../components/BlogAvatarCropper.jsx', import.meta.url), 'utf8');
+
+  assert.match(settingsSource, /<BlogAvatarCropper[\s\S]*?status=\{status\}/);
+  assert.match(cropperSource, /export default function BlogAvatarCropper\(\{[\s\S]*?status/);
+  assert.match(cropperSource, /className="meta blog-avatar-crop-status"/);
+  assert.match(cropperSource, /\{status\}/);
+});

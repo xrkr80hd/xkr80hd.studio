@@ -11,7 +11,7 @@ import {
 const VIEWPORT_SIZE = 360;
 const OUTPUT_SIZE = 1000;
 
-export default function BlogAvatarCropper({ file, onCancel, onCrop, busy = false }) {
+export default function BlogAvatarCropper({ file, onCancel, onCrop, busy = false, status = '' }) {
   const canvasRef = useRef(null);
   const imageRef = useRef(null);
   const dragRef = useRef(null);
@@ -245,6 +245,8 @@ export default function BlogAvatarCropper({ file, onCancel, onCrop, busy = false
           />
           <output htmlFor="blog-avatar-zoom">{zoom.toFixed(2)}×</output>
         </label>
+
+        {status ? <p className="meta blog-avatar-crop-status" role="status">{status}</p> : null}
 
         <div className="actions blog-avatar-crop-actions">
           <button className="button" type="button" onClick={onCancel} disabled={busy || processing}>Cancel</button>

@@ -118,6 +118,34 @@ export default function AdminBlogChannelSettings({ draftCount = 0, publishedCoun
     };
   }, []);
 
+  async function persistBlogChannelProfile({
+    avatarUrl: nextAvatarUrl = avatarUrl,
+    cardImageUrl: nextCardImageUrl = cardImageUrl,
+    channelName: nextChannelName = draftChannelName,
+  } = {}) {
+    const response = await fetch('/api/admin/blog/channel', {
+      method: 'PUT',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        channel_name: nextChannelName,
+        avatar_url: nextAvatarUrl,
+        card_image_url: nextCardImageUrl,
+      }),
+    });
+    const body = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(body.error || 'The blog profile could not be saved.');
+
+    const item = body?.item || {};
+    setChannelUsername(String(item.username || channelUsername));
+    setChannelName(String(item.channel_name || nextChannelName));
+    setDraftChannelName(String(item.channel_name || nextChannelName));
+    setChannelBio(String(item.blogger_bio || channelBio));
+    setAvatarUrl(String(item.avatar_url || nextAvatarUrl || ''));
+    setCardImageUrl(String(item.card_image_url || nextCardImageUrl || ''));
+    setChannelSlug(String(item.channel_slug || channelSlug));
+    return item;
+  }
+
   const handleDrag = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -172,14 +200,19 @@ export default function AdminBlogChannelSettings({ draftCount = 0, publishedCoun
       if (nextUrl) {
         const cacheBustedUrl = withCacheBust(nextUrl);
         if (target === 'avatar') {
-          setAvatarUrl(cacheBustedUrl);
+          await persistBlogChannelProfile({
+            avatarUrl: cacheBustedUrl,
+            cardImageUrl,
+            channelName: draftChannelName,
+          });
           setAvatarPreviewUrl('');
+          setStatus('Profile image saved!');
         } else {
           setCardImageUrl(cacheBustedUrl);
           setCoverPreviewUrl('');
+          setStatus('Cover image uploaded. Save Profile to publish it.');
         }
         URL.revokeObjectURL(blobUrl);
-        setStatus(target === 'avatar' ? 'Profile image saved!' : 'Cover image saved!');
       } else {
         // Upload succeeded but no URL returned — keep local preview visible
         setStatus('Uploaded — save profile to persist.');
@@ -204,33 +237,14 @@ export default function AdminBlogChannelSettings({ draftCount = 0, publishedCoun
         setStatus('');
         setIsEditingProfile(false);
 
-        const response = await fetch('/api/admin/blog/channel', {
-          method: 'PUT',
-          headers: { 'content-type': 'application/json' },
-          body: JSON.stringify({
-            channel_name: draftChannelName,
-            avatar_url: avatarUrl,
-            card_image_url: cardImageUrl,
-          }),
-        });
-
-        const body = await response.json().catch(() => ({}));
-
-        if (!response.ok) {
-          setStatus(body.error || 'Hmm, something went wrong.');
+        try {
+          await persistBlogChannelProfile();
+          setStatus('Profile saved!');
+        } catch (error) {
+          setStatus(`Save error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        } finally {
           setSaving(false);
-          return;
         }
-
-        setChannelUsername(String(body?.item?.username || channelUsername));
-        setChannelName(String(body?.item?.channel_name || draftChannelName));
-        setDraftChannelName(String(body?.item?.channel_name || draftChannelName));
-        setChannelBio(String(body?.item?.blogger_bio || channelBio));
-        setAvatarUrl(String(body?.item?.avatar_url || avatarUrl));
-        setCardImageUrl(String(body?.item?.card_image_url || cardImageUrl));
-        setChannelSlug(String(body?.item?.channel_slug || channelSlug));
-        setStatus('');
-        setSaving(false);
       }}
     >
       <h2 className="section-title"><span className="brand-mylocal"><span className="brand-my">My</span><span className="brand-local">Local</span></span> <span className="brand-blog">Blog</span> Space</h2>
@@ -283,6 +297,7 @@ export default function AdminBlogChannelSettings({ draftCount = 0, publishedCoun
               if (!canEditProfile) {
                 setIsEditingProfile(true);
               }
+              setStatus('');
               setAvatarCropFile(file);
               e.target.value = '';
             }}
@@ -387,10 +402,11 @@ export default function AdminBlogChannelSettings({ draftCount = 0, publishedCoun
         <BlogAvatarCropper
           file={avatarCropFile}
           busy={uploading}
+          status={status}
           onCancel={() => setAvatarCropFile(null)}
           onCrop={async (croppedFile) => {
-            const uploaded = await handleImageUpload(croppedFile, 'avatar');
-            if (uploaded) setAvatarCropFile(null);
+            const persisted = await handleImageUpload(croppedFile, 'avatar');
+            if (persisted) setAvatarCropFile(null);
           }}
         />
       ) : null}

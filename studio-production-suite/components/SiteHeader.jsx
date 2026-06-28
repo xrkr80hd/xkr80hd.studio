@@ -54,7 +54,9 @@ export default function SiteHeader({ adminMode = false, ownerMode = false, admin
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const headerRef = useRef(null);
-  const navItems = adminMode ? getAdminNavItems(ownerMode) : publicNavItems;
+  const isAdminRoute = pathname === '/admin' || pathname?.startsWith('/admin/');
+  const showAdminMode = adminMode && isAdminRoute;
+  const navItems = showAdminMode ? getAdminNavItems(ownerMode) : publicNavItems;
 
   useEffect(() => {
     if (!open) {
@@ -86,15 +88,15 @@ export default function SiteHeader({ adminMode = false, ownerMode = false, admin
   }, [open]);
 
   return (
-    <header ref={headerRef} className={`nav ${adminMode ? 'admin-mode' : ''}`.trim()}>
+    <header ref={headerRef} className={`nav ${showAdminMode ? 'admin-mode' : ''}`.trim()}>
       <div className="container nav-inner">
-        <Link prefetch={false} href={adminMode ? '/admin' : '/'} className={`brand ${adminMode ? 'admin-brand' : ''}`.trim()} onClick={() => setOpen(false)}>
+        <Link prefetch={false} href={showAdminMode ? '/admin' : '/'} className={`brand ${showAdminMode ? 'admin-brand' : ''}`.trim()} onClick={() => setOpen(false)}>
           xrkr80hd.studio
         </Link>
         <button
-          className={`nav-toggle ${adminMode ? 'admin-toggle' : ''}`.trim()}
+          className={`nav-toggle ${showAdminMode ? 'admin-toggle' : ''}`.trim()}
           type="button"
-          aria-label={adminMode ? 'Toggle admin navigation' : 'Toggle navigation'}
+          aria-label={showAdminMode ? 'Toggle admin navigation' : 'Toggle navigation'}
           aria-expanded={open ? 'true' : 'false'}
           aria-controls="site-nav"
           onClick={() => setOpen((value) => !value)}
@@ -115,9 +117,9 @@ export default function SiteHeader({ adminMode = false, ownerMode = false, admin
               {item.label}
             </Link>
           ))}
-          {adminMode && adminUser ? <span className="nav-admin-user nav-admin-user-mobile">Signed in: {adminUser}</span> : null}
+          {showAdminMode && adminUser ? <span className="nav-admin-user nav-admin-user-mobile">Signed in: {adminUser}</span> : null}
         </nav>
-        {adminMode && adminUser ? <span className="nav-admin-user nav-admin-user-desktop">Signed in: {adminUser}</span> : null}
+        {showAdminMode && adminUser ? <span className="nav-admin-user nav-admin-user-desktop">Signed in: {adminUser}</span> : null}
       </div>
     </header>
   );

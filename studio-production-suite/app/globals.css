@@ -1989,6 +1989,15 @@ label {
   font-variant-numeric: tabular-nums;
 }
 
+.blog-avatar-crop-status {
+  margin: 0.8rem 0 0;
+  padding: 0.55rem 0.65rem;
+  border: 1px solid rgba(127, 216, 255, 0.3);
+  border-radius: 8px;
+  background: rgba(5, 10, 18, 0.72);
+  color: #dcecff;
+}
+
 .blog-avatar-crop-actions {
   justify-content: flex-end;
   margin-top: 1rem;
