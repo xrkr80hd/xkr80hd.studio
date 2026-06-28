@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import SharePostLinkButton from '../../../../components/SharePostLinkButton';
 import { getPublishedBlogChannelFeed } from '../../../../lib/content';
+import AutoFitChannelTitle from './AutoFitChannelTitle';
 
 export default async function BlogChannelPage({ params }) {
   const feed = await getPublishedBlogChannelFeed(params.slug);
@@ -13,6 +14,25 @@ export default async function BlogChannelPage({ params }) {
 
   return (
     <>
+      <nav className="blog-breadcrumbs blog-channel-breadcrumbs" aria-label="Breadcrumb">
+        <Link href="/blog" prefetch={false} aria-label="Back to Blog Channels">
+          ← Back to Blog Channels
+        </Link>
+      </nav>
+
+      <section className="card blog-channel-top-bar">
+        <div className="blog-channel-public-identity">
+          {channel.avatar_url ? (
+            <img
+              className="blog-channel-profile-image"
+              src={channel.avatar_url}
+              alt={`${channel.channel_name} profile`}
+            />
+          ) : null}
+          <AutoFitChannelTitle title={channel.channel_name} />
+        </div>
+      </section>
+
       <section className="card hero band-hero blog-channel-hero">
         {channel.card_image_url ? (
           <img
@@ -21,12 +41,6 @@ export default async function BlogChannelPage({ params }) {
             alt={`${channel.channel_name} cover`}
           />
         ) : null}
-        <div className="blog-channel-hero-controls">
-          <h1 className="blog-channel-hero-title">{channel.channel_name}</h1>
-          <Link className="button blog-back-button" href="/blog" prefetch={false}>
-            Back to Blog Channels
-          </Link>
-        </div>
       </section>
 
       <section className="blog-channel-post-flow section-space">
