@@ -1,5 +1,13 @@
 # Completed Work
 
+## 2026-06-28
+
+- Traced the false avatar-save state to invalid signed-upload replacement keys that omitted the required `images/blog-channels/` storage prefix.
+- Corrected the shared avatar and cover upload paths for the owner, Jessie, and every current or future blogger profile.
+- Kept the crop dialog open on failures and made a successful avatar save persist the channel record before closing and confirming success.
+- Made the admin profile editor return the same effective saved-or-fallback cover image served by the public channel.
+- Verified 11/11 focused regression tests and a production build generating 50/50 pages.
+
 ## 2026-06-27
 
 - Added one shared 1:1 blog-avatar cropper for the owner, Jessie, and every future blogger.

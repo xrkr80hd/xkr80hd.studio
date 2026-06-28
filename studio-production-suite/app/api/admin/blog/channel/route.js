@@ -1,11 +1,14 @@
 import { NextResponse } from 'next/server';
-import { ADMIN_SESSION_USER_COOKIE } from '../../../../../lib/admin-auth';
+import { ADMIN_SESSION_USER_COOKIE, isOwnerUsername } from '../../../../../lib/admin-auth';
 import { isValidMediaUrl } from '../../../../../lib/admin-crud-utils';
 import { normalizeAdminUsername } from '../../../../../lib/admin-users';
 import { getDefaultBlogChannelName, normalizeBlogChannelName, toBlogChannelSlug } from '../../../../../lib/blog-channels';
 import { getSupabaseAdmin } from '../../../../../lib/supabase-admin';
 
 export const runtime = 'nodejs';
+
+const BLOG_CHANNEL_DEFAULT_CARD_IMAGE = '/assets/cards/local-blog.png';
+const OWNER_BLOG_CHANNEL_COVER_IMAGE = '/assets/blog/xrkr80hdblog.png';
 
 function getActingUser(request) {
   return normalizeAdminUsername(request.cookies.get(ADMIN_SESSION_USER_COOKIE)?.value || '');
@@ -77,6 +80,15 @@ function defaultChannelItem(username) {
   };
 }
 
+function withDefaultChannelImages(item, username) {
+  return {
+    ...item,
+    card_image_url:
+      String(item?.card_image_url || '').trim() ||
+      (isOwnerUsername(username) ? OWNER_BLOG_CHANNEL_COVER_IMAGE : BLOG_CHANNEL_DEFAULT_CARD_IMAGE),
+  };
+}
+
 function isMissingBloggerBioColumnError(error) {
   const msg = String(error?.message || '').toLowerCase();
   return msg.includes('blogger_bio') && msg.includes('column');
@@ -107,7 +119,7 @@ export async function GET(request) {
     return NextResponse.json({ error: response.error.message }, { status: 500 });
   }
 
-  const item = response.data || defaultChannelItem(actingUser);
+  const item = withDefaultChannelImages(response.data || defaultChannelItem(actingUser), actingUser);
   return NextResponse.json({ ok: true, item });
 }
 

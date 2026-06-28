@@ -27,7 +27,10 @@ test('keeps cropped blog avatars isolated from homepage profile settings', async
 
   assert.match(settingsSource, /fetch\('\/api\/admin\/blog\/channel'/);
   assert.doesNotMatch(settingsSource, /\/api\/admin\/site-profile/);
-  assert.match(settingsSource, /replaceKey: target === 'avatar' \? `blog-profile-\$\{channelUsername/);
+  assert.match(
+    settingsSource,
+    /replaceKey:\s*target === 'avatar'\s*\?\s*`images\/blog-channels\/blog-profile-\$\{channelUsername/
+  );
 });
 
 test('persists a cropped avatar to the blog channel before reporting upload success', async () => {
@@ -59,4 +62,13 @@ test('shows avatar upload failures inside the crop dialog while it remains open'
   assert.match(cropperSource, /export default function BlogAvatarCropper\(\{[\s\S]*?status/);
   assert.match(cropperSource, /className="meta blog-avatar-crop-status"/);
   assert.match(cropperSource, /\{status\}/);
+});
+
+test('returns the same effective cover to the admin profile that the public channel serves', async () => {
+  const routeSource = await readFile(new URL('../app/api/admin/blog/channel/route.js', import.meta.url), 'utf8');
+
+  assert.match(routeSource, /function withDefaultChannelImages/);
+  assert.match(routeSource, /OWNER_BLOG_CHANNEL_COVER_IMAGE/);
+  assert.match(routeSource, /BLOG_CHANNEL_DEFAULT_CARD_IMAGE/);
+  assert.match(routeSource, /withDefaultChannelImages\(response\.data \|\| defaultChannelItem\(actingUser\), actingUser\)/);
 });

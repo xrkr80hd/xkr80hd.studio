@@ -1,5 +1,13 @@
 # Planned Work
 
+## Fix permanent blog avatar persistence
+
+- [x] Trace the admin crop-save request through signed storage, the channel API, Supabase, and the public channel.
+- [x] Correct the shared upload replacement key so every blogger avatar is written under the permitted blog-channel storage folder.
+- [x] Return the effective saved-or-fallback cover image consistently in the admin profile editor.
+- [x] Verify the focused regression tests and production build.
+- [ ] Commit all current changes and push them directly to `main`.
+
 ## Shared blog avatar cropper
 
 - [x] Keep homepage image data completely separate from blog avatar data.

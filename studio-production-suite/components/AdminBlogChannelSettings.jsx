@@ -192,7 +192,9 @@ export default function AdminBlogChannelSettings({ draftCount = 0, publishedCoun
         file,
         folder: 'images/blog-channels',
         replaceMode: true,
-        replaceKey: target === 'avatar' ? `blog-profile-${channelUsername || 'channel'}` : `blog-channel-${channelUsername || 'channel'}`,
+        replaceKey: target === 'avatar'
+          ? `images/blog-channels/blog-profile-${channelUsername || 'channel'}`
+          : `images/blog-channels/blog-channel-${channelUsername || 'channel'}`,
         currentValue: target === 'avatar' ? avatarUrl : cardImageUrl,
       });
 
