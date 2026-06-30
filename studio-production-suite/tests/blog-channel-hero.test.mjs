@@ -55,13 +55,14 @@ test('renders each channel profile image inside the cover hero instead of the to
   assert.match(hero, /src=\{channel\.avatar_url\}/);
 });
 
-test('keeps the square profile overlay entirely left of the cover midpoint', async () => {
+test('keeps the square profile overlay smaller on the right side of every channel cover', async () => {
   const css = await readFile(new URL('../app/globals.css', import.meta.url), 'utf8');
   const profileRuleStart = css.indexOf('.blog-channel-profile-image {');
   const profileRule = css.slice(profileRuleStart, css.indexOf('}', profileRuleStart));
 
   assert.match(profileRule, /position:\s*absolute;/);
-  assert.match(profileRule, /left:\s*3%;/);
-  assert.match(profileRule, /width:\s*min\(22%, 168px\);/);
+  assert.match(profileRule, /right:\s*3%;/);
+  assert.doesNotMatch(profileRule, /left:\s*3%;/);
+  assert.match(profileRule, /width:\s*min\(16%, 124px\);/);
   assert.match(profileRule, /aspect-ratio:\s*1;/);
 });

@@ -2,6 +2,8 @@
 
 ## 2026-06-28
 
+- Moved the shared public blog-channel avatar overlay to the right side of the cover image for every channel.
+- Reduced the desktop and mobile avatar overlay size so it does not cover channel title artwork.
 - Added one shared public directory control strip for A-Z, Z-A, category sort, and category filtering.
 - Applied the shared controls below the heroes on Legends, Scene, Artists, Blog, and Podcast.
 - Kept each page's own category source: band and artist genre, podcast topic, and blog channel category.

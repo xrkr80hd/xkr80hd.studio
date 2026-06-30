@@ -1,5 +1,12 @@
 # Planned Work
 
+## Blog channel avatar right-side overlay
+
+- [x] Use the agent system to audit the shared public blog channel hero overlay.
+- [x] Move the 1:1 channel avatar from the left side of the cover image to the right side.
+- [x] Reduce the avatar size on desktop and mobile so it does not cover hero artwork/title areas.
+- [ ] Verify focused tests, production build, and local server output.
+
 ## Public page sort and category controls
 
 - [x] Use the agent system to audit the public listing pages and the existing Business controls.
