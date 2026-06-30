@@ -2,7 +2,12 @@
 
 ## 2026-06-28
 
-- Standardized the top-level Blog, Legends, Scene, Artists, Podcasts, and Business listings with compact horizontal cards whose titles begin at the top-left and whose height is bounded by the image.
+- Added one shared public directory control strip for A-Z, Z-A, category sort, and category filtering.
+- Applied the shared controls below the heroes on Legends, Scene, Artists, Blog, and Podcast.
+- Kept each page's own category source: band and artist genre, podcast topic, and blog channel category.
+- Corrected the public listing regression after agent review: restored the Blog listing exactly to its pre-change source and moved the non-blog one-column rule after the legacy auto-fill grid so each card spans the full available width.
+- Added exact-source and final-cascade regression coverage so the Blog cannot inherit the shared directory wrapper and the remaining public directories cannot collapse into boxed multi-column cards.
+- Kept the Blog listing in its established dedicated layout while standardizing Legends, Scene, Artists, Podcasts, and Business with compact full-width horizontal cards.
 - Kept Blog channel artwork at 16:9 and changed all other category-card artwork to 1:1, including matching admin upload guidance.
 - Kept the shared cards horizontal on mobile with compact, clamped copy instead of tall stacked containers.
 - Added podcast descriptions and public business controls for A-Z, Z-A, category ordering, and category filtering.

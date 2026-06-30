@@ -1,7 +1,7 @@
 import BandGridPage from '../../components/BandGridPage';
 import { getBandsByEra } from '../../lib/content';
 
-export default async function YourLocalScenePage() {
+export default async function YourLocalScenePage({ searchParams = {} }) {
   const bands = await getBandsByEra('scene');
 
   return (
@@ -12,6 +12,7 @@ export default async function YourLocalScenePage() {
       subtitle="Current local bands that are actively writing, releasing, and performing now."
       era="scene"
       bands={bands}
+      searchParams={searchParams}
     />
   );
 }

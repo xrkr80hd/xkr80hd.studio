@@ -1,9 +1,11 @@
 import Link from 'next/link';
+import PublicDirectoryControls from '../../components/PublicDirectoryControls';
 import YourLocalHeroNav from '../../components/YourLocalHeroNav';
 import { getPodcastEpisodesForPodcast, getPublishedPodcasts } from '../../lib/content';
 import { formatDate } from '../../lib/format';
+import { filterAndSortPublicListings, getPublicListingCategories } from '../../lib/public-directory-listing.mjs';
 
-export default async function PodcastPage() {
+export default async function PodcastPage({ searchParams = {} }) {
   const podcasts = await getPublishedPodcasts();
   const cards = await Promise.all(
     podcasts.map(async (podcast) => {
@@ -14,15 +16,24 @@ export default async function PodcastPage() {
       };
     })
   );
+  const sort = ['az', 'za', 'category'].includes(searchParams.sort) ? searchParams.sort : 'az';
+  const category = String(searchParams.category || 'all').trim() || 'all';
+  const listingOptions = {
+    getName: (card) => card.podcast.title,
+    getCategory: (card) => card.podcast.topic || 'Local Podcast',
+  };
+  const categories = getPublicListingCategories(cards, listingOptions);
+  const visibleCards = filterAndSortPublicListings(cards, { ...listingOptions, sort, category });
 
   return (
     <>
       <YourLocalHeroNav activeKey="podcast" />
 
       <section className="section-space">
+        <PublicDirectoryControls sort={sort} category={category} categories={categories} label="Sort and filter podcasts" />
         <div className="band-grid public-listing-grid">
-          {cards.length ? (
-            cards.map(({ podcast, latest }) => (
+          {visibleCards.length ? (
+            visibleCards.map(({ podcast, latest }) => (
               <article key={podcast.id} className="public-listing-card public-listing-card--square band-card podcast-card">
                 <div className="public-listing-card-media band-card-image">
                   {podcast.cover_image_url ? (
@@ -50,7 +61,7 @@ export default async function PodcastPage() {
             ))
           ) : (
             <article className="card">
-              <p className="meta">No podcasts yet.</p>
+              <p className="meta">{cards.length ? 'No podcasts match this category.' : 'No podcasts yet.'}</p>
             </article>
           )}
         </div>

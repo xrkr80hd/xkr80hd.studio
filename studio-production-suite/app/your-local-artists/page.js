@@ -1,18 +1,29 @@
 import Link from 'next/link';
+import PublicDirectoryControls from '../../components/PublicDirectoryControls';
 import YourLocalHeroNav from '../../components/YourLocalHeroNav';
+import { filterAndSortPublicListings, getPublicListingCategories } from '../../lib/public-directory-listing.mjs';
 import { getPublishedArtists } from '../../lib/content';
 
-export default async function YourLocalArtistsPage() {
+export default async function YourLocalArtistsPage({ searchParams = {} }) {
   const artists = await getPublishedArtists();
+  const sort = ['az', 'za', 'category'].includes(searchParams.sort) ? searchParams.sort : 'az';
+  const category = String(searchParams.category || 'all').trim() || 'all';
+  const listingOptions = {
+    getName: (artist) => artist.name,
+    getCategory: (artist) => artist.genre || 'Solo Artist',
+  };
+  const categories = getPublicListingCategories(artists, listingOptions);
+  const visibleArtists = filterAndSortPublicListings(artists, { ...listingOptions, sort, category });
 
   return (
     <>
       <YourLocalHeroNav activeKey="artists" />
 
       <section className="section-space">
+        <PublicDirectoryControls sort={sort} category={category} categories={categories} label="Sort and filter local artists" />
         <div className="band-grid public-listing-grid">
-          {artists.length ? (
-            artists.map((artist) => {
+          {visibleArtists.length ? (
+            visibleArtists.map((artist) => {
               const gallery = Array.isArray(artist.gallery_images) ? artist.gallery_images.slice(0, 6) : [];
 
               return (
@@ -52,7 +63,7 @@ export default async function YourLocalArtistsPage() {
             })
           ) : (
             <article className="card">
-              <p className="meta">No solo artists are published yet.</p>
+              <p className="meta">{artists.length ? 'No artists match this category.' : 'No solo artists are published yet.'}</p>
             </article>
           )}
         </div>

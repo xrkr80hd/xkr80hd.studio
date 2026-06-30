@@ -2,14 +2,14 @@
 
 ## Scope
 
-Standardize the top-level public category listings for Blog, Local Legends, Local Scene, Artists, Podcasts, and YourLocal Business. Home, Hub, detail pages, and admin screens retain their specialized layouts.
+Standardize the top-level public category listings for Local Legends, Local Scene, Artists, Podcasts, and YourLocal Business. The Blog listing retains its existing dedicated alternating layout. Home, Hub, detail pages, and admin screens retain their specialized layouts.
 
 ## Card contract
 
-- Every category card stays horizontal at desktop and mobile widths.
+- Every non-blog category card stays horizontal and full-width at desktop and mobile widths.
 - The title is the first item at the top-left of the content area.
 - The card height is bounded by the media height; text is clamped so no empty vertical tail or content-driven growth appears.
-- Blog channel artwork is 16:9.
+- Blog channel artwork remains in its existing dedicated 16:9 listing layout.
 - Legends, Scene, Artists, Podcasts, and Business artwork is 1:1.
 - Images fill their media region without distorting the card.
 - Podcast cards include a short description of the show.

@@ -1,5 +1,28 @@
 # Planned Work
 
+## Public page sort and category controls
+
+- [x] Use the agent system to audit the public listing pages and the existing Business controls.
+- [x] Add shared A-Z, Z-A, and category filtering controls below the heroes for Legends, Scene, Artists, Blog, and Podcast.
+- [x] Preserve the approved card layouts while changing only the listing controls/data flow.
+- [x] Verify focused listing tests, production build, and local server output.
+
+## Correct public listing grid regression
+
+- [x] Use the agent system to trace the boxed cards to the legacy auto-fill grid overriding the shared one-column rule.
+- [x] Restore `/blog` byte-for-byte to its pre-shared-card source from commit `4771150`.
+- [x] Force every non-blog public listing to one full-width horizontal card per row.
+- [x] Add regression tests for exact Blog restoration and final CSS cascade authority.
+- [x] Verify the production build and push the correction to `main`.
+
+## Compact mobile public cards
+
+- [x] Preserve the approved desktop Blog Channels layout.
+- [x] Shrink Blog Channels cards only at mobile/narrow widths so they stay compact instead of becoming tall stacked billboards.
+- [x] Keep shared owner-managed public listing cards compact on mobile.
+- [x] Add regression coverage for the mobile-only card sizing contract.
+- [x] Verify focused tests and the production build.
+
 ## Standardize top-level public listing cards
 
 - [x] Inventory Blog, Legends, Scene, Artists, Podcasts, and Business through the workspace agent system.

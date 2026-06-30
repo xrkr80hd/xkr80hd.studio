@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Give all top-level public category listings one compact horizontal card system, with 16:9 blog art, 1:1 art elsewhere, podcast descriptions, and sortable business entries.
+**Goal:** Keep the established Blog listing intact while giving the owner-managed public category listings one full-width horizontal card system with 1:1 art, podcast descriptions, and sortable business entries.
 
 **Architecture:** Existing server-rendered listing pages opt into shared public-listing CSS classes while preserving their current data sources and links. Business sorting and filtering live in a small pure helper consumed by the server page through query parameters.
 
@@ -32,7 +32,7 @@
 - [ ] Move the 1:1 logo into the shared media region.
 - [ ] Run the business behavior tests and confirm they pass.
 
-### Task 3: Apply shared public listing cards
+### Task 3: Apply shared public listing cards without changing Blog
 
 **Files:**
 - Modify: `studio-production-suite/app/blog/page.js`
@@ -41,7 +41,7 @@
 - Modify: `studio-production-suite/app/podcast/page.js`
 - Modify: `studio-production-suite/app/globals.css`
 
-- [ ] Add the missing blog media wrapper and shared wide-card classes.
+- [ ] Preserve the existing Blog listing markup and dedicated 16:9 styling.
 - [ ] Apply square-card classes to Legends, Scene, Artists, and Podcasts.
 - [ ] Put each title first in its content region and include podcast description copy.
 - [ ] Add bounded desktop/mobile horizontal styles and clamped content.

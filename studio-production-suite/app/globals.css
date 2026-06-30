@@ -1243,32 +1243,32 @@ img.cover {
   .public-listing-card.blog-channel-card:nth-child(even) {
     grid-template-columns: auto minmax(0, 1fr);
     grid-template-areas: none;
-    height: 148px;
+    height: clamp(104px, 31vw, 124px);
   }
 
   .public-listing-card--wide,
   .public-listing-card--wide.blog-channel-card,
   .public-listing-card--wide.blog-channel-card:nth-child(even) {
-    height: 120px;
+    height: clamp(92px, 28vw, 112px);
   }
 
   .public-listing-card-content,
   .public-listing-card .band-card-content,
   .public-listing-card .blog-channel-card-content {
-    padding: 0.6rem;
+    padding: 0.48rem 0.54rem;
   }
 
   .public-listing-card-content h3,
   .public-listing-card-content .band-card-name {
-    margin-bottom: 0.25rem;
-    font-size: 0.92rem;
+    margin-bottom: 0.18rem;
+    font-size: 0.82rem;
     -webkit-line-clamp: 2;
   }
 
   .public-listing-card-description {
-    margin-top: 0.3rem;
-    font-size: 0.75rem;
-    line-height: 1.25;
+    margin-top: 0.2rem;
+    font-size: 0.68rem;
+    line-height: 1.18;
     -webkit-line-clamp: 2;
     line-clamp: 2;
   }
@@ -1284,8 +1284,8 @@ img.cover {
 
   .public-listing-card .actions .button,
   .public-listing-card .band-card-arrow {
-    padding: 0.28rem 0.4rem;
-    font-size: 0.66rem;
+    padding: 0.22rem 0.34rem;
+    font-size: 0.6rem;
   }
 
   .public-directory-controls {
@@ -4181,20 +4181,21 @@ label {
   display: grid;
   grid-template-columns: 1fr;
   gap: 0.88rem;
-  width: min(980px, 100%);
+  width: 100%;
   margin: 0.2rem auto 0;
 }
 
 .blog-channel-card {
   display: grid;
-  grid-template-columns: minmax(170px, 250px) minmax(0, 1fr);
+  grid-template-columns: minmax(300px, 44%) minmax(0, 1fr);
   grid-template-areas:
     "media title"
     "media meta"
     "media actions";
+  grid-template-rows: min-content min-content min-content;
   align-items: center;
   column-gap: 0.9rem;
-  row-gap: 0.38rem;
+  row-gap: 0.26rem;
   border: 1px solid rgba(127, 216, 255, 0.2);
   border-radius: 12px;
   padding: 0.66rem;
@@ -4203,7 +4204,7 @@ label {
 }
 
 .blog-channel-card:nth-child(even) {
-  grid-template-columns: minmax(0, 1fr) minmax(170px, 250px);
+  grid-template-columns: minmax(0, 1fr) minmax(300px, 44%);
   grid-template-areas:
     "title media"
     "meta media"
@@ -4228,14 +4229,17 @@ label {
 }
 
 .blog-channel-card-image {
+  grid-area: media;
   width: 100%;
-  height: 100%;
+  aspect-ratio: 16 / 9;
+  height: auto;
   object-fit: cover;
-  border: 0;
-  border-radius: 0;
+  border: 1px solid rgba(127, 216, 255, 0.22);
+  border-radius: 10px;
   max-width: none;
   justify-self: stretch;
   display: block;
+  overflow: hidden;
 }
 
 .blog-channel-card-media.is-jessie .blog-channel-card-image {
@@ -4254,7 +4258,7 @@ label {
 
 .blog-channel-card h3 {
   grid-area: title;
-  margin: 0;
+  margin: 0 0 0.12rem;
   color: #f4fbff;
   font-size: 0.98rem;
   line-height: 1.25;
@@ -4269,7 +4273,7 @@ label {
 
 .blog-channel-card .actions {
   grid-area: actions;
-  margin-top: 0.2rem;
+  margin-top: 0.08rem;
   display: flex;
   gap: 0.38rem;
   flex-wrap: wrap;
@@ -4280,26 +4284,49 @@ label {
   font-size: 0.76rem;
 }
 
-@media (max-width: 860px) {
+@media (max-width: 760px) {
   .blog-channel-grid {
     width: 100%;
   }
 
   .blog-channel-card,
   .blog-channel-card:nth-child(even) {
-    grid-template-columns: 1fr;
+    grid-template-columns: clamp(112px, 34vw, 150px) minmax(0, 1fr);
     grid-template-areas:
-      "media"
-      "title"
-      "meta"
-      "actions";
-    row-gap: 0.46rem;
+      "media title"
+      "media meta"
+      "media actions";
+    align-items: center;
+    column-gap: 0.54rem;
+    row-gap: 0.14rem;
+    padding: 0.46rem;
   }
 
-  .blog-channel-card-media,
-  .blog-channel-card:nth-child(even) .blog-channel-card-media {
-    max-width: 100%;
-    justify-self: stretch;
+  .blog-channel-card-image {
+    width: 100%;
+    max-width: 150px;
+    justify-self: start;
+  }
+
+  .blog-channel-card h3 {
+    margin-bottom: 0;
+    font-size: 0.82rem;
+    line-height: 1.14;
+  }
+
+  .blog-channel-card .meta {
+    font-size: 0.68rem;
+    line-height: 1.15;
+  }
+
+  .blog-channel-card .actions {
+    gap: 0.24rem;
+    margin-top: 0;
+  }
+
+  .blog-channel-card .actions .button {
+    padding: 0.22rem 0.34rem;
+    font-size: 0.58rem;
   }
 }
 
@@ -5339,6 +5366,12 @@ h4 {
 }
 
 /* Keep the shared horizontal shell authoritative over legacy band-card display rules. */
+.band-grid.public-listing-grid {
+  grid-template-columns: minmax(0, 1fr);
+  width: 100%;
+  margin-inline: auto;
+}
+
 .public-listing-card {
   display: grid;
   overflow: hidden;
@@ -5348,4 +5381,5 @@ h4 {
 .public-listing-card.band-card.artist-card {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
+  width: 100%;
 }
