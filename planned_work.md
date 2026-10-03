@@ -167,3 +167,7 @@
 ## 2026-10-03 — CALL TRAV automotive card
 - Replace the generic music/creator card with the supplied CALL TRAV artwork, preserved in full.
 - Use automotive sales copy and a clear digital business card CTA linking to NextDocs, in the page's pink/chrome theme.
+
+## 2026-10-03 — Match homepage radio display
+- Inspect HomeTracksPlayer and use its digital artist/title, clock, and progress treatment inside the Gleaux skin opening.
+- Keep the opening blank whenever audio is not playing; transport and volume remain below the frame.

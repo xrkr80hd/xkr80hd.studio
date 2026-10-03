@@ -106,3 +106,10 @@
 - CTA: “Visit Trav’s digital business card,” linking to https://nextdocs.xrkr80hd.studio/card/trav.
 - Preserved the supplied branding and phone number; pink/chrome surrounding card adapts to mobile.
 - Production build and git diff checks passed.
+
+## 2026-10-03 — Radio display and playback correction
+- Matched HomeTracksPlayer's digital artist/title, elapsed/total clocks and progress inside the supplied skin opening, using pink scanline styling.
+- Display is absent on idle, pause, stop and ended; play/pause, stop and volume stay below the frame.
+- Verified live private bucket and both uploaded MP3 objects exist. Database has the player path, but deployed stream endpoint returned a stale 'Track coming soon' response.
+- Added an explicitly uncached Supabase client for campaign reads so uploads are visible immediately, and surfaced playback errors instead of hiding them behind a generic message.
+- Production compilation and diff checks passed. Browser state checks were unavailable because the runtime browser binary is missing.

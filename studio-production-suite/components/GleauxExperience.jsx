@@ -20,7 +20,7 @@ export default function GleauxExperience({ title, description, hasPlayer, hasDow
         audio.current.src = body.url; audio.current.volume = volume;
       }
       await audio.current.play();
-    } catch { setStatus('Playback could not start. Tap play to try again.'); }
+    } catch (error) { setStatus(error.message || 'Playback could not start. Tap play to try again.'); }
     finally { setLoading(false); }
   }
   async function download() {
@@ -51,17 +51,20 @@ export default function GleauxExperience({ title, description, hasPlayer, hasDow
       <div className={styles.sectionLabel}><span>01 / THE ANTHEM</span><span>PRESS PLAY. FEEL THE GLEAUX.</span></div>
       <div className={styles.skin}>
         <img src="/assets/gleaux/player-skin.png" alt="xrkr.80hd’s Gleaux player — pink, white and chrome" width="1536" height="512" />
-        <div className={styles.display}>
-          <div className={styles.track}><span>{playing ? 'NOW PLAYING' : hasPlayer ? 'READY TO PLAY' : 'COMING SOON'}</span><strong>{title}</strong><small>XRKR.80HD · GLEAUX FOR THE GIRLS</small></div>
-          <div className={`${styles.equalizer} ${playing ? styles.active : ''}`} aria-hidden="true">{Array.from({ length: 28 }, (_, i) => <i key={i} style={{ '--h': `${20 + ((i * 37) % 80)}%`, '--delay': `${i * -0.09}s` }} />)}</div>
-        </div>
+        {playing && <div className={styles.radioDisplay}>
+          <p className={styles.radioStatus}>PLAY DISC 01 · TRK 01/01</p>
+          <p className={styles.radioNow}><span>XRKR.80HD</span> — <strong>{title}</strong></p>
+          <div className={styles.radioProgress}>
+            <span>{time(current)}</span>
+            <input aria-label="Track position" type="range" min="0" max={Number.isFinite(duration) ? duration : 0} step="0.1" value={Math.min(current, Number.isFinite(duration) ? duration : 0)} disabled={!duration} style={{ '--progress': `${duration > 0 ? Math.min(100, current / duration * 100) : 0}%` }} onChange={event => { audio.current.currentTime = Number(event.target.value); setCurrent(Number(event.target.value)); }} />
+            <span>{time(duration)}</span>
+          </div>
+        </div>}
       </div>
       <audio ref={audio} preload="none" onPlay={() => setPlaying(true)} onPause={() => setPlaying(false)} onEnded={() => setPlaying(false)} onTimeUpdate={() => setCurrent(audio.current.currentTime)} onLoadedMetadata={() => setDuration(audio.current.duration)} onDurationChange={() => setDuration(audio.current.duration)} onError={() => { setPlaying(false); setStatus('Audio could not load. Please try play again.'); }} />
       <div className={styles.controls}>
         <button className={styles.play} type="button" onClick={toggle} disabled={!hasPlayer || loading} aria-label={playing ? 'Pause Lets Gleaux' : 'Play Lets Gleaux'}><Icon type={playing ? 'pause' : 'play'} /></button>
-        <span className={styles.timer}>{time(current)}</span>
-        <input className={styles.seek} aria-label="Track position" type="range" min="0" max={duration || 0} step="0.1" value={Math.min(current, duration || 0)} disabled={!duration} onChange={event => { audio.current.currentTime = Number(event.target.value); setCurrent(Number(event.target.value)); }} />
-        <span className={styles.timer}>{time(duration)}</span>
+        <button className={styles.stop} type="button" disabled={!hasPlayer} aria-label="Stop Lets Gleaux" onClick={() => { audio.current.pause(); audio.current.currentTime = 0; setCurrent(0); setPlaying(false); }}>■</button>
         <label className={styles.volume}><Icon type="volume" /><input aria-label="Volume" type="range" min="0" max="1" step="0.01" value={volume} onChange={event => { setVolume(Number(event.target.value)); audio.current.volume = Number(event.target.value); }} /></label>
       </div>
       {!hasPlayer && <p className={styles.coming}>{unavailable ? 'The player is temporarily unavailable. Please check back shortly.' : 'The anthem is on its way. Check back soon to listen.'}</p>}

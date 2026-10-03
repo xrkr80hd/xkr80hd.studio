@@ -26,3 +26,17 @@
 .automotiveCta>span{font-size:22px}
 @media(max-width:600px){.automotiveCard{grid-template-columns:1fr;gap:0}.automotiveArt{width:100%;max-width:340px;justify-self:center}.automotiveCopy{padding:27px 24px 30px;text-align:center}.automotiveCopy .automotivePitch{margin-left:auto;margin-right:auto}.automotiveCta{width:100%;gap:10px}.automotiveCopy h2{font-size:27px}.automotiveCopy p{font-size:15px}}
 @media(prefers-reduced-motion:reduce){.automotiveCard{transition:none}}
+
+/* Digital radio display follows the homepage player, inside this skin's opening. */
+.skin{container-type:inline-size}
+.radioDisplay{position:absolute;left:15.5%;right:15.5%;top:44.5%;height:25.5%;display:grid;align-content:center;gap:clamp(1px,.45cqw,5px);padding:1.1cqw 2.4cqw;border-radius:3cqw;background:linear-gradient(180deg,#1c0711,#020102 48%,#10050b);box-shadow:inset 0 0 22px #ff438d24;color:#ffe5f0;font-family:'Courier New',monospace;text-transform:uppercase;line-height:1.1;overflow:hidden}
+.radioDisplay::after{content:'';position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(180deg,#ffc2d90d 0 1px,#0003 1px 3px)}
+.radioStatus{margin:0;font-size:clamp(5px,.85cqw,10px);letter-spacing:.12em;color:#ff9bc2;text-shadow:0 0 10px #ff438d66}
+.radioNow{margin:0;font-size:clamp(8px,1.5cqw,17px);letter-spacing:.06em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 0 10px #ff83b466}
+.radioNow>span{color:#ff82b4;font-weight:700}.radioNow strong{color:#fff2f7}
+.radioProgress{position:relative;z-index:1;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:.7cqw;font-size:clamp(6px,.9cqw,10px);color:#ffacd0;font-variant-numeric:tabular-nums}
+.radioProgress input{appearance:none;min-width:0;width:100%;margin:0;height:clamp(5px,.7cqw,8px);border:1px solid #ff83b466;border-radius:8px;background:linear-gradient(to right,#ff70a8 var(--progress),#130810 var(--progress));cursor:pointer}
+.radioProgress input::-webkit-slider-thumb{appearance:none;width:clamp(6px,.8cqw,9px);height:clamp(6px,.8cqw,9px);border-radius:50%;background:#ffe5f0;box-shadow:0 0 6px #ff438d}
+.radioProgress input::-moz-range-thumb{width:8px;height:8px;border:0;border-radius:50%;background:#ffe5f0}
+.controls{justify-content:center;max-width:430px}.stop{display:grid;place-items:center;width:44px;height:44px;border:1px solid #ffe0ee;border-radius:50%;background:linear-gradient(#6b4859,#22151d);color:#ffc4dc;font-size:20px;cursor:pointer}.controls .volume{display:flex;margin-left:12px}
+@media(max-width:600px){.radioStatus{display:none}.radioDisplay{gap:1.1cqw}.controls{max-width:320px}.controls .volume input{width:65px}}
