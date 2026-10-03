@@ -53,14 +53,15 @@ export default function GleauxExperience({ title, description, hasPlayer, hasDow
         {playing && <div className={styles.radioDisplay}>
           <p className={styles.radioStatus}>PLAY DISC 01 · TRK 01/01</p>
           <p className={styles.radioNow}><span>XRKR.80HD</span> — <strong>{title}</strong></p>
+          <p className={styles.radioClock}>{time(current)} / {time(duration)}</p>
+        </div>}
+      </div>
+      <audio ref={audio} preload="none" onPlay={() => setPlaying(true)} onPause={() => setPlaying(false)} onEnded={() => setPlaying(false)} onTimeUpdate={() => setCurrent(audio.current.currentTime)} onLoadedMetadata={() => setDuration(audio.current.duration)} onDurationChange={() => setDuration(audio.current.duration)} onError={() => { setPlaying(false); setStatus('Audio could not load. Please try play again.'); }} />
           <div className={styles.radioProgress}>
             <span>{time(current)}</span>
             <input aria-label="Track position" type="range" min="0" max={Number.isFinite(duration) ? duration : 0} step="0.1" value={Math.min(current, Number.isFinite(duration) ? duration : 0)} disabled={!duration} style={{ '--progress': `${duration > 0 ? Math.min(100, current / duration * 100) : 0}%` }} onChange={event => { audio.current.currentTime = Number(event.target.value); setCurrent(Number(event.target.value)); }} />
             <span>{time(duration)}</span>
           </div>
-        </div>}
-      </div>
-      <audio ref={audio} preload="none" onPlay={() => setPlaying(true)} onPause={() => setPlaying(false)} onEnded={() => setPlaying(false)} onTimeUpdate={() => setCurrent(audio.current.currentTime)} onLoadedMetadata={() => setDuration(audio.current.duration)} onDurationChange={() => setDuration(audio.current.duration)} onError={() => { setPlaying(false); setStatus('Audio could not load. Please try play again.'); }} />
       <div className={styles.controls}>
         <button className={styles.play} type="button" onClick={toggle} disabled={!hasPlayer || loading} aria-label={playing ? 'Pause Lets Gleaux' : 'Play Lets Gleaux'}><Icon type={playing ? 'pause' : 'play'} /></button>
         <button className={styles.stop} type="button" disabled={!hasPlayer} aria-label="Stop Lets Gleaux" onClick={() => { audio.current.pause(); audio.current.currentTime = 0; setCurrent(0); setPlaying(false); }}>■</button>

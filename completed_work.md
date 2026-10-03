@@ -128,3 +128,7 @@ Added original hero artwork and functional pink image download button below play
 - Narrow screens stack the two panels to retain readable text and usable controls.
 - Verification: production build passed for both revisions; git diff --check passed. Browser installation failed due to a truncated download, so mobile visual verification remains outstanding.
 - Publish status: local changes committed; GitHub create_commit returned “user rejected MCP tool call.” Main was not updated and these layout changes are NOT live. GitHub blobs/tree creation alone did not publish. Live Supabase presenter description update did succeed.
+
+## Compact mobile and pink radio correction
+Kept automotive panels side by side at phone widths with proportional copy; reduced hero/control spacing; prevented GLEAUX word splitting. Moved seek bar below radio skin, retained elapsed/total digital clock and track title inside opening during playback. Display uses pink lettering on black with pink scanlines, with no blue styling. User supplied blue player is functional reference only. Build verification recorded after completion.
+Production build and git diff --check passed for the compact correction.

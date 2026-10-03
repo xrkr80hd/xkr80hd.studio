@@ -177,3 +177,6 @@ Add supplied hero and download button below player; correct event presenter cred
 
 ## Trav two-panel refinement
 Use reference for clean equal 3:4 panels in one container under free download, original artwork left and centered automotive copy right.
+
+## Compact mobile correction
+Keep Trav panels side by side on mobile, prevent GLEAUX word wrapping, reduce mobile whitespace, and separate pink in-radio digital readout from below-radio seek bar.
