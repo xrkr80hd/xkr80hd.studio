@@ -7,7 +7,7 @@ function Icon({ type }) {
   return <svg viewBox="0 0 24 24" width="22" height="22" fill={type === 'play' || type === 'pause' ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.6" aria-hidden="true">{paths[type]}</svg>;
 }
 export default function GleauxExperience({ title, description, hasPlayer, hasDownload, unavailable }) {
-  const audio = useRef(null), busyRef = useRef(false), downloadId = useRef(null);
+  const audio = useRef(null), busyRef = useRef(false), downloadId = useRef(null), downloadInvite = useRef(null);
   const [playing, setPlaying] = useState(false), [loading, setLoading] = useState(false), [current, setCurrent] = useState(0), [duration, setDuration] = useState(0), [volume, setVolume] = useState(0.8), [busy, setBusy] = useState(false), [status, setStatus] = useState('');
   async function toggle() {
     if (!audio.current || loading) return;
@@ -71,12 +71,20 @@ export default function GleauxExperience({ title, description, hasPlayer, hasDow
     <section className={styles.downloadArtwork} aria-label="Download Lets Gleaux">
       <div className={styles.downloadScene}>
         <img className={styles.downloadHero} src="/assets/gleaux/download-hero.jpg" alt="Download Let’s Gleaux — the track inspired by the Gleaux for the Girls event, presented by Christus Cabrini and Walker Toyota" width="1536" height="513" />
-        <button className={styles.artDownloadButton} type="button" onClick={download} disabled={!hasDownload || busy} aria-label={busy ? 'Preparing download' : 'Download Lets Gleaux for free'} aria-describedby="gleaux-download-info">
+        <button className={styles.artDownloadButton} type="button" onClick={() => downloadInvite.current?.showModal()} disabled={!hasDownload || busy} aria-label={busy ? 'Preparing download' : 'Download Lets Gleaux for free'} aria-describedby="gleaux-download-info">
           <img src="/assets/gleaux/download-button.png" alt="" width="1536" height="1536" />
         </button>
       </div>
       <p id="gleaux-download-info" className={styles.downloadInfo}>{busy ? 'Preparing your download…' : hasDownload ? 'FREE DOWNLOAD · YOURS TO KEEP' : 'Download coming soon'}</p>
     </section>
+    <dialog ref={downloadInvite} className={styles.downloadInvite} aria-labelledby="gleaux-invite-title" aria-describedby="gleaux-invite-description">
+      <button className={styles.inviteClose} type="button" aria-label="Close invitation" onClick={() => downloadInvite.current.close()}>×</button>
+      <p className={styles.inviteKicker}>KEEP THE GLEAUX GOING</p>
+      <h2 id="gleaux-invite-title">Like my Facebook page?</h2>
+      <p id="gleaux-invite-description">If you enjoy the song, show some love on Facebook and keep up with what’s next. Your download is free either way.</p>
+      <a className={styles.inviteFacebook} href="https://www.facebook.com/share/1HTbWWpPmf/" target="_blank" rel="noopener noreferrer" autoFocus>Visit my Facebook page ↗</a>
+      <button className={styles.inviteContinue} type="button" disabled={!hasDownload || busy} onClick={() => { downloadInvite.current.close(); download(); }}>Continue to download</button>
+    </dialog>
     <p className={styles.status} role="status" aria-live="polite">{status}</p>
     <section className={styles.eventLinks} aria-label="Gleaux for the Girls event links">
       <p>SHOW UP. STAND TOGETHER.</p>
