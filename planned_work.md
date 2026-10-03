@@ -180,3 +180,6 @@ Use reference for clean equal 3:4 panels in one container under free download, o
 
 ## Compact mobile correction
 Keep Trav panels side by side on mobile, prevent GLEAUX word wrapping, reduce mobile whitespace, and separate pink in-radio digital readout from below-radio seek bar.
+
+## Admin-only download count
+Remove count from public UI, server props and public download response; retain event tracking and owner admin count.

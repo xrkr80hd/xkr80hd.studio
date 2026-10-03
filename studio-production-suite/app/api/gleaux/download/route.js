@@ -1,6 +1,6 @@
 import { createHmac } from 'crypto';
 import { NextResponse } from 'next/server';
-import { GLEAUX_BUCKET, getGleauxSettings, getGleauxCount, sameOrigin } from '../../../../lib/gleaux';
+import { GLEAUX_BUCKET, getGleauxSettings, sameOrigin } from '../../../../lib/gleaux';
 import { getSupabaseAdmin } from '../../../../lib/supabase-admin';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -25,6 +25,6 @@ export async function POST(request) {
     const fingerprint = createHmac('sha256', secret).update(visitor).digest('hex');
     const logged = await db.from('gleaux_download_events').insert({ request_id, fingerprint, audio_path: item.download_path });
     if (logged.error && logged.error.code !== '23505') throw logged.error;
-    return NextResponse.json({ url: signed.data.signedUrl, count: await getGleauxCount() }, { headers: { 'Cache-Control': 'no-store' } });
+    return NextResponse.json({ url: signed.data.signedUrl }, { headers: { 'Cache-Control': 'no-store' } });
   } catch { return NextResponse.json({ error: 'Download temporarily unavailable. Please try again.' }, { status: 503 }); }
 }

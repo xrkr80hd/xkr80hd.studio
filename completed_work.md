@@ -132,3 +132,6 @@ Added original hero artwork and functional pink image download button below play
 ## Compact mobile and pink radio correction
 Kept automotive panels side by side at phone widths with proportional copy; reduced hero/control spacing; prevented GLEAUX word splitting. Moved seek bar below radio skin, retained elapsed/total digital clock and track title inside opening during playback. Display uses pink lettering on black with pink scanlines, with no blue styling. User supplied blue player is functional reference only. Build verification recorded after completion.
 Production build and git diff --check passed for the compact correction.
+
+## Admin-only download count
+Removed count from public download card, public page data and download API response. Kept successful download event logging and owner-only admin count. Production build and diff check passed.

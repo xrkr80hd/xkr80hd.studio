@@ -6,9 +6,9 @@ function Icon({ type }) {
   const paths = { play: <path d="m8 5 11 7-11 7Z" />, pause: <><path d="M7 5h3v14H7zM14 5h3v14h-3z" /></>, download: <><path d="M12 3v12m-5-5 5 5 5-5M5 16v5h14v-5" /></>, volume: <><path d="m11 4-6 5H2v6h3l6 5ZM15 8a6 6 0 0 1 0 8m3-11a10 10 0 0 1 0 14" /></> };
   return <svg viewBox="0 0 24 24" width="22" height="22" fill={type === 'play' || type === 'pause' ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.6" aria-hidden="true">{paths[type]}</svg>;
 }
-export default function GleauxExperience({ title, description, hasPlayer, hasDownload, initialCount, unavailable }) {
+export default function GleauxExperience({ title, description, hasPlayer, hasDownload, unavailable }) {
   const audio = useRef(null), busyRef = useRef(false), downloadId = useRef(null);
-  const [playing, setPlaying] = useState(false), [loading, setLoading] = useState(false), [current, setCurrent] = useState(0), [duration, setDuration] = useState(0), [volume, setVolume] = useState(0.8), [busy, setBusy] = useState(false), [count, setCount] = useState(initialCount), [status, setStatus] = useState('');
+  const [playing, setPlaying] = useState(false), [loading, setLoading] = useState(false), [current, setCurrent] = useState(0), [duration, setDuration] = useState(0), [volume, setVolume] = useState(0.8), [busy, setBusy] = useState(false), [status, setStatus] = useState('');
   async function toggle() {
     if (!audio.current || loading) return;
     if (playing) { audio.current.pause(); return; }
@@ -30,7 +30,6 @@ export default function GleauxExperience({ title, description, hasPlayer, hasDow
       downloadId.current ||= crypto.randomUUID();
       const response = await fetch('/api/gleaux/download', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ request_id: downloadId.current }) });
       const body = await response.json(); if (!response.ok) throw new Error(body.error || 'Download failed.');
-      setCount(body.count);
       const link = document.createElement('a'); link.href = body.url; link.download = 'Lets-Gleaux'; document.body.appendChild(link); link.click(); link.remove();
       downloadId.current = null;
       setStatus('Your download is starting. Thanks for standing with the girls.');
@@ -76,7 +75,7 @@ export default function GleauxExperience({ title, description, hasPlayer, hasDow
           <img src="/assets/gleaux/download-button.png" alt="" width="1536" height="1536" />
         </button>
       </div>
-      <p id="gleaux-download-info" className={styles.downloadInfo}>{busy ? 'Preparing your download…' : hasDownload ? 'FREE DOWNLOAD · YOURS TO KEEP' : 'Download coming soon'}{count !== null && <> · {count.toLocaleString()} downloads</>}</p>
+      <p id="gleaux-download-info" className={styles.downloadInfo}>{busy ? 'Preparing your download…' : hasDownload ? 'FREE DOWNLOAD · YOURS TO KEEP' : 'Download coming soon'}</p>
     </section>
     <p className={styles.status} role="status" aria-live="polite">{status}</p>
     <a className={styles.automotiveCard} href="https://nextdocs.xrkr80hd.studio/card/trav" target="_blank" rel="noopener noreferrer" aria-label="Visit Trav’s digital business card for all your automotive needs (opens in a new tab)">
