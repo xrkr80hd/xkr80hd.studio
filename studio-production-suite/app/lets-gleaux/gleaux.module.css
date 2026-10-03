@@ -11,3 +11,18 @@
 @media(max-width:1152px){.page::before{left:-16px;right:-16px}}@media(max-width:700px){.hero{padding-top:45px;gap:15px}.page h1{letter-spacing:-3px;font-size:70px}.seal{width:100px}.seal svg{width:55px;height:85px}.seal span{font-size:7px;letter-spacing:1px}.intro{font-size:14px}.issue{display:none}.controls{gap:9px;padding:10px 13px}.play{width:42px;height:42px}.volume input{width:45px}.volume svg{width:17px}.display{padding:0 12px}.track small{display:none}.track>span{font-size:6px;letter-spacing:1px}.equalizer{gap:2px}.skin{margin:8px 0 -6px}.downloadCard{grid-template-columns:1fr;gap:22px;padding:26px;margin-top:36px}.downloadCard h2{font-size:25px}.downloadAction{align-items:stretch;text-align:center}.travCard{gap:20px;padding:24px;flex-wrap:wrap}.travBrand{border-right:0;padding:0;width:100%}.travCopy{flex:1}.travCopy h2{font-size:18px}.footer{gap:20px;font-size:7px}.sectionLabel{font-size:7px;letter-spacing:1px}}
 @media(max-width:420px){.page h1{font-size:59px}.seal{width:75px}.controls{gap:7px}.volume{display:none}.display{padding:0 7px}.track strong{font-size:12px}.equalizer{width:28%}.eyebrow{font-size:8px}.kicker{font-size:9px;letter-spacing:2px}}
 @media(prefers-reduced-motion:reduce){.active i{animation:none;transform:scaleY(.65)}.travCard{transition:none}}
+
+/* Keep Trav's supplied brand artwork intact; theme only the surrounding card. */
+.automotiveCard{display:grid;grid-template-columns:minmax(220px,32%) 1fr;align-items:center;gap:clamp(24px,4vw,52px);overflow:hidden;text-decoration:none;border:1px solid #a9768c;border-radius:18px;background:radial-gradient(ellipse at 100% 0%,#77183955,transparent 65%),linear-gradient(130deg,#171015,#090709);box-shadow:inset 0 1px #fff0f855,0 14px 45px #0006;transition:border-color .2s,box-shadow .2s}
+.automotiveCard:hover{border-color:#ff94bd;box-shadow:inset 0 1px #fff0f877,0 12px 40px #ff438d20}
+.automotiveArt{display:block;width:100%;height:auto;object-fit:contain;align-self:center}
+.automotiveCopy{padding:32px 36px 32px 0;min-width:0}
+.automotiveEyebrow{font-size:10px;letter-spacing:2px;color:#ffabc9;font-weight:700}
+.automotiveCopy h2{font-size:clamp(24px,3vw,36px);line-height:1.2;letter-spacing:-1px;margin:18px 0 22px}
+.automotiveCopy h2 em{font-style:normal;color:#ff78ad;display:inline-block;margin-top:8px}
+.automotiveCopy p{color:#f0dce5;font-size:16px;line-height:1.7;margin:0 0 15px}
+.automotiveCopy .automotivePitch{color:#c7adb9;font-size:13px;max-width:410px}
+.automotiveCta{display:inline-flex;align-items:center;justify-content:center;gap:18px;min-height:50px;padding:13px 19px;margin-top:12px;border:1px solid #ffbed7;border-radius:8px;background:linear-gradient(#f95d9a,#c71d5e);box-shadow:inset 0 1px #fff7;color:white;font-size:13px;font-weight:700}
+.automotiveCta>span{font-size:22px}
+@media(max-width:600px){.automotiveCard{grid-template-columns:1fr;gap:0}.automotiveArt{width:100%;max-width:340px;justify-self:center}.automotiveCopy{padding:27px 24px 30px;text-align:center}.automotiveCopy .automotivePitch{margin-left:auto;margin-right:auto}.automotiveCta{width:100%;gap:10px}.automotiveCopy h2{font-size:27px}.automotiveCopy p{font-size:15px}}
+@media(prefers-reduced-motion:reduce){.automotiveCard{transition:none}}

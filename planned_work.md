@@ -163,3 +163,7 @@
 - Add owner-only /admin/gleaux with separate player/download uploads and campaign copy.
 - Isolate audio in a dedicated private bucket; track download requests server-side with retry deduplication.
 - Add Call Trav / NextDocs preview card; verify build, authorization, responsive layout, and database before publishing to main.
+
+## 2026-10-03 — CALL TRAV automotive card
+- Replace the generic music/creator card with the supplied CALL TRAV artwork, preserved in full.
+- Use automotive sales copy and a clear digital business card CTA linking to NextDocs, in the page's pink/chrome theme.

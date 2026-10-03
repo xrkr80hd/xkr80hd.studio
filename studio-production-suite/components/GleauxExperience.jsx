@@ -67,8 +67,15 @@ export default function GleauxExperience({ title, description, hasPlayer, hasDow
       {!hasPlayer && <p className={styles.coming}>{unavailable ? 'The player is temporarily unavailable. Please check back shortly.' : 'The anthem is on its way. Check back soon to listen.'}</p>}
     </section>
     <p className={styles.status} role="status" aria-live="polite">{status}</p>
-    <a className={styles.travCard} href="https://nextdocs.xrkr80hd.studio/card/trav" target="_blank" rel="noopener noreferrer">
-      <div className={styles.travBrand}><span>WALKER AUTOMOTIVE</span><strong>CALL <em>TRAV.</em></strong></div><div className={styles.travCopy}><span>THE PERSON BEHIND THE GLEAUX</span><h2>Good music. Real connections.</h2><p>Meet Trav, explore featured content, and connect on NextDocs.</p></div><span className={styles.arrow} aria-label="Open Trav’s NextDocs card">↗</span>
+    <a className={styles.automotiveCard} href="https://nextdocs.xrkr80hd.studio/card/trav" target="_blank" rel="noopener noreferrer" aria-label="Visit Trav’s digital business card for all your automotive needs (opens in a new tab)">
+      <img className={styles.automotiveArt} src="/assets/gleaux/call-trav.jpg" alt="CALL TRAV — Walker Automotive. 318-787-7887. Access to the full Walker inventory." width="1366" height="1536" loading="lazy" />
+      <div className={styles.automotiveCopy}>
+        <span className={styles.automotiveEyebrow}>YOUR NEXT RIDE STARTS HERE</span>
+        <h2>Ready for your next vehicle?<br /><em>CALL TRAV.</em></h2>
+        <p>Check out Trav’s digital business card for all your automotive needs.</p>
+        <p className={styles.automotivePitch}>Access to the full Walker inventory. If this one’s not it, I’ll find your perfect fit.</p>
+        <span className={styles.automotiveCta}>Visit Trav’s digital business card <span aria-hidden="true">↗</span></span>
+      </div>
     </a>
     <footer className={styles.footer}><span>FOR THE MAMAS. THE SISTERS. THE DAUGHTERS.</span><span>STAND STRONG. LET’S GLEAUX.</span></footer>
   </div>;

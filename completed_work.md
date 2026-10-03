@@ -100,3 +100,9 @@
 - User requested publishing the current build and standing by.
 
 - Follow-up: user requested the player first; download card/button are withheld until their supplied card is ready. Admin upload and download backend remain available.
+
+## 2026-10-03 — CALL TRAV automotive card
+- Replaced the generic creator/music promo with the user's full, unmodified CALL TRAV artwork and automotive-specific copy.
+- CTA: “Visit Trav’s digital business card,” linking to https://nextdocs.xrkr80hd.studio/card/trav.
+- Preserved the supplied branding and phone number; pink/chrome surrounding card adapts to mobile.
+- Production build and git diff checks passed.
