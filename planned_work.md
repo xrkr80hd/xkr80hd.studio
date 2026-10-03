@@ -171,3 +171,9 @@
 ## 2026-10-03 — Match homepage radio display
 - Inspect HomeTracksPlayer and use its digital artist/title, clock, and progress treatment inside the Gleaux skin opening.
 - Keep the opening blank whenever audio is not playing; transport and volume remain below the frame.
+
+## Gleaux download artwork
+Add supplied hero and download button below player; correct event presenter credit; remove side ribbon and fix responsive overflow. Verify build and publish.
+
+## Trav two-panel refinement
+Use reference for clean equal 3:4 panels in one container under free download, original artwork left and centered automotive copy right.

@@ -45,7 +45,6 @@ export default function GleauxExperience({ title, description, hasPlayer, hasDow
         <h1 id="gleaux-title">LET’S <span>GLEAUX.</span></h1>
         <p className={styles.intro}>{description}</p>
       </div>
-      <div className={styles.seal} aria-label="For the fighters. For the survivors."><svg viewBox="0 0 100 130" fill="none" aria-hidden="true"><path d="M30 28C30 3 70 3 70 28c0 25-25 53-52 88l-9-24C44 48 70 22 60 16M70 28c0-25-40-25-40 0 0 25 25 53 52 88l9-24C56 48 30 22 40 16" stroke="currentColor" strokeWidth="9" strokeLinejoin="round" /></svg><span>FOR THE FIGHTERS.<br />FOR THE SURVIVORS.</span></div>
     </section>
     <section className={styles.playerSection} aria-label="Gleaux music player">
       <div className={styles.sectionLabel}><span>01 / THE ANTHEM</span><span>PRESS PLAY. FEEL THE GLEAUX.</span></div>
@@ -69,9 +68,18 @@ export default function GleauxExperience({ title, description, hasPlayer, hasDow
       </div>
       {!hasPlayer && <p className={styles.coming}>{unavailable ? 'The player is temporarily unavailable. Please check back shortly.' : 'The anthem is on its way. Check back soon to listen.'}</p>}
     </section>
+    <section className={styles.downloadArtwork} aria-label="Download Lets Gleaux">
+      <div className={styles.downloadScene}>
+        <img className={styles.downloadHero} src="/assets/gleaux/download-hero.jpg" alt="Download Let’s Gleaux — the track inspired by the Gleaux for the Girls event, presented by Christus Cabrini and Walker Toyota" width="1536" height="513" />
+        <button className={styles.artDownloadButton} type="button" onClick={download} disabled={!hasDownload || busy} aria-label={busy ? 'Preparing download' : 'Download Lets Gleaux for free'} aria-describedby="gleaux-download-info">
+          <img src="/assets/gleaux/download-button.png" alt="" width="1536" height="1536" />
+        </button>
+      </div>
+      <p id="gleaux-download-info" className={styles.downloadInfo}>{busy ? 'Preparing your download…' : hasDownload ? 'FREE DOWNLOAD · YOURS TO KEEP' : 'Download coming soon'}{count !== null && <> · {count.toLocaleString()} downloads</>}</p>
+    </section>
     <p className={styles.status} role="status" aria-live="polite">{status}</p>
     <a className={styles.automotiveCard} href="https://nextdocs.xrkr80hd.studio/card/trav" target="_blank" rel="noopener noreferrer" aria-label="Visit Trav’s digital business card for all your automotive needs (opens in a new tab)">
-      <img className={styles.automotiveArt} src="/assets/gleaux/call-trav.jpg" alt="CALL TRAV — Walker Automotive. 318-787-7887. Access to the full Walker inventory." width="1366" height="1536" loading="lazy" />
+      <div className={styles.automotiveImagePanel}><img className={styles.automotiveArt} src="/assets/gleaux/call-trav.jpg" alt="CALL TRAV — Walker Automotive. 318-787-7887. Access to the full Walker inventory." width="1366" height="1536" loading="lazy" /></div>
       <div className={styles.automotiveCopy}>
         <span className={styles.automotiveEyebrow}>YOUR NEXT RIDE STARTS HERE</span>
         <h2>Ready for your next vehicle?<br /><em>CALL TRAV.</em></h2>

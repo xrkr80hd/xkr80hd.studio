@@ -113,3 +113,18 @@
 - Verified live private bucket and both uploaded MP3 objects exist. Database has the player path, but deployed stream endpoint returned a stale 'Track coming soon' response.
 - Added an explicitly uncached Supabase client for campaign reads so uploads are visible immediately, and surfaced playback errors instead of hiding them behind a generic message.
 - Production compilation and diff checks passed. Browser state checks were unavailable because the runtime browser binary is missing.
+
+## Gleaux download artwork
+Added original hero artwork and functional pink image download button below player; preserved counted download endpoint. Removed side ribbon, corrected presenter credits in defaults, metadata and live settings; made mobile button separate below artwork for a usable touch target. Production build and git diff --check passed. Local browser installation failed (truncated browser download); live visual check follows publishing.
+
+## 2026-10-03 — Gleaux artwork and Trav layout change record
+- Added supplied download hero, unchanged, below the radio player and controls.
+- Added supplied pink/chrome download button beneath hero lettering; connected existing counted-download handler. On narrow screens the button sits below the artwork for a usable touch target.
+- Retained download availability, preparing state, success/error announcements, and download count.
+- Corrected above-player credit, metadata, fallback settings, and live Supabase description to: “The track inspired by the Gleaux for the Girls event. Presented By Christus Cabrini and Walker Toyota.” Existing audio paths were preserved.
+- Removed the ribbon SVG and its style rules. Contained decorative background and added responsive width safeguards.
+- Kept Call Trav below free download. Refined it into one container with two equal 3:4 panels: original calling-card artwork on left, centered vehicle headline/copy and digital-business-card CTA on right. Reference screenshot used only for layout; no screenshot artwork substituted.
+- Preserved full original calling-card art with contain sizing and no cropping; preserved Nextdocs link https://nextdocs.xrkr80hd.studio/card/trav.
+- Narrow screens stack the two panels to retain readable text and usable controls.
+- Verification: production build passed for both revisions; git diff --check passed. Browser installation failed due to a truncated download, so mobile visual verification remains outstanding.
+- Publish status: local changes committed; GitHub create_commit returned “user rejected MCP tool call.” Main was not updated and these layout changes are NOT live. GitHub blobs/tree creation alone did not publish. Live Supabase presenter description update did succeed.
