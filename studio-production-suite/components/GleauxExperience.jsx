@@ -78,6 +78,11 @@ export default function GleauxExperience({ title, description, hasPlayer, hasDow
       <p id="gleaux-download-info" className={styles.downloadInfo}>{busy ? 'Preparing your download…' : hasDownload ? 'FREE DOWNLOAD · YOURS TO KEEP' : 'Download coming soon'}</p>
     </section>
     <p className={styles.status} role="status" aria-live="polite">{status}</p>
+    <section className={styles.eventLinks} aria-label="Gleaux for the Girls event links">
+      <p>SHOW UP. STAND TOGETHER.</p>
+      <div><a href="https://fundraise.givesmart.com/vf/GLEAUX" target="_blank" rel="noopener noreferrer">CHRISTUS Cabrini · Event &amp; signup ↗</a>
+      <a href="https://www.facebook.com/share/p/1DLRkizfik/" target="_blank" rel="noopener noreferrer"><svg className={styles.facebookIcon} viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M24 12a12 12 0 1 0-13.875 11.855v-8.386H7.078V12h3.047V9.356c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953h-1.513c-1.491 0-1.956.925-1.956 1.874V12h3.328l-.532 3.469h-2.796v8.386A12.003 12.003 0 0 0 24 12Z" /></svg> Gleaux for the Girls · Facebook event ↗</a></div>
+    </section>
     <a className={styles.automotiveCard} href="https://nextdocs.xrkr80hd.studio/card/trav" target="_blank" rel="noopener noreferrer" aria-label="Visit Trav’s digital business card for all your automotive needs (opens in a new tab)">
       <div className={styles.automotiveImagePanel}><img className={styles.automotiveArt} src="/assets/gleaux/call-trav.jpg" alt="CALL TRAV — Walker Automotive. 318-787-7887. Access to the full Walker inventory." width="1366" height="1536" loading="lazy" /></div>
       <div className={styles.automotiveCopy}>
@@ -88,6 +93,10 @@ export default function GleauxExperience({ title, description, hasPlayer, hasDow
         <span className={styles.automotiveCta}>Visit Trav’s digital business card <span aria-hidden="true">↗</span></span>
       </div>
     </a>
+    <section className={styles.raffleCard} aria-label="Gleaux Toyota raffle">
+      <video src="/assets/gleaux/toyota-raffle.mp4" autoPlay muted loop playsInline controls preload="metadata" aria-label="Toyota raffle promotional video" />
+      <a href="https://www.walker-toyota.com/" target="_blank" rel="noopener noreferrer">WIN THIS TOYOTA <span aria-hidden="true">↗</span></a>
+    </section>
     <footer className={styles.footer}><span>FOR THE MAMAS. THE SISTERS. THE DAUGHTERS.</span><span>STAND STRONG. LET’S GLEAUX.</span></footer>
   </div>;
 }

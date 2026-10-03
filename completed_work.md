@@ -138,3 +138,8 @@ Removed count from public download card, public page data and download API respo
 
 ## Radio readability
 Increased rendered radio height by 18% without changing original asset. Explicit content-sized rows and 1.3 line-height prevent title row compression; brighter pink text and softer scanline overlay improve clarity. Seek bar remains below radio. Production build and diff check passed.
+
+## Event links and Toyota raffle
+Added compact Cabrini signup and Walker Gleaux background links between download and business card. Cabrini current official navigation points to https://fundraise.givesmart.com/vf/GLEAUX; Walker dedicated page is a 2020 archive and labeled history. Below business card added supplied Toyota video, muted/autoplay/loop/inline with controls, optimized to 960px H264 (~2.1MB), plus WIN THIS TOYOTA CTA to user-supplied https://www.walker-toyota.com/. No registration transaction performed. Build and diff check passed.
+
+Final event-link correction: replaced Walker archive link with user-provided https://www.facebook.com/share/p/1DLRkizfik/ and pink Facebook SVG icon; retained Cabrini signup beside it above Trav card.

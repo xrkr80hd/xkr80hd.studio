@@ -71,3 +71,7 @@
 .radioDisplay{box-sizing:border-box;grid-template-rows:repeat(3,max-content);align-content:center;gap:.45cqw;padding:.6cqw 2.4cqw}
 .radioDisplay p{min-height:0;line-height:1.3;margin:0}.radioNow{font-size:clamp(8px,2.15cqw,22px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.radioStatus{font-size:clamp(5px,1.4cqw,12px)}.radioClock{font-size:clamp(6px,1.6cqw,14px)}
 .radioDisplay::after{opacity:.2}.radioNow strong{color:#ffadd1}.radioStatus,.radioClock{color:#ff8dc0}
+
+.eventLinks{margin:20px 0;padding:16px;border:1px solid #71334d;border-radius:12px;background:#170b12}.eventLinks>p{margin:0 0 10px;color:#ffabc9;font-size:10px;letter-spacing:2px}.eventLinks>div{display:flex;flex-wrap:wrap;gap:10px}.eventLinks a{flex:1;min-width:180px;padding:12px;color:#ffe3ee;border:1px solid #92536d;border-radius:7px;text-decoration:none;font-size:12px;text-align:center}.eventLinks a:hover{background:#45172c}.raffleCard{margin-top:22px;border:1px solid #a65b7a;border-radius:12px;overflow:hidden;background:#090509;text-align:center}.raffleCard video{display:block;width:100%;aspect-ratio:16/9;object-fit:contain}.raffleCard>a{display:inline-flex;align-items:center;justify-content:center;gap:20px;margin:14px;padding:13px 28px;border:1px solid #ffc4dd;border-radius:999px;background:linear-gradient(#ff65a5,#c10b57);color:white;font-size:14px;font-weight:800;letter-spacing:1px;text-decoration:none}.raffleCard>a:hover{filter:brightness(1.12)}
+
+.eventLinks a{display:flex;align-items:center;justify-content:center;gap:8px}.facebookIcon{color:#ff438d;flex-shrink:0}

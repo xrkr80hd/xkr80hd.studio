@@ -186,3 +186,8 @@ Remove count from public UI, server props and public download response; retain e
 
 ## Radio readability
 Slightly increase rendered radio height and prevent digital text rows from shrinking/clipping; soften scanlines.
+
+## Event links and Toyota raffle
+Add Cabrini signup and Walker event-background links above business card; muted looping supplied Toyota video and supplied Walker Toyota CTA below business card. Optimize web video without altering composition.
+
+Use user-supplied Facebook event post instead of historical Walker event page; add pink Facebook icon.
