@@ -17,6 +17,7 @@ export default function AdminPage({ searchParams }) {
   const error = String(searchParams?.error || '');
   const deniedPath = String(searchParams?.from || '');
   const ownerActions = [
+    { href: '/admin/gleaux', label: 'Lets Gleaux', detail: 'Dedicated player, free download, and download counter.' },
     { href: '/admin/users', label: 'Admin Manager', detail: 'Owner-only manager for admin accounts and access control.' },
     { href: '/admin/home', label: 'Homepage Controls', detail: 'Landing profile and Site Guide card photos.' },
     { href: '/admin/tracks', label: 'XRKR Hub Tracks', detail: 'Upload and manage owner-only tracks for the Hub player.' },

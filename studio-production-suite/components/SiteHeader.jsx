@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from 'react';
 
 const publicNavItems = [
   { href: '/', label: 'Home', className: 'nav-cool' },
+  { href: '/lets-gleaux', label: 'Lets Gleaux', className: 'nav-gleaux' },
   { href: '/hub', label: 'XRKR80HD Hub', className: 'nav-cool' },
   { href: '/local-legends-archive', label: 'Legends', className: 'nav-cool' },
   { href: '/your-local-scene', label: 'Scene', className: 'nav-cool' },
@@ -30,6 +31,7 @@ function getAdminNavItems(ownerMode) {
   ];
 
   if (ownerMode) {
+    items.push({ href: '/admin/gleaux', label: 'Lets Gleaux', className: 'nav-gleaux' });
     items.push({ href: '/admin/home', label: 'Home', className: 'nav-admin-link' });
     items.push({ href: '/admin/tracks', label: 'Hub Tracks', className: 'nav-admin-link' });
     items.push({ href: '/admin/users', label: 'Users', className: 'nav-admin-link' });

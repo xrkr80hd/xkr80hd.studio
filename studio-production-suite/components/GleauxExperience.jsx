@@ -1,0 +1,75 @@
+'use client';
+import { useRef, useState } from 'react';
+import styles from '../app/lets-gleaux/gleaux.module.css';
+function time(value) { const s = Math.floor(Number.isFinite(value) ? value : 0); return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`; }
+function Icon({ type }) {
+  const paths = { play: <path d="m8 5 11 7-11 7Z" />, pause: <><path d="M7 5h3v14H7zM14 5h3v14h-3z" /></>, download: <><path d="M12 3v12m-5-5 5 5 5-5M5 16v5h14v-5" /></>, volume: <><path d="m11 4-6 5H2v6h3l6 5ZM15 8a6 6 0 0 1 0 8m3-11a10 10 0 0 1 0 14" /></> };
+  return <svg viewBox="0 0 24 24" width="22" height="22" fill={type === 'play' || type === 'pause' ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.6" aria-hidden="true">{paths[type]}</svg>;
+}
+export default function GleauxExperience({ title, description, hasPlayer, hasDownload, initialCount, unavailable }) {
+  const audio = useRef(null), busyRef = useRef(false), downloadId = useRef(null);
+  const [playing, setPlaying] = useState(false), [loading, setLoading] = useState(false), [current, setCurrent] = useState(0), [duration, setDuration] = useState(0), [volume, setVolume] = useState(0.8), [busy, setBusy] = useState(false), [count, setCount] = useState(initialCount), [status, setStatus] = useState('');
+  async function toggle() {
+    if (!audio.current || loading) return;
+    if (playing) { audio.current.pause(); return; }
+    setLoading(true); setStatus('');
+    try {
+      if (!audio.current.src || audio.current.error) {
+        const response = await fetch('/api/gleaux/stream', { cache: 'no-store' });
+        const body = await response.json(); if (!response.ok) throw new Error(body.error);
+        audio.current.src = body.url; audio.current.volume = volume;
+      }
+      await audio.current.play();
+    } catch { setStatus('Playback could not start. Tap play to try again.'); }
+    finally { setLoading(false); }
+  }
+  async function download() {
+    if (busyRef.current) return;
+    busyRef.current = true; setBusy(true); setStatus('Preparing your download…');
+    try {
+      downloadId.current ||= crypto.randomUUID();
+      const response = await fetch('/api/gleaux/download', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ request_id: downloadId.current }) });
+      const body = await response.json(); if (!response.ok) throw new Error(body.error || 'Download failed.');
+      setCount(body.count);
+      const link = document.createElement('a'); link.href = body.url; link.download = 'Lets-Gleaux'; document.body.appendChild(link); link.click(); link.remove();
+      downloadId.current = null;
+      setStatus('Your download is starting. Thanks for standing with the girls.');
+    } catch (error) { setStatus(error.message || 'Download failed. Please try again.'); }
+    finally { setBusy(false); busyRef.current = false; }
+  }
+  return <div className={styles.page}>
+    <div className={styles.eyebrow}><span className={styles.dot} /> MUSIC WITH A PURPOSE <span className={styles.issue}>XRKR.80HD / GLEAUX FOR THE GIRLS</span></div>
+    <section className={styles.hero} aria-labelledby="gleaux-title">
+      <div className={styles.heroCopy}>
+        <p className={styles.kicker}>TURN IT UP. STAND TOGETHER.</p>
+        <h1 id="gleaux-title">LET’S <span>GLEAUX.</span></h1>
+        <p className={styles.intro}>{description}</p>
+      </div>
+      <div className={styles.seal} aria-label="For the fighters. For the survivors."><svg viewBox="0 0 100 130" fill="none" aria-hidden="true"><path d="M30 28C30 3 70 3 70 28c0 25-25 53-52 88l-9-24C44 48 70 22 60 16M70 28c0-25-40-25-40 0 0 25 25 53 52 88l9-24C56 48 30 22 40 16" stroke="currentColor" strokeWidth="9" strokeLinejoin="round" /></svg><span>FOR THE FIGHTERS.<br />FOR THE SURVIVORS.</span></div>
+    </section>
+    <section className={styles.playerSection} aria-label="Gleaux music player">
+      <div className={styles.sectionLabel}><span>01 / THE ANTHEM</span><span>PRESS PLAY. FEEL THE GLEAUX.</span></div>
+      <div className={styles.skin}>
+        <img src="/assets/gleaux/player-skin.png" alt="xrkr.80hd’s Gleaux player — pink, white and chrome" width="1536" height="512" />
+        <div className={styles.display}>
+          <div className={styles.track}><span>{playing ? 'NOW PLAYING' : hasPlayer ? 'READY TO PLAY' : 'COMING SOON'}</span><strong>{title}</strong><small>XRKR.80HD · GLEAUX FOR THE GIRLS</small></div>
+          <div className={`${styles.equalizer} ${playing ? styles.active : ''}`} aria-hidden="true">{Array.from({ length: 28 }, (_, i) => <i key={i} style={{ '--h': `${20 + ((i * 37) % 80)}%`, '--delay': `${i * -0.09}s` }} />)}</div>
+        </div>
+      </div>
+      <audio ref={audio} preload="none" onPlay={() => setPlaying(true)} onPause={() => setPlaying(false)} onEnded={() => setPlaying(false)} onTimeUpdate={() => setCurrent(audio.current.currentTime)} onLoadedMetadata={() => setDuration(audio.current.duration)} onDurationChange={() => setDuration(audio.current.duration)} onError={() => { setPlaying(false); setStatus('Audio could not load. Please try play again.'); }} />
+      <div className={styles.controls}>
+        <button className={styles.play} type="button" onClick={toggle} disabled={!hasPlayer || loading} aria-label={playing ? 'Pause Lets Gleaux' : 'Play Lets Gleaux'}><Icon type={playing ? 'pause' : 'play'} /></button>
+        <span className={styles.timer}>{time(current)}</span>
+        <input className={styles.seek} aria-label="Track position" type="range" min="0" max={duration || 0} step="0.1" value={Math.min(current, duration || 0)} disabled={!duration} onChange={event => { audio.current.currentTime = Number(event.target.value); setCurrent(Number(event.target.value)); }} />
+        <span className={styles.timer}>{time(duration)}</span>
+        <label className={styles.volume}><Icon type="volume" /><input aria-label="Volume" type="range" min="0" max="1" step="0.01" value={volume} onChange={event => { setVolume(Number(event.target.value)); audio.current.volume = Number(event.target.value); }} /></label>
+      </div>
+      {!hasPlayer && <p className={styles.coming}>{unavailable ? 'The player is temporarily unavailable. Please check back shortly.' : 'The anthem is on its way. Check back soon to listen.'}</p>}
+    </section>
+    <p className={styles.status} role="status" aria-live="polite">{status}</p>
+    <a className={styles.travCard} href="https://nextdocs.xrkr80hd.studio/card/trav" target="_blank" rel="noopener noreferrer">
+      <div className={styles.travBrand}><span>WALKER AUTOMOTIVE</span><strong>CALL <em>TRAV.</em></strong></div><div className={styles.travCopy}><span>THE PERSON BEHIND THE GLEAUX</span><h2>Good music. Real connections.</h2><p>Meet Trav, explore featured content, and connect on NextDocs.</p></div><span className={styles.arrow} aria-label="Open Trav’s NextDocs card">↗</span>
+    </a>
+    <footer className={styles.footer}><span>FOR THE MAMAS. THE SISTERS. THE DAUGHTERS.</span><span>STAND STRONG. LET’S GLEAUX.</span></footer>
+  </div>;
+}

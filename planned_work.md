@@ -156,3 +156,10 @@
 - [ ] Use Jessie’s profile structure as the reusable staging template for future blogger accounts.
 - [ ] Design and approve the public profile output layout before implementation.
 - [ ] Add ownership, save, reload, mobile-layout, and public-output tests.
+
+## 2026-10-02 — Lets Gleaux campaign page
+- Add /lets-gleaux after Home with pink navigation accent and isolated CSS.
+- Use supplied pink/chrome player skin, live display, and controls below the frame.
+- Add owner-only /admin/gleaux with separate player/download uploads and campaign copy.
+- Isolate audio in a dedicated private bucket; track download requests server-side with retry deduplication.
+- Add Call Trav / NextDocs preview card; verify build, authorization, responsive layout, and database before publishing to main.

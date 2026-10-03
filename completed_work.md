@@ -90,3 +90,13 @@
 - Verified Jessie’s public channel returns HTTP 200 and username-scoped post queries work without schema errors.
 - Verified both `avatar_url` and `card_image_url` through reversible database and live application API write/read/restore checks.
 - Confirmed no prior Jessie image objects exist in Supabase Storage; the old UI had displayed temporary local previews, so his profile and cover images require one fresh upload now that persistence is available.
+
+## 2026-10-02 — Lets Gleaux campaign
+- Built /lets-gleaux with isolated pink/chrome styling, supplied player skin, controls below the frame, download section, and Call Trav NextDocs link.
+- Added owner-only /admin/gleaux with separate streaming and download uploads and campaign settings.
+- Applied gleaux_campaign schema to YourLocal Supabase: dedicated private audio bucket, server-only settings/events tables, and deduplicated download-request tracking.
+- Verified production build, diff formatting, RLS and grants, and transactional download-event deduplication (test rolled back).
+- Seven existing test files passed; blog-channel-hero requires a running localhost server and was not verified. Mobile visual and end-to-end audio upload checks remain pending. No campaign audio has been supplied.
+- User requested publishing the current build and standing by.
+
+- Follow-up: user requested the player first; download card/button are withheld until their supplied card is ready. Admin upload and download backend remain available.
