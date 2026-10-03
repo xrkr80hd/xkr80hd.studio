@@ -183,3 +183,6 @@ Keep Trav panels side by side on mobile, prevent GLEAUX word wrapping, reduce mo
 
 ## Admin-only download count
 Remove count from public UI, server props and public download response; retain event tracking and owner admin count.
+
+## Radio readability
+Slightly increase rendered radio height and prevent digital text rows from shrinking/clipping; soften scanlines.

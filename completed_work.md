@@ -135,3 +135,6 @@ Production build and git diff --check passed for the compact correction.
 
 ## Admin-only download count
 Removed count from public download card, public page data and download API response. Kept successful download event logging and owner-only admin count. Production build and diff check passed.
+
+## Radio readability
+Increased rendered radio height by 18% without changing original asset. Explicit content-sized rows and 1.3 line-height prevent title row compression; brighter pink text and softer scanline overlay improve clarity. Seek bar remains below radio. Production build and diff check passed.
