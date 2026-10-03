@@ -191,3 +191,6 @@ Slightly increase rendered radio height and prevent digital text rows from shrin
 Add Cabrini signup and Walker event-background links above business card; muted looping supplied Toyota video and supplied Walker Toyota CTA below business card. Optimize web video without altering composition.
 
 Use user-supplied Facebook event post instead of historical Walker event page; add pink Facebook icon.
+
+## Admin play tracking
+Count successful playback starts with per-play UUIDs; repeat browsers allowed; resume/buffering deduplicated; stop/end resets. Private RLS-protected events and owner-only admin total. Preserve download behavior and existing page content.

@@ -34,3 +34,11 @@ export async function getGleauxCount() {
   if (error) throw new Error('Could not load download count.');
   return count || 0;
 }
+
+export async function getGleauxPlayCount() {
+  const db = getGleauxDb();
+  if (!db) throw new Error('Gleaux storage is unavailable.');
+  const { count, error } = await db.from('gleaux_play_events').select('request_id', { count: 'exact', head: true });
+  if (error) throw new Error('Could not load play count.');
+  return count || 0;
+}

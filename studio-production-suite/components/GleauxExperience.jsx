@@ -1,5 +1,6 @@
 'use client';
 import { useRef, useState } from 'react';
+import { createPlayTracker } from '../lib/gleaux-play-tracker.mjs';
 import styles from '../app/lets-gleaux/gleaux.module.css';
 function time(value) { const s = Math.floor(Number.isFinite(value) ? value : 0); return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`; }
 function Icon({ type }) {
@@ -9,6 +10,11 @@ function Icon({ type }) {
 export default function GleauxExperience({ title, description, hasPlayer, hasDownload, unavailable }) {
   const audio = useRef(null), busyRef = useRef(false), downloadId = useRef(null), downloadInvite = useRef(null);
   const [playing, setPlaying] = useState(false), [loading, setLoading] = useState(false), [current, setCurrent] = useState(0), [duration, setDuration] = useState(0), [volume, setVolume] = useState(0.8), [busy, setBusy] = useState(false), [status, setStatus] = useState('');
+  const playTracker = useRef(null);
+  if (!playTracker.current) playTracker.current = createPlayTracker(async request_id => {
+    const response = await fetch('/api/gleaux/play', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ request_id }), keepalive: true });
+    if (!response.ok) throw new Error('Play tracking unavailable');
+  }, () => crypto.randomUUID());
   async function toggle() {
     if (!audio.current || loading) return;
     if (playing) { audio.current.pause(); return; }
@@ -55,7 +61,7 @@ export default function GleauxExperience({ title, description, hasPlayer, hasDow
           <p className={styles.radioClock}>{time(current)} / {time(duration)}</p>
         </div>}
       </div>
-      <audio ref={audio} preload="none" onPlay={() => setPlaying(true)} onPause={() => setPlaying(false)} onEnded={() => setPlaying(false)} onTimeUpdate={() => setCurrent(audio.current.currentTime)} onLoadedMetadata={() => setDuration(audio.current.duration)} onDurationChange={() => setDuration(audio.current.duration)} onError={() => { setPlaying(false); setStatus('Audio could not load. Please try play again.'); }} />
+      <audio ref={audio} preload="none" onPlay={() => setPlaying(true)} onPlaying={() => playTracker.current.started()} onPause={() => setPlaying(false)} onEnded={() => { setPlaying(false); playTracker.current.reset(); }} onTimeUpdate={() => setCurrent(audio.current.currentTime)} onLoadedMetadata={() => setDuration(audio.current.duration)} onDurationChange={() => setDuration(audio.current.duration)} onError={() => { setPlaying(false); setStatus('Audio could not load. Please try play again.'); }} />
           <div className={styles.radioProgress}>
             <span>{time(current)}</span>
             <input aria-label="Track position" type="range" min="0" max={Number.isFinite(duration) ? duration : 0} step="0.1" value={Math.min(current, Number.isFinite(duration) ? duration : 0)} disabled={!duration} style={{ '--progress': `${duration > 0 ? Math.min(100, current / duration * 100) : 0}%` }} onChange={event => { audio.current.currentTime = Number(event.target.value); setCurrent(Number(event.target.value)); }} />
@@ -63,7 +69,7 @@ export default function GleauxExperience({ title, description, hasPlayer, hasDow
           </div>
       <div className={styles.controls}>
         <button className={styles.play} type="button" onClick={toggle} disabled={!hasPlayer || loading} aria-label={playing ? 'Pause Lets Gleaux' : 'Play Lets Gleaux'}><Icon type={playing ? 'pause' : 'play'} /></button>
-        <button className={styles.stop} type="button" disabled={!hasPlayer} aria-label="Stop Lets Gleaux" onClick={() => { audio.current.pause(); audio.current.currentTime = 0; setCurrent(0); setPlaying(false); }}>■</button>
+        <button className={styles.stop} type="button" disabled={!hasPlayer} aria-label="Stop Lets Gleaux" onClick={() => { audio.current.pause(); playTracker.current.reset(); audio.current.currentTime = 0; setCurrent(0); setPlaying(false); }}>■</button>
         <label className={styles.volume}><Icon type="volume" /><input aria-label="Volume" type="range" min="0" max="1" step="0.01" value={volume} onChange={event => { setVolume(Number(event.target.value)); audio.current.volume = Number(event.target.value); }} /></label>
       </div>
       {!hasPlayer && <p className={styles.coming}>{unavailable ? 'The player is temporarily unavailable. Please check back shortly.' : 'The anthem is on its way. Check back soon to listen.'}</p>}
