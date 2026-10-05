@@ -1,3 +1,5 @@
+import {GAME_COOKIE,signGameSession} from '../../../../lib/game-night-session.mjs';
+import {isGameOwner,gameOwnerCredentialVersion} from '../../../../lib/game-night-server';
 import { NextResponse } from 'next/server';
 import { ADMIN_SESSION_COOKIE, ADMIN_SESSION_USER_COOKIE, getAdminConfig, isAdminConfigReady, matchEnvAdminCredentials } from '../../../../lib/admin-auth';
 import { normalizeAdminUsername, verifyDatabaseAdminCredentials } from '../../../../lib/admin-users';
@@ -33,6 +35,7 @@ export async function POST(request) {
 
   const { sessionToken } = getAdminConfig();
   const response = NextResponse.json({ ok: true });
+  if(isGameOwner(authenticatedUsername)){try{const credentialVersion=await gameOwnerCredentialVersion(authenticatedUsername);if(credentialVersion)response.cookies.set({name:GAME_COOKIE,value:signGameSession(authenticatedUsername,sessionToken,Date.now(),credentialVersion),httpOnly:true,secure:true,sameSite:'strict',path:'/',maxAge:7*86400});}catch{/* Game access must not interrupt a successful main-site login. */}}
 
   response.cookies.set({
     name: ADMIN_SESSION_COOKIE,
@@ -58,6 +61,7 @@ export async function POST(request) {
 
 export async function DELETE() {
   const response = NextResponse.json({ ok: true });
+  response.cookies.set({name:GAME_COOKIE,value:'',httpOnly:true,secure:true,sameSite:'strict',path:'/',maxAge:0});
 
   response.cookies.set({
     name: ADMIN_SESSION_COOKIE,

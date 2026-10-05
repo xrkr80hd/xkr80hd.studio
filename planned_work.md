@@ -212,3 +212,6 @@ Review Game Master sessions, private room isolation and server routes. Bind host
 
 ## Ultimate Game Night AI agent
 Implement authenticated, origin-checked AI draft endpoint with server-only provider key and durable request limits. Add deterministic content checks and review-before-apply dialog. No provider calls without configured key; no paid verification calls.
+
+## Existing master account correction
+User confirmed xrkr80hdadmin (existing site admin, display name Travis). Map Game Night owner to this exact existing account; validate its existing password; site login grants signed Game Night access, with password-change/disabled-account revocation. Do not create a duplicate account or alter its password.
