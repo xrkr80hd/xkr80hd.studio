@@ -1,0 +1,10 @@
+import assert from 'node:assert/strict';
+import {aiInput,parseDraft,draftSchema} from '../lib/game-night-ai.mjs';
+import {readFile} from 'node:fs/promises';
+const source=await readFile(new URL('../public/game-night-assets/ai-assistant.js',import.meta.url),'utf8');
+const {reviewContent}=await import('data:text/javascript;base64,'+Buffer.from(source).toString('base64'));
+assert.throws(()=>aiInput({action:'delete',topic:'x'}));assert.throws(()=>aiInput({action:'generate',topic:''}));
+assert.equal(aiInput({action:'improve',topic:'Cars',clues:Array(8).fill({question:'Q',answer:'A'})}).clues.length,5);
+const draft={category:'Cars',clues:[{question:'Q',answer:'A',difficulty:'easy',accepted:'',note:''}],narration:'Let’s play!',warnings:[]};assert.deepEqual(parseDraft({status:'completed',output:[{content:[{type:'output_text',text:JSON.stringify(draft)}]}]}),draft);assert.throws(()=>parseDraft({status:'incomplete'}));assert.equal(draftSchema.additionalProperties,false);
+const checks=reviewContent([{name:'Test',clues:[{question:'Which is best today?',answer:'A'},{question:'WHICH is best today?',answer:''}]}]);assert(checks.some(x=>x.includes('duplicates')));assert(checks.some(x=>x.includes('objective')));assert(checks.some(x=>x.includes('correct answer')));
+console.log('AI draft validation and deterministic content checks passed. No provider calls.');

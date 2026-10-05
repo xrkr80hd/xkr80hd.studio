@@ -32,3 +32,6 @@ composer.lock
 # Misc
 .env.testing
 .phpunit.result.cache
+
+# Reproducible viewport captures; reviewed JPEGs remain versioned.
+studio-production-suite/docs/game-night-screenshots/*.png

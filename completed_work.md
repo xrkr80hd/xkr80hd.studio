@@ -146,3 +146,23 @@ Final event-link correction: replaced Walker archive link with user-provided htt
 
 ## Admin-only play count — 2026-10-03
 Added private gleaux_play_events table, server-only inserts/count reads, and Track plays in owner admin. Browser sends a per-play UUID on actual playing event; same-browser replays count after stop/end, while pauses/resumes/buffering and request retries do not duplicate plays. Tracking failures do not interrupt audio. Public API returns acknowledgment only. Counts start at deployment; historic plays cannot be recovered. Verified two lifecycle tests, transaction-only DB repeat/dedup test (rolled back), production build, diff check, RLS and grants. Supabase advisor reports intentional RLS-without-public-policies for this server-only table; existing unrelated findings unchanged.
+
+
+# Work checkpoints
+
+Integration source prepared: separate signed Game Master login, server-mediated private workspace saves with optimistic concurrency, owner host management, public phone API, cropped image and permitted music sources. Pending database migration, tests, production deployment.
+
+Existing site verified: xrkr80hd.studio, Vercel studio-production-suite, connected GitHub xrkr80hd/xkr80hd.studio. Supabase goufiujqycnkvewkvegq.
+
+## Ultimate Game Night security agent
+Bound host sessions to HMAC fingerprint of current password hash; resetting credentials now invalidates existing host sessions. Disabled hosts remain disabled after password reset. Changed media bucket to private; upload returns 24-hour signed URLs and storage path, workspace load/save refreshes only media under the current host path. Three Node security regression tests pass (session tampering/expiry, credential rotation, private-media owner isolation). Legacy public room Edge bypass identified for root to close.
+
+## Ultimate Game Night broadcast CSS
+- Implemented approved cobalt/gold set, TV scaling, live sidebar hooks, wrapping names, phone turn/buzzer treatment, private command-console polish and reduced motion.
+- Added docs/game-show-design.md with sizing and validation requirements. Root owns application integration and screenshot verification.
+
+## Ultimate Game Night AI assistant
+Added authenticated /api/game-night/ai readiness and draft generation route using server-only OPENAI_API_KEY and configurable model. Enforced origin/session checks, durable request limits, bounded input, timeout, private response caching and strict draft schema. Generation remains visibly disabled when provider key is absent. Added review-before-apply UI module, editable questions/answers/narration, duplicate/ambiguity/length/reference checks and transparent rule-based difficulty suggestions. Input excludes media and private credentials. Tested validation and deterministic checks with no provider calls. Root integrates hook and performs build/deploy.
+
+## Ultimate Game Night publication verification
+Applied private game tables/storage and owner isolation migration; closed legacy Edge access for account-owned rooms. Passed production Next build, 14 engine checks, signed-session/media tests, AI draft checks, and live phone/team/rotation/wager privacy integration. Public browser QA passed 16 viewport/phase scenarios across 390×844, 1440×900, 1980×1020 and3840×2160; screenshots recorded. Actual physical55/85-inch viewing distance remains user hardware verification. AI draft backend and reviewed apply UI available; provider generation awaits OPENAI_API_KEY. No paid AI provider calls performed.
