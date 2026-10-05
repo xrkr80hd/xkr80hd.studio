@@ -1,0 +1,15 @@
+import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
+const source=await readFile(new URL('../public/game-night-assets/host-guide.js',import.meta.url),'utf8');
+const {hostNextStep}=await import('data:text/javascript;base64,'+Buffer.from(source).toString('base64'));
+const room={code:'ABCDEF'},play={started:true,phase:'clue',buzzOpen:false};
+assert.equal(hostNextStep(play,null).action,'connect');
+assert.equal(hostNextStep({...play,started:false},room).action,'start-online-game');
+assert.equal(hostNextStep(play,room).action,'open-buzz');
+assert.equal(hostNextStep({...play,buzzOpen:true},room).title,'Buzzers are OPEN');
+assert.equal(hostNextStep({...play,winner:'team'},room).action,undefined);
+assert.equal(hostNextStep({...play,revealed:true},room).action,'close-clue');
+assert.equal(hostNextStep({...play,resolved:true},room).action,'close-clue');
+assert.equal(hostNextStep({...play,phase:'double'},room).action,undefined);
+assert.equal(hostNextStep({...play,phase:'board'},room).action,undefined);
+console.log('9 Game Master guidance states passed');

@@ -215,3 +215,5 @@ Implement authenticated, origin-checked AI draft endpoint with server-only provi
 
 ## Existing master account correction
 User confirmed xrkr80hdadmin (existing site admin, display name Travis). Map Game Night owner to this exact existing account; validate its existing password; site login grants signed Game Night access, with password-change/disabled-account revocation. Do not create a duplicate account or alter its password.
+
+- Add contextual Game Master next-action prompts and an eight-step walkthrough; preserve online room during popout despite cloud save conflicts; verify and publish.
