@@ -194,3 +194,15 @@ Use user-supplied Facebook event post instead of historical Walker event page; a
 
 ## Admin play tracking
 Count successful playback starts with per-play UUIDs; repeat browsers allowed; resume/buffering deduplicated; stop/end resets. Private RLS-protected events and owner-only admin total. Preserve download behavior and existing page content.
+
+
+# Ultimate Game Night
+
+Confirmed scope: integrate /game-night into existing xrkr80hd.studio Next/Vercel project; owner-created Game Master accounts, per-host private cloud saves, public guest QR join; teams and rotating representatives; private host popout; simple picture crop and permitted music clues. Save checkpoints to Git. Deploy validated main commits through connected Vercel Git integration.
+
+After secure hosting: agent-assisted live TV redesign and AI tools with host review. Test mobile, desktop, 1980 × 1020 and 3840 × 2160 and provide screenshots. Simulate viewport/pixel readability; physical 55/85-inch TV distance checks require the user's actual screens.
+
+Agents: security_review (server isolation), show_design (visual direction/CSS), game_qa (game flow and resolution checks). Root handles integration, media and AI.
+
+## Ultimate Game Night security agent
+Review Game Master sessions, private room isolation and server routes. Bind host cookies to current credentials so password resets revoke prior sessions; test tampering, expiry and credential changes.

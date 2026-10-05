@@ -1,0 +1,6 @@
+import {createHmac,timingSafeEqual} from 'node:crypto';
+export const GAME_COOKIE='xrkr_game_session';
+export function gameCredentialVersion(passwordHash,secret){return createHmac('sha256',secret).update('game-credential:'+passwordHash).digest('base64url');}
+export function signGameSession(username,secret,now=Date.now(),credentialVersion=null){if(!secret)throw Error('Game login unavailable');const data=Buffer.from(JSON.stringify({username,expires:now+7*86400000,credentialVersion})).toString('base64url');return data+'.'+createHmac('sha256',secret).update('game-night:'+data).digest('base64url');}
+export function readGameSession(value,secret,now=Date.now()){try{if(!secret||typeof value!=='string'||value.length>600)return null;const [data,signature,...rest]=value.split('.');if(rest.length)return null;const expected=createHmac('sha256',secret).update('game-night:'+data).digest();const actual=Buffer.from(signature,'base64url');if(actual.length!==expected.length||!timingSafeEqual(actual,expected))return null;const p=JSON.parse(Buffer.from(data,'base64url'));return typeof p.username==='string'&&Number.isFinite(p.expires)&&p.expires>now?p:null;}catch{return null;}}
+export function verifyGameSession(value,secret,now=Date.now()){return readGameSession(value,secret,now)?.username||null;}

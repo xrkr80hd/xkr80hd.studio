@@ -146,3 +146,10 @@ Final event-link correction: replaced Walker archive link with user-provided htt
 
 ## Admin-only play count — 2026-10-03
 Added private gleaux_play_events table, server-only inserts/count reads, and Track plays in owner admin. Browser sends a per-play UUID on actual playing event; same-browser replays count after stop/end, while pauses/resumes/buffering and request retries do not duplicate plays. Tracking failures do not interrupt audio. Public API returns acknowledgment only. Counts start at deployment; historic plays cannot be recovered. Verified two lifecycle tests, transaction-only DB repeat/dedup test (rolled back), production build, diff check, RLS and grants. Supabase advisor reports intentional RLS-without-public-policies for this server-only table; existing unrelated findings unchanged.
+
+
+# Work checkpoints
+
+Integration source prepared: separate signed Game Master login, server-mediated private workspace saves with optimistic concurrency, owner host management, public phone API, cropped image and permitted music sources. Pending database migration, tests, production deployment.
+
+Existing site verified: xrkr80hd.studio, Vercel studio-production-suite, connected GitHub xrkr80hd/xkr80hd.studio. Supabase goufiujqycnkvewkvegq.
