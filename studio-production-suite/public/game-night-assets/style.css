@@ -34,3 +34,64 @@ input,select,textarea{background:#090f25;border-color:#5873a475}.host-panel .pri
 @media(min-width:1000px){.broadcast-roster h2{font-size:2.6vh;line-height:1.1;margin:.3vh 0 .6vh}.broadcast-roster{gap:.6vh}.broadcast-team{padding:.65vh .65vw}.broadcast-team h3{margin-bottom:.4vh}.broadcast-member{font-size:2.2vh;margin:.3vh 0}.broadcast-member .avatar{width:3vh;height:3vh}.broadcast-member.on-turn{color:#fff0b4}.broadcast-member>span{font-size:1.35vh;font-weight:800}}
 
 .host-guide{margin-bottom:16px;border:2px solid var(--gold)}.host-guide h3{margin:12px 0;font-size:clamp(22px,2vw,32px)}.host-guide p{font-size:18px;line-height:1.5}.host-guide .actions{margin-top:12px}
+
+
+/* UGN immersive menu redesign 2026-10-06 */
+.brand-text-only .mark{display:none!important}
+.ugn-home{position:relative;min-height:100svh;overflow:hidden;background:#050a24;color:#fff;padding:clamp(18px,3vw,38px);display:flex;flex-direction:column;justify-content:flex-end;gap:18px}
+.ugn-home .menu-art,.games-hero-art{position:absolute;inset:0;z-index:0;overflow:hidden}
+.ugn-home .menu-art:after,.games-hero-art:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(3,7,28,.08) 0%,rgba(3,7,28,.16) 42%,rgba(3,7,28,.78) 76%,rgba(3,7,28,.96) 100%)}
+.ugn-home .menu-art img,.games-hero-art img{width:100%;height:100%;object-fit:cover;display:block}
+.ugn-hero-copy,.ugn-quick-actions,.ugn-home-utilities,.games-hero-content{position:relative;z-index:2}
+.ugn-hero-copy{width:min(900px,100%);margin:auto auto 0;text-align:center;display:flex;flex-direction:column;align-items:center}
+.ugn-kicker{font-size:12px;letter-spacing:.28em;font-weight:800;color:#ffe48a;margin-bottom:8px}
+.ugn-hero-copy h1,.games-hero-content h1{margin:0;font-size:clamp(48px,8vw,112px);line-height:.83;font-weight:1000;letter-spacing:-.055em;text-transform:uppercase;text-shadow:0 6px 30px rgba(0,0,0,.4)}
+.ugn-hero-copy h1 span,.games-hero-content h1 span{background:linear-gradient(180deg,#fff8c9 0%,#ffdc71 24%,#ff65d8 58%,#9b63ff 82%,#5ee9ff 100%);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 16px rgba(233,74,255,.45))}
+.ugn-hero-copy p,.games-hero-content p{font-size:clamp(15px,2vw,21px);color:#dbe7ff;margin:16px 0 18px;text-shadow:0 2px 12px rgba(0,0,0,.45)}
+.ugn-primary-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;width:100%}
+.ugn-action{min-height:62px;padding:14px 22px;border-radius:18px;border:1px solid rgba(147,178,255,.35);background:linear-gradient(180deg,rgba(18,53,114,.92),rgba(10,30,78,.95));color:#fff;font-weight:900;font-size:17px;box-shadow:inset 0 1px 0 rgba(255,255,255,.1),0 10px 28px rgba(0,0,0,.25)}
+.ugn-action.resume-action{background:linear-gradient(135deg,#7047ff,#7658e9);border-color:#b27cff}
+.ugn-action.new-action{background:linear-gradient(180deg,#fff1a7,#ffc84d);color:#101638;border-color:#fff0a3;box-shadow:0 8px 24px rgba(255,193,71,.28)}
+.ugn-leave-room{margin-top:12px;min-height:52px;width:min(620px,100%);border-radius:16px;background:rgba(87,14,61,.72);border:1px solid #ff4b9d;color:#ff8fc3;font-weight:900;font-size:16px;box-shadow:0 0 20px rgba(255,60,154,.14)}
+.ugn-quick-actions{width:min(920px,100%);margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.ugn-quick{min-height:54px;border-radius:16px;background:rgba(5,17,54,.82);border:1px solid rgba(108,179,255,.32);backdrop-filter:blur(12px);font-weight:800}
+.ugn-quick.primary-quick{border-color:#ffe07a;box-shadow:inset 0 0 20px rgba(255,213,92,.08)}
+.ugn-home-utilities{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;width:100%}
+.ugn-home-utilities .menu-small{background:rgba(4,12,37,.72);backdrop-filter:blur(10px)}
+.games-library{padding-top:0!important}
+.games-hero{position:relative;min-height:clamp(420px,56vw,620px);border-radius:0 0 34px 34px;overflow:hidden;margin:-1px calc(var(--page-pad,24px)*-1) 22px}
+.games-hero-content{min-height:inherit;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;text-align:center;padding:36px 24px 34px}
+.games-hero-content .eyebrow{color:#ffe48a;letter-spacing:.24em}
+.game-library-head{display:flex;align-items:end;justify-content:space-between;margin:8px 0 14px}
+.game-library-head h2{margin:5px 0 0}
+.game-library-grid{gap:14px}
+.games-library .game-card{min-height:260px;background:linear-gradient(145deg,rgba(11,35,79,.96),rgba(6,20,52,.96));border:1px solid rgba(83,178,255,.28);box-shadow:inset 0 1px 0 rgba(255,255,255,.04),0 18px 40px rgba(2,6,25,.26)}
+.games-library .game-card .badge{border-color:rgba(246,90,221,.55)}
+.games-library .game-card .actions{margin-top:auto}
+.compact-new-card{min-height:260px!important;background:radial-gradient(circle at 50% 36%,rgba(32,93,203,.72),rgba(9,34,86,.94))!important;border:1px dashed rgba(99,160,255,.65)!important}
+.compact-new-card b{font-size:44px!important}
+@media (max-width:700px){
+  .ugn-home{padding:14px 14px 18px;gap:12px;justify-content:flex-end}
+  .ugn-home .menu-art:after{background:linear-gradient(180deg,rgba(2,7,27,.03) 0%,rgba(2,7,27,.10) 44%,rgba(2,7,27,.72) 70%,rgba(2,7,27,.97) 100%)}
+  .ugn-hero-copy{margin-top:34vh}
+  .ugn-kicker{font-size:10px;margin-bottom:5px}
+  .ugn-hero-copy h1,.games-hero-content h1{font-size:clamp(44px,14vw,68px)}
+  .ugn-hero-copy p,.games-hero-content p{font-size:14px;margin:10px 0 12px}
+  .ugn-primary-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .ugn-primary-actions .new-action:last-child{grid-column:1/-1}
+  .ugn-action{min-height:54px;padding:11px 12px;border-radius:15px;font-size:15px}
+  .ugn-leave-room{min-height:48px;margin-top:8px}
+  .ugn-quick-actions{grid-template-columns:1fr 1fr;gap:8px}
+  .ugn-quick{min-height:48px;font-size:14px}
+  .ugn-home-utilities{gap:6px}
+  .ugn-home-utilities .menu-small{font-size:12px;padding:8px 10px}
+  .games-hero{min-height:500px;border-radius:0 0 26px 26px;margin-left:-16px;margin-right:-16px}
+  .games-hero-content{padding:24px 16px 22px}
+  .games-hero-content .ugn-primary-actions{width:100%}
+  .game-library-grid{grid-template-columns:1fr!important}
+  .games-library .game-card,.compact-new-card{min-height:210px!important}
+}
+@media (min-width:701px){
+  .games-hero-art img{object-position:center center}
+  .ugn-home .menu-art img{object-position:center center}
+}
