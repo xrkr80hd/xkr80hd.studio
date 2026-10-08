@@ -95,3 +95,63 @@ input,select,textarea{background:#090f25;border-color:#5873a475}.host-panel .pri
   .games-hero-art img{object-position:center center}
   .ugn-home .menu-art img{object-position:center center}
 }
+
+
+/* 2026 Game Master desktop control panel, scoped to the host only. */
+.host-shell{max-width:1920px;padding:0 clamp(14px,2vw,34px)}
+.host-shell .host-layout{display:grid;grid-template-columns:minmax(0,1fr) clamp(340px,29vw,430px);gap:16px;align-items:start;margin:18px 0 24px}
+.host-shell .host-board{min-width:0}
+.host-shell .host-board .stage{min-width:0;margin:0;min-height:570px;background:radial-gradient(ellipse at top,#21438270,transparent 60%),#0a1330}
+.host-shell .host-board .stage .tile{font-size:clamp(20px,2.1vw,38px);min-height:60px}
+.host-shell .host-board .stage .category{font-size:clamp(11px,1vw,17px);min-height:64px;overflow-wrap:anywhere}
+.host-shell .host-board .stage-instruction{padding:12px 7px}
+.host-shell .host-board .stage-instruction strong{font-size:clamp(19px,2vw,32px)}
+.host-shell .host-board .stage-instruction p{font-size:clamp(13px,1.2vw,18px)}
+.host-shell .host-board .stage-question{min-height:350px}
+.host-shell .host-board .stage-question h2{font-size:clamp(23px,2.8vw,46px);overflow-wrap:anywhere}
+.host-shell .host-panel{position:sticky;top:12px;max-height:calc(100dvh - 24px);overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;padding:14px 17px;min-width:0;background:linear-gradient(150deg,#162548,#10152e);border:1px solid #5173a26e;border-radius:16px}
+.host-panel-top{display:flex;align-items:center;justify-content:space-between;gap:8px;padding-bottom:9px}
+.host-panel-top h2{font-size:clamp(15px,1.2vw,18px);line-height:1.2;letter-spacing:0;margin:0}
+.host-panel-top span{font-size:11px;font-weight:850;letter-spacing:.06em;color:#ffe08a;white-space:nowrap}
+.host-control-section{padding:10px 0;border-top:1px solid #5e7aa04f;min-width:0}
+.host-control-section>h3{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#bfcff5;margin:0 0 9px}
+.host-session-controls .actions,.host-progress-controls .actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin:0!important}
+.host-session-controls .actions>*,.host-progress-controls .actions>*{width:100%;min-width:0;min-height:37px;font-size:11px;white-space:normal;padding:7px 5px}
+.host-progress-controls .actions>*:last-child:nth-child(odd){grid-column:1/-1}
+.host-clue-controls>.eyebrow{color:#bfcff5}
+.host-clue-controls>h3{margin:3px 0 8px!important;font-size:16px}
+.host-clue-controls .host-answer{margin:8px 0 12px;padding:10px 12px;max-height:160px;overflow-y:auto;scrollbar-width:thin;overflow-wrap:anywhere;font-size:13px}
+.host-clue-controls .host-answer strong{font-size:15px}
+.host-clue-controls .actions{gap:7px}
+.host-clue-controls .actions>button{min-height:38px;font-size:12px;padding:8px 5px}
+.host-clue-controls .field{font-size:12px;margin:5px 0}
+.host-clue-controls select{min-height:38px;margin:4px 0 8px}
+.host-clue-controls p.help{font-size:11px;line-height:1.35;margin:5px 0}
+.host-panel-extras{display:grid;gap:7px;border-top:1px solid #5e7aa04f;padding:10px 0 0}
+.host-panel-extras details{background:#0c1934;border:1px solid #547cb047;border-radius:10px;min-width:0}
+.host-panel-extras summary{cursor:pointer;user-select:none;padding:10px 12px;font-weight:800;font-size:12px}
+.host-panel-extras details[open] summary{border-bottom:1px solid #547cb047}
+.host-panel-extras .host-guide{margin:0;border:0;background:transparent;box-shadow:none;padding:12px}
+.host-panel-extras .host-guide h3{font-size:16px;margin:0 0 6px}
+.host-panel-extras .host-guide p{font-size:12px;line-height:1.4}
+.host-roster-details>.host-roster{margin:0;border:0;background:transparent;box-shadow:none;padding:12px}
+.host-roster-details .host-roster-grid{grid-template-columns:1fr;gap:10px}
+.host-roster-details .host-roster-player .avatar{height:34px;width:34px}
+.host-roster-details .host-roster .section-head{margin:0 0 8px}
+.host-roster-details .host-roster .section-head h3{font-size:13px}
+.host-network-status{padding-top:8px}
+.host-network-status #connection{font-size:10px;margin:0;color:#9bb8db;overflow-wrap:anywhere}
+@media(max-width:959px){
+ .host-shell .host-layout{grid-template-columns:minmax(0,1fr)}
+ .host-shell .host-panel{position:static;max-height:none;overflow:visible}
+ .host-shell .host-board .stage{min-height:0}
+}
+@media(max-width:600px){
+ .host-shell .host-layout{gap:12px;margin:12px 0}
+ .host-shell .host-board .stage{padding:9px}
+ .host-shell .host-board .stage .tile{font-size:18px;min-height:45px;padding:8px 2px}
+ .host-shell .host-board .stage .category{font-size:9px;min-height:46px}
+ .host-shell .host-board .stage-instruction strong{font-size:20px}
+ .host-shell .host-board .stage-question{min-height:275px}
+ .host-shell .host-board .stage-question h2{font-size:25px}
+}
