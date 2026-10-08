@@ -1,3 +1,4 @@
+ALTER TABLE public.family_game_rooms ADD COLUMN IF NOT EXISTS revision bigint NOT NULL DEFAULT 0;
 CREATE OR REPLACE FUNCTION public.family_game_command(p_code text,p_action text,p_token text,p_data jsonb DEFAULT '{}')
 RETURNS jsonb LANGUAGE plpgsql SECURITY INVOKER SET search_path='' AS $function$
 declare r public.family_game_rooms; p jsonb; ps jsonb; h text; host boolean; maximum numeric; w numeric; team_id text; target_id text; members jsonb; rep_id text; turn_index integer;
@@ -10,6 +11,9 @@ begin
   select * into r from public.family_game_rooms where code=p_code and expires_at>now() for update;
  end if;
  if not found then raise exception 'Room not found or expired';end if;
+ if p_action='read' and coalesce((p_data->>'knownRevision')::bigint,-1)=r.revision then
+  return jsonb_build_object('unchanged',true,'revision',r.revision,'serverTime',floor(extract(epoch from clock_timestamp())*1000));
+ end if;
  host:=h=r.host_hash;
  select value into p from jsonb_array_elements(r.players) where value->>'hash'=h;
  if p_action='join' then
@@ -94,9 +98,9 @@ begin
   if coalesce((p_data->>'clearSubmissions')::boolean,false) then r.submissions:='{}';end if;
  elsif p_action<>'read' then raise exception 'Unknown action';
  end if;
- if p_action<>'read' then update public.family_game_rooms set state=r.state,public_state=r.public_state,players=r.players,buzz=r.buzz,submissions=r.submissions,version=r.version where code=p_code;end if;
+ if p_action<>'read' then r.revision:=r.revision+1;update public.family_game_rooms set state=r.state,public_state=r.public_state,players=r.players,buzz=r.buzz,submissions=r.submissions,version=r.version,revision=r.revision where code=p_code;end if;
  select coalesce(jsonb_agg(value-'hash'),'[]') into ps from jsonb_array_elements(r.players);
- return jsonb_build_object('code',r.code,'version',r.version,'public',r.public_state,'players',ps,'buzz',r.buzz,'serverTime',floor(extract(epoch from clock_timestamp())*1000),'me',p->>'id')||case when host then jsonb_build_object('state',r.state,'submissions',r.submissions) else '{}' end;
+ return jsonb_build_object('code',r.code,'version',r.version,'revision',r.revision,'public',r.public_state,'players',ps,'buzz',r.buzz,'serverTime',floor(extract(epoch from clock_timestamp())*1000),'me',p->>'id')||case when host then jsonb_build_object('state',r.state,'submissions',r.submissions) else '{}' end;
 end $function$;
 REVOKE ALL ON FUNCTION public.family_game_command(text,text,text,jsonb) FROM PUBLIC,anon,authenticated;
 GRANT EXECUTE ON FUNCTION public.family_game_command(text,text,text,jsonb) TO service_role;
