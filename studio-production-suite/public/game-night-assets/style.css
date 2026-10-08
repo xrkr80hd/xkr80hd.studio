@@ -168,5 +168,5 @@ input,select,textarea{background:#090f25;border-color:#5873a475}.host-panel .pri
 .host-shell .host-clue-controls>button[data-action="close-clue"],.host-shell .host-clue-controls>button[data-action="standings"]{order:0;min-height:39px;font-weight:850}
 .host-shell .host-clue-controls>.host-answer{order:1;max-height:115px;margin:10px 0 3px}
 .host-shell .host-clue-controls>p.help{order:2}
-.host-shell .host-clue-controls>.card,.host-shell .host-clue-controls>h3:not(:first-child){order:3}
+.host-shell .host-clue-controls>.card,.host-shell .host-clue-controls>h3[style*="margin-top:24px"]{order:3}
 .host-shell .host-clue-controls>.list-row{order:4}
