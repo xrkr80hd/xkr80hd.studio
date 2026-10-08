@@ -47,7 +47,7 @@ begin
   r.submissions:=jsonb_set(r.submissions,array[p->>'id'],coalesce(r.submissions->(p->>'id'),'{}')||jsonb_build_object('pick',p_data->>'clueId'));
  elsif p_action='buzz' then
   if p is null then raise exception 'Join the room first';end if;
-  if r.public_state->>'phase'<>'clue' or not coalesce((r.public_state->>'buzzOpen')::boolean,false) or coalesce((r.public_state->>'revealed')::boolean,false) or coalesce((r.state#>>'{play,resolved}')::boolean,false) or coalesce(r.buzz->>'winner','')<>'' then raise exception 'Buzzers are locked';end if;
+  if r.public_state->>'phase'<>'clue' or not coalesce((r.public_state->>'buzzOpen')::boolean,false) or coalesce((r.public_state->>'revealed')::boolean,false) or coalesce((r.state#>>'{play,resolved}')::boolean,false) or coalesce(r.buzz->>'winner','')<>'' or coalesce((r.public_state->>'buzzStartsAt')::numeric,0)>extract(epoch from clock_timestamp())*1000 then raise exception 'Buzzers are locked';end if;
   team_id:=case when coalesce((r.state#>>'{play,teamMode}')::boolean,false) then p->>'teamId' else p->>'id' end;
   if team_id is null or not exists(select 1 from jsonb_array_elements(r.public_state->'teams') where value->>'id'=team_id) then raise exception 'Choose a team before buzzing';end if;
   if coalesce((r.state#>>'{play,teamMode}')::boolean,false) then
@@ -84,13 +84,19 @@ begin
   if (p_data->>'version')::integer is distinct from r.version then raise exception 'Game changed. Refresh the host view and try again.';end if;
   if jsonb_typeof(p_data->'state')<>'object' or jsonb_typeof(p_data->'public')<>'object' then raise exception 'Invalid game state';end if;
   r.state:=p_data->'state';r.public_state:=p_data->'public';r.version:=r.version+1;
-  if coalesce((p_data->>'resetBuzz')::boolean,false) then r.buzz:='{}';end if;
+  if coalesce((p_data->>'resetBuzz')::boolean,false) then
+   r.buzz:='{}';
+   if coalesce((r.public_state->>'buzzOpen')::boolean,false) then
+    r.public_state:=jsonb_set(r.public_state,'{buzzStartsAt}',to_jsonb(floor(extract(epoch from clock_timestamp())*1000)+1400),true);
+    r.state:=jsonb_set(r.state,'{play,buzzStartsAt}',r.public_state->'buzzStartsAt',true);
+   end if;
+  end if;
   if coalesce((p_data->>'clearSubmissions')::boolean,false) then r.submissions:='{}';end if;
  elsif p_action<>'read' then raise exception 'Unknown action';
  end if;
  if p_action<>'read' then update public.family_game_rooms set state=r.state,public_state=r.public_state,players=r.players,buzz=r.buzz,submissions=r.submissions,version=r.version where code=p_code;end if;
  select coalesce(jsonb_agg(value-'hash'),'[]') into ps from jsonb_array_elements(r.players);
- return jsonb_build_object('code',r.code,'version',r.version,'public',r.public_state,'players',ps,'buzz',r.buzz,'me',p->>'id')||case when host then jsonb_build_object('state',r.state,'submissions',r.submissions) else '{}' end;
+ return jsonb_build_object('code',r.code,'version',r.version,'public',r.public_state,'players',ps,'buzz',r.buzz,'serverTime',floor(extract(epoch from clock_timestamp())*1000),'me',p->>'id')||case when host then jsonb_build_object('state',r.state,'submissions',r.submissions) else '{}' end;
 end $function$;
 REVOKE ALL ON FUNCTION public.family_game_command(text,text,text,jsonb) FROM PUBLIC,anon,authenticated;
 GRANT EXECUTE ON FUNCTION public.family_game_command(text,text,text,jsonb) TO service_role;
