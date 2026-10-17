@@ -1,3 +1,4 @@
+import {validateCgeProfile,cgeToNative} from './cge-profile.mjs';
 import factory from './color-grade-presets.json' with {type:'json'};
 export const FACTORY_GRADES=Object.freeze(factory.map(g=>Object.freeze(g)));
 export const CONTROL_RANGES={temperature:[-100,100],contrast:[-100,100],saturation:[-100,100],shadowTint:[-100,100],highlightTint:[-100,100],blackLevel:[-100,100],grain:[0,100],haze:[0,0]};
@@ -5,6 +6,8 @@ export const NEUTRAL_SETTINGS=Object.fromEntries(Object.keys(CONTROL_RANGES).map
 export const GLOBAL_NEGATIVE='Avoid unwanted oversaturation, artificial HDR halos, plastic textures, uncontrolled color casts, crushed detail, and inconsistent grading. Preserve physical scene, identity, wardrobe, props, geography, framing, action and world-space light sources. Do not add fog, rain, sunlight or props.';
 const clone=v=>structuredClone(v),eq=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
 export function validateGrade(g,{factoryAllowed=false}={}){
+ if(g?.grade_id)g=cgeToNative(g);
+ if(g?.cge_profile){const p=validateCgeProfile(g.cge_profile);if(p.grade_id!==g.id||p.name!==g.name||p.prompt_token_string!==g.prompt)throw Error('CGE profile must match grade ID, name and prompt');}
  if(!g||typeof g!=='object'||typeof g.id!=='string'||!/^[\w-]{1,80}$/.test(g.id))throw Error('Invalid grade ID');
  if(!factoryAllowed&&(g.factoryPreset||g.id.startsWith('CG-')))throw Error('Factory presets are protected; duplicate as a custom grade');
  for(const k of ['slug','name','description','category','prompt','negativePrompt'])if(typeof g[k]!=='string'||!g[k].trim()||g[k].length>10000)throw Error('Invalid grade '+k);
@@ -27,7 +30,7 @@ export function effectiveGrade(m,ctx={}){
 }
 export function gradePrompt(s,style='RL'){
  if(!s||s.intensity===0)return '';
- const g=s.definition;return `Color treatment: ${g.name} v${s.grade_version}, strength ${s.intensity}%. ${g.prompt} Internal controls ${JSON.stringify(g.settings)}. ${style==='CB'||style==='comic_book'?'Keep comic-book illustration, ink and graphic textures; interpret grading within that style. Never convert to photorealism.':'Preserve the selected rendering style.'} Color only; no new lights, weather, fog, props or geometry. These controls guide generation; they do not guarantee an exact pixel match to the preview.`;
+ const g=s.definition;return `Color treatment: ${g.name} v${s.grade_version}, strength ${s.intensity}%. ${g.prompt}${g.cge_profile?' CGE tonal parameters: '+Object.entries(g.cge_profile.parameters).map(([key,value])=>key.replaceAll('_',' ')+': '+value).join('; ')+'.':''} Internal controls ${JSON.stringify(g.settings)}. ${style==='CB'||style==='comic_book'?'Keep comic-book illustration, ink and graphic textures; interpret grading within that style. Never convert to photorealism.':'Preserve the selected rendering style.'} Color only; no new lights, weather, fog, props or geometry. These controls guide generation; they do not guarantee an exact pixel match to the preview.`;
 }
 export function injectGrade(prompt,s,style){if(!s||s.intensity===0)return prompt;const ratio=/\s*--ar 16:9\s*$/.test(prompt);const base=prompt.replace(/\s*--ar 16:9\s*$/,'');return [base,gradePrompt(s,style),'Grade guardrails: '+s.definition.negativePrompt+' '+GLOBAL_NEGATIVE,ratio?'--ar 16:9':''].filter(Boolean).join('\n')}
 export function allGradeShots(m){const out=[];for(const list of Object.values(m.shot_lists||{}))for(const s of list.shots)out.push({shot:s,ctx:{sequence_id:list.sequence_id||list.id,scene_id:s.scene_id||list.scene_id||'',shot_id:s.id}});for(const [id,scene]of Object.entries(m.scenes||{}))for(const s of Object.values(scene.shots||{}))out.push({shot:s,ctx:{sequence_id:scene.sequence_id||'',scene_id:id,shot_id:s.asset_id}});return out}
@@ -54,7 +57,7 @@ export function manageColorGrade(m,args){
  }
  if(action==='delete'){if(factory.some(g=>g.id===args.id))throw Error('Factory grades cannot be deleted');if(!m.color_grades?.custom?.[args.id])throw Error('Grade not found');if(Object.values(m.color_grades.assignments||{}).some(a=>a.grade_id===args.id))throw Error('Reset grade assignments before deleting');delete m.color_grades.custom[args.id];return {deleted:true}}
  if(['save','import','duplicate'].includes(action)){
- let g=action==='duplicate'?{...gradeVersion(m,args.id),id:args.new_id,name:args.name||gradeVersion(m,args.id).name+' copy',factoryPreset:false,version:1}:clone(args.data);g=validateGrade(g);
+ let g=action==='duplicate'?{...gradeVersion(m,args.id),id:args.new_id,name:args.name||gradeVersion(m,args.id).name+' copy',factoryPreset:false,version:1}:clone(args.data);if(g?.grade_id)g=cgeToNative(g,m.color_grades?.custom?.[g.grade_id]);g=validateGrade(g);
  for(const k of ['previewAssetId','referenceAssetId'])if(g[k]&&!m.references?.[g[k]])throw Error('Reference image not found in project');
  m.color_grades||={};m.color_grades.custom||={};m.color_grades.history||={};const old=m.color_grades.custom[g.id];if(old){if(args.expected_version!==old.version)throw Error('Grade changed; reload current version');g.version=old.version+1}else g.version=1;
  m.color_grades.history[g.id]||=[];m.color_grades.history[g.id].push(clone(g));m.color_grades.custom[g.id]=g;return {saved:true,grade:g};

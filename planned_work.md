@@ -248,3 +248,8 @@ User confirmed xrkr80hdadmin (existing site admin, display name Travis). Map Gam
 - Add Main, Supporting, Background and Unsorted cast accordions only within Characters.
 - Persist organizational grouping independently of locked visual records, with owner/folder checks and revision conflicts.
 - Verify group changes preserve codes, images and approvals; publish the update.
+
+## CGE profile storage and editing (2026-10-17)
+- Add canonical profile import/staging, explicit custom saving, editable parameters, export and versioned owner-session API routes.
+- Preserve seven factory definitions, existing custom grades, assignment snapshots, reference links and original CGE tokens.
+- Verify round-trip, edit conflicts and preservation, then publish the complete update.
