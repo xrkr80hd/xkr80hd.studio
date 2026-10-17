@@ -110,14 +110,22 @@ export default function StudioDashboard({ productionContract, providerAvailabili
   const loadAssets = useCallback(async () => {
     setAssetState('loading');
     try {
-      const response = await fetch('/api/assets', { cache: 'no-store', credentials: 'same-origin' });
-      if (response.status === 401 || response.status === 403) {
-        window.location.assign('/login');
-        return;
+      const loaded = [];
+      let offset = 0;
+      while (true) {
+        const response = await fetch(`/api/assets?offset=${offset}`, { cache: 'no-store', credentials: 'same-origin' });
+        if (response.status === 401 || response.status === 403) {
+          window.location.assign('/login');
+          return;
+        }
+        const payload = await response.json();
+        if (!response.ok) throw new Error(payload.error || 'Could not load the library.');
+        loaded.push(...(Array.isArray(payload.assets) ? payload.assets : []));
+        if (payload.next_offset == null) break;
+        if (!Number.isInteger(payload.next_offset) || payload.next_offset <= offset) throw new Error('Invalid library page.');
+        offset = payload.next_offset;
       }
-      const payload = await response.json();
-      if (!response.ok) throw new Error(payload.error || 'Could not load the library.');
-      setAssets(Array.isArray(payload.assets) ? payload.assets : []);
+      setAssets([...new Map(loaded.map(asset => [asset.id, asset])).values()]);
       setAssetState('ready');
       setError('');
     } catch (cause) {

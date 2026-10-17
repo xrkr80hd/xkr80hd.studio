@@ -219,6 +219,11 @@ User confirmed xrkr80hdadmin (existing site admin, display name Travis). Map Gam
 - Add contextual Game Master next-action prompts and an eight-step walkthrough; preserve online room during popout despite cloud save conflicts; verify and publish.
 # XSTUDIO private app and Fuschia integration (2026-10-16)
 
+## XSTUDIO migrated library access (2026-10-17)
+
+- Make every migrated asset reachable in the owner library instead of silently stopping at 100 records. Preserve owner authorization and use bounded, stable pages; verify the build and owner interface.
+
+
 - [x] Build a separate private XSTUDIO app from the installed XSTUDIO plugin's rules, scripts, templates, and assets; leave the live studio app and WAMarket unchanged.
 - [x] Add Fuschia Light House XSTUDIO-only data and private storage with verified owner identity and row-level access.
 - [x] Add authenticated asset upload/download and scoped external-tool ingress, plus provider integrations only where official APIs and credentials are verified.

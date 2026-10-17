@@ -5,12 +5,18 @@ import { isTrustedOrigin, MAX_ASSET_BYTES } from '../../../lib/xstudio-validatio
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-export async function GET() {
+export async function GET(request) {
   const context = await requireOwner();
   if (context.response) return context.response;
+  const offset = Number(new URL(request.url).searchParams.get('offset') || 0);
+  if (!Number.isInteger(offset) || offset < 0 || offset > 100000) return json({ error: 'Invalid library page.' }, 400);
+  const pageSize = 100;
   const result = await context.client.from('xstudio_assets').select(assetColumns)
-    .eq('owner_id', context.user.id).order('created_at', { ascending: false }).limit(100);
-  return result.error ? json({ error: 'Could not load assets.' }, 502) : json({ assets: result.data || [] });
+    .eq('owner_id', context.user.id).order('created_at', { ascending: false })
+    .order('id', { ascending: false }).range(offset, offset + pageSize);
+  if (result.error) return json({ error: 'Could not load assets.' }, 502);
+  const rows = result.data || [];
+  return json({ assets: rows.slice(0, pageSize), next_offset: rows.length > pageSize ? offset + pageSize : null });
 }
 
 export async function POST(request) {

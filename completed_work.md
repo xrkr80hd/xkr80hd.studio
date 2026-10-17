@@ -190,3 +190,9 @@ Confirmed user screenshot and enabled admin_users record xrkr80hdadmin (Travis).
 - The callback accepts only a recovery-code exchange, verifies owner identity and membership, and sets a signed, HttpOnly 10-minute grant tied to that Auth session. Both `/update-password` and its same-origin POST require the grant; successful password update clears it and signs out. No new user or service-role key was added.
 - Build and focused tests passed. Local anonymous checks: `/update-password` redirects to login, password update POST returns 401, callback without code redirects to login with an invalid-link notice.
 - Handoff: add `https://xstudio.xrkr80hd.studio/auth/callback` to Fuschia Auth allowed redirect URLs, set server-only `XSTUDIO_RECOVERY_COOKIE_SECRET` to a random 32-byte base64url value in Vercel, deploy this branch, then have the owner request and use a recovery link in the same browser. The shared Auth email template was not changed.
+
+## XSTUDIO migrated library access (2026-10-17)
+
+- Replaced the owner library's silent 100-record cutoff with stable 100-record pages and complete client retrieval, retaining owner authorization, no-store responses, and ID deduplication.
+- Verified eight existing security/provider/recovery tests and a successful Next.js 16.4.2 production build. Live deployment verification follows publication.
+- Migration storage was independently verified: 502 unique files / 942,196,738 bytes copied to Fuschia, 55 deleted-only files purged, existing active project records and short codes retained. XCE connector hosting remains on the ChatGPT Site; storage migration alone is not permission to suspend that connector host.
