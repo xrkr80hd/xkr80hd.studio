@@ -216,3 +216,8 @@ Confirmed user screenshot and enabled admin_users record xrkr80hdadmin (Travis).
 - Fixed preview selection choosing asset IDs before existing attached references. Four focused regression tests and eight existing tests passed.
 - Added Back and Overview / Project / Current page breadcrumbs throughout the studio, plus View reference uploads beside the workspace upload action, opening and scrolling to the project's image gallery.
 - Studio TSX compilation passed for the navigation changes. Live signed-in visual verification unavailable to agent browser.
+
+## Character cast organization (2026-10-17)
+- Added Main Cast, Supporting Cast, Background Cast and Unsorted Characters accordions. A dropdown on each character card persists its group, including for existing legacy/locked characters. Other asset libraries remain unchanged. Existing characters remain unsorted until assigned.
+- Group metadata lives separately from immutable visual anchors. The mutation route verifies origin, owner session, folder access, character membership and current revision. Creature records are excluded.
+- Three focused regression tests passed (locked record/code preservation, invalid/non-character rejection and group moves); UI TSX compilation passed. Production build verification follows publication; signed-in browser visual verification is unavailable.

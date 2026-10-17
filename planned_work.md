@@ -243,3 +243,8 @@ User confirmed xrkr80hdadmin (existing site admin, display name Travis). Map Gam
 ## Thumbnail and navigation repair (2026-10-17)
 - Fix previews resolving asset IDs ahead of attached reference images; add regression checks.
 - Add persistent Back and Overview / Project / Current page breadcrumbs above studio headings, including the asset library.
+
+## Character cast organization (2026-10-17)
+- Add Main, Supporting, Background and Unsorted cast accordions only within Characters.
+- Persist organizational grouping independently of locked visual records, with owner/folder checks and revision conflicts.
+- Verify group changes preserve codes, images and approvals; publish the update.
