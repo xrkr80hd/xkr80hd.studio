@@ -219,8 +219,8 @@ User confirmed xrkr80hdadmin (existing site admin, display name Travis). Map Gam
 - Add contextual Game Master next-action prompts and an eight-step walkthrough; preserve online room during popout despite cloud save conflicts; verify and publish.
 # XSTUDIO private app and Fuschia integration (2026-10-16)
 
-- [ ] Build a separate private XSTUDIO app from the installed XSTUDIO plugin's rules, scripts, templates, and assets; leave the live studio app and WAMarket unchanged.
-- [ ] Add Fuschia Light House XSTUDIO-only data and private storage with verified owner identity and row-level access.
-- [ ] Add authenticated asset upload/download and scoped external-tool ingress, plus provider integrations only where official APIs and credentials are verified.
+- [x] Build a separate private XSTUDIO app from the installed XSTUDIO plugin's rules, scripts, templates, and assets; leave the live studio app and WAMarket unchanged.
+- [x] Add Fuschia Light House XSTUDIO-only data and private storage with verified owner identity and row-level access.
+- [x] Add authenticated asset upload/download and scoped external-tool ingress, plus provider integrations only where official APIs and credentials are verified.
 - [ ] Verify local behavior, security boundaries, production deployment, DNS, and HTTPS at `xstudio.xrkr80hd.studio`.
 - [ ] Record actual results, missing credentials or account access, and any remaining steps in `completed_work.md`.
