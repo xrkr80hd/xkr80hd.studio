@@ -8,6 +8,8 @@ Set `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, and `XST
 
 The app requires a verified Supabase Auth password session for the owner. Anonymous visitors and other Auth users cannot read assets. Asset files use the private `xstudio-assets` bucket; download links expire after 60 seconds.
 
+For an owner who does not know the existing Fuschia Auth password, the login page can request a recovery email for `xrkr80hd@gmail.com`. Add the exact URL `https://xstudio.xrkr80hd.studio/auth/callback` to Fuschia Auth's allowed redirect URLs. Set `XSTUDIO_RECOVERY_COOKIE_SECRET` to a server-only 32-byte random value encoded as base64url; password recovery remains unavailable without it. Open the email link in the same browser used to request it: the Supabase PKCE verifier is stored in that browser's cookies. The callback accepts only a recovery-code exchange, checks the configured owner UID and `xstudio_owners` row, and creates a signed, HttpOnly grant bound to that Auth session for 10 minutes. Only a session with that grant can show `/update-password` or submit a new password. Updating the password clears the grant and signs out the recovery session. This changes that Fuschia Auth account's password; it does not create another user. The recovery flow has no service-role key and does not modify the project's shared email template.
+
 ## External asset API
 
 The owner creates a 30-day, read/write token in the app's **Asset API access** panel. Its plaintext is shown once; only its SHA-256 hash is stored. The owner can list and revoke tokens. External tools send `Authorization: Bearer <token>` to `https://osbsjjoxepxezcmupcak.supabase.co/functions/v1/xstudio-assets-api`.

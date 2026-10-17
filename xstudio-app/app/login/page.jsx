@@ -5,6 +5,7 @@ export const metadata = {
   robots: { index: false, follow: false },
 };
 
-export default function LoginPage() {
-  return <LoginForm />;
+export default async function LoginPage({ searchParams }) {
+  const { recovery } = await searchParams;
+  return <LoginForm recovery={recovery} />;
 }

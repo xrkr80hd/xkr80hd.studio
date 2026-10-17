@@ -225,3 +225,9 @@ User confirmed xrkr80hdadmin (existing site admin, display name Travis). Map Gam
 - [x] Verify local build and security checks, production deployment, authoritative and public DNS, HTTPS, and anonymous access boundaries at `xstudio.xrkr80hd.studio`.
 - [x] Record actual results, missing credentials or account access, and any remaining steps in `completed_work.md`.
 - [ ] Verify owner sign-in, an authorized asset upload/download, and owner token management with a live owner session.
+
+## XSTUDIO owner password recovery (2026-10-16)
+
+- [x] Add a same-browser Supabase password recovery request for the existing owner account.
+- [x] Exchange only a recovery code server-side, verify owner identity, and require a signed grant tied to that session for the password form and update endpoint.
+- [x] Run focused tests and a production build; document the required redirect allow-list entry.
