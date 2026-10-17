@@ -205,3 +205,9 @@ Confirmed user screenshot and enabled admin_users record xrkr80hdadmin (Travis).
 - Added strict project-only @Asset binding, immutable reviewed locks, parent character/location binding, attached-image selectors, and actual reference-byte injection in the Gemini adapter. Missing, ambiguous, unlocked and cross-project references stop compilation. The text-only Grok adapter is blocked for anchored production; no paid generation was invoked in verification.
 - Extended the existing Edge engine authorization to accept a verified allow-listed owner session as well as its existing scoped connector tokens. No service-role key is exposed to the browser.
 - Verification: production Next build and TypeScript passed; 21 tests passed, including concurrent local creation, stale-sync edit preservation, offline creation/cache, reference injection, auth-origin validation and recovery checks. Browser checks confirmed local project creation, image attachment, reviewed lock, bound prompt, persisted List view, and asset/image persistence after a fresh reload. Local test records remain on localhost only. Live release verification follows the authorized Git push.
+
+## Connections and key visibility (2026-10-17)
+
+- Rotated the revoked XCE token into a new owner-scoped 30-day read/write credential, installed as a Sites server secret; deployment succeeded and live XCE returned all 11 active projects. Revoked tokens remain revoked, primary Supabase storage unchanged.
+- Updated the current ConnectionsPanel with separate tool choices, custom tool support, named one-time key display, Copy key feedback/manual fallback, and active/revoked/expired history with dates. No existing token plaintext is retrievable.
+- JSX compilation passed. Existing eight security/provider/recovery tests passed. Signed-in UI verification remains unavailable in the agent browser; no provider generation or credit spend was performed.
