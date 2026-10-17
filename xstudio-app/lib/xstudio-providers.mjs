@@ -38,11 +38,12 @@ export function parseGeminiImage(result) {
   return { bytes, mimeType };
 }
 
-export async function generateGeminiImage(prompt, key) {
+export async function generateGeminiImage(prompt, key, references = []) {
+  if (!references.length || references.some(r => !['image/png','image/jpeg','image/webp'].includes(r.mimeType) || !r.data)) throw new Error('Saved project reference bytes are required');
   const response = await fetch('https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash-image:generateContent', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'x-goog-api-key': key },
-    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }], generationConfig: { responseModalities: ['Image'] } }),
+    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }, ...references.map(inlineData => ({inlineData}))] }], generationConfig: { responseModalities: ['Image'] } }),
     signal: AbortSignal.timeout(45_000),
     cache: 'no-store',
   });

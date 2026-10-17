@@ -236,3 +236,6 @@ User confirmed xrkr80hdadmin (existing site admin, display name Travis). Map Gam
 - [x] Add a same-browser Supabase password recovery request for the existing owner account.
 - [x] Exchange only a recovery code server-side, verify owner identity, and require a signed grant tied to that session for the password form and update endpoint.
 - [x] Run focused tests and a production build; document the required redirect allow-list entry.
+
+## 2026-10-17 XCE interface restoration
+- Restore the original project/workspace/asset/shot interface on xstudio.xrkr80hd.studio, private inline previews, strict project anchor binding, cached offline browsing, global list/grid controls, separate Rules, and touch controls. Preserve Supabase owner authentication and the existing connector.

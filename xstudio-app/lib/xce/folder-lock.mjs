@@ -1,0 +1,5 @@
+const hex=bytes=>Array.from(new Uint8Array(bytes),b=>b.toString(16).padStart(2,'0')).join('');
+export const cookieName=p=>'xce_unlock_'+p;
+export async function pinDigest(pin,salt){if(!/^\d{4}$/.test(pin))throw Error('Enter a four-digit PIN');const key=await crypto.subtle.importKey('raw',new TextEncoder().encode(pin),'PBKDF2',false,['deriveBits']);return hex(await crypto.subtle.deriveBits({name:'PBKDF2',salt:new TextEncoder().encode(salt),iterations:100000,hash:'SHA-256'},key,256));}
+export async function tokenDigest(token){return hex(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(token)));}
+export async function folderAllowed(lock,request,p){if(!lock)return true;if(!request)return Boolean(lock.session_hash&&lock.session_expires>Date.now());const cookie=request?.headers.get('cookie')||'';const token=cookie.split(';').map(s=>s.trim()).find(s=>s.startsWith(cookieName(p)+'='))?.slice(cookieName(p).length+1);return Boolean(token&&lock.session_expires>Date.now()&&lock.session_hash===await tokenDigest(token));}

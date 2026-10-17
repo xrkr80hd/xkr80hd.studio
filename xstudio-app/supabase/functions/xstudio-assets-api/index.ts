@@ -1,3 +1,4 @@
+import { engine } from './engine.ts';
 import { createClient } from 'npm:@supabase/supabase-js@2.118.0';
 
 const BUCKET = 'xstudio-assets';
@@ -154,6 +155,20 @@ async function upload(request, admin, token) {
   return json({ asset }, 201);
 }
 
+async function listAssets(request, admin, token) {
+  const url = new URL(request.url);
+  const limit = Number(url.searchParams.get('limit') || 30);
+  const offset = Number(url.searchParams.get('offset') || 0);
+  if (!Number.isInteger(limit) || limit < 1 || limit > 100 || !Number.isInteger(offset) || offset < 0 || offset > 100000) return json({ error: 'Invalid pagination.' }, 400);
+  const { data, error } = await admin.from('xstudio_assets').select(ASSET_COLUMNS)
+    .eq('owner_id', token.owner_id).eq('status', 'ready')
+    .order('created_at', { ascending: false }).order('id', { ascending: false })
+    .range(offset, offset + limit);
+  if (error) return json({ error: 'Assets unavailable.' }, 502);
+  const rows = data || [];
+  return json({ assets: rows.slice(0, limit), next_offset: rows.length > limit ? offset + limit : null });
+}
+
 async function download(request, admin, token) {
   const id = new URL(request.url).searchParams.get('id');
   if (!UUID.test(id || '')) return json({ error: 'Invalid asset ID.' }, 400);
@@ -262,6 +277,16 @@ Deno.serve(async (request) => {
     if (url.pathname.endsWith('/xstudio-assets-api/tokens') || url.searchParams.get('resource') === 'tokens') {
       return await tokenManagement(request, admin);
     }
+    if (url.searchParams.get('resource') === 'engine') {
+      if (request.method !== 'POST') return json({error:'POST required.'},405);
+      let token = await authenticate(request, admin, 'asset:read');
+      if (!token) {
+        const ownerId = await authenticateOwner(request, admin);
+        if (ownerId) token = {owner_id:ownerId,provider:'xstudio',scopes:['asset:read','asset:write']};
+      }
+      if (!token) return json({error:'Unauthorized.'},401);
+      return await engine(request, admin, token);
+    }
     if (request.method !== 'POST' && request.method !== 'GET') {
       return json({ error: 'Method not allowed.' }, 405);
     }
@@ -270,7 +295,7 @@ Deno.serve(async (request) => {
     if (!token) return json({ error: 'Unauthorized.' }, 401);
     return request.method === 'POST'
       ? await upload(request, admin, token)
-      : await download(request, admin, token);
+      : new URL(request.url).searchParams.has('id') ? await download(request, admin, token) : await listAssets(request, admin, token);
   } catch {
     return json({ error: 'Request failed.' }, 500);
   }

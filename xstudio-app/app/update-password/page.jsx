@@ -1,3 +1,4 @@
+import '../account.css';
 import { redirect } from 'next/navigation';
 import PasswordResetForm from '../../components/PasswordResetForm';
 import { requireOwner } from '../../lib/xstudio-server';

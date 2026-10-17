@@ -1,4 +1,5 @@
 import './globals.css';
+import './studio-updates.css';
 
 export const metadata = {
   title: 'XSTUDIO | Private production library',

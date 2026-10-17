@@ -2,6 +2,7 @@ import { createServerClient } from '@supabase/ssr';
 import { NextResponse } from 'next/server';
 
 export async function proxy(request) {
+  if (['/local','/studio-sw.js'].includes(request.nextUrl.pathname)) return NextResponse.next({ request });
   if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY) {
     return NextResponse.next({ request });
   }
@@ -17,7 +18,7 @@ export async function proxy(request) {
       },
     },
   });
-  await client.auth.getClaims();
+  try { await client.auth.getClaims(); } catch { /* Routes still enforce owner authorization; cached local work can open. */ }
   return response;
 }
 
