@@ -212,6 +212,7 @@ Confirmed user screenshot and enabled admin_users record xrkr80hdadmin (Travis).
 - Updated the current ConnectionsPanel with separate tool choices, custom tool support, named one-time key display, Copy key feedback/manual fallback, and active/revoked/expired history with dates. No existing token plaintext is retrievable.
 - JSX compilation passed. Existing eight security/provider/recovery tests passed. Signed-in UI verification remains unavailable in the agent browser; no provider generation or credit spend was performed.
 
-## Asset thumbnail repair (2026-10-17)
-- Fixed CinematicStudio card previews selecting the asset's own ID before attached reference IDs. The selector now tests candidates against saved project references and falls through stale IDs; approved output previews take priority. Cards request thumbnail previews.
-- Four focused regression tests passed: structured assets, stale output fallback, approved outputs/raw uploads, and missing/foreign references. Live browser visual verification remains unavailable in the agent browser.
+## Thumbnail and navigation repair (2026-10-17)
+- Fixed preview selection choosing asset IDs before existing attached references. Four focused regression tests and eight existing tests passed.
+- Added Back and Overview / Project / Current page breadcrumbs throughout the studio, plus View reference uploads beside the workspace upload action, opening and scrolling to the project's image gallery.
+- Studio TSX compilation passed for the navigation changes. Live signed-in visual verification unavailable to agent browser.
