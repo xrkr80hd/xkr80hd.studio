@@ -239,3 +239,7 @@ User confirmed xrkr80hdadmin (existing site admin, display name Travis). Map Gam
 
 ## 2026-10-17 XCE interface restoration
 - Restore the original project/workspace/asset/shot interface on xstudio.xrkr80hd.studio, private inline previews, strict project anchor binding, cached offline browsing, global list/grid controls, separate Rules, and touch controls. Preserve Supabase owner authentication and the existing connector.
+
+## Asset thumbnail repair (2026-10-17)
+- Resolve card previews from existing attached image records before the asset record ID; retain approved output priority and raw reference previews.
+- Verify missing/stale references do not suppress valid attachments and deploy the change to xstudio-private.

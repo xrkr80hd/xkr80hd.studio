@@ -1,6 +1,7 @@
 'use client';
 import {studioFetch as fetch} from '../lib/xce/studio-network.mjs';
 import PreviewImage from '../components/PreviewImage';
+import {assetPreviewReference} from '../lib/xce/asset-preview.mjs';
 import WorldLibrary from '../components/WorldLibrary';
 import {configureStore} from '../lib/xce/local-store.mjs';
 import {syncLocalProjects} from '../lib/xce/studio-network.mjs';
@@ -116,7 +117,7 @@ export default function Home({ownerId}:{ownerId:string}){
  function go(v:View){setView(v==='Projects'?'Studio':v);setQuery('')}
  function inspect(a:any){setSelected(a);setModal('detail')}
  async function copy(text:string){try{await navigator.clipboard.writeText(text);setNotice('Copied to clipboard.')}catch{setNotice('Copy unavailable. Select and copy the project ID below.')}}
- function thumbnail(a:any){const id=a.source_image_id||a.output_reference_id||a.preview_reference_id||a.blueprint_id||a.id||a.reference_ids?.[0];return id&&manifest.references[id]?<PreviewImage src={imageUrl(id)} alt={a.name||a.asset_id||a.id} loading="lazy"/>:<div className="asset-placeholder"><Aperture size={36}/><span>{a.category==='references'?'REFERENCE':'AWAITING IMAGE'}</span></div>}
+ function thumbnail(a:any){const id=assetPreviewReference(a,manifest.references);return id?<PreviewImage thumbnail src={imageUrl(id)} alt={a.name||a.asset_id||a.id} loading="lazy"/>:<div className="asset-placeholder"><Aperture size={36}/><span>{a.category==='references'?'REFERENCE':'AWAITING IMAGE'}</span></div>}
  const poolReferences=unassignedReferences(manifest) as any[];
  const libraryGroups=groupedLibraryReferences(refs);
  const savedSceneImages=libraryGroups.find(g=>g.folder==='Scenes')?.records||[];

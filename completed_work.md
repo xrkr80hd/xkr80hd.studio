@@ -211,3 +211,7 @@ Confirmed user screenshot and enabled admin_users record xrkr80hdadmin (Travis).
 - Rotated the revoked XCE token into a new owner-scoped 30-day read/write credential, installed as a Sites server secret; deployment succeeded and live XCE returned all 11 active projects. Revoked tokens remain revoked, primary Supabase storage unchanged.
 - Updated the current ConnectionsPanel with separate tool choices, custom tool support, named one-time key display, Copy key feedback/manual fallback, and active/revoked/expired history with dates. No existing token plaintext is retrievable.
 - JSX compilation passed. Existing eight security/provider/recovery tests passed. Signed-in UI verification remains unavailable in the agent browser; no provider generation or credit spend was performed.
+
+## Asset thumbnail repair (2026-10-17)
+- Fixed CinematicStudio card previews selecting the asset's own ID before attached reference IDs. The selector now tests candidates against saved project references and falls through stale IDs; approved output previews take priority. Cards request thumbnail previews.
+- Four focused regression tests passed: structured assets, stale output fallback, approved outputs/raw uploads, and missing/foreign references. Live browser visual verification remains unavailable in the agent browser.
