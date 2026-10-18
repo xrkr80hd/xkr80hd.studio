@@ -72,3 +72,27 @@ dialog.xce-shot-modal{border:0;margin:0;width:100%;height:100%;max-width:none;ma
 .character-quick-details .character-link-row .clause-text textarea{width:100%;max-width:100%;min-height:180px;box-sizing:border-box;margin:0;resize:vertical}
 .character-quick-details .character-link-row>button{align-self:flex-start}
 .character-quick-details .character-link-row+.character-link-row{padding-top:20px;border-top:1px solid var(--line)}
+
+/* Compact asset summary; character editors open from the action grid. */
+.asset-detail-dialog{width:min(520px,calc(100% - 24px));padding:14px}
+.asset-detail-dialog>.modal-header{top:-14px;margin:-14px -14px 12px;padding:8px 14px}
+.asset-detail-dialog>.modal-header .icon-button{width:36px;height:36px}
+.asset-detail-heading h2{font-size:23px;margin:0 0 5px}
+.asset-cast-label{margin:0 0 12px;color:var(--cyan);font-size:13px;line-height:1.3}
+.asset-detail-hero{margin-bottom:12px}
+.asset-detail-hero .asset-image img{max-height:260px}
+.asset-detail-actions{gap:7px;margin-bottom:12px}
+.asset-detail-actions>.button{min-height:42px;padding:8px;font-size:12px}
+.asset-detail-actions>.cast-group-action{grid-column:2;grid-row:2}
+.character-edit-panel[hidden]{display:none}
+.character-edit-panel{padding-top:12px;border-top:1px solid var(--line)}
+.cast-group-options h3{font-size:15px;margin:0 0 10px}
+.cast-group-options .cast-picker-choices{margin:10px 0;gap:7px}
+.cast-group-options .cast-picker-choices button{min-height:44px;padding:10px;font-size:13px}
+.character-edit-panel .form-accordion{margin:12px 0}
+.asset-detail-code{margin-top:12px;padding-top:12px;gap:8px;grid-template-columns:1fr 1fr}
+.asset-detail-code>div{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.asset-detail-code span{margin:0}
+.asset-detail-code>.primary{grid-column:auto}
+.asset-detail-code>.button{min-height:40px;padding:8px;font-size:12px}
+.asset-detail .full{min-height:40px;font-size:12px}
