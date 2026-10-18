@@ -1,3 +1,13 @@
+# XCE_COMPOSER implementation · 2026-10-17
+
+- Added the native /composer project page and shared navigation entry. Existing and newly created projects resolve their own inventory, grades, shot lists and compositions without initialization writes or a second database.
+- Added thumbnail inventory, click/desktop drag placement, mobile long-press selection and position-slider fallback, depth/actions/relationships, simple look controls and advanced accordions, live unverified prompt/JSON preview, server-verified output, copy/save/edit/duplicate and ZIP exports with actual image bytes.
+- Added a strict versioned compiler. Exact project assets, LOCKED references and required parents are resolved; current image bytes are downloaded from allowlisted authenticated storage and bounded/hashed. Missing/deleted/foreign/diagnostic/draft anchors fail without substitution. The mandatory XSTUDIO directive is compiler-injected on regenerated and exported outputs. Hash validation proves retrieval, not visual fidelity.
+- Compositions, bounded configuration history and staged/reviewed asset intelligence live additively in existing manifests. Existing assets/IDs/grades/anchors are unchanged. Research Asset prepares a source-aware brief; automated online research is not wired to a provider.
+- Added owner-session/scoped-token API with CSRF checks, existing folder-lock enforcement, optimistic project/record revisions and save readback. Prepared OpenAPI integration and synchronized JSON schema; no new registered ChatGPT plugin or MCP transport was published.
+- Verification: 75 Node tests pass (41 composer tests plus existing regressions); production Next build/type check pass. Browser automation is unavailable in this session, so desktop pointer/mobile touch visual E2E and authenticated live saves are not claimed as tested. No database migration or test records were introduced into production.
+- Release authorized by the user after local checks. Production branch and project verified against the current Vercel deployment before pushing.
+
 # Completed Work
 
 ## 2026-06-28

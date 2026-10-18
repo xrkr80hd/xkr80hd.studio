@@ -1,5 +1,12 @@
 # Planned Work
 
+## XCE_COMPOSER additive local implementation (2026-10-17)
+
+- Inspect and reuse owner authentication, project manifests, immutable references, grade library, local image components and shot list structures.
+- Add a visual composer, strict approved-reference compiler, verified media packaging, versioned project compositions/intelligence notes, authenticated API and preparatory plugin interface.
+- Test directive injection, relationships, missing/foreign anchors, media byte validation, revision conflicts and existing-module regression.
+- User authorized testing and production push on 2026-10-17 after the local implementation. Release only to the verified XSTUDIO production branch codex/xstudio-private.
+
 ## Blog channel avatar right-side overlay
 
 - [x] Use the agent system to audit the shared public blog channel hero overlay.
