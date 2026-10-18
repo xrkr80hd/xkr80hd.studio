@@ -1,3 +1,4 @@
+import {saveSceneCast} from './scene-cast.mjs';
 import 'server-only';
 import {requireOwner} from '../xstudio-server';
 import {engineRequest} from './session-backend';
@@ -46,6 +47,11 @@ export async function composerRequest(req:Request){
   }
   if(req.method!=='POST')throw Error('Use POST for this operation');
   const write=(next:any)=>persistComposition(request,p,next,revision,args.expected_revision);
+  if(action==='scene_cast'){
+   if(args.confirm!==true)throw Error('Explicit save confirmation required');
+   const next=saveSceneCast(m,args.scene_id,args.character_ids);
+   const updated=await write(next);return json({saved:true,revision:updated,scene:next.scenes[args.scene_id]});
+  }
   if(action==='character_state'){
    if(args.confirm!==true)throw Error('Explicit save confirmation required');
    const next=editCharacterState(m,args,worldRecords(m));

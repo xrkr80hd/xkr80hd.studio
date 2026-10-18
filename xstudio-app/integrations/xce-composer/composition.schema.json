@@ -593,6 +593,19 @@
           ],
           "additionalProperties": false
         },
+        "source_scene": {
+          "type": "object",
+          "properties": {
+            "scene_id": {
+              "type": "string",
+              "maxLength": 2000
+            }
+          },
+          "required": [
+            "scene_id"
+          ],
+          "additionalProperties": false
+        },
         "formations": {
           "type": "array",
           "maxItems": 20,
@@ -941,6 +954,11 @@
       "additionalProperties": true
     },
     "entity_bindings": {
+      "type": "object",
+      "properties": {},
+      "additionalProperties": true
+    },
+    "scene_reference": {
       "type": "object",
       "properties": {},
       "additionalProperties": true

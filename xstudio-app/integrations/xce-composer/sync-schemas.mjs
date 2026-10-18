@@ -9,6 +9,9 @@ api.paths['/api/composer'].post.requestBody.content['application/json'].schema.p
 api.components.schemas={...(api.components.schemas||{}),...ENTITY_SCHEMAS,EquipmentBinding:EQUIPMENT_BINDING_SCHEMA,CharacterDirection:CHARACTER_DIRECTION_SCHEMA,SceneSetting:SCENE_SETTING_SCHEMA};
 const properties=api.paths['/api/composer'].post.requestBody.content['application/json'].schema.properties;
 if(!properties.action.enum.includes('character_state'))properties.action.enum.push('character_state');
+if(!properties.action.enum.includes('scene_cast'))properties.action.enum.push('scene_cast');
+properties.scene_id={type:'string',maxLength:128};
+properties.character_ids={type:'array',maxItems:50,items:{type:'string',maxLength:128}};
 properties.state=CHARACTER_STATE_SCHEMA;
 properties.operation={type:'string',enum:['save','lock','unlock','delete']};
 properties.expected_version={type:'integer',minimum:0};

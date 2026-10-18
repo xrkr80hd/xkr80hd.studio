@@ -125,7 +125,8 @@
                       "intelligence",
                       "character_details",
                       "cast_group",
-                      "character_state"
+                      "character_state",
+                      "scene_cast"
                     ]
                   },
                   "project_id": {
@@ -697,6 +698,19 @@
                         ],
                         "additionalProperties": false
                       },
+                      "source_scene": {
+                        "type": "object",
+                        "properties": {
+                          "scene_id": {
+                            "type": "string",
+                            "maxLength": 2000
+                          }
+                        },
+                        "required": [
+                          "scene_id"
+                        ],
+                        "additionalProperties": false
+                      },
                       "formations": {
                         "type": "array",
                         "maxItems": 20,
@@ -986,6 +1000,18 @@
                       "unlock",
                       "delete"
                     ]
+                  },
+                  "scene_id": {
+                    "type": "string",
+                    "maxLength": 128
+                  },
+                  "character_ids": {
+                    "type": "array",
+                    "maxItems": 50,
+                    "items": {
+                      "type": "string",
+                      "maxLength": 128
+                    }
                   }
                 },
                 "additionalProperties": false

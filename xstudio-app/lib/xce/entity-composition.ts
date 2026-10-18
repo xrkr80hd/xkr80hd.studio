@@ -35,6 +35,7 @@ export interface EntityCompositionConfig {
  equipment_bindings?: EquipmentBinding[];
  character_directions?: CharacterDirection[];
  scene_setting?: SceneSetting;
+ source_scene?: {scene_id: string};
 }
 export interface EquipmentBinding {
  id: string;
