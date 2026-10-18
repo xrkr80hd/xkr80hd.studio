@@ -1,11 +1,12 @@
 'use client';
 
 import { useState } from 'react';
+import { safeReturn } from '../lib/oauth/return-path.mjs';
 import { createBrowserClient } from '@supabase/ssr';
 
 const OWNER_EMAIL = 'xrkr80hd@gmail.com';
 
-export default function LoginForm({ recovery }) {
+export default function LoginForm({ recovery, next }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [busy, setBusy] = useState(false);
@@ -26,7 +27,7 @@ export default function LoginForm({ recovery }) {
       });
       const payload = await response.json();
       if (!response.ok || !payload.user) throw new Error(payload.error || 'Sign in failed.');
-      window.location.assign('/');
+      window.location.assign(safeReturn(next));
     } catch (cause) {
       setError(cause.message || 'Sign in failed.');
     } finally {

@@ -7,6 +7,6 @@ export const metadata = {
 };
 
 export default async function LoginPage({ searchParams }) {
-  const { recovery } = await searchParams;
-  return <LoginForm recovery={recovery} />;
+  const { recovery, next } = await searchParams;
+  return <LoginForm recovery={recovery} next={next} />;
 }

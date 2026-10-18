@@ -2,7 +2,7 @@ import { createServerClient } from '@supabase/ssr';
 import { NextResponse } from 'next/server';
 
 export async function proxy(request) {
-  if (['/local','/studio-sw.js'].includes(request.nextUrl.pathname)) return NextResponse.next({ request });
+  if (['/local','/studio-sw.js','/mcp','/oauth/token','/oauth/register','/oauth/revoke','/.well-known/oauth-authorization-server','/.well-known/oauth-protected-resource','/.well-known/oauth-protected-resource/mcp'].includes(request.nextUrl.pathname)) return NextResponse.next({ request });
   if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY) {
     return NextResponse.next({ request });
   }
