@@ -23,3 +23,9 @@ GET research&project_id=…&asset_id=… prepares a research brief for approved 
 Compositions and intelligence are additive fields under the existing project manifest's composer key. Compositions store configuration, references remain existing inventory records, grades remain original grade IDs/version references. No new database, migration, sample assets, or active-project mutation. Optimistic project and record revisions reject conflicts. Configuration history is bounded to ten prior versions. No automatic restores or deleted-file recovery. Reference byte checks prove retrieval and integrity, not semantic visual fidelity or zero generation drift.
 
 The OpenAPI operations are a prepared API-based plugin interface, not a new MCP transport or a live registered plugin. Existing XCE_MV/MCP tools are untouched.
+
+## Scene descriptions and speed presets
+
+Composer includes 228 dropdown choices across 15 camera/environment/lighting/action fields. Custom values remain plain configuration strings, so existing saved scenes and approved-asset guidance are retained. The optional configuration.scene_action field supplies an overall action; assets with action="as described" follow it, while explicit per-asset actions remain authoritative. Earlier configurations without scene_action are accepted and normalized to an empty action.
+
+Every newly compiled or previewed prompt includes ACTION DESCRIPTION guidance to clarify the supplied movement, direction, speed, timing and interaction only when useful, preserving intent, selected assets, relationships and locked references. It does not authorize new story events, props, characters or generation. The same action_guidance is included in generated JSON and retained in image+prompt exports.

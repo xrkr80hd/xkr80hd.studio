@@ -1,3 +1,11 @@
+## Composer dropdown presets and action guidance · 2026-10-17
+
+- Added 228 preloaded choices across 15 fields: terrain, architecture, atmosphere, weather, time of day, lighting direction/quality, camera lens/angle/elevation/distance/framing/composition/movement and overall scene action. Native selects keep mobile interaction familiar; every field offers Custom without erasing existing values.
+- Added “What’s happening?” with reusable action descriptions and custom prose. Optional scene_action remains backward compatible with previous saves. New assets follow overall scene action by default; explicit per-asset actions take priority.
+- Injected bounded action-enhancement guidance into preview/final prompts and exported JSON: clarify motion, direction, speed, timing and interaction only as needed, preserving intent and approved references; never add new assets/events or override identity locks.
+- Preset choices use existing scene configuration fields; no database migrations, approved asset changes or grade changes. Other pages/forms are untouched.
+- All 78 tests pass, including preset-to-prompt/JSON compilation, legacy/custom preservation and action/save/reopen/ZIP guardrail retention. Type checking and the clean production build pass. Signed-in browser controls remain unverified because the cloud browser is at owner sign-in.
+
 ## XCE_COMPOSER mobile recheck · 2026-10-17
 
 - Rechecked forms, canvas controls, modal focus/close, navigation and narrow-screen wrapping after the user requested a mobile review.

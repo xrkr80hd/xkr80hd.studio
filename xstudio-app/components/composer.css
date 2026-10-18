@@ -14,3 +14,5 @@
 @media(max-width:360px){.xce-composer .comp-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.xce-composer .comp-position{grid-template-columns:1fr}}
 
 .xce-composer .comp-grid>button[aria-pressed=true]{border-color:#92e4ef;box-shadow:inset 0 0 0 1px #92e4ef}
+
+.xce-composer .comp-preset-field{display:grid;gap:6px;min-width:0}.xce-composer .comp-preset-field>label{text-transform:capitalize}.xce-composer .comp-preset-field textarea{min-height:100px;resize:vertical}.xce-composer .comp-preset-field select{text-overflow:ellipsis}

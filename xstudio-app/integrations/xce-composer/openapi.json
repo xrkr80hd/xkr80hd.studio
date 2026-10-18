@@ -163,13 +163,27 @@
                             "action": {
                               "type": "string",
                               "enum": [
+                                "as described",
                                 "standing",
                                 "walking",
                                 "running",
                                 "flying",
                                 "arriving",
                                 "interacting",
-                                "observing"
+                                "observing",
+                                "sitting",
+                                "turning",
+                                "jumping",
+                                "landing",
+                                "climbing",
+                                "swimming",
+                                "driving",
+                                "riding",
+                                "reaching",
+                                "holding",
+                                "crouching",
+                                "looking back",
+                                "departing"
                               ]
                             }
                           },
@@ -395,6 +409,10 @@
                         ]
                       },
                       "negative_constraints": {
+                        "type": "string",
+                        "maxLength": 2000
+                      },
+                      "scene_action": {
                         "type": "string",
                         "maxLength": 2000
                       }

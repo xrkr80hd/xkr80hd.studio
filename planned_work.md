@@ -1,5 +1,11 @@
 # Planned Work
 
+## Composer speed presets and action description · 2026-10-17
+
+- Replace camera/environment/lighting text-only controls with preloaded, mobile-friendly dropdowns and a Custom option that preserves existing values.
+- Add an optional scene-action description to the shared prompt/JSON compiler and saved configurations, retaining compatibility with earlier compositions.
+- Keep anchor enforcement, grades and other pages unchanged; verify presets, legacy saves, action persistence, exports and production build before release.
+
 ## XCE_COMPOSER additive local implementation (2026-10-17)
 
 - Inspect and reuse owner authentication, project manifests, immutable references, grade library, local image components and shot list structures.
