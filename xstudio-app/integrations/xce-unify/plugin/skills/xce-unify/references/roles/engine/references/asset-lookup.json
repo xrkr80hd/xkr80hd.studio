@@ -1,0 +1,150 @@
+{
+  "schema_version": "1.0.0",
+  "contract": "xce-explicit-asset-lookup",
+  "app_name": "XCE — Xstudio Cinematic Engine",
+  "site_url": "https://xce-cinematic-engine.xrkr80hd.chatgpt.site",
+  "mcp_url": "https://xce-cinematic-engine.xrkr80hd.chatgpt.site/mcp",
+  "activation": {
+    "requires_available_connected_app": true,
+    "when_unavailable": "Stop live XCE lookup; use the authorized read-only backup recovery below when available. Ask the user to select or @mention XCE to restore the live connection.",
+    "cannot_force_host_tool_selection": true
+  },
+  "triggers": [
+    "Exact saved asset code",
+    "Copy for ChatGPT handoff",
+    "Use a saved character, creature, prop, vehicle, location, scene, storyboard or reference by name",
+    "Retrieve, inspect, continue, edit or regenerate a saved XCE asset"
+  ],
+  "stop_controls": {
+    "STBY": "acknowledge_only",
+    "RPTPLS": "repeat_understanding_only",
+    "RPTALLPLS": "repeat_understanding_only",
+    "ANSR": "answer_only",
+    "LTSTLK": "discuss_only",
+    "BRNSTRM": "discuss_only"
+  },
+  "scope": {
+    "owner_only": true,
+    "explicit_code_overrides_active_project": true,
+    "explicit_project_must_match": true,
+    "cross_project_mix_requires_explicit_user_intent": true,
+    "never_create_project_for_lookup": true,
+    "never_use_active_asset_as_code_fallback": true
+  },
+  "lookup": {
+    "primary": {
+      "tool": "resolve_asset_code",
+      "arguments": {
+        "asset_code": "<exact supplied code>"
+      }
+    },
+    "fallbacks_only_when_tool_unavailable": [
+      {
+        "tool": "resolve_asset_reference",
+        "arguments": {
+          "asset_name": "<exact supplied code>"
+        }
+      },
+      {
+        "tool": "get_reference",
+        "arguments": {
+          "reference_id": "<exact supplied code>"
+        }
+      }
+    ],
+    "never_fallback_after_access_or_lookup_error": true,
+    "name_lookup": "Resolve the named project if supplied, inspect its manifest, disambiguate stored names and use returned IDs. Do not infer from franchise canon.",
+    "code_normalization": "Trim outer whitespace and normalize case; preserve internal separators and identifiers.",
+    "multiple_codes": "Resolve each supplied code separately. Do not render the combined job until every required reference is retrieved and checked."
+  },
+  "verification": {
+    "require": [
+      "Exact returned code",
+      "Stored record name and category",
+      "Owning project",
+      "Returned reference IDs",
+      "Actual image content blocks for visual work"
+    ],
+    "visual_inputs": "Inspect and pass the actual returned images into the image tool. Text, metadata, filenames and URLs do not prove image-conditioned generation.",
+    "drafts": "Allow explicit draft retrieval; do not auto-approve.",
+    "scene": "Preserve the uploaded storyboard as a composition reference. Do not invent shots or import character identity from it.",
+    "diagnostic": "Failed or DIAGNOSTIC images may be inspected for diagnosis only; never use them as generation identity inputs."
+  },
+  "on_failure": {
+    "not_found": "Stop and identify the missing code; no similar-name replacement.",
+    "ambiguous": "Stop and ask which stored record is intended.",
+    "project_mismatch": "Stop and report the owning project; do not silently switch.",
+    "folder_locked": "Stop and ask the user to unlock the project in Xstudio. Never request a PIN in chat.",
+    "unauthorized": "Stop; preserve owner boundaries.",
+    "missing_or_unsupported_image": "Report that visual retrieval failed; never claim visual inspection or substitute an online image.",
+    "host_image_transfer_unavailable": "Stop the image-dependent task and explain that the actual retrieved image cannot be supplied to the renderer."
+  },
+  "intent": {
+    "lookup_only": "Retrieve and report the resolved asset; do not generate, mutate, save, lock, move or delete.",
+    "authorized_production": "After retrieval and actual image inspection, honor the requested operation, source roles, preflight and free/included generation rules.",
+    "retry": "Fetch original saved sources again; never use the rejected output as identity."
+  },
+  "post_generation": {
+    "destination": "Explicit user destination; otherwise xce-lost-assets under standing save authorization.",
+    "method": "register_reference with actual final bytes when supported; verify with inspect_project_manifest.",
+    "originals": "Keep separate; never overwrite or auto-lock.",
+    "uncertain_save": "Inspect before retrying; report partial saves honestly.",
+    "unavailable_bytes": "Deliver the successful image and report studio saving incomplete; never fabricate a save.",
+    "idempotency": "Pass a stable idempotency_key for the exact output, using its host output ID or a SHA-256-derived key. Reuse it only for identical bytes. register_reference verifies stored bytes, returns reused=true for completed retries and refuses recreation of intentionally deleted outputs.",
+    "active_project": "Saving to Lost Assets must preserve the active creative project."
+  },
+  "completion": {
+    "report_separately": [
+      "retrieval",
+      "visual inspection",
+      "image-input handoff",
+      "generation",
+      "persistence"
+    ],
+    "never_claim": [
+      "Every regular chat will invoke XCE automatically",
+      "JSON alone changes host app availability",
+      "Passing code checks proves visual likeness",
+      "Background saving is guaranteed"
+    ]
+  },
+  "recovery": {
+    "primary": "Authenticated live XCE site data",
+    "secondary": "Connected ChatGPT file tools, under /XSTUDIO/<exact project name>/Site Backup",
+    "native_chatgpt_project": "No automatic access is assumed. A native ChatGPT Project and the XSTUDIO file folder are different destinations.",
+    "when_allowed": [
+      "Live XCE tools unavailable",
+      "Live connection transport failure",
+      "Diagnostic investigation of a code not found in the live site"
+    ],
+    "search_steps": [
+      "Search exact supplied asset code with the connected file tools, then the exact project name and saved project-records filename.",
+      "Read the matched backup JSON; do not rely on snippets or similar filenames.",
+      "Verify exact asset_code, project_id, project name, backup timestamp and snapshot revision. Disambiguate multiple projects or versions.",
+      "Locate actual linked image files in that project folder using retained file identities and hashes when available. A records JSON without image files cannot provide visual inputs.",
+      "Report backup provenance and age. Reconcile with the live site when available before production or any write."
+    ],
+    "never_bypass": [
+      "Folder lock",
+      "Permission denial",
+      "Explicit project mismatch",
+      "Ambiguous identity",
+      "Intentional deletion",
+      "Rejected-source exclusion"
+    ],
+    "backup_is_not_live_authority": true,
+    "automatic_restore": false,
+    "missing_media": "Stop visual work and report the missing actual image; metadata is not a reference image.",
+    "authorization_during_outage": "A records backup cannot prove current lock/deletion/access status. Use it only for diagnostic read-only inspection when authorization is uncertain; stop production, restoration and writes until live access/state is confirmed."
+  },
+  "lock": {
+    "trigger": "Explicit LOCK for the exact reviewed edited image",
+    "site": "lock_asset_anchor verifies the recorded visual review and source image ID, then approves that exact version.",
+    "code": "The asset code retrieves only that locked source image, never a newer unapproved edit or all historical inputs.",
+    "other_versions": "Retain files; discard sibling draft versions from production. No automatic deletion.",
+    "second_destination": "Save actual locked image bytes and the verified asset/project/code record under /XSTUDIO/<project name>/Site Backup using connected file tools.",
+    "completion": "Report site lock and folder save separately. Pending or failed folder save is not a successful dual-destination completion.",
+    "native_project": "Do not claim that a file-folder save attaches the file to a native ChatGPT Project."
+  }
+}
+

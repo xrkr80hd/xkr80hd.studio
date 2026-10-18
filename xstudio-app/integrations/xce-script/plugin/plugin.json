@@ -1,0 +1,26 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "xce-script",
+  "version": "1.1.1",
+  "description": "Ingest XSTUDIO prompts or scene files in chat and enhance, build, generate or collaboratively write grounded scripts.",
+  "author": {
+    "name": "XRKR"
+  },
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "XCE_SCRIPT",
+        "shortDescription": "From XSTUDIO prompt to script",
+        "longDescription": "Read your XSTUDIO Composer prompt, scene export or current script directly in chat. Interpret intent, preserve selected references and continuity, then help plan, enhance or write filmable dialogue and action beats.",
+        "developerName": "XRKR",
+        "category": "Productivity",
+        "capabilities": [],
+        "defaultPrompt": [
+          "Ingest this XSTUDIO prompt and help me develop its script.",
+          "Enhance this script while preserving its intent and character voices.",
+          "LTSTLK: help me work out the next scene beat."
+        ]
+      }
+    }
+  }
+}

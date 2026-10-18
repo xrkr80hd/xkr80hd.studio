@@ -1,0 +1,54 @@
+{
+  "version": "1.0.12",
+  "aspect_ratio": "16:9",
+  "views": [
+    "front_full",
+    "side_90_full",
+    "three_quarter_full",
+    "rear_full",
+    "front_bust",
+    "profile_90_bust"
+  ],
+  "palette": false,
+  "equipment_source": "visible_and_needed_only",
+  "voice_limit": 120,
+  "quality_checks": [
+    "identity",
+    "costume",
+    "equipment",
+    "anatomy",
+    "profiles",
+    "silhouette",
+    "title",
+    "description",
+    "layout",
+    "no_palette"
+  ],
+  "modes": {
+    "simple": {
+      "description_panel": false,
+      "equipment_panels": false,
+      "detail_panels": false,
+      "layout": "six_columns",
+      "name_position": "bottom_center",
+      "bust_positions": [
+        "column_5",
+        "column_6"
+      ],
+      "background": "neutral_gray"
+    },
+    "complex": {
+      "description_panel": true,
+      "equipment_panels": "visible_and_needed_only",
+      "detail_panels": "visible_and_needed_only",
+      "bust_positions": [
+        "upper_right",
+        "lower_right"
+      ],
+      "background": "neutral_light_gray",
+      "layout": "four_columns_stacked_portraits",
+      "name_position": "top_left"
+    }
+  }
+}
+

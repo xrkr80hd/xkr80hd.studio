@@ -1,0 +1,442 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://xstudio.xrkr80hd.studio/schemas/xce-gpt-batch-3.1.0.json",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "3.1.0-GPT-BATCH-HANDOFF"
+    },
+    "module": {
+      "type": "string",
+      "const": "XCE_GPT_BATCH"
+    },
+    "source_site": {
+      "type": "string",
+      "const": "https://xstudio.xrkr80hd.studio"
+    },
+    "project_id": {
+      "type": "string"
+    },
+    "scene_id": {
+      "type": "string"
+    },
+    "project_revision": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "export_timestamp": {
+      "type": "string"
+    },
+    "gpt_upload_ready": {
+      "type": "boolean"
+    },
+    "production_ready": {
+      "type": "boolean"
+    },
+    "deployment_gate": {
+      "type": "object",
+      "properties": {},
+      "additionalProperties": true
+    },
+    "xstudio_export_hub_module": {
+      "type": "object",
+      "properties": {},
+      "additionalProperties": true
+    },
+    "xce_unify_orchestrator_block": {
+      "type": "object",
+      "properties": {
+        "target_plugin": {
+          "type": "string",
+          "enum": [
+            "@XCE_UNIFY"
+          ]
+        },
+        "boot_priority": {
+          "type": "integer",
+          "enum": [
+            1
+          ]
+        },
+        "director_mode_locked": {
+          "type": "boolean",
+          "enum": [
+            true
+          ]
+        },
+        "aspect_ratio_lock": {
+          "type": "string",
+          "enum": [
+            "16:9"
+          ]
+        },
+        "shot_duration_range_seconds": {
+          "type": "object",
+          "properties": {
+            "minimum": {
+              "type": "integer",
+              "enum": [
+                3
+              ]
+            },
+            "maximum": {
+              "type": "integer",
+              "enum": [
+                6
+              ]
+            }
+          },
+          "required": [
+            "minimum",
+            "maximum"
+          ],
+          "additionalProperties": false
+        },
+        "pipeline_telemetry_hud": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "separate_16x9_images_for_batch_download": {
+          "type": "boolean"
+        },
+        "isolated_prompt_download_boxes_per_shot": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "target_plugin",
+        "boot_priority",
+        "director_mode_locked",
+        "aspect_ratio_lock",
+        "shot_duration_range_seconds",
+        "pipeline_telemetry_hud",
+        "separate_16x9_images_for_batch_download",
+        "isolated_prompt_download_boxes_per_shot"
+      ],
+      "additionalProperties": true
+    },
+    "xce_script_scene_tab_block": {
+      "type": "object",
+      "properties": {
+        "target_plugin": {
+          "type": "string",
+          "enum": [
+            "@XCE_SCRIPT"
+          ]
+        },
+        "authoring_mode": {
+          "type": "string"
+        },
+        "engine_mode": {
+          "type": "string"
+        },
+        "ltstlk_active": {
+          "type": "boolean"
+        },
+        "scene_intent": {
+          "type": "string"
+        },
+        "intent_interpretation": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "planning": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "pre_uploaded_roster": {
+          "type": "array",
+          "items": {}
+        },
+        "mood_dropdown_presets": {
+          "type": "array",
+          "items": {}
+        },
+        "dialogue_and_direction_timeline": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "character_id": {
+                "type": "string"
+              },
+              "character_name": {
+                "type": "string"
+              },
+              "mood": {
+                "type": "string"
+              },
+              "dialogue": {
+                "type": "string"
+              },
+              "dialogue_box_quoted": {
+                "type": "string"
+              },
+              "direction_box_1": {
+                "type": "string"
+              },
+              "direction_box_2": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "character_id",
+              "character_name",
+              "mood",
+              "dialogue",
+              "dialogue_box_quoted",
+              "direction_box_1",
+              "direction_box_2"
+            ],
+            "additionalProperties": true
+          }
+        }
+      },
+      "required": [
+        "target_plugin",
+        "authoring_mode",
+        "engine_mode",
+        "ltstlk_active",
+        "scene_intent",
+        "intent_interpretation",
+        "planning",
+        "pre_uploaded_roster",
+        "mood_dropdown_presets",
+        "dialogue_and_direction_timeline"
+      ],
+      "additionalProperties": true
+    },
+    "xce_composer_assets_and_states_block": {
+      "type": "object",
+      "properties": {
+        "target_plugin": {
+          "type": "string",
+          "enum": [
+            "@XCE_COMPOSER"
+          ]
+        },
+        "dynamic_project_roster": {
+          "type": "boolean"
+        },
+        "configuration": {},
+        "characters": {
+          "type": "array",
+          "items": {}
+        },
+        "active_transformation_sheets": {
+          "type": "array",
+          "items": {}
+        },
+        "mount_vehicle_bindings": {
+          "type": "array",
+          "items": {}
+        },
+        "equipment_bindings": {
+          "type": "array",
+          "items": {}
+        },
+        "character_directions": {
+          "type": "array",
+          "items": {}
+        },
+        "formations": {
+          "type": "array",
+          "items": {}
+        },
+        "assets": {
+          "type": "array",
+          "items": {}
+        },
+        "environment_and_room_anchors": {
+          "type": "array",
+          "items": {}
+        }
+      },
+      "required": [
+        "target_plugin",
+        "dynamic_project_roster",
+        "configuration",
+        "characters",
+        "active_transformation_sheets",
+        "mount_vehicle_bindings",
+        "equipment_bindings",
+        "character_directions",
+        "formations",
+        "assets",
+        "environment_and_room_anchors"
+      ],
+      "additionalProperties": true
+    },
+    "xce_mv_multiview_spatial_block": {
+      "type": "object",
+      "properties": {
+        "target_plugin": {
+          "type": "string",
+          "enum": [
+            "@XCE_MV"
+          ]
+        },
+        "halt_for_interactive_questions": {
+          "type": "boolean",
+          "enum": [
+            true
+          ]
+        },
+        "enforce_4_distinct_16x9_angles": {
+          "type": "boolean",
+          "enum": [
+            true
+          ]
+        },
+        "master_reference_frame": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "spatial_room_layout": {
+          "type": "array",
+          "items": {}
+        },
+        "default_4_angle_package": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 4,
+          "maxItems": 4
+        },
+        "mandatory_questions": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "selected_continuation_angle_id": {},
+        "no_generation_authorized_by_export": {
+          "type": "boolean",
+          "enum": [
+            true
+          ]
+        }
+      },
+      "required": [
+        "target_plugin",
+        "halt_for_interactive_questions",
+        "enforce_4_distinct_16x9_angles",
+        "master_reference_frame",
+        "spatial_room_layout",
+        "default_4_angle_package",
+        "mandatory_questions",
+        "selected_continuation_angle_id",
+        "no_generation_authorized_by_export"
+      ],
+      "additionalProperties": true
+    },
+    "xce_cge_color_and_lighting_block": {
+      "type": "object",
+      "properties": {
+        "target_plugin": {
+          "type": "string",
+          "enum": [
+            "@XCE_CGE"
+          ]
+        },
+        "lens_profile": {},
+        "proposed_lens_profile": {},
+        "camera_lock": {},
+        "lighting_anchor": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "lut_color_grade": {},
+        "lut_file_included": {
+          "type": "boolean"
+        },
+        "global_negative_guardrails": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "target_plugin",
+        "lens_profile",
+        "proposed_lens_profile",
+        "camera_lock",
+        "lighting_anchor",
+        "lut_color_grade",
+        "lut_file_included",
+        "global_negative_guardrails"
+      ],
+      "additionalProperties": true
+    },
+    "reference_validation": {
+      "type": "object",
+      "properties": {},
+      "additionalProperties": true
+    },
+    "harmonization": {
+      "type": "object",
+      "properties": {},
+      "additionalProperties": true
+    },
+    "master_prompt": {
+      "type": "string"
+    },
+    "scene_script": {
+      "type": "object",
+      "properties": {},
+      "additionalProperties": true
+    },
+    "compiled_composition": {
+      "type": "object",
+      "properties": {},
+      "additionalProperties": true
+    },
+    "source_scene": {
+      "type": "object",
+      "properties": {},
+      "additionalProperties": true
+    },
+    "character_context": {
+      "type": "object",
+      "properties": {},
+      "additionalProperties": true
+    },
+    "support_routes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": [
+    "schema_version",
+    "module",
+    "source_site",
+    "project_id",
+    "scene_id",
+    "project_revision",
+    "export_timestamp",
+    "gpt_upload_ready",
+    "production_ready",
+    "deployment_gate",
+    "xstudio_export_hub_module",
+    "xce_unify_orchestrator_block",
+    "xce_script_scene_tab_block",
+    "xce_composer_assets_and_states_block",
+    "xce_mv_multiview_spatial_block",
+    "xce_cge_color_and_lighting_block",
+    "reference_validation",
+    "harmonization",
+    "master_prompt",
+    "scene_script",
+    "compiled_composition",
+    "source_scene",
+    "character_context",
+    "support_routes"
+  ],
+  "additionalProperties": false
+}

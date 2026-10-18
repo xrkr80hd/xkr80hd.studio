@@ -1,0 +1,8 @@
+{
+  "plugin_id": "plugins_6ad44690a8bc81918ebab5c83769fc6d",
+  "release_id": "pluginrel_6ad446913f688191ba6c5a00905589ee",
+  "version": "1.1.1",
+  "plugin_url": "https://chatgpt.com/plugins/plugins_6ad44690a8bc81918ebab5c83769fc6d",
+  "capability": "in_chat_prompt_ingestion_and_screenwriting_skill",
+  "dedicated_script_mcp_connected": false
+}

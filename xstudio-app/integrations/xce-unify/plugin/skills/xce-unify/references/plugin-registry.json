@@ -1,0 +1,169 @@
+{
+  "registry_version": "2.0.0",
+  "source_of_truth": "https://xstudio.xrkr80hd.studio",
+  "refresh_policy": "Rediscover current tools and installed role instructions at each boot. Snapshots are fallbacks, not proof of current live state.",
+  "routes": [
+    {
+      "role": "XCE_ENGINE",
+      "aliases": [
+        "XCE \u2014 Xstudio Cinematic Engine",
+        "XSTUDIO core"
+      ],
+      "kind": "CONNECTED_APP",
+      "plugin_id": "plugin_asdk_app_sites_30ca9592f7f481919e6e5e704289ff37",
+      "app_id": "asdk_app_sites_30ca9592f7f481919e6e5e704289ff37",
+      "version": "1.0.9",
+      "rolebook": "roles/engine/SKILL.md",
+      "responsibilities": [
+        "project inventory",
+        "asset codes",
+        "anchor/reference retrieval",
+        "character and creature sheets",
+        "props/vehicles",
+        "location/room anchors",
+        "wardrobe",
+        "asset saving",
+        "scene blueprints",
+        "shot lists",
+        "reference reset"
+      ]
+    },
+    {
+      "role": "XCE_SCRIPT",
+      "kind": "WRITING_SKILL",
+      "plugin_id": "plugins_6ad44690a8bc81918ebab5c83769fc6d",
+      "version": "1.1.1",
+      "rolebook": "roles/script/SKILL.md",
+      "responsibilities": [
+        "prompt ingestion",
+        "intent",
+        "LTSTLK",
+        "dialogue",
+        "mood",
+        "action boxes",
+        "script JSON"
+      ],
+      "dedicated_script_api": "NOT_CONNECTED"
+    },
+    {
+      "role": "XCE_COMPOSER",
+      "kind": "MODULE_IN_XCE_ENGINE",
+      "plugin_id": "plugin_asdk_app_sites_30ca9592f7f481919e6e5e704289ff37",
+      "version": "LIVE_SCHEMA",
+      "rolebook": "roles/engine/SKILL.md",
+      "responsibilities": [
+        "composition",
+        "character state",
+        "equipment",
+        "mounts",
+        "formations",
+        "spatial relationships",
+        "image bytes",
+        "camera",
+        "scene themes"
+      ]
+    },
+    {
+      "role": "XCE_MV",
+      "kind": "DIRECTOR_SKILL",
+      "plugin_id": "plugins_6acb1ffb15d081918d84760d447368e2",
+      "version": "2.4.1",
+      "rolebook": "roles/mv/SKILL.md",
+      "responsibilities": [
+        "SL",
+        "SS",
+        "AS",
+        "CES",
+        "seven-shot workflow",
+        "FF/LF",
+        "MOD",
+        "Y/GEN gate",
+        "separate 16:9 frames",
+        "shot lists",
+        "four-angle UNIFY preflight",
+        "user-selected canonical continuation"
+      ],
+      "unify_mode": "FOUR_ANGLE_COVERAGE",
+      "standalone_mode": "SEVEN_SHOTS",
+      "unify_override": "harmonization.md"
+    },
+    {
+      "role": "XCE_CGE",
+      "aliases": [
+        "CGE",
+        "Color Grading Engine"
+      ],
+      "kind": "MODULE_IN_XCE_MV",
+      "plugin_id": "plugins_6acb1ffb15d081918d84760d447368e2",
+      "version": "2.4.1",
+      "rolebook": "roles/mv/references/cge.md",
+      "responsibilities": [
+        "saved factory/custom grades",
+        "parse",
+        "preview",
+        "stage",
+        "explicit grade writes",
+        "lighting/look continuity"
+      ],
+      "standalone_plugin_verified": false
+    },
+    {
+      "role": "COMMERCIAL_STORYBOARD",
+      "kind": "COMMERCIAL_SKILL",
+      "plugin_id": "plugins_6ac2f64fdebc8191bc46376e517ce36f",
+      "version": "1.0.1",
+      "rolebook": "roles/commercial/SKILL.md",
+      "responsibilities": [
+        "30s/60s",
+        "BRNSTRM",
+        "CMPN title lock",
+        "SFX-only track",
+        "exact runtime",
+        "commercial storyboard JSON"
+      ]
+    },
+    {
+      "role": "XSTUDIO_CTFORGE",
+      "aliases": [
+        "xstudio",
+        "CTForge",
+        "Character Turnaround Forge"
+      ],
+      "kind": "ANCHOR_SKILL",
+      "version": "1.0.14",
+      "rolebook": "roles/ctforge/SKILL.md",
+      "responsibilities": [
+        "MCSRL/MCSCB SMPL/CMPLX",
+        "PTP",
+        "RITP",
+        "six-view sheet contracts",
+        "face/body anchors",
+        "location visual quality",
+        "reset drift"
+      ],
+      "app_id": null
+    }
+  ],
+  "optional_adapters": [
+    {
+      "role": "AI_DIRECTOR_ENGINE",
+      "kind": "USER_SKILL",
+      "skill": "ai-director-engine",
+      "policy": "Discover for full film/production bible, edit, voice or platform routing; do not pretend it is an XCE API."
+    },
+    {
+      "role": "STORYBOARD_ARCADE",
+      "kind": "USER_SKILL",
+      "skill": "storyboard-arcade",
+      "policy": "Discover for .storyboard.json imports and preserve actual embedded reference mappings."
+    }
+  ],
+  "discovery": {
+    "live_composer_schema_verified": true,
+    "reported_source": "https://xstudio.xrkr80hd.studio",
+    "project_inventory_read": true,
+    "verification_scope": "Read-only creation-time check; repeat for actual scene boot.",
+    "no_project_assets_copied_into_plugin": true
+  },
+  "harmonization_protocol": "XCE_HARMONIZATION_AND_TELEMETRY_V1"
+}

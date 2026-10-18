@@ -1,0 +1,37 @@
+{
+  "files": [
+    {
+      "name": "character-sheet.md",
+      "path": "references/character-sheet.md"
+    },
+    {
+      "name": "locations.md",
+      "path": "references/locations.md"
+    },
+    {
+      "name": "production.md",
+      "path": "references/production.md"
+    },
+    {
+      "name": "platforms.md",
+      "path": "references/platforms.md"
+    },
+    {
+      "name": "contract.json",
+      "path": "references/contract.json"
+    },
+    {
+      "name": "voices.json",
+      "path": "references/voices.json"
+    },
+    {
+      "name": "prompt-this-picture.md",
+      "path": "references/prompt-this-picture.md"
+    },
+    {
+      "name": "simple-finishing.md",
+      "path": "references/simple-finishing.md"
+    }
+  ]
+}
+

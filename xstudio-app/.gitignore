@@ -7,3 +7,7 @@ supabase/.temp/
 *.tsbuildinfo
 
 next-env.d.ts
+
+# Python plugin verification output
+__pycache__/
+*.pyc

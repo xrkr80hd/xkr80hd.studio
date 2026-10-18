@@ -1,0 +1,812 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "XCE_SCRIPT API",
+    "version": "1.1.0",
+    "description": "Owner-session or existing scoped XSTUDIO connector access. Browser writes require same Origin. Intent-first host-chat handoff; no connected site text-model adapter. No sample project data is seeded."
+  },
+  "servers": [
+    {
+      "url": "https://xstudio.xrkr80hd.studio"
+    }
+  ],
+  "security": [
+    {
+      "StudioBearer": []
+    }
+  ],
+  "paths": {
+    "/api/scenes/script": {
+      "get": {
+        "operationId": "readSceneScript",
+        "summary": "Read live schema, projects, scenes, or a saved scene script",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "schema",
+                "projects",
+                "scenes",
+                "read"
+              ]
+            }
+          },
+          {
+            "name": "project_id",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "scene_id",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Live schema, inventory or saved record; no generation or mutation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input or state",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Origin or scope denied",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Project or scene missing",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Stale revision, roster or script",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Payload too large",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "423": {
+            "description": "Folder locked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Studio unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "operateSceneScript",
+        "summary": "Validate, explicitly save, authorize 123GO, hand off, or export a scene",
+        "description": "save requires document, confirm=true, expected_revision and expected_version; AI lines additionally require a saved digest-bound 123GO approval or a current explicit execution_command. validate/handoff/execution/export require document and scene/project IDs. execution verifies approved reference bytes but renders nothing. export returns a ZIP with unified-scene.json, script.txt and actual references. All changes use existing scene manifests.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "action": {
+                    "type": "string",
+                    "enum": [
+                      "schema",
+                      "projects",
+                      "scenes",
+                      "read",
+                      "validate",
+                      "handoff",
+                      "execution",
+                      "export",
+                      "save"
+                    ]
+                  },
+                  "project_id": {
+                    "type": "string",
+                    "pattern": "^[\\w-]{1,80}$"
+                  },
+                  "scene_id": {
+                    "type": "string",
+                    "pattern": "^[\\w-]{1,128}$"
+                  },
+                  "document": {
+                    "$ref": "#/components/schemas/SceneScript"
+                  },
+                  "confirm": {
+                    "type": "boolean"
+                  },
+                  "expected_revision": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "expected_version": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "execution_command": {
+                    "type": "string",
+                    "enum": [
+                      "123GO"
+                    ]
+                  }
+                },
+                "required": [
+                  "action"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Operation result or verified ZIP",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/zip": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input or state",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Origin or scope denied",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Project or scene missing",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Stale revision, roster or script",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Payload too large",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "423": {
+            "description": "Folder locked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Studio unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "StudioBearer": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Existing scoped xst_ connector token; never embed a token in project files."
+      }
+    },
+    "schemas": {
+      "SceneScript": {
+        "type": "object",
+        "properties": {
+          "schema_version": {
+            "const": "1.1.0",
+            "type": "string"
+          },
+          "module": {
+            "const": "XCE_SCRIPT",
+            "type": "string"
+          },
+          "source_url": {
+            "const": "https://xstudio.xrkr80hd.studio",
+            "type": "string"
+          },
+          "project_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[a-zA-Z0-9_-]+$"
+          },
+          "scene_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[a-zA-Z0-9_-]+$"
+          },
+          "authoring_mode": {
+            "type": "string",
+            "enum": [
+              "AI",
+              "LTSTLK",
+              "MANUAL"
+            ]
+          },
+          "engine_mode": {
+            "type": "string",
+            "enum": [
+              "INTENT_INTERPRETATION",
+              "LTSTLK_PLANNING",
+              "SCRIPT_EXECUTION"
+            ]
+          },
+          "scene_intent": {
+            "type": "string",
+            "maxLength": 20000
+          },
+          "minor_details": {
+            "type": "string",
+            "maxLength": 20000
+          },
+          "intent_interpretation": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "string",
+                "enum": [
+                  "NOT_ANALYZED",
+                  "PROPOSED",
+                  "REVIEWED"
+                ]
+              },
+              "decoded_subtext": {
+                "type": "string",
+                "maxLength": 10000
+              },
+              "dramatic_conflict": {
+                "type": "string",
+                "maxLength": 10000
+              },
+              "spatial_blocking_logic": {
+                "type": "string",
+                "maxLength": 10000
+              },
+              "character_motivations": {
+                "type": "string",
+                "maxLength": 10000
+              },
+              "unsaid": {
+                "type": "string",
+                "maxLength": 10000
+              },
+              "beats": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "maxLength": 2000
+                },
+                "maxItems": 100
+              }
+            },
+            "required": [
+              "status",
+              "decoded_subtext",
+              "dramatic_conflict",
+              "spatial_blocking_logic",
+              "character_motivations",
+              "unsaid",
+              "beats"
+            ],
+            "additionalProperties": false
+          },
+          "planning": {
+            "type": "object",
+            "properties": {
+              "notes": {
+                "type": "string",
+                "maxLength": 20000
+              },
+              "open_questions": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "maxLength": 2000
+                },
+                "maxItems": 50
+              },
+              "decisions": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "maxLength": 2000
+                },
+                "maxItems": 100
+              }
+            },
+            "required": [
+              "notes",
+              "open_questions",
+              "decisions"
+            ],
+            "additionalProperties": false
+          },
+          "roster": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "character_id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128,
+                  "pattern": "^[a-zA-Z0-9_-]+$"
+                },
+                "display_name": {
+                  "type": "string",
+                  "maxLength": 200
+                },
+                "anchor_locked": {
+                  "type": "boolean"
+                },
+                "reference_ids": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 128,
+                    "pattern": "^[a-zA-Z0-9_-]+$"
+                  },
+                  "maxItems": 30
+                }
+              },
+              "required": [
+                "character_id",
+                "display_name",
+                "anchor_locked",
+                "reference_ids"
+              ],
+              "additionalProperties": false
+            },
+            "maxItems": 50
+          },
+          "continuity": {
+            "type": "object",
+            "properties": {
+              "location_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128,
+                  "pattern": "^[a-zA-Z0-9_-]+$"
+                },
+                "maxItems": 30
+              },
+              "reference_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128,
+                  "pattern": "^[a-zA-Z0-9_-]+$"
+                },
+                "maxItems": 100
+              },
+              "composition_id": {
+                "type": "string",
+                "maxLength": 128
+              },
+              "current_story_state": {
+                "type": "string",
+                "maxLength": 20000
+              },
+              "start_state": {
+                "type": "string",
+                "maxLength": 10000
+              },
+              "end_state": {
+                "type": "string",
+                "maxLength": 10000
+              },
+              "progression": {
+                "type": "string",
+                "enum": [
+                  "SS",
+                  "AS"
+                ]
+              }
+            },
+            "required": [
+              "location_ids",
+              "reference_ids",
+              "composition_id",
+              "current_story_state",
+              "start_state",
+              "end_state",
+              "progression"
+            ],
+            "additionalProperties": false
+          },
+          "script_timeline": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "block_id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128,
+                  "pattern": "^[a-zA-Z0-9_-]+$"
+                },
+                "sequence_order": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "character_id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128,
+                  "pattern": "^[a-zA-Z0-9_-]+$"
+                },
+                "character_name": {
+                  "type": "string",
+                  "maxLength": 200
+                },
+                "mood": {
+                  "type": "string",
+                  "maxLength": 100
+                },
+                "dialogue": {
+                  "type": "string",
+                  "maxLength": 3000
+                },
+                "direction_box_1": {
+                  "type": "string",
+                  "maxLength": 3000
+                },
+                "direction_box_2": {
+                  "type": "string",
+                  "maxLength": 3000
+                },
+                "duration_seconds": {
+                  "type": "number",
+                  "minimum": 3,
+                  "maximum": 6
+                }
+              },
+              "required": [
+                "block_id",
+                "sequence_order",
+                "character_id",
+                "character_name",
+                "mood",
+                "dialogue",
+                "direction_box_1",
+                "direction_box_2",
+                "duration_seconds"
+              ],
+              "additionalProperties": false
+            },
+            "maxItems": 200
+          }
+        },
+        "required": [
+          "schema_version",
+          "module",
+          "source_url",
+          "project_id",
+          "scene_id",
+          "authoring_mode",
+          "engine_mode",
+          "scene_intent",
+          "minor_details",
+          "intent_interpretation",
+          "planning",
+          "roster",
+          "continuity",
+          "script_timeline"
+        ],
+        "additionalProperties": false,
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "$id": "https://xstudio.xrkr80hd.studio/schemas/scene-script-1.1.0.json"
+      },
+      "ScriptRequest": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": [
+              "schema",
+              "projects",
+              "scenes",
+              "read",
+              "validate",
+              "handoff",
+              "execution",
+              "export",
+              "save"
+            ]
+          },
+          "project_id": {
+            "type": "string",
+            "pattern": "^[\\w-]{1,80}$"
+          },
+          "scene_id": {
+            "type": "string",
+            "pattern": "^[\\w-]{1,128}$"
+          },
+          "document": {
+            "$ref": "#/components/schemas/SceneScript"
+          },
+          "confirm": {
+            "type": "boolean"
+          },
+          "expected_revision": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "expected_version": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "execution_command": {
+            "type": "string",
+            "enum": [
+              "123GO"
+            ]
+          }
+        },
+        "required": [
+          "action"
+        ],
+        "additionalProperties": false
+      }
+    }
+  }
+}

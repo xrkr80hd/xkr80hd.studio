@@ -1,0 +1,186 @@
+{
+  "source": "User Flow screenshots, 2026-09-24; null pitch = cropped/unspecified",
+  "voices": [
+    {
+      "name": "Achernar",
+      "label_gender": "Female",
+      "delivery": "soft",
+      "pitch": "high"
+    },
+    {
+      "name": "Achird",
+      "label_gender": "Male",
+      "delivery": "friendly",
+      "pitch": "mid"
+    },
+    {
+      "name": "Algenib",
+      "label_gender": "Male",
+      "delivery": "gravelly",
+      "pitch": "low"
+    },
+    {
+      "name": "Algieba",
+      "label_gender": "Male",
+      "delivery": "easy-going",
+      "pitch": null
+    },
+    {
+      "name": "Alnilam",
+      "label_gender": "Male",
+      "delivery": "firm",
+      "pitch": "mid-low"
+    },
+    {
+      "name": "Aoede",
+      "label_gender": "Female",
+      "delivery": "breezy",
+      "pitch": "mid"
+    },
+    {
+      "name": "Autonoe",
+      "label_gender": "Female",
+      "delivery": "bright",
+      "pitch": "mid"
+    },
+    {
+      "name": "Callirrhoe",
+      "label_gender": "Female",
+      "delivery": "easy-going",
+      "pitch": null
+    },
+    {
+      "name": "Charon",
+      "label_gender": "Male",
+      "delivery": "informative",
+      "pitch": "lower"
+    },
+    {
+      "name": "Despina",
+      "label_gender": "Female",
+      "delivery": "smooth",
+      "pitch": "mid"
+    },
+    {
+      "name": "Enceladus",
+      "label_gender": "Male",
+      "delivery": "breathy",
+      "pitch": "lower"
+    },
+    {
+      "name": "Erinome",
+      "label_gender": "Female",
+      "delivery": "clear",
+      "pitch": "mid"
+    },
+    {
+      "name": "Fenrir",
+      "label_gender": "Male",
+      "delivery": "excitable",
+      "pitch": null
+    },
+    {
+      "name": "Gacrux",
+      "label_gender": "Female",
+      "delivery": "mature",
+      "pitch": "mid"
+    },
+    {
+      "name": "Iapetus",
+      "label_gender": "Male",
+      "delivery": "clear",
+      "pitch": "mid-low"
+    },
+    {
+      "name": "Kore",
+      "label_gender": "Female",
+      "delivery": "firm",
+      "pitch": "mid"
+    },
+    {
+      "name": "Laomedeia",
+      "label_gender": "Female",
+      "delivery": "upbeat",
+      "pitch": null
+    },
+    {
+      "name": "Leda",
+      "label_gender": "Female",
+      "delivery": "youthful",
+      "pitch": null
+    },
+    {
+      "name": "Orus",
+      "label_gender": "Male",
+      "delivery": "firm",
+      "pitch": "mid-low"
+    },
+    {
+      "name": "Puck",
+      "label_gender": "Male",
+      "delivery": "upbeat",
+      "pitch": "mid"
+    },
+    {
+      "name": "Pulcherrima",
+      "label_gender": "Ungendered",
+      "delivery": "forward",
+      "pitch": null
+    },
+    {
+      "name": "Rasalgethi",
+      "label_gender": "Male",
+      "delivery": "informative",
+      "pitch": "mid"
+    },
+    {
+      "name": "Sadachbia",
+      "label_gender": "Male",
+      "delivery": "lively",
+      "pitch": "low"
+    },
+    {
+      "name": "Sadaltager",
+      "label_gender": "Male",
+      "delivery": "knowledgeable",
+      "pitch": null
+    },
+    {
+      "name": "Schedar",
+      "label_gender": "Male",
+      "delivery": "even",
+      "pitch": "mid-low"
+    },
+    {
+      "name": "Sulafat",
+      "label_gender": "Female",
+      "delivery": "warm",
+      "pitch": "mid"
+    },
+    {
+      "name": "Umbriel",
+      "label_gender": "Male",
+      "delivery": "smooth",
+      "pitch": "lower"
+    },
+    {
+      "name": "Vindemiatrix",
+      "label_gender": "Female",
+      "delivery": "gentle",
+      "pitch": "mid"
+    },
+    {
+      "name": "Zephyr",
+      "label_gender": "Female",
+      "delivery": "bright",
+      "pitch": null
+    },
+    {
+      "name": "Zubenelgenubi",
+      "label_gender": "Male",
+      "delivery": "casual",
+      "pitch": "mid-low"
+    }
+  ]
+}
+
