@@ -64,7 +64,7 @@ export async function authorize(req,deps={}){
    if(!Array.isArray(rows))throw new GatewayError('temporarily_unavailable',503);
    const projects=rows.flatMap(row=>{let m;try{m=JSON.parse(row.manifest);}catch{return [];}return m.deleted_at||m.folder_lock?[]:[{id:row.project,name:m.campaign_name||row.project}];});
    const f=await service.begin(args,projects);
-   return new Response(consentHTML(f),{status:200,headers:{...headers,'content-type':'text/html; charset=utf-8','content-security-policy':"default-src 'none'; style-src 'unsafe-inline'; form-action 'self'; frame-ancestors 'none'; base-uri 'none'",'x-frame-options':'DENY','set-cookie':`${cookieName(f.flow)}=${f.csrf}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=600`}});
+   return new Response(consentHTML(f),{status:200,headers:{...headers,'referrer-policy':'strict-origin','content-type':'text/html; charset=utf-8','content-security-policy':"default-src 'none'; style-src 'unsafe-inline'; form-action 'self'; frame-ancestors 'none'; base-uri 'none'",'x-frame-options':'DENY','set-cookie':`${cookieName(f.flow)}=${f.csrf}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=600`}});
   }
   if(req.headers.get('origin')!==ISSUER)throw new GatewayError('access_denied',403);
   const type=(req.headers.get('content-type')||'').split(';')[0];if(type!=='application/x-www-form-urlencoded')throw new GatewayError('invalid_request',415);
