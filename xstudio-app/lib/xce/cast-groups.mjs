@@ -1,4 +1,4 @@
-export const CAST_GROUPS={main:'Main Cast',supporting:'Supporting Cast',villain:'Villains',sub_villain:'Sub-villains',general:'General Cast'};
+export const CAST_GROUPS={main:'Main Cast',supporting:'Supporting Cast',villain:'Villains',sub_villain:'Sub-villains',general:'General Cast',background:'Background Characters',extras:'Extras / Crowd',military:'Military Unit / Crowd'};
 export function resolveCastCharacter(manifest,id,characters){
  const eligible=characters.filter(a=>a.type==='characters'&&!a.deleted_at&&!manifest.manifest_store?.creatures?.[a.id]);
  const exact=eligible.filter(a=>a.id===id||a.asset_id===id||a.asset_code===id);
@@ -11,9 +11,9 @@ export function resolveCastCharacter(manifest,id,characters){
  if(linked.length>1)throw Error('This image belongs to more than one character. Open the character itself to choose its cast group.');
  throw Error('This character is not available in the selected project. Reopen the saved character and retry.');
 }
-export function characterGroup(manifest,id){const group=manifest.character_cast_groups?.[id];return ['background','unassigned'].includes(group)?'general':Object.hasOwn(CAST_GROUPS,group)?group:'general';}
+export function characterGroup(manifest,id){const group=manifest.character_cast_groups?.[id];return group==='unassigned'?'general':Object.hasOwn(CAST_GROUPS,group)?group:'general';}
 export function assignCastGroup(manifest,id,group,characters){
- if(['background','unassigned'].includes(group))group='general';
+ if(group==='unassigned')group='general';
  if(!Object.hasOwn(CAST_GROUPS,group))throw Error('Choose a valid cast group');
  const characterId=resolveCastCharacter(manifest,id,characters);
  return {...manifest,character_cast_groups:{...(manifest.character_cast_groups||{}),[characterId]:group}};

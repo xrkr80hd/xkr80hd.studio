@@ -942,7 +942,7 @@
     "final_cinematic_prompt": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 300000
+      "maxLength": 1200000
     },
     "action_guidance": {
       "type": "string",
@@ -959,6 +959,11 @@
       "additionalProperties": true
     },
     "scene_reference": {
+      "type": "object",
+      "properties": {},
+      "additionalProperties": true
+    },
+    "world_builder": {
       "type": "object",
       "properties": {},
       "additionalProperties": true

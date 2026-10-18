@@ -1,0 +1,111 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://xstudio.xrkr80hd.studio/schemas/xce-firestarter-state-1.1.0.json",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "1.1.0"
+    },
+    "phase": {
+      "enum": [
+        "PLANNING",
+        "HANDOFF_READY"
+      ]
+    },
+    "project_id": {
+      "type": "string",
+      "pattern": "^[-\\w]{1,80}$"
+    },
+    "entries": {
+      "type": "array",
+      "maxItems": 200,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[-\\w]{1,100}$"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "CANON",
+              "PROPOSAL",
+              "OPEN_QUESTION",
+              "BREAKTHROUGH",
+              "REJECTED",
+              "RETIRED"
+            ]
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 3000
+          },
+          "character_ids": {
+            "type": "array",
+            "maxItems": 50,
+            "items": {
+              "type": "string",
+              "pattern": "^[-\\w]{1,128}$"
+            }
+          },
+          "source": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "USER",
+                  "SAVED_PROJECT",
+                  "RETRIEVED_CHAT",
+                  "IMPORTED_FILE"
+                ]
+              },
+              "reference": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1000
+              }
+            },
+            "required": [
+              "kind",
+              "reference"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "status",
+          "text",
+          "character_ids",
+          "source"
+        ]
+      }
+    },
+    "last_recap": {
+      "type": "string",
+      "maxLength": 30000
+    },
+    "open_questions": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 2000
+      }
+    }
+  },
+  "required": [
+    "schema_version",
+    "phase",
+    "project_id",
+    "entries",
+    "last_recap",
+    "open_questions"
+  ]
+}

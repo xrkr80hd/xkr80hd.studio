@@ -4,6 +4,22 @@
   "refresh_policy": "Rediscover current tools and installed role instructions at each boot. Snapshots are fallbacks, not proof of current live state.",
   "routes": [
     {
+      "role": "XCE_FIRESTARTER",
+      "aliases": [
+        "@XCE_FIRESTARTER"
+      ],
+      "kind": "PREPRODUCTION_PLUGIN",
+      "plugin_id": "plugins_6ad4561fc3f48191b26fa442e927100f",
+      "version": "1.1.0",
+      "responsibilities": [
+        "SS story development",
+        "STF narrative recap",
+        "US World Builder updates",
+        "XCE CONTINUE production handoff"
+      ],
+      "policy": "Optional creative preparation before UNIFY production boot. Discover the installed skill. Preserve its sourced canon, proposals and open questions; no unlimited-memory or background-sync claims."
+    },
+    {
       "role": "XCE_ENGINE",
       "aliases": [
         "XCE \u2014 Xstudio Cinematic Engine",

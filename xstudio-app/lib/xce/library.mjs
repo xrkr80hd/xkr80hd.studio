@@ -14,7 +14,7 @@ export function purgeTrash(m,args){
  need(args.confirm===true,'Confirm permanent deletion first');const trash=m.trash||{};
  const keys=args.empty_all?Object.keys(trash).filter(k=>!k.startsWith('scene-version:')):args.keys;
  need(keys?.length,'Select deleted items first');need(new Set(keys).size===keys.length,'Duplicate selected items');for(const key of keys)need(trash[key]&&!key.startsWith('scene-version:'),'Deleted item not found');
- const removing=new Set(keys);const remaining=[...Object.values(m.manifest_store).flatMap(Object.values),...Object.values(m.scenes),...Object.values(m.state_variants||{}).flatMap(Object.values),...Object.entries(trash).filter(([k])=>!removing.has(k)).map(([,t])=>t.record)];
+ const removing=new Set(keys);const remaining=[...Object.values(m.world_library||{}).flatMap(Object.values),...Object.values(m.manifest_store).flatMap(Object.values),...Object.values(m.scenes),...Object.values(m.state_variants||{}).flatMap(Object.values),...Object.entries(trash).filter(([k])=>!removing.has(k)).map(([,t])=>t.record)];
  for(const key of keys){const t=trash[key];const id=t.record.asset_id||t.record.scene_id||t.record.id||key.slice(key.indexOf(':')+1);const dependents=remaining.filter(r=>usesReference(r,id));need(!dependents.length,'Needed by '+(dependents[0]?.name||'another saved or deleted item')+'. Restore it or include the dependent deleted item in your selection.');}
  for(const key of keys)delete trash[key];m.permits={};m.history.push({kind:'purge_trash',count:keys.length,date:new Date().toISOString()});return {saved:true,permanently_deleted:keys.length};
 }

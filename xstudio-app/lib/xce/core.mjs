@@ -1,3 +1,4 @@
+import {compileWorld,worldContextHeader} from './world-builder.mjs';
 import {effectiveGrade,gradePrompt,GLOBAL_NEGATIVE} from './color-grades.mjs';
 import {shotId} from './namespace.mjs';
 import {checkWardrobe,wardrobeTokens} from './wardrobe.mjs';
@@ -30,7 +31,7 @@ export function compileShot(m,p){
  const refs=[scene.blueprint_id,...new Set(anchors.map(a=>a.source_image_id))];refCheck(m,refs);
  const effective_grade=Object.hasOwn(p,'effective_grade')?p.effective_grade:effectiveGrade(m,{sequence_id:scene.sequence_id,scene_id:p.scene_id,shot_id:p.asset_id});
  const tokens=effective_grade? [...anchors.flatMap(a=>traitTokens(a.immutable_traits)),'Visible subjects: '+scene.subject_count,'Blueprint blocking: '+scene.blocking,'Start: '+p.action_continuity.start_state,'End: '+p.action_continuity.end_state,...Object.entries(p.camera_spec).map(([k,v])=>k+': '+v),scene.lighting_palette,gradePrompt(effective_grade,p.medium),'Grade guardrails: '+GLOBAL_NEGATIVE+' '+effective_grade.definition.negativePrompt,'Full-bleed standalone landscape 16:9; no bars, grids, text or borders --ar 16:9']:['16:9 / storyboard_frame',...anchors.flatMap(a=>traitTokens(a.immutable_traits)),scene.lighting_palette,'Visible subjects: '+scene.subject_count,'Blueprint blocking: '+scene.blocking,...Object.entries(p.camera_spec).map(([k,v])=>k+': '+v),'Start: '+p.action_continuity.start_state,'End: '+p.action_continuity.end_state];
- return {...p,...(effective_grade?{effective_grade}:{}),asset_id:p.asset_id||shotId(m,scene,p.shot_number),target_deliverable:'storyboard_frame',anchor_ids:ids,assigned_reference_ids:refs,compiled_prompt_tokens:tokens,prompt_header:m.campaign_name||'',negative_constraints:['No unassigned subjects or props','No identity, costume, material or geometry drift','No labels, numbers, borders, reference text or plugin metadata inside the frame'],status:'DRAFT'};
+ return {...p,...(effective_grade?{effective_grade}:{}),asset_id:p.asset_id||shotId(m,scene,p.shot_number),target_deliverable:'storyboard_frame',anchor_ids:ids,assigned_reference_ids:refs,compiled_prompt_tokens:[worldContextHeader(compileWorld(m,m.project_id||m.active_project_code||''),p.assigned_character_ids),...tokens],prompt_header:m.campaign_name||'',negative_constraints:['No unassigned subjects or props','No identity, costume, material or geometry drift','No labels, numbers, borders, reference text or plugin metadata inside the frame'],status:'DRAFT'};
 }
 export function preflight(m,p){
  active(m);need(m.campaign_name,'Set CMPN campaign title before production');
@@ -40,7 +41,7 @@ export function preflight(m,p){
   const refreshed=compileShot(m,shot);tokens=refreshed.compiled_prompt_tokens;refs=refreshed.assigned_reference_ids;anchor_ids=refreshed.anchor_ids;
  }else{need(a,'Unknown draft asset');need(!a.discarded_for_production,'This version was discarded for production; use its selected locked anchor');need(!a.analysis_pending,'Inspect the assigned source images and complete_asset_analysis before generation');need(a.status==='DRAFT','Locked assets require a new draft version for generation');need(a.target_deliverable===p.target_deliverable,'Wrong deliverable for asset');checkWardrobe(a);tokens=canonical(a,m);refs=a.reference_ids;anchor_ids=[a.asset_id];}
  refCheck(m,refs);need(same(p.compiled_prompt_tokens,tokens),'Token drift detected: submit exact compiler tokens, without additions, omissions, reordering or paraphrases');need(same(p.assigned_reference_ids,refs),'Reference drift: use exact assigned IDs in returned order');
- return {passed:true,validation_scope:'Exact stored token, reference, state and continuity checks; pixel inspection still required.',prompt_header:m.campaign_name,compiled_prompt_tokens:tokens,image_generation_prompt:tokens.join('\n'),assigned_reference_ids:refs,anchor_ids};
+ return {passed:true,validation_scope:'Exact stored token, reference, state and continuity checks; pixel inspection still required.',prompt_header:m.campaign_name,compiled_prompt_tokens:[worldContextHeader(compileWorld(m,m.project_id||m.active_project_code||''),p.assigned_character_ids),...tokens],image_generation_prompt:tokens.join('\n'),assigned_reference_ids:refs,anchor_ids};
 }
 
 export function parseAssetCommand(text){

@@ -11,7 +11,7 @@ export function manage(m,a){
  const collection=entity==='reference'?m.references:entity==='scene'?m.scenes:m.manifest_store[categories[entity]];
  if(entity==='project'){
   if(action==='read')return {record:clean(m)};
-  if(action==='update')editProjectDetails(m,data)
+  if(action==='update'){if(data.world_builder?.firestarter_state&&data.world_builder.firestarter_state.project_id!==a.project_id)throw Error('Narrative state belongs to a different project');editProjectDetails(m,data)}
   else if(action==='delete'){need(a.confirm===true,'Delete confirmation required');m.deleted_at=new Date().toISOString()}
   else if(action==='restore')delete m.deleted_at;
   else throw Error('Use create_project or list_projects');
@@ -46,6 +46,7 @@ export function manage(m,a){
     for(const [listId,list] of Object.entries(m.shot_lists||{}))if(list.shots.some(s=>s.character_ids.includes(id)||s.reference_ids.includes(id)||s.image_reference_id===id))dependencies.push('shot-list:'+listId);
     for(const [sid,s] of Object.entries(m.scenes))if(sid!==id&&uses(s,id))dependencies.push('scene:'+sid);
     for(const [category,records] of Object.entries(m.manifest_store))for(const [aid,r] of Object.entries(records))if(aid!==id&&!(entity==='scene'&&r.scene_id===id)&&uses(r,id))dependencies.push(category+':'+aid);
+    for(const rows of Object.values(m.world_library||{}))for(const r of Object.values(rows))if(r.id!==id&&(uses(r,id)||Object.values(r.metadata||{}).includes(id)))dependencies.push('library:'+r.name);
     need(!dependencies.length,'Used by '+dependencies.join(', ')+'. Edit or delete those assignments first.');
     m.trash[entity+':'+id]={entity,id,record:structuredClone(record),deleted_at:new Date().toISOString()};delete collection[id];
     if(entity==='scene'){for(const shot of Object.values(record.shots||{})){if(m.manifest_store.shots[shot.asset_id]){m.trash['keyframe:'+shot.asset_id]={record:m.manifest_store.shots[shot.asset_id]};delete m.manifest_store.shots[shot.asset_id]}}if(m.active_scene===id)m.active_scene=null}

@@ -1,3 +1,4 @@
+import {compileWorld,worldContextHeader} from './world-builder.mjs';
 import {createHash} from 'node:crypto';
 import {zipSync,strToU8} from 'fflate';
 import {SCRIPT_SCHEMA,scriptSave,scriptHandoff,scriptText,validateScript,scriptWarnings} from './scene-script.mjs';
@@ -15,7 +16,7 @@ export function saveScriptRequest(m,p,s,doc,args){
 }
 export function scriptPackage(m,p,s,doc){
  const clean=validateScript(doc,m,p,s,{allowAiLines:authorizedScript(m,p,s,doc)}),rows=worldRecords(m),assetIds=[...clean.roster.map(r=>r.character_id),...clean.continuity.location_ids];
- return {...scriptHandoff(clean),assets:assetIds.map(id=>rows.find(a=>a.id===id)),character_stories:Object.fromEntries(assetIds.filter(id=>m.character_stories?.[id]).map(id=>[id,m.character_stories[id]])),character_context:characterContext(m,doc.roster.map(r=>r.character_id),rows),composition:clean.continuity.composition_id?m.composer.compositions[clean.continuity.composition_id]:null,script_schema:SCRIPT_SCHEMA,script_text:scriptText(clean),warnings:scriptWarnings(clean),reference_validation:{status:'NOT_RETRIEVED',images_retrieved:false}};
+ return {...scriptHandoff(clean),world_builder:compileWorld(m,p),world_context_header:worldContextHeader(compileWorld(m,p),clean.roster.map(r=>r.character_id)),assets:assetIds.map(id=>rows.find(a=>a.id===id)),character_stories:Object.fromEntries(assetIds.filter(id=>m.character_stories?.[id]).map(id=>[id,m.character_stories[id]])),character_context:characterContext(m,doc.roster.map(r=>r.character_id),rows),composition:clean.continuity.composition_id?m.composer.compositions[clean.continuity.composition_id]:null,script_schema:SCRIPT_SCHEMA,script_text:scriptText(clean),warnings:scriptWarnings(clean),reference_validation:{status:'NOT_RETRIEVED',images_retrieved:false}};
 }
 export async function scriptExecution(m,p,s,doc,getImage){
  const payload=scriptPackage(m,p,s,doc),ids=new Set(doc.continuity.reference_ids),images=[],validation=[];let total=0;

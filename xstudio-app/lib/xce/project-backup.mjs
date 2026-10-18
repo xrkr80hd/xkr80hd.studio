@@ -1,9 +1,10 @@
+import {compileWorld} from './world-builder.mjs';
 // A portable records snapshot. Image references are listed, never represented as embedded bytes.
 export function projectBackup(m,{project_id,revision,created_at=new Date().toISOString()}){
  const manifest=structuredClone(m);delete manifest.folder_lock;
  const files=Object.values(m.references||{}).map(r=>({reference_id:r.id,name:r.name,mime_type:r.mime_type,size_bytes:r.size??null,content_sha256:r.content_sha256||null}));
  const strip=o=>{if(!o||typeof o!=='object')return;delete o.key;delete o.idempotency_key;for(const v of Object.values(o))strip(v)};strip(manifest);
- return {format:'xce-project-records',schema_version:'1.0.0',created_at,project_id,project_name:m.campaign_name,project_code:m.active_project_code,revision,manifest,media:{embedded:false,files,instruction:'Image bytes remain in Xstudio. This records snapshot alone is not a complete media backup.'},restore_policy:'Reference snapshot only. Never overwrite a live project or approved anchor automatically.'};
+ return {format:'xce-project-records',schema_version:'1.0.0',created_at,project_id,project_name:m.campaign_name,project_code:m.active_project_code,revision,manifest,world_builder:compileWorld(manifest,project_id),media:{embedded:false,files,instruction:'Image bytes remain in Xstudio. This records snapshot alone is not a complete media backup.'},restore_policy:'Reference snapshot only. Never overwrite a live project or approved anchor automatically.'};
 }
 export function projectBackupHandoff({project,project_id,project_code}){
  const folder=String(project||project_code||project_id).replace(/[\\/\u0000-\u001f]/g,'_');

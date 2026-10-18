@@ -36,13 +36,10 @@ export function validateWorld(world,manifest){
    if(parentKey&&metadata[parentKey]){const parent=[...all,...worldRecords({...manifest,world_library:{}})].find(x=>x.id===metadata[parentKey]);if(!parent||parent.type!==(type==='wardrobe'?'characters':'locations'))throw Error('Choose a parent from this project');}
    if(a.status==='LOCKED'){
     if(!a.reference_ids.length)throw Error('A locked asset requires a saved visual anchor');
-    if(type==='characters'&&!metadata.identity_lock.trim())throw Error('Add an identity lock before approval');
-    if(!metadata.style_anchor.trim())throw Error('Add a style lock before approval');
-    if(parentKey&&!metadata[parentKey])throw Error('Assign the parent before approval');
    }
    const prior=manifest.world_library?.[type]?.[id];
-   const record={id,type,name:a.name.trim(),status:a.status,reference_ids:[...new Set(a.reference_ids)],thumbnail_reference_id:a.reference_ids[0]||'',metadata};
-   if(prior?.status==='LOCKED'&&JSON.stringify(record)!==JSON.stringify(prior))throw Error('Locked assets are immutable. Duplicate a draft variant.');
+   const record={id,type,name:a.name.trim(),status:a.status,reference_ids:[...new Set(a.reference_ids)],thumbnail_reference_id:a.reference_ids[0]||'',metadata,...(prior?.asset_code?{asset_code:prior.asset_code,asset_code_record_id:prior.asset_code_record_id||id}:{})};
+   if(prior?.status==='LOCKED'){const immutable=r=>({id:r.id,type:r.type,name:r.name.trim(),status:r.status,reference_ids:[...new Set(r.reference_ids)],thumbnail_reference_id:r.reference_ids[0]||'',metadata:Object.fromEntries(WORLD_FIELDS[type].filter(k=>!['voice','traits'].includes(k)).map(k=>[k,r.metadata?.[k]||'']))});if(JSON.stringify(immutable(record))!==JSON.stringify(immutable(prior)))throw Error('Locked assets are immutable. Duplicate a draft variant.');}
    clean[type][id]=record;
   }
  }

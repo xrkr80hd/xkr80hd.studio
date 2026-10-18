@@ -17,7 +17,7 @@ export function rootFor(m,entity,name){lockNamespace(m);const type=autoIdRules.r
 const recordId=r=>r.asset_id||r.scene_id||r.id;
 const recordRoot=r=>r.namespace_root||recordId(r)?.replace(/-v\d+$/,'');
 const recordVersion=r=>r.namespace_version||Number(recordId(r)?.match(/-v(\d+)$/)?.[1])||0;
-const allIds=m=>[...Object.keys(m.references),...Object.keys(m.scenes),...records(m).map(recordId),...Object.values(m.trash||{}).map(t=>recordId(t.record||{}))];
+const allIds=m=>[...Object.keys(m.references),...Object.keys(m.scenes),...records(m).map(recordId),...Object.values(m.world_library||{}).flatMap(rows=>Object.keys(rows)),...Object.values(m.trash||{}).map(t=>recordId(t.record||{}))];
 export function allocate(m,entity,name,root){root ||= rootFor(m,entity,name);lockNamespace(m);const ids=allIds(m);let v=m.auto_id_parser.counters[root]||0;for(const id of ids){if(id?.startsWith(root+'-v')&&/^\d+$/.test(id.slice(root.length+2)))v=Math.max(v,Number(id.slice(root.length+2)))}do{v++}while(ids.includes(root+'-v'+v));m.auto_id_parser.counters[root]=v;return root+'-v'+v;}
 export function newSceneId(m){lockNamespace(m);let root;do{m.auto_id_parser.scene_index++;root=`${m.active_project_code}-SB-SC${String(m.auto_id_parser.scene_index).padStart(2,'0')}`}while(Object.keys(m.scenes).some(id=>id===root||id.startsWith(root+'-v')));return allocate(m,'scene','',root);}
 export function shotId(m,scene,number){if(!m.active_project_code)return `${scene.scene_id}-shot-${number}`;const root=scene.namespace_root||scene.scene_id.replace(/-v\d+$/,'');return `${root}-SH${String(number).padStart(2,'0')}-v${scene.namespace_version||Number(scene.scene_id.match(/-v(\d+)$/)?.[1])||1}`;}

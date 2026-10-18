@@ -10,6 +10,6 @@ export function intakeScene(m,{name,reference_ids,character_ids=[]}){
  const cast=sceneCastIds(m,character_ids);
  const ids=intakeReferences(m,reference_ids,'scene',name),id=newSceneId(m);
  manage(m,{entity:'scene',action:'create',id,data:{name:name.trim(),blueprint_id:ids[0],subject_count:0,character_ids:[],prop_ids:[],location_ids:[],blocking:'Uploaded scene / storyboard reference. Panel breakdown has not been reviewed.',lighting_palette:'Preserve the uploaded image.'}});
- const scene=m.scenes[id];scene.character_ids=cast;scene.subject_count=cast.length;scene.reference_ids=ids;scene.analysis_pending=true;scene.source_kind='uploaded_storyboard';m.active_scene=id;
+ const scene=m.scenes[id];scene.character_ids=cast;scene.subject_count=cast.length;scene.reference_ids=ids;scene.intake_source_reference_ids=[...reference_ids];scene.analysis_pending=true;scene.source_kind='uploaded_storyboard';m.active_scene=id;
  return {saved:true,scene,reference_ids:ids};
 }

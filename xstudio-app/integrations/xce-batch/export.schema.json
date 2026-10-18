@@ -382,6 +382,11 @@
       "properties": {},
       "additionalProperties": true
     },
+    "world_builder": {
+      "type": "object",
+      "properties": {},
+      "additionalProperties": true
+    },
     "master_prompt": {
       "type": "string"
     },
@@ -431,6 +436,7 @@
     "xce_cge_color_and_lighting_block",
     "reference_validation",
     "harmonization",
+    "world_builder",
     "master_prompt",
     "scene_script",
     "compiled_composition",

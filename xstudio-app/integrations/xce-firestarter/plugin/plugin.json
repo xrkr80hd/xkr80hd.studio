@@ -1,0 +1,31 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "xce-firestarter",
+  "version": "1.1.0",
+  "description": "XCE story think-tank with SS, STF, US and XCE CONTINUE; sourced canon, anti-cliche coaching and verified World Builder handoffs.",
+  "author": {
+    "name": "XRKR"
+  },
+  "extensions": {
+    "com.openai": {
+      "apps": "./.app.json",
+      "interface": {
+        "displayName": "XCE_FIRESTARTER",
+        "shortDescription": "Build worlds. Keep the story.",
+        "longDescription": "Brainstorm worlds and stories, challenge predictable beats, recap established canon with STF, compile World Builder updates with US and hand off to XCE_UNIFY. Persistent continuity uses verified saved project state; no unlimited chat-memory or automatic deployment claims.",
+        "developerName": "XRKR",
+        "category": "Productivity",
+        "capabilities": [],
+        "defaultPrompt": [
+          "SS: help me develop my world and story.",
+          "STF: recap our established story and open questions.",
+          "US: compile and save this project\u2019s agreed World Builder state."
+        ],
+        "logo": "./assets/xce-icon.png",
+        "composerIcon": "./assets/xce-icon.png",
+        "brandColor": "#00E5FF",
+        "brandColorDark": "#00E5FF"
+      }
+    }
+  }
+}
