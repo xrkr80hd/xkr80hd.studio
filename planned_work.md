@@ -273,3 +273,9 @@ User confirmed xrkr80hdadmin (existing site admin, display name Travis). Map Gam
 - Presort live, unlinked references using original names and inspected sheets; preserve existing links, codes, locked records and deletions. Unresolved references go to Lost Assets.
 - Move cast assignment off library tiles into an explicit choice dialog inside asset details; simplify the mobile details view and hide generic character prompts and background color samples.
 - Verify core data invariants, cast API behavior, responsive styles and build before publishing.
+
+## Delete confirmation checkbox layout (2026-10-18)
+- Put the linked-record checkbox after its sentence on the same row, with wrapping text and a fixed-size checkbox on mobile. Preserve deletion behavior. Check and publish.
+
+- Investigate Rosa cast save failure: resolve project-local character/reference aliases to the canonical saved character ID; reject ambiguous, missing, foreign and creature records. Preserve character/image data.
+- Reuse NEXTDOCS cropper image/export approach for face/body anchors; add movable edge/corner selection, square start and optional square lock, saved-image/device sources and separate non-destructive crop files. Verify geometry, attachment pool, cast behavior and production build; hold commit/push pending review.

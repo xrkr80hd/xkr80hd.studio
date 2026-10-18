@@ -268,3 +268,16 @@ Confirmed user screenshot and enabled admin_users record xrkr80hdadmin (Travis).
 - Removed tile-level cast selectors. Added a choice dialog inside character details, compact image-first mobile inspection, removed generic character prompt/background color samples, and added editable Character story with independent owner/folder/CAS-protected saving.
 - Narrative context feeds Composer as user-saved background/motivation with visual locks and explicit scene actions retaining priority. Presorted source uploads are visible by category without gaining approval.
 - Full suite passed 84 tests and production build passed. Cloud browser is at the owner sign-in page, so signed-in device interaction remains unverified.
+
+## Delete confirmation checkbox layout (2026-10-18)
+- Moved the linked-record checkbox after its sentence in the shared single/bulk delete confirmation. Added scoped horizontal alignment, wrapping text and a fixed 22px checkbox with a 44px label target. Deletion state and behavior are unchanged.
+- Diff check and production build passed.
+
+## 2026-10-18 — Anchor crops and cast/pool follow-up (local, not pushed)
+- Inspected NEXTDOCS image-cropper-modal.tsx and existing studio BlogAvatarCropper before implementation. Adapted original-image canvas export and native pointer controls; added resizable/movable selection rather than reusing the fixed avatar window.
+- Face/body anchor fields now accept device or saved project images and crop the same source independently. Crop starts square, supports all eight edge/corner handles and keyboard move/resize, optional square lock, reset, cancel and X. Saves actual source-pixel crops as separate files using existing local-store/sync and world metadata; retains originals and existing locked-asset protections.
+- Added in-flight save protection and clearing of image metadata when its reference is removed.
+- General Cast is the default, consolidating legacy background/unassigned display without rewriting asset IDs or images. Cast saves resolve unique project-local record/reference aliases and reject ambiguous/foreign/non-character targets.
+- Attachment pool checks now include world_library records across categories; project reference picker hides attached images except current selections. This is a project-manifest check, not a cross-project scan of copied Lost Assets originals.
+- Verification: all 125 existing/new Node tests passed, Next production build and TypeScript passed, git diff --check passed. Geometry bounds, free vs square resize, independent face/body reference round-trip, original preservation, cast mapping and world-category pool filtering covered.
+- Browser preview unavailable through the connected local browser capability; did not claim a signed-in browser save or visual mobile QA. No production DB edits, commit or push for these follow-up changes; awaiting user review/push.
