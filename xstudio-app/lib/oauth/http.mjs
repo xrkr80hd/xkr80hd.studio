@@ -31,6 +31,15 @@ async function readJSONBody(req,max){
  return Buffer.concat(chunks).toString('utf8');
 }
 const failure=e=>json({error:e instanceof GatewayError?e.message:'temporarily_unavailable'},e instanceof GatewayError?e.status:503);
+function returnToClient(location,flow){
+ // Finish the POST with a new document. A form-action 'self' policy on the
+ // consent page can block a 303 chain to an external OAuth callback in Chrome.
+ // Navigation from this new document is not a form submission. The destination
+ // was already checked against the exact registered redirect before code issue.
+ const target=escape(location);
+ return new Response(`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="refresh" content="0;url=${target}"><title>Return to your app</title></head><body><main><h1>Return to your app</h1><p>Returning to your app…</p><p><a href="${target}" rel="noreferrer">Continue to your app</a></p></main></body></html>`,{status:200,headers:{...headers,'content-type':'text/html; charset=utf-8','content-security-policy':"default-src 'none'; form-action 'none'; frame-ancestors 'none'; base-uri 'none'",'x-frame-options':'DENY','set-cookie':`${cookieName(flow)}=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0`}});
+}
+
 export async function publicEndpoint(req,kind,deps={}){
  try{
   if(new URL(req.url).search)throw new GatewayError('invalid_request',400);
@@ -73,6 +82,6 @@ export async function authorize(req,deps={}){
   if(!['approve','deny'].includes(form.get('decision')))throw new GatewayError('invalid_request',400);
   const flow=form.get('flow'),cookie=(req.headers.get('cookie')||'').split(';').map(x=>x.trim()).find(x=>x.startsWith(cookieName(flow)+'='))?.split('=')[1];
   const location=await service.approve({flow,csrf:form.get('csrf'),cookie,projects:form.getAll('project'),approve:form.get('decision')==='approve'});
-  return new Response(null,{status:303,headers:{...headers,location,'set-cookie':`${cookieName(flow)}=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0`}});
+  return returnToClient(location,flow);
  }catch(e){return failure(e);}
 }
