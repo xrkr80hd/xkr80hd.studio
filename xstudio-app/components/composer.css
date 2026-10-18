@@ -12,3 +12,5 @@
 .xce-composer .comp-position strong,.xce-composer .comp-modal p{overflow-wrap:anywhere}
 @media(max-width:760px){.xce-composer .comp-toolbar{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:stretch}.xce-composer .comp-toolbar>*{min-width:0;width:100%}.xce-composer .comp-toolbar label{grid-column:1/-1}.xce-composer .comp-toolbar input{grid-column:1/-1}.xce-composer .comp-toolbar button{height:100%;font-size:14px}.xce-composer .comp-output textarea{font-size:16px}.xce-composer .comp-canvas{min-height:0;max-height:none}.xce-composer .comp-relation select{width:100%;min-width:0;flex:1 1 100%}.xce-composer .comp-modal>div{padding:14px;gap:10px}}
 @media(max-width:360px){.xce-composer .comp-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.xce-composer .comp-position{grid-template-columns:1fr}}
+
+.xce-composer .comp-grid>button[aria-pressed=true]{border-color:#92e4ef;box-shadow:inset 0 0 0 1px #92e4ef}

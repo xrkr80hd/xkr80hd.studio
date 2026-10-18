@@ -2,7 +2,7 @@
 
 - Rechecked forms, canvas controls, modal focus/close, navigation and narrow-screen wrapping after the user requested a mobile review.
 - Set Composer inputs to 16px to avoid iOS focus zoom; maintained 44px touch targets; stacked relation selectors and a two-column wrapping action grid on mobile; used two thumbnail columns below 360px.
-- Kept scene nodes within visible canvas bounds; made the dialog X sticky with safe-area padding; added a vertical scroll region for the longer desktop sidebar so all existing destinations remain reachable on short windows. Composer form CSS is scoped to its module; no other page forms changed.
+- Kept scene nodes within visible canvas bounds, spread initial click-added references across the canvas and made reselecting an asset preserve its placement; made the dialog X sticky with safe-area padding; added a vertical scroll region for the longer desktop sidebar so all existing destinations remain reachable on short windows. Composer form CSS is scoped to its module; no other page forms changed.
 - Production release 13e9bd2 reached READY. Live checks: OpenAPI 200, private inventory 401 without sign-in, malformed connector 401, cross-origin/missing-origin POST 403, private Composer redirects to owner login.
 - Cloud browser is available but at owner sign-in. Signed-in live drag/touch and actual project save remain unverified; code-level controls, exports, permissions, revisions and existing regressions are covered by the 75 passing tests. Vercel runtime-log access returned 403, so no clean runtime-log claim is made.
 
