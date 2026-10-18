@@ -27,6 +27,11 @@
       "maxLength": 128,
       "pattern": "^[a-zA-Z0-9_-]+$"
     },
+    "project_metadata": {
+      "type": "object",
+      "properties": {},
+      "additionalProperties": true
+    },
     "configuration": {
       "type": "object",
       "properties": {
@@ -974,6 +979,7 @@
     "module",
     "source_url",
     "project_id",
+    "project_metadata",
     "configuration",
     "assets",
     "anchor_locks",

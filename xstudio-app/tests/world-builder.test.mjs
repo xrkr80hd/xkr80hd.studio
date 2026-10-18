@@ -12,3 +12,12 @@ test('all world edits validate before mutation and cannot set executable or priv
 test('title parsing never creates characters, traits or objectives from filenames',()=>{const m=fixture(),before=JSON.stringify(m),w=compileWorld(m,'P');assert.equal(w.character_directory.length,2);assert.equal(w.character_directory[0].saved_objective,'');assert.equal(w.character_directory[0].title_hints[0].status,'TITLE_HINT_NOT_CANON');assert.equal(w.world_bible.title_tags[0].title,'Alpha and Beta Truth and Discipline');assert.equal(JSON.stringify(m),before);assert.doesNotMatch(JSON.stringify(w),/private\/key/);assert.deepEqual(w,JSON.parse(JSON.stringify(w)))});
 test('scene context scopes actors while preserving the authored story and saved background group',()=>{const m=fixture();updateWorldBuilder(m,{story_so_far:'Saved premise'});const w=compileWorld(m,'P'),header=worldContextHeader(w,['C']);assert.match(header,/Saved premise/);assert.match(header,/Only these selected scene actors/);const payload=JSON.parse(header.split('\n')[1]);assert.deepEqual(payload.character_directory.map(c=>c.id),['C']);assert.equal(w.character_directory.find(c=>c.character_id==='B').cast_tier,'Background Characters');assert.equal(w.chatgpt_bulk_execution_directives.target_plugins.length,6)});
 test('copy and project records include world story without authorizing automatic generation',()=>{const m=fixture();updateWorldBuilder(m,{story_so_far:'Saved premise'});const h=chatHandoff({project:'Actual',project_id:'P',name:'Alpha',asset_code:'CODE',manifest:m});assert.match(h,/Saved premise/);assert.match(h,/wait for my next instruction/);const b=projectBackup(m,{project_id:'P',revision:1});assert.equal(b.world_builder.world_bible.authored_story.story_so_far,'Saved premise');assert.doesNotMatch(JSON.stringify(b),/private\/key/)});
+
+test('legacy project JSON exports carry canonical identity without changing source records',()=>{
+ const m=fixture();m.project_id='stale';m.active_project_code='ACT';const before=JSON.stringify(m);
+ const exported=JSON.parse(JSON.stringify(projectBackup(m,{project_id:'legacy-P',revision:7})));
+ assert.equal(exported.project_id,'legacy-P');assert.equal(exported.manifest.project_id,'legacy-P');
+ assert.deepEqual(exported.project_metadata,exported.manifest.project_metadata);
+ assert.equal(exported.project_metadata.project_name,'Actual project');assert.equal(exported.project_metadata.project_code,'ACT');
+ assert.equal(JSON.stringify(m),before);assert.doesNotMatch(JSON.stringify(exported),/private\/key/);
+});

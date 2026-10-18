@@ -1,3 +1,4 @@
+import {stampProjectIdentity} from './project-identity.mjs';
 import {primaryBackend} from './primary-backend.mjs';
 import {xstudioClient} from './xstudio-bridge.mjs';
 import {manageColorGrade} from './color-grades.mjs';
@@ -26,9 +27,9 @@ const E=backend;
 const esc=(s:string)=>s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&apos;'}[c]!));
 export async function owner(request:Request){const context=await requireOwner();need(!context.response,'Authenticated studio owner required');return context.user!.id;}
 function withAssetCodes(m:any){assignAssetCodes(m);return m;}
-export async function load(u:string,p:string){const row=await E().DB.prepare('SELECT manifest,revision FROM xce_projects WHERE owner=? AND project=?').bind(u,p).first();return row?{m:withAssetCodes(storePrompts(JSON.parse(row.manifest))),revision:row.revision}:{m:fresh(),revision:0};}
+export async function load(u:string,p:string){const row=await E().DB.prepare('SELECT manifest,revision FROM xce_projects WHERE owner=? AND project=?').bind(u,p).first();return row?{m:stampProjectIdentity(withAssetCodes(storePrompts(JSON.parse(row.manifest))),p),revision:row.revision}:{m:stampProjectIdentity(fresh(),p),revision:0};}
 export async function save(u:string,p:string,m:any,revision:number){
- assignAssetCodes(m);storePrompts(m);
+ assignAssetCodes(m);storePrompts(m);stampProjectIdentity(m,p);
  need(JSON.stringify(m).length<1900000,'Project manifest too large; start another project');
  let r;if(revision===0)r=await E().DB.prepare('INSERT OR IGNORE INTO xce_projects(owner,project,revision,manifest) VALUES(?,?,1,?)').bind(u,p,JSON.stringify(m)).run();
  else r=await E().DB.prepare('UPDATE xce_projects SET manifest=?,revision=revision+1 WHERE owner=? AND project=? AND revision=?').bind(JSON.stringify(m),u,p,revision).run();
