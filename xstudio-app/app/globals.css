@@ -135,3 +135,53 @@ label.anchor-square-toggle{display:flex;align-items:center;gap:8px;text-transfor
 .anchor-crop-dialog footer{position:sticky;bottom:-16px;background:#111c24;padding:12px 0 4px;display:flex;flex-wrap:wrap;gap:8px}
 .anchor-crop-dialog footer .button{flex:1;min-height:44px}
 @media(max-width:480px){.anchor-image-field{padding:12px}.anchor-crop-dialog{padding:12px}.anchor-crop-tools{flex-wrap:wrap}}
+
+/* Constrain character forms and anchor choosers to the phone viewport. */
+.world-editor,.anchor-crop-dialog{min-width:0;max-width:calc(100vw - 24px);box-sizing:border-box;overflow-x:hidden}
+.world-editor form,.world-editor fieldset,.world-editor .story-field{min-width:0;min-inline-size:0;max-width:100%;box-sizing:border-box}
+.world-editor input,.world-editor select,.world-editor textarea{min-width:0;max-width:100%;box-sizing:border-box}
+.world-editor .world-reference-strip{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));overflow:visible}
+.world-editor .world-reference-strip>div{width:auto;min-width:0}
+.anchor-image-field,.anchor-image-choices,.anchor-image-preview{width:100%;max-width:100%;min-width:0;box-sizing:border-box}
+.anchor-image-preview{max-width:180px}
+.anchor-image-actions>.button{min-width:0;flex:1 1 100px;overflow-wrap:anywhere}
+.anchor-image-actions>.text-button{flex-basis:100%;text-align:left;min-height:44px}
+.anchor-image-choices>.button{width:100%;white-space:normal;overflow-wrap:anywhere;min-height:44px}
+.anchor-image-choices .reference-picker-grid{width:100%;min-width:0;box-sizing:border-box;grid-template-columns:repeat(2,minmax(0,1fr));overflow-x:hidden;overflow-y:auto}
+.anchor-image-choices .reference-picker-tile{width:100%;max-width:100%;box-sizing:border-box}
+.anchor-image-choices .reference-picker-tile .preview-frame{width:100%;height:110px;min-width:0}
+.anchor-image-choices .reference-picker-name{white-space:normal;overflow-wrap:anywhere}
+.anchor-image-field .step-hint,.anchor-image-field .error-text{overflow-wrap:anywhere}
+.character-category-panel>.button{width:100%;white-space:normal;min-height:44px}
+@media(max-width:360px){.anchor-image-actions{flex-direction:column;align-items:stretch}.anchor-image-actions>.button{flex:auto}.anchor-image-choices .reference-picker-grid{grid-template-columns:minmax(0,1fr)}}
+
+/* Small, labeled image blocks; editing tools expand only when needed. */
+.anchor-image-field{padding:10px;margin:10px 0;border-radius:8px}
+.anchor-image-summary{margin:0;display:flex;flex-direction:column;align-items:flex-start;gap:6px}
+.anchor-image-summary .anchor-image-preview{width:88px;max-width:100%;margin:0}
+.anchor-image-summary figcaption,.reference-image-label{display:block;font-size:13px;font-weight:600;line-height:1.4;margin:0;text-transform:none}
+.anchor-image-empty{font-size:12px;color:var(--muted)}
+.anchor-image-controls>summary{cursor:pointer;min-height:44px;display:list-item;align-content:center;font-size:13px;overflow-wrap:anywhere}
+.anchor-image-controls .step-hint{font-size:12px;margin-bottom:0}
+.world-editor .world-reference-strip.character-sheet-stack{display:flex;flex-direction:column;gap:10px;padding:6px 0}
+.world-editor .world-reference-strip.character-sheet-stack>div{flex:none;width:100%;max-width:100%;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:5px 12px;align-items:center}
+.world-editor .world-reference-strip.character-sheet-stack .preview-frame{grid-column:1/-1;width:180px;max-width:100%;height:auto;aspect-ratio:16/9}
+.world-editor .world-reference-strip.character-sheet-stack .text-button{min-height:44px;font-size:12px}
+
+/* Equal square thumbnails stay aligned; full images retain their own proportions. */
+.reference-thumbnail{display:block;width:88px;max-width:100%;aspect-ratio:1;min-width:0;padding:0;overflow:hidden;background:#080e12;border:1px solid var(--line);border-radius:6px;cursor:zoom-in}
+.reference-thumbnail>.preview-frame{width:100%;height:100%;min-height:0}
+.reference-thumbnail .preview-placeholder{min-height:0}
+.reference-thumbnail img{object-fit:contain}
+.character-anchor-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;align-items:start;margin:10px 0}
+.character-anchor-grid>.anchor-image-field{margin:0}
+.character-anchor-grid>.anchor-image-field:has(.anchor-image-controls[open]){grid-column:1/-1}
+.anchor-image-summary .anchor-image-preview{width:88px;aspect-ratio:1}
+.world-editor .world-reference-strip.character-sheet-stack .reference-thumbnail{grid-column:1/-1;width:88px;aspect-ratio:1}
+.world-editor .world-reference-strip.character-sheet-stack .reference-thumbnail>.preview-frame{width:100%;height:100%;aspect-ratio:auto}
+.reference-image-dialog{width:min(900px,calc(100vw - 24px));max-width:calc(100vw - 24px);max-height:calc(100dvh - 24px);padding:12px;box-sizing:border-box;overflow-x:hidden}
+.reference-image-dialog>header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+.reference-image-dialog h3{font-size:16px;overflow-wrap:anywhere;margin:0}
+.reference-image-dialog>.preview-frame{width:100%;height:auto;min-height:0}
+.reference-image-dialog>.preview-frame>img{display:block;width:100%;height:auto;max-height:calc(100dvh - 110px);object-fit:contain}
+.reference-image-dialog::backdrop{background:#03070ce8}
