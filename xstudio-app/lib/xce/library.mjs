@@ -14,7 +14,7 @@ export function purgeTrash(m,args){
  need(args.confirm===true,'Confirm permanent deletion first');const trash=m.trash||{};
  const keys=args.empty_all?Object.keys(trash).filter(k=>!k.startsWith('scene-version:')):args.keys;
  need(keys?.length,'Select deleted items first');need(new Set(keys).size===keys.length,'Duplicate selected items');for(const key of keys)need(trash[key]&&!key.startsWith('scene-version:'),'Deleted item not found');
- const removing=new Set(keys);const remaining=[...Object.values(m.manifest_store).flatMap(Object.values),...Object.values(m.scenes),...Object.entries(trash).filter(([k])=>!removing.has(k)).map(([,t])=>t.record)];
+ const removing=new Set(keys);const remaining=[...Object.values(m.manifest_store).flatMap(Object.values),...Object.values(m.scenes),...Object.values(m.state_variants||{}).flatMap(Object.values),...Object.entries(trash).filter(([k])=>!removing.has(k)).map(([,t])=>t.record)];
  for(const key of keys){const t=trash[key];const id=t.record.asset_id||t.record.scene_id||t.record.id||key.slice(key.indexOf(':')+1);const dependents=remaining.filter(r=>usesReference(r,id));need(!dependents.length,'Needed by '+(dependents[0]?.name||'another saved or deleted item')+'. Restore it or include the dependent deleted item in your selection.');}
  for(const key of keys)delete trash[key];m.permits={};m.history.push({kind:'purge_trash',count:keys.length,date:new Date().toISOString()});return {saved:true,permanently_deleted:keys.length};
 }
@@ -27,7 +27,9 @@ export function deletionPlan(m,items,{cascade=false}={}){
  return nodes.filter(n=>selected.has(n.entity+':'+n.id));
 }
 function cascadeDelete(m,args){
- const work=structuredClone(m),plan=deletionPlan(work,args.items,{cascade:true}),batch=crypto.randomUUID(),now=new Date().toISOString();work.trash||={};
+ const work=structuredClone(m),plan=deletionPlan(work,args.items,{cascade:true});
+ for(const n of plan)if(n.entity==='reference')for(const states of Object.values(work.state_variants||{}))for(const state of Object.values(states))need(!state.reference_ids.includes(n.id),'Reference is assigned to alternate form '+state.name+'. Remove that assignment first.');
+ const batch=crypto.randomUUID(),now=new Date().toISOString();work.trash||={};
  for(const n of plan){work.trash[n.entity+':'+n.id]={entity:n.entity,id:n.id,record:structuredClone(n.record),deleted_at:now,delete_batch_id:batch};if(n.entity==='reference')delete work.references[n.id];else if(n.entity==='scene')delete work.scenes[n.id];else if(n.entity==='shot_list')delete work.shot_lists[n.id];else delete work.manifest_store[categories[n.entity]][n.id];}
  const ids=new Set(plan.map(n=>n.id));for(const scene of Object.values(work.scenes))for(const [number,shot]of Object.entries(scene.shots||{}))if(ids.has(shot.asset_id))delete scene.shots[number];if(ids.has(work.active_asset_id))work.active_asset_id=null;if(ids.has(work.active_scene))work.active_scene=null;if(ids.has(work.active_reference_id))work.active_reference_id=null;if(work.pending_action&&ids.has(work.pending_action.asset_id))work.pending_action=null;work.permits={};work.history.push({kind:'cascade_delete',batch_id:batch,items:plan.map(n=>({entity:n.entity,id:n.id})),date:now});
  return {manifest:work,result:{saved:true,deleted:plan.length,linked_deleted:plan.length-args.items.length,delete_batch_id:batch,scope:'current_project',recoverable:true}};

@@ -1,0 +1,174 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$defs": {
+    "CharacterState": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_-]+$"
+        },
+        "character_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_-]+$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "DRAFT",
+            "LOCKED"
+          ]
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "reference_ids": {
+          "type": "array",
+          "maxItems": 6,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[a-zA-Z0-9_-]+$"
+          }
+        },
+        "visual_description": {
+          "type": "string",
+          "maxLength": 2000
+        }
+      },
+      "required": [
+        "id",
+        "character_id",
+        "name",
+        "status",
+        "version",
+        "reference_ids",
+        "visual_description"
+      ],
+      "additionalProperties": false
+    },
+    "CompositeMountBinding": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_-]+$"
+        },
+        "character_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_-]+$"
+        },
+        "mount_asset_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_-]+$"
+        },
+        "mode": {
+          "type": "string",
+          "enum": [
+            "riding",
+            "piloting",
+            "driving"
+          ]
+        },
+        "seat": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "posture": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "equipment": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "movement": {
+          "type": "string",
+          "maxLength": 2000
+        }
+      },
+      "required": [
+        "id",
+        "character_id",
+        "mount_asset_id",
+        "mode",
+        "seat",
+        "posture",
+        "equipment",
+        "movement"
+      ],
+      "additionalProperties": false
+    },
+    "FormationScaleConfig": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_-]+$"
+        },
+        "target_type": {
+          "type": "string",
+          "enum": [
+            "asset",
+            "composite"
+          ]
+        },
+        "target_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_-]+$"
+        },
+        "preset": {
+          "type": "string",
+          "enum": [
+            "pair",
+            "patrol",
+            "squad",
+            "company",
+            "battalion",
+            "army",
+            "custom"
+          ]
+        },
+        "count": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100000
+        },
+        "arrangement": {
+          "type": "string",
+          "maxLength": 2000
+        }
+      },
+      "required": [
+        "id",
+        "target_type",
+        "target_id",
+        "preset",
+        "count",
+        "arrangement"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

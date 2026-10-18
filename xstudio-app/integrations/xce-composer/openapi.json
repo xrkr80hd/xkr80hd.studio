@@ -28,12 +28,12 @@
             "schema": {
               "type": "string",
               "enum": [
+                "schema",
                 "projects",
                 "inventory",
                 "read",
                 "research",
-                "resolve",
-                "schema"
+                "resolve"
               ]
             }
           },
@@ -124,7 +124,8 @@
                       "duplicate",
                       "intelligence",
                       "character_details",
-                      "cast_group"
+                      "cast_group",
+                      "character_state"
                     ]
                   },
                   "project_id": {
@@ -188,6 +189,16 @@
                                 "looking back",
                                 "departing"
                               ]
+                            },
+                            "state_id": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 128,
+                              "pattern": "^[a-zA-Z0-9_-]+$"
+                            },
+                            "state_version": {
+                              "type": "integer",
+                              "minimum": 1
                             }
                           },
                           "required": [
@@ -415,6 +426,335 @@
                         "type": "string",
                         "maxLength": 2000
                       },
+                      "composite_bindings": {
+                        "type": "array",
+                        "maxItems": 20,
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 128,
+                              "pattern": "^[a-zA-Z0-9_-]+$"
+                            },
+                            "character_id": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 128,
+                              "pattern": "^[a-zA-Z0-9_-]+$"
+                            },
+                            "mount_asset_id": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 128,
+                              "pattern": "^[a-zA-Z0-9_-]+$"
+                            },
+                            "mode": {
+                              "type": "string",
+                              "enum": [
+                                "riding",
+                                "piloting",
+                                "driving"
+                              ]
+                            },
+                            "seat": {
+                              "type": "string",
+                              "maxLength": 2000
+                            },
+                            "posture": {
+                              "type": "string",
+                              "maxLength": 2000
+                            },
+                            "equipment": {
+                              "type": "string",
+                              "maxLength": 2000
+                            },
+                            "movement": {
+                              "type": "string",
+                              "maxLength": 2000
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "character_id",
+                            "mount_asset_id",
+                            "mode",
+                            "seat",
+                            "posture",
+                            "equipment",
+                            "movement"
+                          ],
+                          "additionalProperties": false
+                        }
+                      },
+                      "character_directions": {
+                        "type": "array",
+                        "maxItems": 20,
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "character_id": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 128,
+                              "pattern": "^[a-zA-Z0-9_-]+$"
+                            },
+                            "handedness": {
+                              "type": "string",
+                              "enum": [
+                                "unspecified",
+                                "left",
+                                "right",
+                                "ambidextrous"
+                              ]
+                            },
+                            "stance": {
+                              "type": "string",
+                              "maxLength": 2000
+                            },
+                            "facing": {
+                              "type": "string",
+                              "maxLength": 2000
+                            },
+                            "body_relations": {
+                              "type": "array",
+                              "maxItems": 20,
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "body_part": {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 100
+                                  },
+                                  "relation": {
+                                    "type": "string",
+                                    "enum": [
+                                      "toward",
+                                      "away from",
+                                      "closer to",
+                                      "facing",
+                                      "pointing toward"
+                                    ]
+                                  },
+                                  "target_id": {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 128,
+                                    "pattern": "^[a-zA-Z0-9_-]+$"
+                                  }
+                                },
+                                "required": [
+                                  "body_part",
+                                  "relation",
+                                  "target_id"
+                                ],
+                                "additionalProperties": false
+                              }
+                            }
+                          },
+                          "required": [
+                            "character_id",
+                            "handedness",
+                            "stance",
+                            "facing",
+                            "body_relations"
+                          ],
+                          "additionalProperties": false
+                        }
+                      },
+                      "equipment_bindings": {
+                        "type": "array",
+                        "maxItems": 30,
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 128,
+                              "pattern": "^[a-zA-Z0-9_-]+$"
+                            },
+                            "character_id": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 128,
+                              "pattern": "^[a-zA-Z0-9_-]+$"
+                            },
+                            "prop_id": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 128,
+                              "pattern": "^[a-zA-Z0-9_-]+$"
+                            },
+                            "usage": {
+                              "type": "string",
+                              "enum": [
+                                "wielding",
+                                "holding",
+                                "wearing",
+                                "using"
+                              ]
+                            },
+                            "attachment": {
+                              "type": "string",
+                              "maxLength": 2000
+                            },
+                            "instruction": {
+                              "type": "string",
+                              "maxLength": 2000
+                            },
+                            "body_region": {
+                              "type": "string",
+                              "enum": [
+                                "hands",
+                                "arms",
+                                "head",
+                                "back",
+                                "torso",
+                                "waist",
+                                "feet",
+                                "custom"
+                              ]
+                            },
+                            "side": {
+                              "type": "string",
+                              "enum": [
+                                "unspecified",
+                                "left",
+                                "right",
+                                "both",
+                                "center"
+                              ]
+                            },
+                            "orientation": {
+                              "type": "string",
+                              "maxLength": 2000
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "character_id",
+                            "prop_id",
+                            "usage",
+                            "attachment",
+                            "instruction"
+                          ],
+                          "additionalProperties": false
+                        }
+                      },
+                      "scene_setting": {
+                        "type": "object",
+                        "properties": {
+                          "mode": {
+                            "type": "string",
+                            "enum": [
+                              "build",
+                              "reference",
+                              "atmosphere"
+                            ]
+                          },
+                          "location_id": {
+                            "type": "string",
+                            "maxLength": 128
+                          },
+                          "relation": {
+                            "type": "string",
+                            "enum": [
+                              "at",
+                              "inside"
+                            ]
+                          },
+                          "description": {
+                            "type": "string",
+                            "maxLength": 2000
+                          },
+                          "theme": {
+                            "type": "string",
+                            "enum": [
+                              "none",
+                              "fantasy",
+                              "sci_fi",
+                              "steampunk",
+                              "cyberpunk",
+                              "futuristic",
+                              "retro_futuristic"
+                            ]
+                          },
+                          "theme_details": {
+                            "type": "string",
+                            "maxLength": 2000
+                          }
+                        },
+                        "required": [
+                          "mode",
+                          "location_id",
+                          "relation",
+                          "description",
+                          "theme",
+                          "theme_details"
+                        ],
+                        "additionalProperties": false
+                      },
+                      "formations": {
+                        "type": "array",
+                        "maxItems": 20,
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 128,
+                              "pattern": "^[a-zA-Z0-9_-]+$"
+                            },
+                            "target_type": {
+                              "type": "string",
+                              "enum": [
+                                "asset",
+                                "composite"
+                              ]
+                            },
+                            "target_id": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 128,
+                              "pattern": "^[a-zA-Z0-9_-]+$"
+                            },
+                            "preset": {
+                              "type": "string",
+                              "enum": [
+                                "pair",
+                                "patrol",
+                                "squad",
+                                "company",
+                                "battalion",
+                                "army",
+                                "custom"
+                              ]
+                            },
+                            "count": {
+                              "type": "integer",
+                              "minimum": 1,
+                              "maximum": 100000
+                            },
+                            "arrangement": {
+                              "type": "string",
+                              "maxLength": 2000
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "target_type",
+                            "target_id",
+                            "preset",
+                            "count",
+                            "arrangement"
+                          ],
+                          "additionalProperties": false
+                        }
+                      },
                       "scene_action": {
                         "type": "string",
                         "maxLength": 2000
@@ -493,7 +833,8 @@
                     "type": "integer"
                   },
                   "expected_version": {
-                    "type": "integer"
+                    "type": "integer",
+                    "minimum": 0
                   },
                   "confirm": {
                     "type": "boolean"
@@ -579,6 +920,72 @@
                       "sub_villain",
                       "unassigned"
                     ]
+                  },
+                  "state": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 128,
+                        "pattern": "^[a-zA-Z0-9_-]+$"
+                      },
+                      "character_id": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 128,
+                        "pattern": "^[a-zA-Z0-9_-]+$"
+                      },
+                      "name": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 100
+                      },
+                      "status": {
+                        "type": "string",
+                        "enum": [
+                          "DRAFT",
+                          "LOCKED"
+                        ]
+                      },
+                      "version": {
+                        "type": "integer",
+                        "minimum": 1
+                      },
+                      "reference_ids": {
+                        "type": "array",
+                        "maxItems": 6,
+                        "items": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 128,
+                          "pattern": "^[a-zA-Z0-9_-]+$"
+                        }
+                      },
+                      "visual_description": {
+                        "type": "string",
+                        "maxLength": 2000
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "character_id",
+                      "name",
+                      "status",
+                      "version",
+                      "reference_ids",
+                      "visual_description"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "operation": {
+                    "type": "string",
+                    "enum": [
+                      "save",
+                      "lock",
+                      "unlock",
+                      "delete"
+                    ]
                   }
                 },
                 "additionalProperties": false
@@ -615,6 +1022,378 @@
         "type": "http",
         "scheme": "bearer",
         "description": "Existing scoped, revocable XSTUDIO xst_ token. Never put the token in scene text or asset metadata."
+      }
+    },
+    "schemas": {
+      "CharacterState": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[a-zA-Z0-9_-]+$"
+          },
+          "character_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[a-zA-Z0-9_-]+$"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "DRAFT",
+              "LOCKED"
+            ]
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "reference_ids": {
+            "type": "array",
+            "maxItems": 6,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[a-zA-Z0-9_-]+$"
+            }
+          },
+          "visual_description": {
+            "type": "string",
+            "maxLength": 2000
+          }
+        },
+        "required": [
+          "id",
+          "character_id",
+          "name",
+          "status",
+          "version",
+          "reference_ids",
+          "visual_description"
+        ],
+        "additionalProperties": false
+      },
+      "CompositeMountBinding": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[a-zA-Z0-9_-]+$"
+          },
+          "character_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[a-zA-Z0-9_-]+$"
+          },
+          "mount_asset_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[a-zA-Z0-9_-]+$"
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "riding",
+              "piloting",
+              "driving"
+            ]
+          },
+          "seat": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "posture": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "equipment": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "movement": {
+            "type": "string",
+            "maxLength": 2000
+          }
+        },
+        "required": [
+          "id",
+          "character_id",
+          "mount_asset_id",
+          "mode",
+          "seat",
+          "posture",
+          "equipment",
+          "movement"
+        ],
+        "additionalProperties": false
+      },
+      "FormationScaleConfig": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[a-zA-Z0-9_-]+$"
+          },
+          "target_type": {
+            "type": "string",
+            "enum": [
+              "asset",
+              "composite"
+            ]
+          },
+          "target_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[a-zA-Z0-9_-]+$"
+          },
+          "preset": {
+            "type": "string",
+            "enum": [
+              "pair",
+              "patrol",
+              "squad",
+              "company",
+              "battalion",
+              "army",
+              "custom"
+            ]
+          },
+          "count": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100000
+          },
+          "arrangement": {
+            "type": "string",
+            "maxLength": 2000
+          }
+        },
+        "required": [
+          "id",
+          "target_type",
+          "target_id",
+          "preset",
+          "count",
+          "arrangement"
+        ],
+        "additionalProperties": false
+      },
+      "EquipmentBinding": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[a-zA-Z0-9_-]+$"
+          },
+          "character_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[a-zA-Z0-9_-]+$"
+          },
+          "prop_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[a-zA-Z0-9_-]+$"
+          },
+          "usage": {
+            "type": "string",
+            "enum": [
+              "wielding",
+              "holding",
+              "wearing",
+              "using"
+            ]
+          },
+          "attachment": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "instruction": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "body_region": {
+            "type": "string",
+            "enum": [
+              "hands",
+              "arms",
+              "head",
+              "back",
+              "torso",
+              "waist",
+              "feet",
+              "custom"
+            ]
+          },
+          "side": {
+            "type": "string",
+            "enum": [
+              "unspecified",
+              "left",
+              "right",
+              "both",
+              "center"
+            ]
+          },
+          "orientation": {
+            "type": "string",
+            "maxLength": 2000
+          }
+        },
+        "required": [
+          "id",
+          "character_id",
+          "prop_id",
+          "usage",
+          "attachment",
+          "instruction"
+        ],
+        "additionalProperties": false
+      },
+      "SceneSetting": {
+        "type": "object",
+        "properties": {
+          "mode": {
+            "type": "string",
+            "enum": [
+              "build",
+              "reference",
+              "atmosphere"
+            ]
+          },
+          "location_id": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "relation": {
+            "type": "string",
+            "enum": [
+              "at",
+              "inside"
+            ]
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "theme": {
+            "type": "string",
+            "enum": [
+              "none",
+              "fantasy",
+              "sci_fi",
+              "steampunk",
+              "cyberpunk",
+              "futuristic",
+              "retro_futuristic"
+            ]
+          },
+          "theme_details": {
+            "type": "string",
+            "maxLength": 2000
+          }
+        },
+        "required": [
+          "mode",
+          "location_id",
+          "relation",
+          "description",
+          "theme",
+          "theme_details"
+        ],
+        "additionalProperties": false
+      },
+      "CharacterDirection": {
+        "type": "object",
+        "properties": {
+          "character_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[a-zA-Z0-9_-]+$"
+          },
+          "handedness": {
+            "type": "string",
+            "enum": [
+              "unspecified",
+              "left",
+              "right",
+              "ambidextrous"
+            ]
+          },
+          "stance": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "facing": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "body_relations": {
+            "type": "array",
+            "maxItems": 20,
+            "items": {
+              "type": "object",
+              "properties": {
+                "body_part": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 100
+                },
+                "relation": {
+                  "type": "string",
+                  "enum": [
+                    "toward",
+                    "away from",
+                    "closer to",
+                    "facing",
+                    "pointing toward"
+                  ]
+                },
+                "target_id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128,
+                  "pattern": "^[a-zA-Z0-9_-]+$"
+                }
+              },
+              "required": [
+                "body_part",
+                "relation",
+                "target_id"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "character_id",
+          "handedness",
+          "stance",
+          "facing",
+          "body_relations"
+        ],
+        "additionalProperties": false
       }
     }
   }

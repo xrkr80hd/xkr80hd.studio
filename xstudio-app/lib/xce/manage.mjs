@@ -41,6 +41,7 @@ export function manage(m,a){
    if(action==='delete'){
     need(a.confirm===true,'Delete confirmation required');
     const dependencies=[];
+    if(entity==='reference')for(const [character,states] of Object.entries(m.state_variants||{}))for(const state of Object.values(states))if(state.reference_ids.includes(id))dependencies.push('alternate-form:'+character+'/'+state.name);
     for(const [listId,list] of Object.entries(m.shot_lists||{}))if(list.shots.some(s=>s.character_ids.includes(id)||s.reference_ids.includes(id)||s.image_reference_id===id))dependencies.push('shot-list:'+listId);
     for(const [sid,s] of Object.entries(m.scenes))if(sid!==id&&uses(s,id))dependencies.push('scene:'+sid);
     for(const [category,records] of Object.entries(m.manifest_store))for(const [aid,r] of Object.entries(records))if(aid!==id&&!(entity==='scene'&&r.scene_id===id)&&uses(r,id))dependencies.push(category+':'+aid);

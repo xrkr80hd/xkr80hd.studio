@@ -1,10 +1,20 @@
+import {EQUIPMENT_BINDING_SCHEMA,CHARACTER_DIRECTION_SCHEMA,SCENE_SETTING_SCHEMA} from '../../lib/xce/scene-context.mjs';
 import {writeFileSync,readFileSync} from 'node:fs';
+import {ENTITY_SCHEMAS,CHARACTER_STATE_SCHEMA} from '../../lib/xce/entity-composition.mjs';
 import {OUTPUT_SCHEMA,CONFIG_SCHEMA} from '../../lib/xce/composer.mjs';
 const path=new URL('./',import.meta.url);
 writeFileSync(new URL('composition.schema.json',path),JSON.stringify({$schema:'https://json-schema.org/draft/2020-12/schema',title:'XCE_COMPOSER 1.0.0',...OUTPUT_SCHEMA},null,2)+'\n');
 const api=JSON.parse(readFileSync(new URL('openapi.json',path),'utf8'));
 api.paths['/api/composer'].post.requestBody.content['application/json'].schema.properties.configuration=CONFIG_SCHEMA;
+api.components.schemas={...(api.components.schemas||{}),...ENTITY_SCHEMAS,EquipmentBinding:EQUIPMENT_BINDING_SCHEMA,CharacterDirection:CHARACTER_DIRECTION_SCHEMA,SceneSetting:SCENE_SETTING_SCHEMA};
+const properties=api.paths['/api/composer'].post.requestBody.content['application/json'].schema.properties;
+if(!properties.action.enum.includes('character_state'))properties.action.enum.push('character_state');
+properties.state=CHARACTER_STATE_SCHEMA;
+properties.operation={type:'string',enum:['save','lock','unlock','delete']};
+properties.expected_version={type:'integer',minimum:0};
 const get=api.paths['/api/composer'].get;
 get.parameters[0].schema.enum=['schema','projects','inventory','read','research','resolve'];
 for(const name of ['asset_code','q','category'])if(!get.parameters.some(p=>p.name===name))get.parameters.push({name,in:'query',schema:{type:'string'}});
 writeFileSync(new URL('openapi.json',path),JSON.stringify(api,null,2)+'\n');
+
+writeFileSync(new URL('entity-schemas.json',path),JSON.stringify({$schema:'https://json-schema.org/draft/2020-12/schema',$defs:ENTITY_SCHEMAS},null,2)+'\n');
