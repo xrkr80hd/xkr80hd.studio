@@ -4,6 +4,7 @@ import PreviewImage from '../components/PreviewImage';
 import {assetPreviewReference} from '../lib/xce/asset-preview.mjs';
 import WorldLibrary from '../components/WorldLibrary';
 import CastGroupPicker from '../components/CastGroupPicker';
+import CharacterQuickDetails from '../components/CharacterQuickDetails';
 import CharacterStory from '../components/CharacterStory';
 import {configureStore} from '../lib/xce/local-store.mjs';
 import {syncLocalProjects} from '../lib/xce/studio-network.mjs';
@@ -186,8 +187,10 @@ export default function Home({ownerId,initialComposerProject}:{ownerId:string,in
   <header className="asset-detail-heading"><h2 id="modal-title">{selected.name||selected.scene_id||selected.asset_id}</h2></header>
   <div className="detail-image asset-detail-hero">{thumbnail(selected)}</div>
   <div className="asset-detail-actions">{entityOf(selected)==='reference'&&<button type="button" className="button primary" onClick={()=>createFromReference(selected)}>Name &amp; save as asset</button>}{["update","reclassify","duplicate","move","delete"].filter(action=>action!=="reclassify"||["character","creature","prop","location","vehicle","reference"].includes(entityOf(selected))).filter(action=>selected.asset_type!=="keyframe"||(manifest.manifest_store.shots[selected.asset_id]&&["update","delete"].includes(action))).map(action=><button className="button secondary" key={action} onClick={()=>action==='reclassify'&&entityOf(selected)==='reference'?createFromReference(selected):editRecord(selected,action)}>{['update','reclassify'].includes(action)?<Pencil size={15}/>:action==='duplicate'?<CopyPlus size={15}/>:action==='move'?<Move size={15}/>:<Trash2 size={15}/>}{action==='update'?'Edit / Rename':action==='reclassify'?'Change category':action==='duplicate'?'Duplicate':action==='move'?'Move':'Delete'}</button>)}
-   {entityOf(selected)==='character'&&<CastGroupPicker project={project} manifest={manifest} characterId={selected.asset_id||selected.id} name={selected.name} onSaved={async result=>{setManifest((m:any)=>({...m,revision:result.revision,character_cast_groups:result.character_cast_groups}));await refresh()}}/>}
+
   </div>
+   {entityOf(selected)==='character'&&<CastGroupPicker project={project} manifest={manifest} characterId={selected.asset_id||selected.id} name={selected.name} onSaved={async result=>{setManifest((m:any)=>({...m,revision:result.revision,character_cast_groups:result.character_cast_groups}));await refresh()}}/>}
+  {entityOf(selected)==='character'&&<CharacterQuickDetails project={project} manifest={manifest} characterId={selected.asset_id||selected.id} onSaved={async result=>{setManifest((m:any)=>({...m,revision:result.revision,character_network:result.character_network}));await refresh()}}/>}
   {entityOf(selected)==='character'&&<CharacterStory project={project} manifest={manifest} characterId={selected.asset_id||selected.id} onSaved={async result=>{setManifest((m:any)=>({...m,revision:result.revision,character_stories:result.character_stories}));await refresh()}}/>}
   {entityOf(selected)!=='character'&&selected.generation_prompt&&<details className="form-accordion generation-prompt"><summary>Generation prompt<ChevronDown size={16}/></summary><label>Reusable prompt<textarea readOnly rows={7} value={selected.generation_prompt}/></label><button type="button" className="button secondary" onClick={()=>copy(selected.generation_prompt)}><Copy size={15}/>Copy prompt</button></details>}
   {selected.action_continuity&&<dl><dt>Start state</dt><dd>{selected.action_continuity.start_state}</dd><dt>End state</dt><dd>{selected.action_continuity.end_state}</dd></dl>}

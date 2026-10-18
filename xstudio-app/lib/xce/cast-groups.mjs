@@ -1,4 +1,4 @@
-export const CAST_GROUPS={main:'Main Cast',supporting:'Supporting Cast',background:'Background Cast',unassigned:'Unsorted Characters'};
+export const CAST_GROUPS={main:'Main Cast',supporting:'Supporting Cast',background:'Background Cast',villain:'Villains',sub_villain:'Sub-villains',unassigned:'Unsorted Characters'};
 export function characterGroup(manifest,id){const group=manifest.character_cast_groups?.[id];return Object.hasOwn(CAST_GROUPS,group)?group:'unassigned';}
 export function assignCastGroup(manifest,id,group,characters){
  if(!Object.hasOwn(CAST_GROUPS,group))throw Error('Choose a valid cast group');

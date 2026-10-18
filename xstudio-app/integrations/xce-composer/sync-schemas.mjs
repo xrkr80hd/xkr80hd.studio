@@ -5,6 +5,6 @@ writeFileSync(new URL('composition.schema.json',path),JSON.stringify({$schema:'h
 const api=JSON.parse(readFileSync(new URL('openapi.json',path),'utf8'));
 api.paths['/api/composer'].post.requestBody.content['application/json'].schema.properties.configuration=CONFIG_SCHEMA;
 const get=api.paths['/api/composer'].get;
-get.parameters[0].schema.enum=['projects','inventory','read','research','resolve'];
+get.parameters[0].schema.enum=['schema','projects','inventory','read','research','resolve'];
 for(const name of ['asset_code','q','category'])if(!get.parameters.some(p=>p.name===name))get.parameters.push({name,in:'query',schema:{type:'string'}});
 writeFileSync(new URL('openapi.json',path),JSON.stringify(api,null,2)+'\n');

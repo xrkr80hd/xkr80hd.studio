@@ -1,3 +1,4 @@
+import {characterContext,characterContextPrompt} from './character-network.mjs';
 export const WORLD_TYPES={characters:'Characters',wardrobe:'Wardrobe',props:'Props',vehicles:'Vehicles',locations:'Locations',rooms:'Rooms',scenes_and_shots:'Scenes & Shots'};
 export const IMAGE_FIELDS=['face_anchor_url','body_anchor_url','costume_anchors','exterior_anchor','interior_anchor','exterior_environment_anchor'];
 export const WORLD_FIELDS={
@@ -56,6 +57,7 @@ export function bindProjectPrompt(manifest,projectId,text){
  matches.forEach(m=>add(m[1]||m[2]));
  const referenceIds=[...new Set([...bound.values()].flatMap(a=>a.reference_ids))];
  const references=referenceIds.map(id=>({reference_id:id,url:'/api/manifest?project='+encodeURIComponent(projectId)+'&file='+encodeURIComponent(id),role:manifest.references[id].role}));
+ const continuity=characterContext(manifest,[...bound.keys()],assets);
  const locks=[...bound.values()].map(a=>({asset_id:a.id,name:a.name,type:a.type,anchor_tokens:Object.fromEntries(Object.entries(a.metadata||{}).map(([key,value])=>[key,IMAGE_FIELDS.includes(key)&&value?'/api/manifest?project='+encodeURIComponent(projectId)+'&file='+encodeURIComponent(value):value])),visual_parameters:a.immutable_traits||{},reference_ids:a.reference_ids}));
- return {project_id:projectId,source_origin:'LOCAL_PROJECT_STORE',allow_external_defaults:false,anchor_binding_verified:true,character_anchors:locks.filter(a=>a.type==='characters'),assets:locks,references,prompt:['Use only the attached saved project anchors. Never substitute franchise, public-web, remembered or generic character designs. Preserve identity, wardrobe, scale, materials, geometry and style. If a reference is inaccessible, stop.',...locks.map(a=>'LOCK '+a.name+' '+JSON.stringify(a.anchor_tokens)),text].join('\n'),rendered:false};
+ return {character_continuity:continuity,project_id:projectId,source_origin:'LOCAL_PROJECT_STORE',allow_external_defaults:false,anchor_binding_verified:true,character_anchors:locks.filter(a=>a.type==='characters'),assets:locks,references,prompt:[characterContextPrompt(continuity),'Use only the attached saved project anchors. Never substitute franchise, public-web, remembered or generic character designs. Preserve identity, wardrobe, scale, materials, geometry and style. If a reference is inaccessible, stop.',...locks.map(a=>'LOCK '+a.name+' '+JSON.stringify(a.anchor_tokens)),text].join('\n'),rendered:false};
 }

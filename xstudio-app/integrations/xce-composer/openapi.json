@@ -32,7 +32,8 @@
                 "inventory",
                 "read",
                 "research",
-                "resolve"
+                "resolve",
+                "schema"
               ]
             }
           },
@@ -121,7 +122,9 @@
                       "execution",
                       "save",
                       "duplicate",
-                      "intelligence"
+                      "intelligence",
+                      "character_details",
+                      "cast_group"
                     ]
                   },
                   "project_id": {
@@ -506,6 +509,76 @@
                     "additionalProperties": {
                       "type": "string"
                     }
+                  },
+                  "character_id": {
+                    "type": "string",
+                    "maxLength": 128
+                  },
+                  "details": {
+                    "type": "object",
+                    "properties": {
+                      "quick_details": {
+                        "type": "string",
+                        "maxLength": 4000
+                      },
+                      "links": {
+                        "type": "array",
+                        "maxItems": 50,
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "kind": {
+                              "type": "string",
+                              "enum": [
+                                "equal_height",
+                                "shorter_than",
+                                "taller_than",
+                                "opposes",
+                                "custom"
+                              ]
+                            },
+                            "target_id": {
+                              "type": "string"
+                            },
+                            "text": {
+                              "type": "string",
+                              "maxLength": 2000
+                            },
+                            "enabled": {
+                              "type": "boolean"
+                            },
+                            "clause_type": {
+                              "type": "string",
+                              "enum": [
+                                "relationship",
+                                "synergy"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "kind",
+                            "target_id"
+                          ],
+                          "additionalProperties": false
+                        }
+                      }
+                    },
+                    "required": [
+                      "quick_details",
+                      "links"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "group": {
+                    "type": "string",
+                    "enum": [
+                      "main",
+                      "supporting",
+                      "background",
+                      "villain",
+                      "sub_villain",
+                      "unassigned"
+                    ]
                   }
                 },
                 "additionalProperties": false
