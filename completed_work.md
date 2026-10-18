@@ -1,3 +1,12 @@
+## Composer layered worldbuilding presets · 2026-10-17
+
+- Expanded grouped base selections to 415 choices, including 125 terrains and 106 architectural styles (historic, regional, civic, industrial, futuristic and imaginative).
+- Added 116 stackable terrain/architecture/weather/element details in compact accordions with per-item removal. Desert + buried ruins + broken walls and overcast + rain + mist are supported without manual prose.
+- Added Write here near the top of the main dropdowns, including architecture, with editable text preserving prior custom values. Creative choices include cliff cities, living-tree settlements, crystal palaces, machine complexes, floating temples and other original worldbuilding directions.
+- Optional scene_details arrays preserve compatibility with earlier saved compositions. Compiler/preview/JSON/export include the combined details, preserving approved anchor authority. No project/asset/grade records were duplicated or changed.
+- Added optional Inspired by world context at the end, with FF6/StarTropics presets and Write here. Prompt instructions borrow mood/world feel only and explicitly preserve approved asset designs and selected rendering style.
+- All 81 tests pass, including combined terrain/weather/world parsing, layered save/reopen/ZIP continuity, existing custom/legacy scenes, array limits and existing-module regressions. Production build/type checks pass; signed-in visual/mobile checks remain unavailable in the test browser session.
+
 ## Composer dropdown presets and action guidance · 2026-10-17
 
 - Added 228 preloaded choices across 15 fields: terrain, architecture, atmosphere, weather, time of day, lighting direction/quality, camera lens/angle/elevation/distance/framing/composition/movement and overall scene action. Native selects keep mobile interaction familiar; every field offers Custom without erasing existing values.

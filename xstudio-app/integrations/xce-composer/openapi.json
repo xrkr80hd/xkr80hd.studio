@@ -415,6 +415,54 @@
                       "scene_action": {
                         "type": "string",
                         "maxLength": 2000
+                      },
+                      "world_inspiration": {
+                        "type": "string",
+                        "maxLength": 2000
+                      },
+                      "scene_details": {
+                        "type": "object",
+                        "properties": {
+                          "terrain_features": {
+                            "type": "array",
+                            "maxItems": 20,
+                            "items": {
+                              "type": "string",
+                              "maxLength": 2000
+                            }
+                          },
+                          "architecture_features": {
+                            "type": "array",
+                            "maxItems": 20,
+                            "items": {
+                              "type": "string",
+                              "maxLength": 2000
+                            }
+                          },
+                          "weather_layers": {
+                            "type": "array",
+                            "maxItems": 20,
+                            "items": {
+                              "type": "string",
+                              "maxLength": 2000
+                            }
+                          },
+                          "elements": {
+                            "type": "array",
+                            "maxItems": 20,
+                            "items": {
+                              "type": "string",
+                              "maxLength": 2000
+                            }
+                          }
+                        },
+                        "required": [
+                          "terrain_features",
+                          "architecture_features",
+                          "weather_layers",
+                          "elements"
+                        ],
+                        "additionalProperties": false
                       }
                     },
                     "required": [

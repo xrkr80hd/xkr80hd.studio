@@ -2,6 +2,8 @@
 
 ## Composer speed presets and action description · 2026-10-17
 
+- Add optional Inspired by world context (FF6, StarTropics or custom), scoped to mood rather than replacement asset designs.
+- Add broad grouped terrain/architecture families, stackable terrain/architecture/weather/effect details, creative architectural choices and a Write here fallback.
 - Replace camera/environment/lighting text-only controls with preloaded, mobile-friendly dropdowns and a Custom option that preserves existing values.
 - Add an optional scene-action description to the shared prompt/JSON compiler and saved configurations, retaining compatibility with earlier compositions.
 - Keep anchor enforcement, grades and other pages unchanged; verify presets, legacy saves, action persistence, exports and production build before release.

@@ -16,3 +16,5 @@
 .xce-composer .comp-grid>button[aria-pressed=true]{border-color:#92e4ef;box-shadow:inset 0 0 0 1px #92e4ef}
 
 .xce-composer .comp-preset-field{display:grid;gap:6px;min-width:0}.xce-composer .comp-preset-field>label{text-transform:capitalize}.xce-composer .comp-preset-field textarea{min-height:100px;resize:vertical}.xce-composer .comp-preset-field select{text-overflow:ellipsis}
+
+.xce-composer .comp-additions{margin:0;align-self:start}.xce-composer .comp-additions label{margin-bottom:6px}.xce-composer .comp-addition-list{display:grid;gap:6px;margin-top:8px}.xce-composer .comp-addition-list>div{display:flex;align-items:center;justify-content:space-between;gap:8px;border-bottom:1px solid var(--comp-line);padding:4px 0}.xce-composer .comp-addition-list span{min-width:0;font-size:14px;overflow-wrap:anywhere}.xce-composer .comp-addition-list button{flex:none}
