@@ -1,0 +1,9 @@
+'use client';
+import {useEffect,useState} from 'react';
+export default function CharacterStory({project,manifest,characterId,onSaved}:{project:string,manifest:any,characterId:string,onSaved:(result:any)=>Promise<void>}){
+ const stored=manifest.character_stories?.[characterId]?.text||'';
+ const [text,setText]=useState(stored),[busy,setBusy]=useState(false),[error,setError]=useState(''),[message,setMessage]=useState('');
+ useEffect(()=>{setText(stored);setMessage('');setError('')},[stored,characterId]);
+ async function save(){setBusy(true);setError('');setMessage('');try{const response=await fetch('/api/character-story',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({project_id:project,character_id:characterId,story:text,expected_revision:manifest.revision})});const result=await response.json();if(!response.ok)throw Error(result.error||'Could not save story');await onSaved(result);setMessage('Story saved.')}catch(e){setError((e as Error).message)}finally{setBusy(false)}}
+ return <details className="form-accordion character-story"><summary>Character story</summary><p>A short background, what they want, and why they act.</p><label htmlFor={'story-'+characterId}>Story<textarea id={'story-'+characterId} rows={5} maxLength={4000} value={text} onChange={e=>{setText(e.target.value);setMessage('')}} placeholder="Write or paste their short story here…"/></label><div className="button-row"><button type="button" className="button primary" disabled={busy||text===stored} onClick={()=>void save()}>{busy?'Saving…':'Save story'}</button><button type="button" className="button secondary" disabled={!text} onClick={async()=>{try{await navigator.clipboard.writeText(text);setMessage('Story copied.')}catch{setError('Select the story text to copy it.')}}}>Copy story</button></div>{error&&<p className="error-text" role="alert">{error}</p>}{message&&<p role="status">{message}</p>}</details>;
+}

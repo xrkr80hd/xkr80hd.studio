@@ -268,3 +268,8 @@ User confirmed xrkr80hdadmin (existing site admin, display name Travis). Map Gam
 - Add canonical profile import/staging, explicit custom saving, editable parameters, export and versioned owner-session API routes.
 - Preserve seven factory definitions, existing custom grades, assignment snapshots, reference links and original CGE tokens.
 - Verify round-trip, edit conflicts and preservation, then publish the complete update.
+
+## Asset sorting and character details (2026-10-18)
+- Presort live, unlinked references using original names and inspected sheets; preserve existing links, codes, locked records and deletions. Unresolved references go to Lost Assets.
+- Move cast assignment off library tiles into an explicit choice dialog inside asset details; simplify the mobile details view and hide generic character prompts and background color samples.
+- Verify core data invariants, cast API behavior, responsive styles and build before publishing.
