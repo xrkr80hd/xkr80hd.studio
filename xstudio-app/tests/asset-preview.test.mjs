@@ -5,3 +5,5 @@ test('structured assets use attached image instead of their record ID',()=>{asse
 test('missing stale output falls through to a real attached image',()=>{assert.equal(assetPreviewReference({output_reference_id:'missing',reference_ids:['missing-too','real']},{real:{}}),'real')});
 test('approved output wins and raw references still preview themselves',()=>{assert.equal(assetPreviewReference({id:'asset',output_reference_id:'approved',reference_ids:['source']},{approved:{},source:{}}),'approved');assert.equal(assetPreviewReference({id:'upload'},{upload:{}}),'upload')});
 test('unattached or foreign references never produce guessed image URLs',()=>{assert.equal(assetPreviewReference({id:'character',reference_ids:['foreign']},{}),null)});
+
+test('locked characters display the pinned source even when a different output exists',()=>{assert.equal(assetPreviewReference({status:'LOCKED',source_image_id:'pinned',output_reference_id:'other'},{pinned:{},other:{}}),'pinned');});

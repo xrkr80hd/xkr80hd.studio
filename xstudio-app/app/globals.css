@@ -97,4 +97,10 @@ dialog.xce-shot-modal{border:0;margin:0;width:100%;height:100%;max-width:none;ma
 .asset-detail-code>.button{min-height:40px;padding:8px;font-size:12px}
 .asset-detail .full{min-height:40px;font-size:12px}
 
-.character-anchor-lock{margin:10px 0}.character-anchor-lock>.button{width:100%;min-height:40px;justify-content:center;font-size:12px}.anchor-lock-confirm{padding:12px;margin:10px 0;border:1px solid var(--line);border-radius:6px}.anchor-lock-confirm strong{font-size:14px}.anchor-lock-confirm p{font-size:13px;margin:8px 0 12px}.anchor-lock-confirm .anchor-approval-check{display:flex;align-items:flex-start;gap:10px;font-size:13px;text-transform:none}.anchor-approval-check input{width:20px;height:20px;flex:none;margin:0}.asset-lock-status{display:block;font-size:12px;color:#93ddbb;margin:0 0 10px}
+.character-anchor-lock{margin:10px 0}.character-anchor-lock>.button{width:100%;min-height:40px;justify-content:center;font-size:12px}.asset-lock-status{display:block;font-size:12px;color:#93ddbb;margin:0 0 10px}
+/* Clear, sentence-case copy and consistent spacing in character controls. */
+.character-edit-panel .form-accordion>p{font-size:14px;line-height:1.6;margin:0 0 16px;color:var(--muted)}
+.character-edit-panel label,.character-edit-panel legend{text-transform:none;line-height:1.5}
+.character-edit-panel label{font-size:14px}
+.character-edit-panel .form-accordion textarea{margin-top:8px;margin-bottom:16px;line-height:1.6}
+.character-edit-panel .character-link-row label{font-size:14px;line-height:1.5}
