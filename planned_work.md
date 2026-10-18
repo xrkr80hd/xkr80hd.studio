@@ -279,3 +279,11 @@ User confirmed xrkr80hdadmin (existing site admin, display name Travis). Map Gam
 
 - Investigate Rosa cast save failure: resolve project-local character/reference aliases to the canonical saved character ID; reject ambiguous, missing, foreign and creature records. Preserve character/image data.
 - Reuse NEXTDOCS cropper image/export approach for face/body anchors; add movable edge/corner selection, square start and optional square lock, saved-image/device sources and separate non-destructive crop files. Verify geometry, attachment pool, cast behavior and production build; hold commit/push pending review.
+
+
+## 2026-10-18 — Unsaved carousel character save
+Trace the reported Kutan save error; preserve reference identity in the inspector and route unsaved image organization through asset intake, with destination selection. Verify locally; no commit, push or deployment.
+
+
+## 2026-10-18 — Alternate form reference pool
+Replace the empty project-image dropdown with a searchable thumbnail picker across available asset pools. Do not require private storage keys in public manifests; import a selected cross-project reference before assigning it. Preserve existing local carousel fixes.
