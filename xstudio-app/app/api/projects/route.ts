@@ -1,3 +1,4 @@
+import {projectSummary} from '../../../lib/xce/project-summary.mjs';
 import {backend} from '../../../lib/xce/server';
 import {owner,call,ensureLostAssets} from '../../../lib/xce/server';
 export const dynamic='force-dynamic';
@@ -8,7 +9,7 @@ export async function GET(req:Request){
  const order=await backend().DB.prepare('SELECT project, position FROM xce_project_order WHERE owner=?').bind(u).all();const ranks=new Map(order.results.map((r:any)=>[r.project,r.position]));
  const rows=await backend().DB.prepare('SELECT project, revision, manifest FROM xce_projects WHERE owner=? ORDER BY project').bind(u).all();
  rows.results.sort((a:any,b:any)=>Number(ranks.get(a.project)??Number.MAX_SAFE_INTEGER)-Number(ranks.get(b.project)??Number.MAX_SAFE_INTEGER)||a.project.localeCompare(b.project));
- return Response.json({deleted_projects:rows.results.filter((r:any)=>JSON.parse(r.manifest).deleted_at).map((r:any)=>({id:r.project,title:JSON.parse(r.manifest).campaign_name})),projects:rows.results.filter((r:any)=>!JSON.parse(r.manifest).deleted_at).map((r:any)=>{const m=JSON.parse(r.manifest);return {system_pool:m.system_pool,id:r.project,title:m.campaign_name||r.project,revision:r.revision,folder_locked:Boolean(m.folder_lock),cover_id:m.folder_lock?null:m.cover_image?.id||null,project_code:m.active_project_code,assets:Object.values({...m.manifest_store,...Object.fromEntries(Object.entries(m.world_library||{}).map(([k,v])=>["world_"+k,v]))}).reduce((n:number,c:any)=>n+Object.keys(c).length,0),references:Object.keys(m.references||{}).length}})},{headers:{'Cache-Control':'private, no-store'}});
+ return Response.json({deleted_projects:rows.results.filter((r:any)=>JSON.parse(r.manifest).deleted_at).map((r:any)=>({id:r.project,title:JSON.parse(r.manifest).campaign_name})),projects:rows.results.filter((r:any)=>!JSON.parse(r.manifest).deleted_at).map((r:any)=>{const m=JSON.parse(r.manifest);return {system_pool:m.system_pool,id:r.project,title:m.campaign_name||r.project,revision:r.revision,folder_locked:Boolean(m.folder_lock),cover_id:m.folder_lock?null:m.cover_image?.id||null,project_code:m.active_project_code,...projectSummary(m)}})},{headers:{'Cache-Control':'private, no-store'}});
 }
 export async function POST(req:Request){
  if(req.headers.get('origin')!==new URL(req.url).origin)return Response.json({error:'Origin required'},{status:403});

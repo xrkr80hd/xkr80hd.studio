@@ -1,3 +1,4 @@
+import {editProjectDetails} from './project-summary.mjs';
 import {intakeReferences} from './intake-references.mjs';
 import {annotate} from './namespace.mjs';
 import {need,categories,findAsset} from './core.mjs';
@@ -10,7 +11,7 @@ export function manage(m,a){
  const collection=entity==='reference'?m.references:entity==='scene'?m.scenes:m.manifest_store[categories[entity]];
  if(entity==='project'){
   if(action==='read')return {record:clean(m)};
-  if(action==='update'){need(typeof data.name==='string'&&data.name.trim()&&data.name.length<=200,'Project name required (max 200 characters)');m.campaign_name=data.name.trim()}
+  if(action==='update')editProjectDetails(m,data)
   else if(action==='delete'){need(a.confirm===true,'Delete confirmation required');m.deleted_at=new Date().toISOString()}
   else if(action==='restore')delete m.deleted_at;
   else throw Error('Use create_project or list_projects');

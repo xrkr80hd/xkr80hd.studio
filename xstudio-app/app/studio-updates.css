@@ -39,3 +39,16 @@
 .world-editor>.button-row .icon-button{flex-shrink:0}
 .world-editor form>.button-row>.button{min-width:0;white-space:normal;overflow-wrap:anywhere;min-height:44px}
 .world-editor .cast-picker-choices>button{min-width:0;gap:8px;overflow-wrap:anywhere}
+/* Project list rows: a compact cover with readable metadata across the row. */
+.flow-copy{display:contents}.flow-description,.flow-counts,.flow-breakdown{display:none}
+.flow-grid.project-layout-list{width:100%;min-width:0;gap:10px}
+.project-layout-list .flow-card{width:100%;aspect-ratio:auto;min-width:0;height:auto!important;min-height:112px!important;border-radius:8px}
+.project-layout-list .flow-open{position:relative;inset:auto;display:flex;align-items:center;gap:14px;width:100%;height:auto!important;min-height:112px;padding:12px 58px 12px 12px!important;border-radius:7px;box-sizing:border-box}
+.project-layout-list .flow-open>.preview-frame,.project-layout-list .flow-placeholder{position:static!important;inset:auto;width:76px!important;height:76px!important;min-height:0;aspect-ratio:1;flex:0 0 76px;border-radius:5px;overflow:hidden}
+.project-layout-list .flow-placeholder svg{width:32px;height:32px}
+.project-layout-list .flow-copy{display:block;min-width:0;flex:1}
+.project-layout-list .flow-name{position:static!important;padding:0!important;display:flex;background:none!important;font-size:17px!important;line-height:1.35;overflow-wrap:anywhere}
+.project-layout-list .flow-description,.project-layout-list .flow-counts,.project-layout-list .flow-breakdown{display:block;white-space:normal;overflow-wrap:anywhere;line-height:1.45;margin-top:5px;font-size:12px;color:#afc0cc}
+.project-layout-list .flow-description{color:#d1dce5;font-size:13px}.project-layout-list .flow-options{top:8px;right:8px!important;left:auto!important}
+.project-layout-list .flow-card:nth-child(odd) .flow-menu{left:auto;right:0}
+@media(max-width:560px){.project-layout-list .flow-open{gap:10px;padding:10px 52px 10px 10px!important;align-items:flex-start}.project-layout-list .flow-open>.preview-frame,.project-layout-list .flow-placeholder{width:60px!important;height:60px!important;flex-basis:60px}.project-layout-list .flow-name{font-size:15px!important}.project-layout-list .flow-counts,.project-layout-list .flow-breakdown{font-size:11px}}
