@@ -5,11 +5,19 @@ export function approveCharacterAnchor(manifest,{asset_id,source_image_id,confir
  if(!/^[a-f0-9]{64}$/.test(sha256||''))throw Error('Stored image bytes must be verified before locking');
  const next=structuredClone(manifest),asset=next.manifest_store?.characters?.[asset_id];
  if(!asset||asset.deleted_at||asset.asset_type!=='character')throw Error('Character not found in this project');
- if(asset.status!=='DRAFT')throw Error('Only a draft character can be locked');
  const expected=assetPreviewReference(asset,next.references);
  if(!expected||source_image_id!==expected)throw Error('The character image changed. Reopen it and review the current image');
  const ref=next.references?.[source_image_id];
  if(!ref?.key||ref.deleted_at||ref.role==='DIAGNOSTIC')throw Error('A saved production image is required');
+ // The owner's explicit approval is the lock gate, regardless of workflow status or cast role.
+ // Repeating the same lock is safe, but cannot replace a pinned image or its verified bytes.
+ if(asset.status==='LOCKED'){
+  if(asset.source_image_id!==source_image_id)throw Error('The locked character image changed. Reopen it and review the current image');
+  if(asset.owner_image_approval?.sha256){
+   if(asset.owner_image_approval.sha256!==sha256)throw Error('The locked character image bytes changed. Reopen it and review before locking');
+   return {manifest:next,asset};
+  }
+ }
  asset.status='LOCKED';asset.source_image_id=source_image_id;asset.locked_at=now;
  asset.approval_instruction='Owner explicitly locked the displayed character image in XSTUDIO.';
  asset.owner_image_approval={source:'OWNER_EXPLICIT_LOCK',reference_id:source_image_id,sha256,approved_at:now};
