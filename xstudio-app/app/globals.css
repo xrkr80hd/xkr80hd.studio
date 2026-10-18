@@ -62,3 +62,13 @@ dialog.xce-shot-modal{border:0;margin:0;width:100%;height:100%;max-width:none;ma
 .character-link-row{display:grid;grid-template-columns:2fr 1fr auto;gap:10px;align-items:end;margin-block:12px}.character-quick-details fieldset{border:0;padding:0}.character-link-row label{min-width:0}.character-link-row select{width:100%;min-width:0}.cast-picker-choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.cast-picker-choices button{min-height:48px;padding:12px;display:flex;justify-content:space-between}.cast-picker-choices [aria-checked=true]{outline:2px solid var(--accent,#6ecdd4)}@media(max-width:520px){.character-link-row{grid-template-columns:1fr 1fr}.character-link-row button{grid-column:1/-1}}
 
 .character-link-row .clause-enable{grid-column:1/-1;display:flex;gap:8px;align-items:center}.clause-enable input[type=checkbox]{width:20px;height:20px;flex:none}
+
+/* Keep each clause readable at every card and viewport width. */
+.character-quick-details fieldset{display:block;width:100%;min-inline-size:0;box-sizing:border-box}
+.character-quick-details .character-link-row{display:flex;flex-direction:column;align-items:stretch;gap:16px;width:100%;min-width:0;margin:16px 0 24px}
+.character-quick-details .character-link-row>label{display:flex;flex-direction:column;gap:8px;width:100%;min-width:0;margin:0}
+.character-quick-details .character-link-row>.clause-enable{flex-direction:row;align-items:center}
+.character-quick-details .character-link-row select{display:block;width:100%;max-width:100%;min-width:0;box-sizing:border-box;margin:0}
+.character-quick-details .character-link-row .clause-text textarea{width:100%;max-width:100%;min-height:180px;box-sizing:border-box;margin:0;resize:vertical}
+.character-quick-details .character-link-row>button{align-self:flex-start}
+.character-quick-details .character-link-row+.character-link-row{padding-top:20px;border-top:1px solid var(--line)}
