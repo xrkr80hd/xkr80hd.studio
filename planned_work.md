@@ -346,3 +346,6 @@ Replace broad upload image types with the actual cast groups and distinct prop/v
 Trace the exact Create Scene Reference cast picker. Load all saved project cast roles and creatures; show all category choices before any character list instead of silently defaulting to Main Characters. Hydration/category changes must not reset already-added cast. Verify villains and background cast can be selected and saved together.
 
 The picker also needs an explicit Back to categories button; returning to categories must preserve all added cast IDs.
+
+### Mobile character picker Back correction
+Replace the native character select that obscures category navigation with an inline, bounded list. Keep Categories at the top beside the current category; preserve parent selections. Verify interaction and lint before release.

@@ -220,3 +220,11 @@ input.xce-toggle[role="switch"]:disabled{opacity:.45;cursor:default}
 .project-identity-actions{display:flex;gap:8px}
 .project-id-copy{display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;padding:0;background:transparent;border:0;color:var(--muted);cursor:pointer}
 .project-id-copy:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+
+/* Keep category navigation outside the scrolling character choices on mobile. */
+.character-category-panel { display: grid; gap: 12px; min-width: 0; }
+.character-category-header { display: flex; align-items: center; gap: 12px; }
+.character-category-header .button { flex: 0 0 auto; width: auto; min-height: 44px; padding: 8px 12px; }
+.character-category-header strong { min-width: 0; overflow-wrap: anywhere; }
+.character-category-list { display: flex; flex-direction: column; gap: 6px; max-height: min(40dvh, 320px); overflow-y: auto; overscroll-behavior: contain; }
+.character-category-list .button { flex: 0 0 auto; width: 100%; min-height: 44px; padding: 10px 12px; text-align: left; justify-content: flex-start; }
