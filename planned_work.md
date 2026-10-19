@@ -311,3 +311,6 @@ Combine saved asset name, category, classification, short description and charac
 ## 2026-10-18 — Categorize the scene-reference character list
 Recording identifies SceneCastPicker's uncategorized native select, separate from Composer. Add one role/category dropdown, alphabetical filtered character choices and search; isolate beasts/creatures from cast roles. Retain selected IDs across category changes and remove draft/lock suffixes. Verify and publish this correction within the already authorized simplification work.
 Reuse the categorized character picker for prop-character clauses and character relationship clauses, removing the same long mixed dropdown from those editors too. Keep scene choices and existing clause targets intact when browsing another category.
+
+## 2026-10-18 — Restore visible compact inspector buttons
+User clarified category dropdowns were not authorization to hide action/copy buttons. Restore visible Edit / Rename, Duplicate, Move, Delete, Copy code and Copy for ChatGPT buttons. Replace oversized Share accordion and saved-asset Edit accordion with compact controls; retain the unified editor behind Edit / Rename. Scope styling to the inspector and keep consistent 44px button height.
