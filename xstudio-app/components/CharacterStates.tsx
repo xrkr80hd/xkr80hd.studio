@@ -1,4 +1,5 @@
 'use client';
+import OverlaySelect from './OverlaySelect';
 import {useEffect,useRef,useState} from 'react';
 import PreviewImage from './PreviewImage';
 import ReferencePoolPicker,{type PoolImage} from './ReferencePoolPicker';
@@ -70,7 +71,7 @@ export default function CharacterStates({project,manifest,characterId,onSaved}:P
  }
  return <details className="form-accordion entity-editor"><summary>Alternate costumes / Forms / Transformations</summary>
   <button type="button" className="button secondary" disabled={busy} onClick={addAlternate}>Add Alternate Character / Costume</button>
-  {states.length>0&&<label>Alternate form<select value={draft?.id||''} disabled={busy} onChange={e=>setDraft(states.find(s=>s.id===e.target.value)||null)}><option value="">Choose a form</option>{states.map(s=><option key={s.id} value={s.id}>{s.name}</option>)}</select></label>}
+  {states.length>0&&<label>Alternate form<OverlaySelect value={draft?.id||''} disabled={busy} onChange={e=>setDraft(states.find(s=>s.id===e.target.value)||null)}><option value="">Choose a form</option>{states.map(s=><option key={s.id} value={s.id}>{s.name}</option>)}</OverlaySelect></label>}
   {draft&&<section className="entity-card" aria-label="Alternate form editor"><fieldset disabled={busy||locked}>
    <label>Name<input maxLength={100} value={draft.name} onChange={e=>setDraft({...draft,name:e.target.value})}/></label>
    <label>Appearance<textarea rows={3} maxLength={2000} value={draft.visual_description} onChange={e=>setDraft({...draft,visual_description:e.target.value})}/></label>

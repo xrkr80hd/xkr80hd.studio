@@ -4,15 +4,15 @@ import {manage} from './manage.mjs';
 const assetTypes=['character','creature','prop','location','vehicle'];
 const roleFor=t=>['character','creature'].includes(t)?'IDENTITY':t==='location'?'LOCATION':'PROP';
 export function reclassify(m,args){
- const {entity,target_category}=args;
+ const {entity}=args,requested=args.target_category,target_category=({beast:'creature',magical_being:'creature',weapon:'prop'})[requested]||requested,display=({beast:'beasts',magical_being:'magical_beings',weapon:'weapons'})[requested];
  need([...assetTypes,'reference'].includes(entity),'Only assets and source images can change category');
  need(assetTypes.includes(target_category),'Choose Character, Creature / Beast, Prop, Location, or Vehicle');
  const original=resolve(m,entity,args.id||args.target_name,{locked:false});
  if(entity!=='reference')need(original.asset_type===entity,'Source category does not match this asset');
  const oldId=entity==='reference'?original.id:original.asset_id;
  const sourceType=original.asset_type||({IDENTITY:'character',COSTUME:'character',PROP:'prop',LOCATION:'location'})[original.role];
- need(sourceType!==target_category,'This item is already in that category');
  const name=(args.name||original.name||original.asset_name||oldId).trim();need(name&&name.length<=200,'Name required (max 200 characters)');
+ if(entity!=='reference'&&sourceType===target_category){m.asset_details||={};m.asset_details[oldId]={...(m.asset_details[oldId]||{}),library_category:display||categories[target_category]};original.name=name;m.permits={};m.history.push({kind:'reclassify',id:oldId,to:requested,date:new Date().toISOString()});return {saved:true,id:oldId,record:structuredClone(original),old_id:oldId,target_category:requested,preserved_approved_original:false};}
  const preserve=entity!=='reference'&&original.status==='LOCKED';
  // Validate removal on a copy before allocating IDs or touching shared source references.
  if(!preserve)manage(structuredClone(m),{entity,action:'delete',id:oldId,confirm:true});
@@ -31,6 +31,7 @@ export function reclassify(m,args){
   m.manifest_store[categories[target_category]][id]=record;
  }
  if(!preserve)manage(m,{entity,action:'delete',id:oldId,confirm:true});
+ if(display){m.asset_details||={};m.asset_details[id]={...(m.asset_details[id]||{}),library_category:display};}
  m.permits={};if(m.pending_action?.asset_id===oldId)m.pending_action=null;
  if(entity==='reference')m.active_reference_id=id;else m.active_asset_id=id;
  m.history.push({kind:'reclassify',from:entity,to:target_category,old_id:oldId,new_id:id,preserved_approved_original:preserve,date:new Date().toISOString()});storePrompts(m);

@@ -241,3 +241,5 @@ input.xce-toggle[role="switch"]:disabled{opacity:.45;cursor:default}
 .entity-card>fieldset{align-content:start;height:auto}
 .entity-card>fieldset>label{margin:0 0 6px}
 .entity-reference-strip{margin-top:8px}
+
+.scene-record-editor fieldset{display:grid;gap:14px;border:0;padding:0;min-width:0}.scene-record-editor section{display:grid;gap:8px;min-width:0}.scene-record-editor label{display:grid;gap:6px;min-width:0}.scene-record-editor textarea,.scene-record-editor input{width:100%;min-width:0}.scene-cast-list .cast-quantity{display:grid;gap:4px;width:65px;flex:0 0 65px}.cast-quantity input{width:65px;min-width:0}.scene-cast-list>div{flex-wrap:wrap}

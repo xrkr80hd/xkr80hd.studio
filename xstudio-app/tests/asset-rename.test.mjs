@@ -61,3 +61,24 @@ test('native locked asset display name can change without duplicating its record
  const result=validateWorld(renamed,m);assert.equal(result.props.P.name,'Sword');assert.equal(result.props.P.status,'LOCKED');assert.deepEqual(result.props.P.reference_ids,['R']);assert.deepEqual(Object.keys(result.props),['P']);
  renamed.props.P.reference_ids=[];assert.throws(()=>validateWorld(renamed,m),/visual anchor/);
 });
+
+
+test('all scene keyframes can be renamed by stable ID before or after approval',async()=>{
+ const {prepareAutoArgs}=await import('../lib/xce/namespace.mjs');
+ for(const status of ['DRAFT','LOCKED'])for(const indexed of [false,true]){
+  const m=fresh();m.campaign_name='Final Fantasy VI';
+  const shot={asset_id:'SHOT-1',scene_id:'SCENE-1',shot_number:1,name:'Old name',status,source_image_id:'IMAGE-1',assigned_reference_ids:['IMAGE-1'],camera_spec:{framing:'wide'}};
+  m.scenes['SCENE-1']={scene_id:'SCENE-1',shots:{'1':structuredClone(shot)}};
+  if(indexed)m.manifest_store.shots[shot.asset_id]=structuredClone(shot);
+  // A persisted manifest has separate objects in these two collections.
+  for(const name of ['Rear camera behind the Emperor','My second name']){
+   const args=prepareAutoArgs(m,'manage_record',{entity:'keyframe',action:'update',id:shot.asset_id,data:{name}});
+   const result=manage(m,args);
+   assert.equal(result.record.name,name);
+   assert.deepEqual(m.scenes['SCENE-1'].shots['1'],{...shot,name});
+   assert.deepEqual(Object.keys(m.manifest_store.shots),indexed?['SHOT-1']:[]);
+   if(indexed)assert.deepEqual(m.manifest_store.shots['SHOT-1'],{...shot,name});
+   assert.deepEqual(Object.keys(m.scenes['SCENE-1'].shots),['1']);
+  }
+ }
+});

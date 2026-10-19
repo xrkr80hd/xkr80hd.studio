@@ -12,7 +12,7 @@ export function deriveCode(name){
  return code.length>=2?code:code+'X';
 }
 export function lockNamespace(m,code){m.active_project_code ||= code||deriveCode(m.campaign_name||'Project');m.auto_id_parser ||= {...autoIdRules,counters:{},scene_index:0};m.auto_id_parser.counters ||= {};m.manifest_store.vehicles ||= {};m.manifest_store.creatures ||= {};m.auto_id_parser.rules ||= structuredClone(autoIdRules.rules);m.auto_id_parser.rules.type_prefixes ||= {...autoIdRules.rules.type_prefixes};m.auto_id_parser.rules.type_prefixes.creature='CR';return m.active_project_code;}
-export function records(m,entity){return entity==='scene'?Object.values(m.scenes):entity==='reference'?Object.values(m.references):entity?Object.values(m.manifest_store[categories[entity]]||{}):Object.values(m.manifest_store).flatMap(Object.values);}
+export function records(m,entity){if(entity==='keyframe'){const shots=[...Object.values(m.scenes||{}).flatMap(s=>Object.values(s.shots||{})),...Object.values(m.manifest_store.shots||{})];return [...new Map(shots.map(s=>[s.asset_id,s])).values()];}return entity==='scene'?Object.values(m.scenes):entity==='reference'?Object.values(m.references):entity?Object.values(m.manifest_store[categories[entity]]||{}):Object.values(m.manifest_store).flatMap(Object.values);}
 export function rootFor(m,entity,name){lockNamespace(m);const type=autoIdRules.rules.type_prefixes[entity];need(type,'Unknown item category');return `${m.active_project_code}-${type}-${slug(name)}`;}
 const recordId=r=>r.asset_id||r.scene_id||r.id;
 const recordRoot=r=>r.namespace_root||recordId(r)?.replace(/-v\d+$/,'');

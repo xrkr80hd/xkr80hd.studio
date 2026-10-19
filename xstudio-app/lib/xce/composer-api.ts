@@ -1,3 +1,4 @@
+import {editSceneRecord} from './scene-editor.mjs';
 import {editAsset} from './asset-edit.mjs';
 import {saveAssetDetails} from './asset-details.mjs';
 import {byteStream} from './response-stream.mjs';
@@ -60,6 +61,10 @@ export async function composerRequest(req:Request){
   }
   if(req.method!=='POST')throw Error('Use POST for this operation');
   const write=(next:any)=>persistComposition(request,p,next,revision,args.expected_revision);
+  if(action==='scene_record'){
+   if(args.confirm!==true)throw Error('Explicit save confirmation required');
+   const result=editSceneRecord(m,args);const updated=await write(result.manifest);return json({saved:true,revision:updated,record:result.record});
+  }
   if(action==='scene_cast'){
    if(args.confirm!==true)throw Error('Explicit save confirmation required');
    const next=saveSceneCast(m,args.scene_id,args.character_ids);

@@ -1,5 +1,6 @@
 // Adapted from kazim-45/openframe (MIT). See LICENSE in this directory.
-'use client'
+'use client';
+import OverlaySelect from '../OverlaySelect';
 import { useState, useRef, useEffect } from 'react'
 import { ShotTemplateGrid, ShotTemplateSVG } from './ShotTemplates'
 
@@ -83,10 +84,10 @@ export default function PanelEditor({ panel, sceneNumber, onSave, onClose, extra
                   {[{label:'Camera',field:'cameraMove',opts:CAM_MOVES},{label:'Lens',field:'lens',opts:LENSES}].map(({label,field,opts})=>(
                     <div key={field}>
                       <label className="block text-xs text-[#555] uppercase tracking-widest mb-1.5">{label}</label>
-                      <select value={data[field]} onChange={e=>set(field,e.target.value)}
+                      <OverlaySelect value={data[field]} onChange={e=>set(field,e.target.value)}
                         className="w-full bg-[#1c1c1c] border border-[#333] text-[#d8d6cc] text-sm rounded px-2 py-2 outline-none focus:border-[#65dcff]">
                         {opts.map(o=><option key={o} value={o}>{o}</option>)}
-                      </select>
+                      </OverlaySelect>
                     </div>
                   ))}
                 </div>

@@ -37,7 +37,8 @@ export function manage(m,a){
     collection[id]=annotate({...data,asset_id:id,asset_type:entity,status:'DRAFT',generation_review:null},m,entity);
    }
   }else{
-   const record=collection[id];need(record,'Record not found');
+   const sceneShots=entity==='keyframe'?Object.values(m.scenes).flatMap(s=>Object.values(s.shots||{})).filter(s=>s.asset_id===id):[];
+   const record=collection[id]||sceneShots[0];need(record,'Record not found');
    if(action==='read')return {record:clean(record)};
    if(action==='delete'){
     need(a.confirm===true,'Delete confirmation required');
@@ -55,7 +56,7 @@ export function manage(m,a){
    }else if(action==='update'){
     const keys=Object.keys(data);need(keys.length,'No changes supplied');
     need(!keys.some(k=>['asset_id','asset_type','id','scene_id','status','key','generation_review','approval_instruction','locked_at','shots'].includes(k)),'IDs and approval fields cannot be edited');
-    if(keys.length===1&&keys[0]==='name'){need(typeof data.name==='string'&&data.name.trim()&&data.name.length<=200,'Name required (max 200 characters)');record.name=data.name.trim();if(entity==='reference'){if(record.asset_name)record.asset_name=record.name;if(record.presort)record.presort={...record.presort,display_name:record.name};}}
+    if(keys.length===1&&keys[0]==='name'){need(typeof data.name==='string'&&data.name.trim()&&data.name.length<=200,'Name required (max 200 characters)');record.name=data.name.trim();for(const shot of sceneShots)shot.name=record.name;if(entity==='reference'){if(record.asset_name)record.asset_name=record.name;if(record.presort)record.presort={...record.presort,display_name:record.name};}}
     else{
      need(entity!=='reference','Reference image and role are immutable; upload a replacement reference');
      const allowed=entity==='scene'?['name','blueprint_id','subject_count','character_ids','prop_ids','location_ids','blocking','lighting_palette']:['name','immutable_traits','reference_ids','lighting_palette','action','mode','medium','equipment_callouts'];
@@ -79,6 +80,6 @@ export function manage(m,a){
   }
  }
  m.permits={};m.history.push({kind:'manage_record',entity,action,id,date:new Date().toISOString()});
- const saved=collection?.[a.new_version_id]||collection?.[id];
+ const saved=collection?.[a.new_version_id]||collection?.[id]||(entity==='keyframe'?Object.values(m.scenes).flatMap(s=>Object.values(s.shots||{})).find(s=>s.asset_id===id):undefined);
  return {saved:true,entity,action,id,record:saved?clean(saved):undefined};
 }

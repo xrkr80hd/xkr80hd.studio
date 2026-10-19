@@ -12,15 +12,17 @@ import {assignCastGroup,CAST_GROUPS} from './cast-groups.mjs';
 import {saveSceneCast} from './scene-cast.mjs';
 import {assignAssetCodes,codedRecords} from './asset-codes.mjs';
 import {unassignedReferences} from './attachments.mjs';
-export const TRIAGE_TYPES={character:'Characters',creature:'Creatures',scene:'Scenes',prop:'Props',wardrobe:'Wardrobe',vehicle:'Vehicles',location:'Locations',room:'Rooms'};
+export const TRIAGE_TYPES={character:'Characters',creature:'Creatures',beast:'Beasts',magical_being:'Magical Beings',weapon:'Weapons',scene:'Scenes',prop:'Props',wardrobe:'Wardrobe',vehicle:'Vehicles',location:'Locations',room:'Rooms'};
 export const triageKey=a=>(a.category==='references'||a.sourceReference?'reference':a.asset_type||(!a.legacy&&!a.sourceReference&&a.type?'world':null)||({characters:'character',creatures:'creature',props:'prop',vehicles:'vehicle',locations:'location',scenes:'scene'}[a.category])||'world')+':'+(a.asset_id||a.scene_id||a.id);
 export function stageReference(m,referenceId,type,name){
+ const requested=type;type=({beast:'creature',magical_being:'creature',weapon:'prop'})[type]||type;
  const ref=m.references?.[referenceId];if(!ref||ref.role==='DIAGNOSTIC'||!ref.key)throw Error('Missing or diagnostic source image');
  if(!Object.hasOwn(TRIAGE_TYPES,type)||!name?.trim()||name.length>200)throw Error('Choose a category and a name (max 200 characters)');
  if(type==='scene'){const result=intakeScene(m,{name,reference_ids:[referenceId]});result.scene.intake_source_reference_ids=[referenceId];return {id:result.scene.scene_id,entity:'scene'}}
  if(['wardrobe','room'].includes(type)){const category=type==='room'?'rooms':'wardrobe',id=allocate(m,'prop',name);m.world_library||={};m.world_library[category]||={};m.world_library[category][id]={id,type:category,name,status:'DRAFT',reference_ids:[referenceId],thumbnail_reference_id:referenceId,metadata:{style_anchor:''}};return {id,entity:'world'}}
  const refs=intakeReferences(m,[referenceId],type,name),id=allocate(m,type,name);
  m.manifest_store[categories[type]][id]=annotate({asset_id:id,asset_type:type,name:name.trim(),status:'DRAFT',reference_ids:refs,intake_source_reference_ids:[referenceId],reference_preservation:true,analysis_pending:true,mode:'simple',medium:'RL',target_deliverable:type==='character'?'character_turnaround':type==='creature'?'creature_sheet':type==='location'?'location_map':'prop_sheet',immutable_traits:{silhouette:'',material_spec:''},generation_review:null},m,type);
+ const display=({beast:'beasts',magical_being:'magical_beings',weapon:'weapons'})[requested];if(display){m.asset_details||={};m.asset_details[id]={...(m.asset_details[id]||{}),library_category:display};}
  return {id,entity:type};
 }
 const get=(m,item)=>item.entity==='reference'?m.references?.[item.id]:item.entity==='scene'?m.scenes?.[item.id]:item.entity==='world'?Object.values(m.world_library||{}).flatMap(rows=>Object.values(rows)).find(a=>a.id===item.id):m.manifest_store?.[categories[item.entity]]?.[item.id];
@@ -33,6 +35,7 @@ export function triageBatch(source,destination,args){
  if(dst.system_pool&&!['move','delete'].includes(args.action))throw Error('Choose a creative destination project');
  if(args.action==='cast'&&!Object.hasOwn(CAST_GROUPS,args.group))throw Error('Choose a cast group');
  if(args.action==='delete'){if(cross)throw Error('Delete from the source project');removeWorldAssets(src,args.items.filter(x=>x.entity==='world'));const legacy=args.items.filter(x=>x.entity!=='world'),next=legacy.length?deleteRecords(src,{items:legacy,confirm:true,cascade:false}).manifest:src;return {source:next,destination:next,cross:false,results:args.items};}
+ const requestedCategory=args.category,displayCategory=({beast:'beasts',magical_being:'magical_beings',weapon:'weapons'})[requestedCategory];args={...args,category:({beast:'creature',magical_being:'creature',weapon:'prop'})[requestedCategory]||requestedCategory};
  const mapping=new Map();
  let nextNumber=1;const names=new Set(worldRecords(dst).map(a=>a.name));
  for(const item of args.items){let current={...item};const original=get(src,item);
@@ -46,6 +49,7 @@ export function triageBatch(source,destination,args){
     if(args.action==='cast'&&['background','extras','military'].includes(args.group)){const prefix=args.group==='background'?'BG_Character':args.group==='extras'?'Extra_Character':'Unit_Character';do{name=prefix+'_'+String(nextNumber++).padStart(2,'0')}while(names.has(name));names.add(name)}
     current=stageReference(dst,current.id,type,name);if(args.action==='cast'){get(dst,current).rename_pending=true;}
    }else if(args.action==='categorize'&&current.entity!==args.category){if(!Object.hasOwn(TRIAGE_TYPES,args.category))throw Error('Choose an asset category');if(['character','creature','prop','vehicle','location'].includes(args.category)&&['character','creature','prop','vehicle','location'].includes(current.entity)){const result=reclassify(dst,{...current,target_category:args.category});current={id:result.id,entity:args.category};}else{const original=get(dst,current),ref=[...(original.reference_ids||[]),original.source_image_id,original.blueprint_id].find(id=>dst.references[id]?.key);if(!ref)throw Error('Attach an image before changing category');const originalItem=current;current=stageReference(dst,ref,args.category,original.name);get(dst,current).reclassified_from={id:originalItem.id,type:originalItem.entity};if(original.status!=='LOCKED'){if(originalItem.entity==='world'){dst.trash||={};dst.trash['world:'+originalItem.id]={entity:'world',record:original};delete dst.world_library[original.type][originalItem.id]}else manage(dst,{...originalItem,action:'delete',confirm:true})}}}
+   if(['categorize','save'].includes(args.action)&&displayCategory){dst.asset_details||={};dst.asset_details[current.id]={...(dst.asset_details[current.id]||{}),library_category:displayCategory};}else if(args.action==='categorize'&&dst.asset_details?.[current.id])dst.asset_details[current.id].library_category=categories[args.category]||args.category;
    if(args.action==='cast'){if(current.entity!=='character'&&!(current.entity==='world'&&get(dst,current).type==='characters'))throw Error('Cast assignment requires characters');Object.assign(dst,assignCastGroup(dst,current.id,args.group,worldRecords(dst)));}
    if(args.action==='scene'){if(current.entity!=='character'&&current.entity!=='creature'&&!(current.entity==='world'&&get(dst,current).type==='characters'))throw Error('Scene roster selection accepts characters and creatures');Object.assign(dst,saveSceneCast(dst,args.scene_id,[...new Set([...(dst.scenes?.[args.scene_id]?.character_ids||[]),current.id])]));}
   }
