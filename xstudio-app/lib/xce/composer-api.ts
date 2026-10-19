@@ -1,3 +1,5 @@
+import {METADATA_SCHEMA,assetMetadata,updateAssetMetadata,updateGenerationPrompt,bulkMetadata} from './asset-metadata.mjs';
+import {CLASSIFICATION_SCHEMA,classificationRows,classifyAssets} from './classifications.mjs';
 import {editSceneRecord} from './scene-editor.mjs';
 import {editAsset} from './asset-edit.mjs';
 import {saveAssetDetails} from './asset-details.mjs';
@@ -37,12 +39,14 @@ export async function composerRequest(req:Request){
   const request=await connection(req),query=new URL(req.url).searchParams;
   const args=req.method==='GET'?Object.fromEntries(query):JSON.parse((await readBounded(req,150000)).toString('utf8'));
   const action=args.action||'inventory';
-  if(action==='schema')return json({module:'XCE_COMPOSER',configuration_schema:CONFIG_SCHEMA,world_builder:{version:'1.1.0',read:{tool:'manage_record',entity:'project',action:'read'},save:{tool:'manage_record',entity:'project',action:'update',data_field:'world_builder',expected_revision_required:true},text_fields:{world_type:1000,aesthetic:5000,world_background:30000,story_so_far:50000,production_brief:30000,notes:10000},narrative_state_field:'firestarter_state',narrative_state_version:'1.1.0',identity_authority:'Saved asset name and exact locked reference image; descriptive identity notes are optional.'},scene_batch:{schema:BATCH_SCHEMA,discovery:'inventory returns scene_references',preview:{action:'read',category:'scene_batch',id:'exact scene ID'},handoff:{action:'execution',category:'scene_batch',id:'exact scene ID'},instruction:'Saved scene only. Returns all five XCE blocks and verified original image bytes. No rendering, writing or plugin activation.'},entity_schemas:{...ENTITY_SCHEMAS,EquipmentBinding:EQUIPMENT_BINDING_SCHEMA,CharacterDirection:CHARACTER_DIRECTION_SCHEMA,SceneSetting:SCENE_SETTING_SCHEMA},scene_themes:SCENE_THEMES,formation_presets:FORMATION_PRESETS,cast_groups:CAST_GROUPS,character_relations:CHARACTER_RELATIONS,source_url:'https://xstudio.xrkr80hd.studio',instruction:'Use this live schema and current inventory. Site and plugin share this endpoint and project records.'});
+  if(action==='schema')return json({module:'XCE_COMPOSER',asset_classifications:CLASSIFICATION_SCHEMA,asset_metadata:METADATA_SCHEMA,character_details_contract:{partial_updates:true,fields:['quick_details','links','gender',...METADATA_SCHEMA.text_fields,...METADATA_SCHEMA.other_fields],omitted_links:'preserved'},configuration_schema:CONFIG_SCHEMA,world_builder:{version:'1.1.0',read:{tool:'manage_record',entity:'project',action:'read'},save:{tool:'manage_record',entity:'project',action:'update',data_field:'world_builder',expected_revision_required:true},text_fields:{world_type:1000,aesthetic:5000,world_background:30000,story_so_far:50000,production_brief:30000,notes:10000},narrative_state_field:'firestarter_state',narrative_state_version:'1.1.0',identity_authority:'Saved asset name and exact locked reference image; descriptive identity notes are optional.'},scene_batch:{schema:BATCH_SCHEMA,discovery:'inventory returns scene_references',preview:{action:'read',category:'scene_batch',id:'exact scene ID'},handoff:{action:'execution',category:'scene_batch',id:'exact scene ID'},instruction:'Saved scene only. Returns all five XCE blocks and verified original image bytes. No rendering, writing or plugin activation.'},entity_schemas:{...ENTITY_SCHEMAS,EquipmentBinding:EQUIPMENT_BINDING_SCHEMA,CharacterDirection:CHARACTER_DIRECTION_SCHEMA,SceneSetting:SCENE_SETTING_SCHEMA},scene_themes:SCENE_THEMES,formation_presets:FORMATION_PRESETS,cast_groups:CAST_GROUPS,character_relations:CHARACTER_RELATIONS,source_url:'https://xstudio.xrkr80hd.studio',instruction:'Use this live schema and current inventory. Site and plugin share this endpoint and project records.'});
   if(action==='projects'){
    const rows=(await request({op:'projects'})).data||[];
    return json({projects:rows.flatMap((row:any)=>{const m=JSON.parse(row.manifest);return m.deleted_at||m.system_pool?[]:[{id:row.project,name:m.campaign_name||row.project,folder_locked:Boolean(m.folder_lock)}]})});
   }
   const p=args.project_id;const {manifest:m,revision}=await openProject(request,req,p);
+  if(['metadata_read','generation_prompt'].includes(action)){const result=assetMetadata(m,p,revision,args.asset_id);return json(action==='generation_prompt'?{asset_id:args.asset_id,project_id:p,revision,...result.generation_prompt}:result);}
+  if(action==='classifications')return json({project_id:p,revision,schema:CLASSIFICATION_SCHEMA,assets:classificationRows(m,p,revision)});
   if(action==='inventory'){const c=catalogue(m,p,revision);if(args.q)c.assets=c.assets.filter((a:any)=>(a.name+' '+a.asset_code).toLowerCase().includes(String(args.q).toLowerCase()));if(args.category)c.assets=c.assets.filter((a:any)=>a.category===args.category);return json(c);}
   if(args.category==='scene_batch'&&['read','execution'].includes(action)){
    if(!Object.hasOwn(m.scenes||{},args.id))throw new ApiError('Scene not found',404);
@@ -61,6 +65,20 @@ export async function composerRequest(req:Request){
   }
   if(req.method!=='POST')throw Error('Use POST for this operation');
   const write=(next:any)=>persistComposition(request,p,next,revision,args.expected_revision);
+  if(['metadata_update','metadata_bulk','generation_prompt_update'].includes(action)){
+   if(args.confirm!==true)throw new ApiError('Explicit metadata confirmation required');
+   if(args.expected_revision!==revision)throw new ApiError('Project changed; reload before saving',409);
+   const result=action==='metadata_bulk'?bulkMetadata(m,p,revision,args.updates):action==='generation_prompt_update'?updateGenerationPrompt(m,p,revision,args.asset_id,args.expected_version,args.text,args.provenance):updateAssetMetadata(m,p,revision,args.asset_id,args.expected_version,args.patch);
+   const updated=result.changed?await write(result.manifest):revision;
+   return json({project_id:p,revision:updated,changed:result.changed,...('results' in result?{results:result.results}:{asset:result.asset})});
+  }
+  if(['classify','classify_bulk'].includes(action)){
+   if(args.confirm!==true)throw new ApiError('Explicit classification confirmation required');
+   if(args.expected_revision!==revision)throw new ApiError('Project changed; reload before classifying',409);
+   const result=classifyAssets(m,p,revision,args.expected_revision,action==='classify'?[{asset_id:args.asset_id,classification:args.classification,expected_version:args.expected_version}]:args.updates);
+   const updated=result.changed?await write(result.manifest):revision;
+   return json({project_id:p,revision:updated,results:result.results,assets:result.assets,changed:result.changed});
+  }
   if(action==='scene_record'){
    if(args.confirm!==true)throw Error('Explicit save confirmation required');
    const result=editSceneRecord(m,args);const updated=await write(result.manifest);return json({saved:true,revision:updated,record:result.record});
@@ -97,7 +115,11 @@ export async function composerRequest(req:Request){
   }
   if(action==='character_details'){
    if(args.confirm!==true)throw Error('Explicit save confirmation required');
-   const next=saveCharacterDetails(m,args.character_id,args.details,worldRecords(m));
+   if(!args.details||typeof args.details!=='object'||Array.isArray(args.details)||!Object.keys(args.details).length)throw new ApiError('Provide at least one supported character details field');
+   const patch=Object.fromEntries(Object.entries(args.details).filter(([k])=>!['quick_details','links','gender'].includes(k)));
+   const metadata=Object.keys(patch).length?updateAssetMetadata(m,p,revision,args.character_id,args.expected_version??assetMetadata(m,p,revision,args.character_id).version,patch).manifest:m;
+   const quick=Object.fromEntries(Object.entries(args.details).filter(([k])=>['quick_details','links','gender'].includes(k)));
+   const next=Object.keys(quick).length?saveCharacterDetails(metadata,args.character_id,quick,worldRecords(metadata)):metadata;
    const updated=await write(next);return json({saved:true,revision:updated,character_network:next.character_network});
   }
   if(action==='intelligence'){

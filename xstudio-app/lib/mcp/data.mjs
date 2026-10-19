@@ -1,3 +1,5 @@
+import {METADATA_SCHEMA,assetMetadata,updateAssetMetadata,updateGenerationPrompt,bulkMetadata} from '../xce/asset-metadata.mjs';
+import {CLASSIFICATION_SCHEMA,classificationRows,classifyAssets} from '../xce/classifications.mjs';
 import {XSTUDIO_ENDPOINT} from '../xce/xstudio-bridge.mjs';
 import {codedRecords,recordId} from '../xce/asset-codes.mjs';
 import {gradeLibrary} from '../xce/color-grades.mjs';
@@ -12,9 +14,9 @@ export async function readJSON(response,max=4*1024*1024){
  while(true){const {done,value}=await reader.read();if(done)break;size+=value.byteLength;if(size>max){await reader.cancel();throw new GatewayError('Response too large; narrow the request',502);}chunks.push(Buffer.from(value));}
  try{return JSON.parse(Buffer.concat(chunks).toString('utf8'));}catch{throw new GatewayError('Backend unavailable',502);}
 }
-export function backend(token,fetcher=fetch){
+export function backend(token,fetcher=fetch,{allowClassificationSave=false}={}){
  return async args=>{
-  if(!['projects','load','file_get'].includes(args.op))throw new GatewayError('Read-only operation required',403);
+  if(!['projects','load','file_get'].includes(args.op)&&!(allowClassificationSave&&args.op==='save'))throw new GatewayError('Read-only operation required',403);
   let r;try{r=await fetcher(XSTUDIO_ENDPOINT+'?resource=engine',{method:'POST',headers:{authorization:'Bearer '+token,'content-type':'application/json'},body:JSON.stringify(args),cache:'no-store',redirect:'error',signal:AbortSignal.timeout(25000)});}catch{throw new GatewayError('Backend unavailable',502);}
   if(!r.ok)throw new GatewayError(r.status===401?'Invalid credential':'Backend unavailable',r.status===401?401:502);
   return readJSON(r,args.op==='projects'?32*1024*1024:4*1024*1024);
@@ -38,7 +40,7 @@ export function referenceIds(r,type){
  if(r.status==='LOCKED'&&r.source_image_id)return [r.source_image_id];
  return [...new Set([...(r.reference_ids||r.assigned_reference_ids||[]),r.source_image_id,r.output_reference_id,r.blueprint_id,r.thumbnail_reference_id,...['face_anchor_url','body_anchor_url','costume_anchors','exterior_anchor','interior_anchor','exterior_environment_anchor'].map(k=>r.metadata?.[k])].filter(v=>typeof v==='string'&&v))];
 }
-export function dataSource(auth,request=backend(auth.backendToken)){
+export function dataSource(auth,request=backend(auth.backendToken,fetch,{allowClassificationSave:auth.scopes?.has('asset:classify')||auth.scopes?.has('asset:metadata')})){
  async function project(p){
   if(!auth.projects.has(p))notFound();
   const row=(await request({op:'load',project:p})).data;if(!row)notFound();const m=manifest(row);if(!m)notFound();return {m,revision:row.revision};
@@ -66,14 +68,38 @@ export function dataSource(auth,request=backend(auth.backendToken)){
    const projects=rows.filter(r=>auth.projects.has(r.project)).flatMap(r=>{const m=manifest(r);return m?[summary(r,m)]:[];});
    return {projects:projects.slice(a.offset,a.offset+a.limit),next_offset:projects.length>a.offset+a.limit?a.offset+a.limit:null};
   }
+  if(name==='bulk_update_asset_details'&&a.projects){
+   if(!auth.scopes?.has('asset:metadata'))throw new GatewayError('Metadata permission required; reconnect with asset:metadata',403);
+   const results=[];for(const batch of a.projects){try{results.push({project_id:batch.project_id,ok:true,...await dataSource(auth,request)('bulk_update_asset_details',{...batch,confirm:a.confirm})})}catch(e){results.push({project_id:batch.project_id,ok:false,error:e instanceof GatewayError?e.message:'Metadata update failed'})}}
+   return {results};
+  }
   const {m,revision}=await project(a.project_id);const p=a.project_id;
+  if(name==='get_project_classification_schema')return {project_id:p,revision,schema:CLASSIFICATION_SCHEMA,metadata_schema:METADATA_SCHEMA};
+  if(['get_asset_details','get_asset_generation_prompt'].includes(name)){let detail;try{detail=assetMetadata(m,p,revision,a.asset_id)}catch(e){throw new GatewayError(e.message,404)}return name==='get_asset_details'?detail:{asset_id:a.asset_id,project_id:p,revision,...detail.generation_prompt};}
+  if(['update_asset_details','bulk_update_asset_details','update_asset_generation_prompt'].includes(name)){
+   if(!auth.scopes?.has('asset:metadata'))throw new GatewayError('Metadata permission required; reconnect with asset:metadata',403);
+   if(a.confirm!==true)throw new GatewayError('Explicit confirmation required',400);
+   if(a.expected_revision!==revision)throw new GatewayError('Project changed; reload before updating metadata',409);
+   let result;try{result=name==='bulk_update_asset_details'?bulkMetadata(m,p,revision,a.updates):name==='update_asset_generation_prompt'?updateGenerationPrompt(m,p,revision,a.asset_id,a.expected_version,a.text,a.provenance):updateAssetMetadata(m,p,revision,a.asset_id,a.expected_version,a.patch)}catch(e){throw new GatewayError(e.message,400)}
+   if(result.changed){const value=JSON.stringify(result.manifest);if(Buffer.byteLength(value)>1900000)throw new GatewayError('Project manifest too large',413);const saved=await request({op:'save',project:p,revision,manifest:value});if(saved.changes!==1)throw new GatewayError('Concurrent project update; reload',409);const verified=await project(p);if(verified.revision!==revision+1||JSON.stringify(verified.m)!==value)throw new GatewayError('Save verification uncertain; reload before retrying',409);}
+   return {project_id:p,revision:revision+(result.changed?1:0),changed:result.changed,...(result.results?{results:result.results}:{asset:result.asset})};
+  }
+  if(name==='get_asset_classifications')return {project_id:p,revision,schema:CLASSIFICATION_SCHEMA,assets:classificationRows(m,p,revision).filter(r=>!a.asset_ids||a.asset_ids.includes(r.asset_id))};
+  if(['update_asset_classification','bulk_update_asset_classifications'].includes(name)){
+   if(!auth.scopes?.has('asset:classify'))throw new GatewayError('Classification permission required; reconnect with asset:classify',403);
+   if(a.confirm!==true)throw new GatewayError('Explicit confirmation required',400);
+   if(a.expected_revision!==revision)throw new GatewayError('Project changed; reload before classifying',409);
+   let result;try{result=classifyAssets(m,p,revision,a.expected_revision,name==='update_asset_classification'?[{asset_id:a.asset_id,classification:a.classification,expected_version:a.expected_version}]:a.updates)}catch(e){throw new GatewayError(e.message,400)}
+   if(result.changed){const value=JSON.stringify(result.manifest);if(Buffer.byteLength(value)>1900000)throw new GatewayError('Project manifest too large',413);const saved=await request({op:'save',project:p,revision,manifest:value});if(saved.changes!==1)throw new GatewayError('Concurrent project update; reload',409);const verified=await project(p);if(verified.revision!==revision+1||JSON.stringify(verified.m)!==value)throw new GatewayError('Save verification uncertain; reload before retrying',409);}
+   return {project_id:p,revision:revision+(result.changed?1:0),results:result.results,assets:result.assets,changed:result.changed};
+  }
   if(name==='get_project')return {...summary({project:p,revision},m),asset_count:allRecords(m).length,scene_ids:Object.keys(m.scenes||{})};
   if(['list_project_assets','search_assets','list_establishing_shots'].includes(name)){
    let rows=allRecords(m);
    if(a.category)rows=rows.filter(r=>r.type===a.category);
    if(name==='search_assets'){const q=a.query.toLocaleLowerCase();rows=rows.filter(({record:r})=>[recordId(r),r.asset_code,r.name,r.asset_name].some(v=>typeof v==='string'&&v.toLocaleLowerCase().includes(q)));}
    if(name==='list_establishing_shots')rows=rows.filter(({record:r})=>[r.shot_type,r.camera?.shot,r.camera_spec?.framing,r.metadata?.shot_type].some(v=>v==='establishing'||v==='establishing shot'));
-   return {project_id:p,assets:rows.slice(a.offset,a.offset+a.limit).map(r=>packed(p,r)),next_offset:rows.length>a.offset+a.limit?a.offset+a.limit:null};
+   return {project_id:p,assets:rows.slice(a.offset,a.offset+a.limit).map(r=>({...packed(p,r),...classificationRows(m,p,revision).find(c=>c.asset_id===recordId(r.record))})),next_offset:rows.length>a.offset+a.limit?a.offset+a.limit:null};
   }
   if(name==='get_color_grades')return {project_id:p,grades:publicData(gradeLibrary(m)),assignments:publicData(m.color_grades?.assignments||{})};
   if(name==='get_composition_rules')return {project_id:p,character_network:publicData(m.character_network||{}),compositions:publicData(m.composer?.compositions||{}),intelligence:publicData(m.composer?.intelligence||{}),...(a.character_ids?{applicable:publicData(characterContext(m,a.character_ids,worldRecords(m)))}:{}),application_rule:'Apply enabled saved clauses only when both linked characters are selected. Never add a character to activate a clause.'};
@@ -82,10 +108,16 @@ export function dataSource(auth,request=backend(auth.backendToken)){
    const ids=referenceIds(entry.record,entry.type);return {...packed(p,entry),references:await references(m,p,ids,a.include_media)};
   }
   const entry=find(m,a.asset_id);
+  const classification=classificationRows(m,p,revision).find(r=>r.asset_id===recordId(entry.record));
+  if(name==='get_character_cref'){
+   if(entry.type!=='character'||entry.record.status!=='LOCKED')throw new GatewayError('Choose a saved LOCKED character',404);
+   const source=entry.record.source_image_id;const ids=source?[source]:[];if(entry.record.owner_image_approval?.reference_id&&entry.record.owner_image_approval.reference_id!==source)throw new GatewayError('Locked reference approval mismatch',409);if(!ids.length||ids.some(id=>!m.references?.[id]||m.references[id].deleted_at||m.references[id].role==='DIAGNOSTIC'||['DRAFT','UNLOCKED'].includes(m.references[id].status)))throw new GatewayError('Approved character references unavailable',404);
+   return {...classification,cref:{project_id:p,asset_id:recordId(entry.record),asset_code:entry.record.asset_code||null,reference_ids:ids,source_url:'https://xstudio.xrkr80hd.studio',identity_authority:'LOCKED_REFERENCE_IMAGES'},references:await references(m,p,ids,a.include_media)};
+  }
   if(name.startsWith('get_character_')&&entry.type!=='character')notFound();
   if(name==='get_character_anchor'&&entry.record.status!=='LOCKED')throw new GatewayError('No saved locked character anchor',404);
   const ids=referenceIds(entry.record,entry.type);
   if(name==='get_character_anchor'&&!ids.length)throw new GatewayError('Saved anchor references are missing',404);
-  return {...packed(p,entry),references:await references(m,p,ids,a.include_media)};
+  return {...packed(p,entry),...classification,references:await references(m,p,ids,a.include_media)};
  };
 }

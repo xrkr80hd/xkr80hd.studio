@@ -1,3 +1,5 @@
+import {METADATA_FIELDS,METADATA_SCHEMA} from '../../lib/xce/asset-metadata.mjs';
+import {CLASSIFICATIONS,CLASSIFICATION_SCHEMA} from '../../lib/xce/classifications.mjs';
 import {EQUIPMENT_BINDING_SCHEMA,CHARACTER_DIRECTION_SCHEMA,SCENE_SETTING_SCHEMA} from '../../lib/xce/scene-context.mjs';
 import {writeFileSync,readFileSync} from 'node:fs';
 import {ENTITY_SCHEMAS,CHARACTER_STATE_SCHEMA} from '../../lib/xce/entity-composition.mjs';
@@ -15,8 +17,18 @@ properties.character_ids={type:'array',maxItems:50,items:{type:'string',maxLengt
 properties.state=CHARACTER_STATE_SCHEMA;
 properties.operation={type:'string',enum:['save','lock','unlock','delete']};
 properties.expected_version={type:'integer',minimum:0};
+for(const action of ['classify','classify_bulk','metadata_update','metadata_bulk','generation_prompt_update'])if(!properties.action.enum.includes(action))properties.action.enum.push(action);
+properties.patch={type:'object',additionalProperties:false,properties:{...Object.fromEntries(Object.keys(METADATA_FIELDS).map(k=>[k,{type:'string',maxLength:10000}])),display_name:{type:'string',maxLength:200},quick_details:{type:'string',maxLength:4000},cast_role:{type:'string'},base_character_id:{type:'string'},analysis_status:{type:'string',enum:METADATA_SCHEMA.analysis_status},provenance:{type:'object'},append_relationships:{type:'array',maxItems:50}}};
+properties.text={type:'string',maxLength:30000};
+properties.provenance={type:'object',additionalProperties:false,required:['source','notes','reference_ids'],properties:{source:{type:'string',enum:['USER_AUTHORED','USER_CONFIRMED','REFERENCE_VERIFIED']},notes:{type:'string',maxLength:4000},reference_ids:{type:'array',items:{type:'string'},maxItems:30}}};
+api.components.schemas.AssetMetadata={type:'object',description:JSON.stringify(METADATA_SCHEMA)};
+properties.classification={type:'string',enum:['',...Object.keys(CLASSIFICATIONS)]};
+properties.updates={type:'array',minItems:1,maxItems:50,items:{type:'object',additionalProperties:false,required:['asset_id','classification','expected_version'],properties:{asset_id:{type:'string'},classification:properties.classification,expected_version:properties.expected_version}}};
+properties.updates.items={oneOf:[properties.updates.items,{type:'object',additionalProperties:false,required:['asset_id','expected_version','patch'],properties:{asset_id:{type:'string'},expected_version:properties.expected_version,patch:properties.patch}}]};
+api.components.schemas.AssetClassifications={type:'object',description:JSON.stringify(CLASSIFICATION_SCHEMA)};
+
 const get=api.paths['/api/composer'].get;
-get.parameters[0].schema.enum=['schema','projects','inventory','read','research','resolve'];
+get.parameters[0].schema.enum=['schema','projects','inventory','read','research','resolve','classifications','metadata_read','generation_prompt'];
 for(const name of ['asset_code','q','category'])if(!get.parameters.some(p=>p.name===name))get.parameters.push({name,in:'query',schema:{type:'string'}});
 writeFileSync(new URL('openapi.json',path),JSON.stringify(api,null,2)+'\n');
 

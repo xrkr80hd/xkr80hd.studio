@@ -1,3 +1,5 @@
+import {METADATA_FIELDS} from '../xce/asset-metadata.mjs';
+import {CLASSIFICATIONS} from '../xce/classifications.mjs';
 import {McpServer} from '@modelcontextprotocol/sdk/server/mcp.js';
 import {WebStandardStreamableHTTPServerTransport} from '@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js';
 import {z} from 'zod';
@@ -9,7 +11,25 @@ const project_id=z.string().regex(/^[\w-]{1,80}$/);
 const page={limit:z.number().int().min(1).max(100).default(30),offset:z.number().int().min(0).max(100000).default(0)};
 const media={include_media:z.boolean().default(false)};
 const category=z.enum(['character','creature','prop','vehicle','location','wardrobe','room','scene','keyframe','reference']);
+const classification=z.enum(['',...Object.keys(CLASSIFICATIONS)]);
+const update=z.strictObject({asset_id:id,classification,expected_version:z.number().int().min(0)});
+const proof=z.strictObject({source:z.enum(['USER_AUTHORED','USER_CONFIRMED','REFERENCE_VERIFIED']),reference_ids:z.array(id).max(30),notes:z.string().max(4000)});
+const link=z.strictObject({kind:z.enum(['equal_height','shorter_than','taller_than','opposes','custom']),target_id:id,text:z.string().max(2000).optional(),enabled:z.boolean().optional(),clause_type:z.enum(['relationship','synergy']).optional()});
+const patch=z.strictObject({...Object.fromEntries(Object.keys(METADATA_FIELDS).map(k=>[k,z.string().max(10000).optional()])),display_name:z.string().min(1).max(200).optional(),quick_details:z.string().max(4000).optional(),cast_role:z.enum(['main','supporting','villain','sub_villain','general','background','extras','military']).optional(),base_character_id:z.string().max(128).optional(),analysis_status:z.enum(['unverified','user_confirmed','reference_verified']).optional(),provenance:proof.optional(),append_relationships:z.array(link).max(50).optional()});
+const metadataUpdate=z.strictObject({asset_id:id,expected_version:z.number().int().min(0),patch});
+const metadataBatch={project_id,expected_revision:z.number().int().min(1),updates:z.array(metadataUpdate).min(1).max(50)};
+const writeScope=name=>['update_asset_details','bulk_update_asset_details','update_asset_generation_prompt'].includes(name)?'asset:metadata':name.includes('update_asset_classification')?'asset:classify':null;
 export const toolSpecs=[
+ ['get_project_classification_schema','Discover classification choices, allowed metadata fields, scopes and version contracts.',{project_id}],
+ ['get_asset_details','Read descriptive metadata, missing fields, existing relationships, approval status and prompt versions.',{project_id,asset_id:id}],
+ ['update_asset_details','Patch existing metadata only. Omitted fields and user clauses remain unchanged. Requires asset:metadata.',{project_id,...metadataUpdate.shape,expected_revision:z.number().int().min(1),confirm:z.literal(true)}],
+ ['bulk_update_asset_details','Apply resumable metadata patches across explicitly authorized projects. Locked folders and per-record errors are reported without stopping other projects.',{projects:z.array(z.strictObject(metadataBatch)).min(1).max(10),confirm:z.literal(true)}],
+ ['get_asset_generation_prompt','Read reusable prompt, provenance and preserved original versions.',{project_id,asset_id:id}],
+ ['update_asset_generation_prompt','Save a versioned prompt based on approved LOCKED references. Never overwrite the original generation prompt or invent reference traits.',{project_id,asset_id:id,expected_revision:z.number().int().min(1),expected_version:z.number().int().min(0),text:z.string().min(1).max(30000),provenance:proof,confirm:z.literal(true)}],
+ ['get_asset_classifications','Read primary categories and secondary classifications; includes available choices, metadata versions and revision.',{project_id,asset_ids:z.array(id).max(50).optional()}],
+ ['update_asset_classification','Update classification metadata only; requires explicit asset:classify permission. Preserves locked images and primary category.',{project_id,...update.shape,expected_revision:z.number().int().min(1),confirm:z.literal(true)}],
+ ['bulk_update_asset_classifications','Classify existing IDs with per-item errors and project revision protection. No duplicates or category moves.',{project_id,updates:z.array(update).min(1).max(50),expected_revision:z.number().int().min(1),confirm:z.literal(true)}],
+ ['get_character_cref','Get a cref binding to one saved LOCKED character and its exact reference IDs. Optional signed image URLs expire in 60 seconds; no invented identity.',{project_id,asset_id:id,...media}],
  ['list_projects','List explicitly authorized, available XSTUDIO projects.',{...page}],
  ['get_project','Get saved project metadata and canonical scene IDs.',{project_id}],
  ['list_project_assets','List saved asset IDs, names and metadata in one project.',{project_id,category:category.optional(),...page}],
@@ -26,7 +46,7 @@ const headers={'cache-control':'private, no-store, max-age=0','x-content-type-op
 const response=(body,status=200,extra={})=>Response.json(body,{status,headers:{...headers,...extra}});
 export function makeServer(execute,audit=()=>{}){
  const server=new McpServer({name:'xstudio-reference-gateway',version:'1.0.0'},{maxToolInputElements:500});
- for(const [name,description,shape] of toolSpecs)server.registerTool(name,{description,inputSchema:z.strictObject(shape),annotations:{readOnlyHint:true,destructiveHint:false,idempotentHint:true,openWorldHint:false},_meta:{securitySchemes:[{type:'oauth2',scopes:[SCOPE]}]}},async args=>{
+ for(const [name,description,shape] of toolSpecs)server.registerTool(name,{description,inputSchema:z.strictObject(shape),annotations:{readOnlyHint:!writeScope(name),destructiveHint:false,idempotentHint:true,openWorldHint:false},_meta:{securitySchemes:[{type:'oauth2',scopes:writeScope(name)?[SCOPE,writeScope(name)]:[SCOPE]}]}},async args=>{
   try{
    const result={source_url:'https://xstudio.xrkr80hd.studio',...await execute(name,args)};
    const text=JSON.stringify(result);if(Buffer.byteLength(text)>1_500_000)throw new GatewayError('Result too large; narrow the request',413);
@@ -51,7 +71,7 @@ export async function gateway(request,deps={}){
   const limit=deps.limit||redisLimiter();await limit('global',600);
   const auth=await (deps.authenticate||authenticate)(request,config);principal=auth.principal;
   await limit(principal,60);
-  const read=deps.backend||backend(auth.backendToken);
+  const read=deps.backend||backend(auth.backendToken,fetch,{allowClassificationSave:auth.scopes?.has('asset:classify')||auth.scopes?.has('asset:metadata')});
   // Revalidate the existing API credential on EVERY request, even discovery.
   // A read-only load of an explicitly granted project never changes active context.
   await read({op:'load',project:auth.projects.values().next().value});

@@ -15,17 +15,22 @@ function graph(records,relationships){
  return {find,reaches,valid};
 }
 export function saveCharacterDetails(m,id,details,records){
- const chars=records.filter(a=>a.type==='characters'&&!a.deleted_at&&!m.manifest_store?.creatures?.[a.id]);
+ const chars=records.filter(a=>a.type==='characters'&&!a.deleted_at);
  if(!chars.some(a=>a.id===id))throw Error('Choose a character in this project');
- if(!details||typeof details.quick_details!=='string'||details.quick_details.length>4000||!Array.isArray(details.links)||details.links.length>50)throw Error('Invalid Quick Details');
+ if(!details||typeof details!=='object'||Array.isArray(details))throw Error('Provide a character details object');
+ const unsupported=Object.keys(details).filter(k=>!['quick_details','links','gender'].includes(k));if(unsupported.length)throw Error('Unsupported Quick Details fields: '+unsupported.join(', '));
+ const updateLinks=Object.hasOwn(details,'links');
+ details={quick_details:m.character_network?.details?.[id]?.text||'',links:characterLinks(m,id),...details};
+ if(typeof details.quick_details!=='string'||details.quick_details.length>4000||!Array.isArray(details.links)||details.links.length>50)throw Error('quick_details must be text up to 4,000 characters; links must be an array of at most 50 relationships');
  if(details.gender!==undefined&&!Object.hasOwn(CHARACTER_GENDERS,details.gender))throw Error('Choose a saved gender label');
- const next=clone(m);next.character_network||={};next.character_network.details||={};next.character_network.details[id]={text:details.quick_details.trim(),gender:details.gender||m.character_network?.details?.[id]?.gender||'unspecified',source:'USER_SAVED',updated_at:new Date().toISOString()};
+ const next=clone(m);next.character_network||={};next.character_network.details||={};next.character_network.details[id]={...next.character_network.details[id],text:details.quick_details.trim(),gender:details.gender||m.character_network?.details?.[id]?.gender||'unspecified',source:'USER_SAVED',updated_at:new Date().toISOString()};
+ if(!updateLinks)return next;
  const links=(m.character_network?.relationships||[]).filter(r=>r.subject_id!==id&&r.object_id!==id),seen=new Set();
  for(const r of details.links){if(!Object.hasOwn(CHARACTER_RELATIONS,r.kind)||r.target_id===id||!chars.some(a=>a.id===r.target_id))throw Error('Choose a different character from this project');if(r.kind==='custom'&&((r.enabled!==undefined&&typeof r.enabled!=='boolean')||(r.clause_type!==undefined&&!['relationship','synergy'].includes(r.clause_type))))throw Error('Invalid relationship / synergy clause');if(r.kind==='custom'&&(typeof r.text!=='string'||!r.text.trim()||r.text.length>2000))throw Error('Write your linked rule (up to 2,000 characters)');const key=r.kind+'|'+r.target_id+'|'+(r.text||'');if(seen.has(key))continue;seen.add(key);links.push({subject_id:id,kind:r.kind,object_id:r.target_id,...(r.kind==='custom'?{text:r.text.trim(),enabled:r.enabled!==false,clause_type:r.clause_type||'relationship'}:{})});}
  if(links.length>1000)throw Error('Character relationship limit reached');graph(chars,links);next.character_network.relationships=links;return next;
 }
 export function characterContext(m,selectedIds,records){
- const selected=new Set(selectedIds),chars=records.filter(a=>a.type==='characters'&&!a.deleted_at&&!m.manifest_store?.creatures?.[a.id]),active=chars.filter(a=>selected.has(a.id));
+ const selected=new Set(selectedIds),chars=records.filter(a=>a.type==='characters'&&!a.deleted_at),active=chars.filter(a=>selected.has(a.id));
  const g=graph(chars,m.character_network?.relationships||[]),relationships=[];
  for(let i=0;i<active.length;i++)for(let j=i+1;j<active.length;j++){const a=active[i].id,b=active[j].id,pa=g.find(a),pb=g.find(b);let kind=pa===pb?'equal_height':g.reaches(pa,pb)?'shorter_than':g.reaches(pb,pa)?'taller_than':null;if(kind)relationships.push({subject_id:a,kind,object_id:b});if(g.valid.some(r=>r.kind==='opposes'&&((r.subject_id===a&&r.object_id===b)||(r.subject_id===b&&r.object_id===a))))relationships.push({subject_id:a,kind:'opposes',object_id:b});}
  const custom=g.valid.filter(r=>r.kind==='custom'&&r.enabled!==false&&selected.has(r.subject_id)&&selected.has(r.object_id));relationships.push(...custom);

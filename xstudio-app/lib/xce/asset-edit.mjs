@@ -30,6 +30,11 @@ export function editAsset(m,id,details){
  if(details.equipment_ids!==undefined){if(type!=='characters')throw Error('Assign equipment to a character');next.asset_details[id].equipment_ids=equipmentIds(next,details.equipment_ids,worldRecords(next));}
  next.asset_details[id].classification=(details.classification||'').trim();
  if(type==='characters'){
+  if(details.medium!==undefined){
+   if(!['RL','CB'].includes(details.medium))throw Error('Choose Realistic or Comic book');
+   if(asset.legacy)next.manifest_store.characters[id].medium=details.medium;
+   else {next.world_library.characters[id].metadata.style_anchor=details.medium;}
+  }
   if(details.cast_group!==undefined)next=assignCastGroup(next,id,details.cast_group,worldRecords(next));
   if(details.gender!==undefined){if(!Object.hasOwn(CHARACTER_GENDERS,details.gender))throw Error('Choose a gender label');next.character_network||={};next.character_network.details||={};next.character_network.details[id]={...next.character_network.details[id],gender:details.gender};}
  }

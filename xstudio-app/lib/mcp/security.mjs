@@ -3,6 +3,8 @@ import {createRemoteJWKSet,jwtVerify} from 'jose';
 
 export const RESOURCE='https://xstudio.xrkr80hd.studio/mcp';
 export const SCOPE='asset:read';
+export const CLASSIFY_SCOPE='asset:classify';
+export const METADATA_SCOPE='asset:metadata';
 export const digest=value=>createHash('sha256').update(value).digest('hex');
 export class GatewayError extends Error {
  constructor(message,status=400){super(message);this.status=status;}
@@ -36,7 +38,7 @@ export function checkOrigin(request,config){
 export async function authenticate(request,config,{verify=jwtVerify,keySet}={}){
  const header=request.headers.get('authorization')||'';
  if(header.length>8192||!/^Bearer [^\s]+$/.test(header))fail('Authentication required',401);
- const raw=header.slice(7);let grant,backendToken,principal;
+ const raw=header.slice(7);let grant,backendToken,principal,tokenScopes=[SCOPE];
  if(/^xmo_[a-f0-9]{64}$/.test(raw)){const {oauthService,redisStore,credentialCipher}=await import('../oauth/core.mjs');const {stateSecret}=await import('../oauth/state.mjs');const cipher=credentialCipher(stateSecret());return oauthService({store:redisStore(),owner:config.owner,upstreamToken:config.upstreamToken,unseal:value=>cipher.open(value)}).access(raw);}
  if(/^xmc_[a-f0-9]{64}$/.test(raw)){
   grant=config.grants.find(g=>g.type==='api'&&g.token_sha256===digest(raw));
@@ -49,12 +51,13 @@ export async function authenticate(request,config,{verify=jwtVerify,keySet}={}){
    const {payload,protectedHeader}=await verify(raw,keys,{issuer:config.issuer,audience:RESOURCE,algorithms:['RS256','ES256'],requiredClaims:['sub','exp','iat','client_id'],maxTokenAge:'1h',clockTolerance:5});
    if(protectedHeader.typ!=='at+jwt'||typeof payload.sub!=='string'||typeof payload.client_id!=='string'||!Number.isFinite(payload.exp)||payload.exp*1000<=Date.now())fail('Invalid credential',401);
    if(typeof payload.scope!=='string'||!payload.scope.split(' ').includes(SCOPE))fail('Read scope required',403);
+   tokenScopes=payload.scope.split(' ');
    grant=config.grants.find(g=>g.type==='oauth'&&g.subject===payload.sub&&g.client_id===payload.client_id);
    principal='oauth:'+digest(config.issuer+'|'+payload.sub+'|'+payload.client_id);backendToken=config.upstreamToken;
   }catch(error){if(error instanceof GatewayError)throw error;fail('Invalid credential',401);}
  }
  if(!grant||Date.parse(grant.expires_at)<=Date.now())fail('Invalid credential',401);
- return {projects:new Set(grant.projects),backendToken,principal,owner:config.owner};
+ return {projects:new Set(grant.projects),backendToken,principal,owner:config.owner,scopes:new Set([SCOPE,...[CLASSIFY_SCOPE,METADATA_SCOPE].filter(s=>grant.scopes?.includes(s)&&(grant.type==='api'||tokenScopes.includes(s)))])};
 }
 
 // Atomic shared fixed windows. No in-memory fallback on serverless instances.
@@ -71,5 +74,5 @@ export function redisLimiter(env=process.env,fetcher=fetch){
  };
 }
 export function resourceMetadata(config){
- return {resource:RESOURCE,...(config.issuer?{authorization_servers:[config.issuer]}:{}),scopes_supported:[SCOPE],bearer_methods_supported:['header'],resource_name:'XSTUDIO read-only reference gateway'};
+ return {resource:RESOURCE,...(config.issuer?{authorization_servers:[config.issuer]}:{}),scopes_supported:[SCOPE,CLASSIFY_SCOPE,METADATA_SCOPE],bearer_methods_supported:['header'],resource_name:'XSTUDIO reference and classification gateway'};
 }
