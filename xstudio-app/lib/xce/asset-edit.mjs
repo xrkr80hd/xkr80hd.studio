@@ -1,3 +1,4 @@
+import {equipmentIds,assetCategory} from './equipment.mjs';
 import {saveAssetDetails} from './asset-details.mjs';
 import {storePrompts} from './core.mjs';
 import {reclassify} from './reclassify.mjs';
@@ -9,7 +10,7 @@ export function editAsset(m,id,details){
  let next=structuredClone(m),asset=worldRecords(next).find(a=>a.id===id&&!a.deleted_at);
  if(!asset)throw Error('Open a saved asset before editing');
  const originalType=m.manifest_store?.creatures?.[id]?'creatures':asset.type;
- const type=details.category||originalType,name=details.name===undefined?asset.name:details.name;
+ const requested=details.category||assetCategory(m,asset)||originalType,type=({weapons:'props',beasts:'creatures',magical_beings:'creatures'})[requested]||requested,name=details.name===undefined?asset.name:details.name;
  if(typeof name!=='string'||!name.trim()||name.length>200)throw Error('Enter a name up to 200 characters');
  if(typeof (details.classification||'')!=='string'||(details.classification||'').length>100)throw Error('Keep classification under 100 characters');
  if(asset.legacy){
@@ -25,6 +26,8 @@ export function editAsset(m,id,details){
   next.world_library=validateWorld(world,baseline);
  }
  next=saveAssetDetails(next,id,{description:details.description,clauses:type==='props'?details.clauses:[]});
+ next.asset_details[id].library_category=requested;
+ if(details.equipment_ids!==undefined){if(type!=='characters')throw Error('Assign equipment to a character');next.asset_details[id].equipment_ids=equipmentIds(next,details.equipment_ids,worldRecords(next));}
  next.asset_details[id].classification=(details.classification||'').trim();
  if(type==='characters'){
   if(details.cast_group!==undefined)next=assignCastGroup(next,id,details.cast_group,worldRecords(next));

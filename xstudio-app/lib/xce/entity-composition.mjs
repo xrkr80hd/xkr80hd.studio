@@ -37,6 +37,8 @@ export function editCharacterState(m,args,records){
  if(!previous&&Object.keys(next.state_variants[character_id]).length>=20)throw Error('Maximum 20 alternate forms per character');
  if(operation==='delete')delete next.state_variants[character_id][state.id];
  else next.state_variants[character_id][state.id]={...candidate,status:operation==='lock'?'LOCKED':operation==='unlock'?'DRAFT':candidate.status,version:(previous?.version||0)+1};
+ const parent=next.manifest_store?.characters?.[character_id]||next.world_library?.characters?.[character_id];
+ if(parent)parent.alternate_costumes=Object.keys(next.state_variants[character_id]);
  return next;
 }
 export function selectedState(m,placement){
@@ -85,3 +87,16 @@ export function entityPrompt(config,assets){
  return lines.join('\n\n');
 }
 export function compositionBlockingAction(config,id){return (config.composite_bindings||[]).some(b=>[b.character_id,b.mount_asset_id].includes(id))?'follow the composite seat, posture and movement binding':null;}
+
+// Attach by reference ID: no image copies and no new character records.
+export function attachCharacterCostume(m,args,records){
+ const {character_id,reference_id}=args;
+ if(!records.some(a=>a.id===character_id&&a.type==='characters'&&!a.deleted_at)||m.manifest_store?.creatures?.[character_id])throw Error('Choose a character in this project');
+ if(!m.references?.[reference_id]?.key||m.references[reference_id].role==='DIAGNOSTIC'||m.references[reference_id].deleted_at)throw Error('Choose an image from this project');
+ const states=stateVariants(m,character_id),previous=args.state_id?states.find(s=>s.id===args.state_id):null;
+ if(previous?.reference_ids.includes(reference_id))return {manifest:m,state:previous};
+ if(!previous){const existing=states.find(s=>s.reference_ids.includes(reference_id));if(existing)return {manifest:m,state:existing};}
+ const state=previous?{...previous,reference_ids:[...new Set([...previous.reference_ids,reference_id])]}:{id:args.state_id,character_id,name:(args.name||m.references[reference_id].asset_name||m.references[reference_id].name||'Alternate costume').slice(0,100),status:'DRAFT',version:1,reference_ids:[reference_id],visual_description:args.visual_description||''};
+ const next=editCharacterState(m,{character_id,state,operation:'save',expected_version:args.expected_version||0},records);
+ return {manifest:next,state:next.state_variants[character_id][state.id]};
+}

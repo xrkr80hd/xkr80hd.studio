@@ -1,35 +1,84 @@
 'use client';
 import {useEffect,useRef,useState} from 'react';
 import PreviewImage from './PreviewImage';
-import ReferencePoolPicker from './ReferencePoolPicker';
+import ReferencePoolPicker,{type PoolImage} from './ReferencePoolPicker';
 import type {CharacterState} from '../lib/xce/entity-composition';
 import './entity-composition.css';
+
 type Props={project:string;manifest:any;characterId:string;onSaved:(result:any)=>Promise<void>};
+// Retain edits when the parent asset viewer unmounts. Scope by project and character.
+const drafts=new Map<string,CharacterState>();
 export default function CharacterStates({project,manifest,characterId,onSaved}:Props){
- const [draft,setDraft]=useState<CharacterState|null>(null),[busy,setBusy]=useState(false),[error,setError]=useState(''),[poolOpen,setPoolOpen]=useState(false);
- const revision=useRef(manifest.revision),picker=useRef<HTMLSelectElement>(null);
- useEffect(()=>{revision.current=manifest.revision},[manifest.revision]);
- useEffect(()=>{setDraft(null);setError('');setPoolOpen(false)},[project,characterId]);
- const states=Object.values(manifest.state_variants?.[characterId]||{}) as CharacterState[];
+ const scope=project+':'+characterId;
+ const [draft,setDraftValue]=useState<CharacterState|null>(()=>drafts.get(scope)||null);
+ const [states,setStates]=useState<CharacterState[]>(()=>Object.values(manifest.state_variants?.[characterId]||{}));
+ const [busy,setBusy]=useState(false),[error,setError]=useState(''),[poolOpen,setPoolOpen]=useState(false);
+ const revision=useRef(manifest.revision),inFlight=useRef(false),activeScope=useRef(scope);
+ activeScope.current=scope;
+ useEffect(()=>{activeScope.current=scope;return()=>{activeScope.current='';};},[scope]);
+ function setDraft(value:CharacterState|null){if(value)drafts.set(scope,value);else drafts.delete(scope);setDraftValue(value);}
+ useEffect(()=>{revision.current=manifest.revision;setStates(Object.values(manifest.state_variants?.[characterId]||{}));},[manifest.revision,manifest.state_variants,characterId]);
+ useEffect(()=>{setDraftValue(drafts.get(scope)||null);setPoolOpen(false);setError('');},[scope]);
  const previous=states.find(s=>s.id===draft?.id),locked=draft?.status==='LOCKED';
  const dirty=!!draft&&JSON.stringify(draft)!==JSON.stringify(previous);
- async function save(operation:string){if(!draft)return;setBusy(true);setError('');try{const response=await fetch('/api/composer',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'character_state',project_id:project,character_id:characterId,state:draft,operation,expected_version:previous?.version||0,expected_revision:revision.current,confirm:true})});const result=await response.json();if(!response.ok)throw Error(result.error||'Could not save alternate form');revision.current=result.revision;setDraft(operation==='delete'?null:result.state_variants[characterId][draft.id]);await onSaved(result);if(operation==='delete')picker.current?.focus()}catch(e){setError((e as Error).message)}finally{setBusy(false)}}
- async function upload(file:File){if(!draft)return;setBusy(true);setError('');try{if(file.size>6*1024*1024)throw Error('Choose an image up to 6 MB');const form=new FormData();form.set('file',file);form.set('project_id',project);form.set('role','IDENTITY');const response=await fetch('/api/upload',{method:'POST',body:form});const result=await response.json();if(!response.ok)throw Error(result.error||'Upload failed');const read=await fetch('/api/manifest?project='+encodeURIComponent(project),{cache:'no-store'});const data=await read.json();if(!read.ok)throw Error(data.error||'Refresh project before saving');const m=data.manifest||data;revision.current=m.revision;setDraft(old=>old?{...old,reference_ids:[...new Set([...old.reference_ids,result.reference_id])]}:old);await onSaved({revision:m.revision,references:m.references});}catch(e){setError((e as Error).message)}finally{setBusy(false)}}
- async function chooseAssetImage(image:{id:string;project:string}){
-  if(!draft||locked||busy||draft.reference_ids.length>=6)return;
-  if(image.project===project){setDraft(old=>old?{...old,reference_ids:[...new Set([...old.reference_ids,image.id])]}:old);setPoolOpen(false);return;}
-  setBusy(true);setError('');
-  try{
-   const response=await fetch('/api/manage',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({tool:'transfer_record',project_id:image.project,entity:'reference',id:image.id,operation:'duplicate',destination_project_id:project})});
-   const result=await response.json();if(!response.ok)throw Error(result.error||'Could not add selected image');
-   // Attach the confirmed reference before refreshing so a refresh failure cannot lose it.
-   setDraft(old=>old?{...old,reference_ids:[...new Set([...old.reference_ids,result.id])]}:old);setPoolOpen(false);
-   const read=await fetch('/api/manifest?project='+encodeURIComponent(project),{cache:'no-store'});const data=await read.json();
-   if(!read.ok)throw Error('Image added. Refresh the project before saving the costume.');
-   const m=data.manifest||data;revision.current=m.revision;await onSaved({revision:m.revision,references:m.references});
-  }catch(e){setError((e as Error).message)}finally{setBusy(false)}
+ async function request(body:any){
+  if(activeScope.current!==scope)throw Error('The active character changed. Reopen the original character to continue.');
+  const response=await fetch('/api/composer',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...body,project_id:project,character_id:characterId,expected_revision:revision.current,confirm:true})});
+  const result=await response.json();if(!response.ok)throw Error(result.error||'Could not save costume');return result;
  }
- return <details className="form-accordion entity-editor"><summary>Alternate costumes / Forms / Transformations</summary><p>Choose a costume or form for this character, then add its reference image from the asset library. Each costume or form can be locked separately.</p><label>Alternate form<select ref={picker} value={draft?.id||''} disabled={busy} onChange={e=>{setDraft(states.find(s=>s.id===e.target.value)||null);setError('')}}><option value="">Choose a form</option>{states.map(s=><option key={s.id} value={s.id}>{s.name} · {s.status==='LOCKED'?'Locked':'Draft'}</option>)}</select></label><button type="button" className="button secondary" disabled={busy} onClick={()=>setDraft({id:'STATE-'+crypto.randomUUID(),character_id:characterId,name:'',status:'DRAFT',version:1,reference_ids:[],visual_description:''})}>Add alternate form</button>
- {draft&&<section className="entity-card" aria-label="Alternate form editor"><div className="entity-card-heading"><strong>{draft.name||'New alternate form'}</strong><span className="asset-lock-status">{locked?'Locked reference':'Draft'}</span></div><fieldset disabled={busy||locked}><label>Form name<input maxLength={100} value={draft.name} onChange={e=>setDraft({...draft,name:e.target.value})}/></label><label>Form appearance<textarea rows={4} maxLength={2000} value={draft.visual_description} onChange={e=>setDraft({...draft,visual_description:e.target.value})}/></label><label>Turnaround sheet<input type="file" accept="image/png,image/jpeg,image/webp" disabled={draft.reference_ids.length>=6} onChange={e=>{const file=e.target.files?.[0];if(file)void upload(file);e.target.value=''}}/></label><button type="button" className="button secondary" disabled={draft.reference_ids.length>=6} aria-expanded={poolOpen} onClick={()=>setPoolOpen(true)}>Add from assets</button>{poolOpen&&<ReferencePoolPicker key={project+':'+draft.id} project={project} manifest={manifest} selected={draft.reference_ids} disabled={busy||!!locked} onChoose={chooseAssetImage} onClose={()=>setPoolOpen(false)}/>}<div className="entity-reference-strip">{draft.reference_ids.map(id=><div key={id}><PreviewImage src={'/api/manifest?'+new URLSearchParams({project,file:id})} alt={draft.name+' turnaround'}/><button type="button" className="button secondary" onClick={()=>setDraft({...draft,reference_ids:draft.reference_ids.filter(r=>r!==id)})}>Remove image</button></div>)}</div></fieldset><div className="button-row"><button type="button" className="button primary" disabled={busy||(!locked&&(dirty||!previous||!draft.reference_ids.length))} onClick={()=>void save(locked?'unlock':'lock')}>{locked?'Unlock':'Lock form'}</button>{!locked&&<><button type="button" className="button secondary" disabled={busy||!draft.name.trim()||!dirty} onClick={()=>void save('save')}>Save form</button><button type="button" className="button secondary" disabled={busy} onClick={()=>previous?void save('delete'):setDraft(null)}>{previous?'Delete form':'Discard'}</button></>}</div></section>}{error&&<p className="error-text" role="alert">{error}</p>}
+ async function accept(result:any,next:CharacterState|null){
+  if(activeScope.current!==scope)return;
+  revision.current=result.revision;setStates(Object.values(result.state_variants?.[characterId]||{}));setDraft(next);
+  // The attachment is already saved. A parent refresh failure must not undo it.
+  try{await onSaved(result)}catch{setError('Saved. The project view could not refresh; reopen it to refresh.');}
+ }
+ async function save(operation:string){
+  if(!draft||inFlight.current)return;inFlight.current=true;setBusy(true);setError('');
+  try{const result=await request({action:'character_state',state:draft,operation,expected_version:previous?draft.version:0});await accept(result,operation==='delete'?null:result.state_variants[characterId][draft.id]);}
+  catch(e){if(activeScope.current===scope)setError((e as Error).message)}finally{inFlight.current=false;setBusy(false)}
+ }
+ function addAlternate(){if(draft&&dirty){setError('');setPoolOpen(true);return;}setDraft({id:'STATE-'+crypto.randomUUID(),character_id:characterId,name:'',status:'DRAFT',version:1,reference_ids:[],visual_description:''});setError('');setPoolOpen(true);}
+ async function attach(referenceId:string,name:string){
+  if(!draft)return;
+  // Save unsaved text first when adding another image to an edited form.
+  let version=previous?draft.version:0;
+  if(previous&&dirty&&draft.name.trim()){
+   const saved=await request({action:'character_state',state:draft,operation:'save',expected_version:version});
+   await accept(saved,saved.state_variants[characterId][draft.id]);version=saved.state_variants[characterId][draft.id].version;
+  }
+  const result=await request({action:'attach_character_costume',reference_id:referenceId,state_id:draft.id,name:draft.name.trim()||name,visual_description:draft.visual_description,expected_version:version});
+  if(activeScope.current===scope)setPoolOpen(false);
+  await accept(result,result.state);
+ }
+ async function chooseAssetImage(image:PoolImage){
+  if(!draft||locked||inFlight.current)return;
+  if(image.project!==project){setError('Choose an asset from this project.');return;}
+  inFlight.current=true;setBusy(true);setError('');
+  try{await attach(image.id,image.name)}catch(e){if(activeScope.current===scope)setError((e as Error).message)}finally{inFlight.current=false;setBusy(false)}
+ }
+ async function upload(file:File){
+  if(!draft||locked||inFlight.current)return;inFlight.current=true;setBusy(true);setError('');
+  try{
+   if(file.size>6*1024*1024)throw Error('Choose an image up to 6 MB');
+   const form=new FormData();form.set('file',file);form.set('project_id',project);form.set('role','COSTUME');
+   const response=await fetch('/api/upload',{method:'POST',body:form}),result=await response.json();if(!response.ok)throw Error(result.error||'Upload failed');
+   const read=await fetch('/api/manifest?project='+encodeURIComponent(project),{cache:'no-store'}),data=await read.json();if(!read.ok)throw Error('Image uploaded. Reopen the project to attach it from assets.');
+   if(activeScope.current!==scope)return;
+   const current=data.manifest||data;revision.current=current.revision;
+   await attach(result.reference_id,file.name);
+  }catch(e){if(activeScope.current===scope)setError((e as Error).message)}finally{inFlight.current=false;setBusy(false)}
+ }
+ return <details className="form-accordion entity-editor"><summary>Alternate costumes / Forms / Transformations</summary>
+  <button type="button" className="button secondary" disabled={busy} onClick={addAlternate}>Add Alternate Character / Costume</button>
+  {states.length>0&&<label>Alternate form<select value={draft?.id||''} disabled={busy} onChange={e=>setDraft(states.find(s=>s.id===e.target.value)||null)}><option value="">Choose a form</option>{states.map(s=><option key={s.id} value={s.id}>{s.name}</option>)}</select></label>}
+  {draft&&<section className="entity-card" aria-label="Alternate form editor"><fieldset disabled={busy||locked}>
+   <label>Name<input maxLength={100} value={draft.name} onChange={e=>setDraft({...draft,name:e.target.value})}/></label>
+   <label>Appearance<textarea rows={3} maxLength={2000} value={draft.visual_description} onChange={e=>setDraft({...draft,visual_description:e.target.value})}/></label>
+   <label>Upload image<input type="file" accept="image/png,image/jpeg,image/webp" disabled={draft.reference_ids.length>=6} onChange={e=>{const file=e.target.files?.[0];if(file)void upload(file);e.target.value=''}}/></label>
+   <button type="button" className="button secondary" disabled={draft.reference_ids.length>=6} onClick={()=>setPoolOpen(true)}>Add from assets</button>
+   <div className="entity-reference-strip">{draft.reference_ids.map(id=><div key={id}><PreviewImage src={'/api/manifest?'+new URLSearchParams({project,file:id})} alt={draft.name}/><button type="button" className="button secondary" onClick={()=>setDraft({...draft,reference_ids:draft.reference_ids.filter(r=>r!==id)})}>Remove image</button></div>)}</div>
+  </fieldset><div className="button-row"><button type="button" className="button primary" disabled={busy||(!locked&&(dirty||!previous||!draft.reference_ids.length))} onClick={()=>void save(locked?'unlock':'lock')}>{locked?'Unlock':'Lock form'}</button>{!locked&&<><button type="button" className="button secondary" disabled={busy||!draft.name.trim()||!dirty} onClick={()=>void save('save')}>Save form</button><button type="button" className="button secondary" disabled={busy} onClick={()=>previous?void save('delete'):setDraft(null)}>{previous?'Delete form':'Discard'}</button></>}</div></section>}
+  <ReferencePoolPicker project={project} manifest={manifest} selected={draft?.reference_ids||[]} disabled={busy||!!locked} open={poolOpen} error={error} onChoose={chooseAssetImage} onClose={()=>setPoolOpen(false)}/>
+  {error&&<p className="error-text" role="alert">{error}</p>}
  </details>;
 }

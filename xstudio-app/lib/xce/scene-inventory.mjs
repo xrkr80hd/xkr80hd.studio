@@ -1,13 +1,14 @@
+import {assetCategory} from './equipment.mjs';
 import {CAST_GROUPS} from './cast-groups.mjs';
 export {CHARACTER_GENDERS} from './character-labels.mjs';
-const assetCategories={creatures:'Creatures / Beasts',props:'Props',vehicles:'Vehicles',locations:'Locations',rooms:'Rooms',wardrobe:'Wardrobe',scenes_and_shots:'Scene references'};
+const assetCategories={creatures:'Creatures',beasts:'Beasts',magical_beings:'Magical Beings',props:'Props',weapons:'Weapons',vehicles:'Vehicles',locations:'Locations',rooms:'Rooms',wardrobe:'Wardrobe',scenes_and_shots:'Scene references'};
 export function sceneInventoryGroups(assets,{query='',gender='',sort='name'}={}){
  const terms=query.trim().toLocaleLowerCase().split(/\s+/).filter(Boolean);
  const rows=assets.filter(a=>a.status==='LOCKED'&&terms.every(t=>[a.name,a.asset_code].join(' ').toLocaleLowerCase().includes(t))&&(!gender||a.category!=='characters'||(a.gender||'unspecified')===gender));
  const order=(a,b)=>sort==='name_desc'?String(b.name).localeCompare(String(a.name)):String(a.name).localeCompare(String(b.name));
  return [
   ...Object.entries(CAST_GROUPS).map(([id,label])=>({id:'cast:'+id,label:id==='main'?'Main Characters':id==='supporting'?'Supporting Characters':label,records:rows.filter(a=>a.category==='characters'&&(Object.hasOwn(CAST_GROUPS,a.cast_group)?a.cast_group:'general')===id).sort(order)})),
-  ...Object.entries(assetCategories).map(([id,label])=>({id,label,records:rows.filter(a=>a.category===id).sort(order)}))
+  ...Object.entries(assetCategories).map(([id,label])=>({id,label,records:rows.filter(a=>assetCategory({},a)===id).sort(order)}))
  ].filter(group=>group.records.length);
 }
 

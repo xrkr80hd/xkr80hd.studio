@@ -11,7 +11,7 @@ import {authorizeTransport,openProject,persistComposition,ComposerError} from '.
 import {readBounded} from '../xstudio-providers.mjs';
 import {catalogue,prepareComposition,saveComposition,editIntelligence,researchBrief} from './composer-service.mjs';
 import {EQUIPMENT_BINDING_SCHEMA,CHARACTER_DIRECTION_SCHEMA,SCENE_SETTING_SCHEMA,SCENE_THEMES} from './scene-context.mjs';
-import {ENTITY_SCHEMAS,FORMATION_PRESETS,editCharacterState} from './entity-composition.mjs';
+import {ENTITY_SCHEMAS,FORMATION_PRESETS,editCharacterState,attachCharacterCostume} from './entity-composition.mjs';
 import {CONFIG_SCHEMA} from './composer.mjs';
 import {CAST_GROUPS,assignCastGroup} from './cast-groups.mjs';
 import {CHARACTER_RELATIONS} from './character-network.mjs';
@@ -64,6 +64,11 @@ export async function composerRequest(req:Request){
    if(args.confirm!==true)throw Error('Explicit save confirmation required');
    const next=saveSceneCast(m,args.scene_id,args.character_ids);
    const updated=await write(next);return json({saved:true,revision:updated,scene:next.scenes[args.scene_id]});
+  }
+  if(action==='attach_character_costume'){
+   if(args.confirm!==true)throw Error('Choose an asset to attach');
+   const result=attachCharacterCostume(m,args,worldRecords(m));
+   const updated=await write(result.manifest);return json({saved:true,revision:updated,state:result.state,state_variants:result.manifest.state_variants});
   }
   if(action==='character_state'){
    if(args.confirm!==true)throw Error('Explicit save confirmation required');

@@ -1,50 +1,23 @@
 'use client';
-import {useEffect,useState} from 'react';
-import {studioFetch as fetch} from '../lib/xce/studio-network.mjs';
-import {referencePoolRows,filterReferencePool,referencePoolGroups} from '../lib/xce/reference-pool.mjs';
+import {useEffect,useRef,useState} from 'react';
+import {projectAssetFolders} from '../lib/xce/reference-pool.mjs';
 import PreviewImage from './PreviewImage';
 
-type PoolImage={id:string;project:string;title:string;name:string;role:string;asset_type:string};
-type Props={project:string;manifest:any;selected:string[];disabled:boolean;onChoose:(image:PoolImage)=>Promise<void>;onClose:()=>void};
-export default function ReferencePoolPicker({project,manifest,selected,disabled,onChoose,onClose}:Props){
- const [rows,setRows]=useState<PoolImage[]>(()=>referencePoolRows(manifest,project,manifest.campaign_name||'This project'));
- const [projects,setProjects]=useState<{id:string;title:string}[]>([{id:project,title:manifest.campaign_name||'This project'}]);
- const [query,setQuery]=useState(''),[category,setCategory]=useState(''),[source,setSource]=useState(''),[loading,setLoading]=useState(true),[error,setError]=useState('');
+export type PoolImage={id:string;project:string;title:string;name:string;role:string;asset_type:string};
+type Props={project:string;manifest:any;selected:string[];disabled:boolean;open:boolean;error?:string;onChoose:(image:PoolImage)=>Promise<void>;onClose:()=>void};
+export default function ReferencePoolPicker({project,manifest,selected,disabled,open,error,onChoose,onClose}:Props){
+ const dialog=useRef<HTMLDialogElement>(null);
+ const [folder,setFolder]=useState<string|null>(null),[query,setQuery]=useState('');
+ const folders=projectAssetFolders(manifest,project);
+ const current=folders.find((f:any)=>f.id===folder);
  useEffect(()=>{
-  const abort=new AbortController();
-  async function load(){
-   try{
-    const response=await fetch('/api/projects',{signal:abort.signal});const data=await response.json();
-    if(!response.ok)throw Error(data.error||'Could not load asset pools');
-    const available=(data.projects||[]).filter((p:any)=>p.id!==project&&!p.folder_locked);
-    setProjects([{id:project,title:manifest.campaign_name||'This project'},...available]);
-    let failed=0;
-    for(let i=0;i<available.length;i+=4){
-     const results=await Promise.allSettled(available.slice(i,i+4).map(async(p:any)=>{
-      const response=await fetch('/api/manifest?project='+encodeURIComponent(p.id),{signal:abort.signal});const data=await response.json();
-      if(!response.ok)throw Error(data.error||'Pool unavailable');
-      return referencePoolRows(data.manifest||data,p.id,p.title);
-     }));
-     if(abort.signal.aborted)return;
-     const images=results.flatMap(result=>{if(result.status==='fulfilled')return result.value;failed++;return []});
-     setRows(old=>[...old,...images]);
-    }
-    if(failed)setError('Some asset pools could not load. Close and reopen to retry.');
-   }catch(e){if(!abort.signal.aborted)setError((e as Error).message)}finally{if(!abort.signal.aborted)setLoading(false)}
-  }
-  void load();return()=>abort.abort();
- },[project,manifest.campaign_name]);
- const groups=referencePoolGroups(filterReferencePool(rows,'',source,project,selected)),currentCategory=category||groups[0]?.id;
- const visible=referencePoolGroups(filterReferencePool(rows,query,source,project,selected)).find((g:any)=>g.id===currentCategory)?.records||[];
- return <section className="asset-pool-picker" aria-label="Reference library" aria-busy={loading}>
-  <div className="entity-card-heading"><strong>Reference library</strong><button type="button" className="button secondary" disabled={disabled} onClick={onClose}>Close library</button></div>
-  <label>Search asset pool<input autoFocus type="search" placeholder="Search images, assets or projects…" value={query} onChange={e=>setQuery(e.target.value)}/></label>
-  <label>Asset pool<select value={source} onChange={e=>setSource(e.target.value)}><option value="">All available projects &amp; Lost Assets</option>{projects.map(p=><option key={p.id} value={p.id}>{p.title}</option>)}</select></label>
-  <p role="status">{visible.length} images{loading?' · Loading asset pools…':''}</p>
-  <label>Category<select value={currentCategory||''} onChange={e=>setCategory(e.target.value)}>{groups.map((group:any)=><option key={group.id} value={group.id}>{group.label}</option>)}</select></label><div className="reference-picker-grid">{visible.map((r:PoolImage)=><button type="button" className="reference-picker-tile" key={r.project+':'+r.id} disabled={disabled} onClick={()=>void onChoose(r)} aria-label={'Use '+r.name+' from '+r.title}>
-   <PreviewImage thumbnail src={'/api/manifest?'+new URLSearchParams({project:r.project,file:r.id})} alt={r.name}/><span className="reference-picker-name">{r.name}</span><small>{r.title}</small>
-  </button>)}</div>
-  {!loading&&!visible.length&&<p>No matching images. Try another search or asset pool.</p>}
+  if(open){setFolder(null);setQuery('');if(!dialog.current?.open)dialog.current?.showModal();}
+  else dialog.current?.close();
+ },[open,project]);
+ const visible=(current?.records||[]).filter((r:PoolImage)=>r.name.toLocaleLowerCase().includes(query.trim().toLocaleLowerCase()));
+ return <dialog ref={dialog} className="asset-folder-dialog" aria-label="Choose an asset" onCancel={e=>{e.preventDefault();if(!disabled)onClose()}}>
+  <div className="asset-folder-header"><strong>{manifest.campaign_name||'Project assets'}</strong><button type="button" className="icon-button" aria-label="Close asset picker" disabled={disabled} onClick={onClose}>×</button></div>
   {error&&<p className="error-text" role="alert">{error}</p>}
- </section>;
+  {current?<><div className="asset-folder-header"><button type="button" className="button secondary" disabled={disabled} onClick={()=>{setFolder(null);setQuery('')}}>← Folders</button><span>{current.label}</span></div><label>Search<input type="search" value={query} onChange={e=>setQuery(e.target.value)} placeholder="Find an asset…"/></label><div className="reference-picker-grid">{visible.map((r:PoolImage)=><button type="button" className="reference-picker-tile" key={r.id} disabled={disabled||selected.includes(r.id)} aria-label={'Choose '+r.name} onClick={()=>void onChoose(r)}><PreviewImage thumbnail src={'/api/manifest?'+new URLSearchParams({project,file:r.id})} alt={r.name}/><span>{r.name}</span>{selected.includes(r.id)&&<small>Attached</small>}</button>)}</div>{!visible.length&&<p>No images in this folder.</p>}</>:<div className="project-folder-grid">{folders.map((f:any)=><button type="button" className="button secondary" key={f.id} disabled={disabled} onClick={()=>setFolder(f.id)}><span>{f.label}</span><small>{f.records.length}</small></button>)}</div>}
+ </dialog>;
 }

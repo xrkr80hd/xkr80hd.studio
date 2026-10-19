@@ -2,7 +2,7 @@
 import {useState} from 'react';
 import {sceneCastGroups} from '../lib/xce/scene-cast.mjs';
 export default function ProjectCharacterPicker({manifest,value='',onChange,label='Character',exclude=[],includeCreatures=false,disabled=false}:{manifest:any;value?:string;onChange:(id:string)=>void;label?:string;exclude?:string[];includeCreatures?:boolean;disabled?:boolean}){
- const groups=sceneCastGroups(manifest).filter((g:any)=>includeCreatures||g.id!=='creatures');
+ const groups=sceneCastGroups(manifest).filter((g:any)=>includeCreatures||!['creatures','beasts','magical_beings'].includes(g.id));
  const [category,setCategory]=useState<string|null>(null),[search,setSearch]=useState('');
  // Existing clause targets hydrate their category; new selections always start with categories.
  const current=category===null?groups.find((g:any)=>g.records.some((a:any)=>a.id===value)):groups.find((g:any)=>g.id===category);

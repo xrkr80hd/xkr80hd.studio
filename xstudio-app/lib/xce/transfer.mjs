@@ -1,5 +1,5 @@
 function copyAssetDetails(source,dest,mapping){
- for(const [oldId,newId] of mapping){const details=source.asset_details?.[oldId];if(!details)continue;dest.asset_details||={};dest.asset_details[newId]={...structuredClone(details),clauses:(details.clauses||[]).flatMap(c=>{const character=mapping.get(c.character_id)||(source===dest?c.character_id:null);return character&&(dest.manifest_store?.characters?.[character]||dest.world_library?.characters?.[character])?[{...c,character_id:character}]:[]})};}
+ for(const [oldId,newId] of mapping){const details=source.asset_details?.[oldId];if(!details)continue;dest.asset_details||={};dest.asset_details[newId]={...structuredClone(details),equipment_ids:(details.equipment_ids||[]).map(id=>mapping.get(id)||(source===dest?id:null)).filter(Boolean),clauses:(details.clauses||[]).flatMap(c=>{const character=mapping.get(c.character_id)||(source===dest?c.character_id:null);return character&&(dest.manifest_store?.characters?.[character]||dest.world_library?.characters?.[character])?[{...c,character_id:character}]:[]})};}
 }
 import {allocate,newSceneId,annotate,shotId} from './namespace.mjs';
 import {need,categories,findAsset} from './core.mjs';

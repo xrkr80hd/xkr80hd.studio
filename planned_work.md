@@ -349,3 +349,6 @@ The picker also needs an explicit Back to categories button; returning to catego
 
 ### Mobile character picker Back correction
 Replace the native character select that obscures category navigation with an inline, bounded list. Keep Categories at the top beside the current category; preserve parent selections. Verify interaction and lint before release.
+
+### Shared viewer centering
+Restore explicit auto margins and fixed viewport positioning for native dialogs after Tailwind reset. Preserve desktop drag overrides and full-screen shot modal. Existing Tailwind 4 and lucide dependencies already provide styling/icons; avoid duplicate framework.

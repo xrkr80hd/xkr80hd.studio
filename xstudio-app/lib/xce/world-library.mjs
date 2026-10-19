@@ -40,9 +40,9 @@ export function validateWorld(world,manifest){
     if(!a.reference_ids.length)throw Error('A locked asset requires a saved visual anchor');
    }
    const prior=manifest.world_library?.[type]?.[id];
-   const record={id,type,name:a.name.trim(),status:a.status,reference_ids:[...new Set(a.reference_ids)],thumbnail_reference_id:a.reference_ids[0]||'',metadata,...(prior?.asset_code?{asset_code:prior.asset_code,asset_code_record_id:prior.asset_code_record_id||id}:{})};
+   const record={id,type,...(type==='props'&&a.library_category==='weapons'?{library_category:'weapons'}:{}),name:a.name.trim(),status:a.status,reference_ids:[...new Set(a.reference_ids)],thumbnail_reference_id:a.reference_ids[0]||'',metadata,...(prior?.asset_code?{asset_code:prior.asset_code,asset_code_record_id:prior.asset_code_record_id||id}:{})};
    if(prior?.status==='LOCKED'){const immutable=r=>({id:r.id,type:r.type,status:r.status,reference_ids:[...new Set(r.reference_ids)],thumbnail_reference_id:r.reference_ids[0]||'',metadata:Object.fromEntries(WORLD_FIELDS[type].filter(k=>!['voice','traits'].includes(k)).map(k=>[k,r.metadata?.[k]||'']))});if(JSON.stringify(immutable(record))!==JSON.stringify(immutable(prior)))throw Error('Locked assets are immutable. Duplicate a draft variant.');}
-   for(const key of ['source_image_id','owner_image_approval','locked_at','approval_instruction','anchor_lock_history'])if(prior?.[key]!==undefined)record[key]=structuredClone(prior[key]);
+   for(const key of ['alternate_costumes','source_image_id','owner_image_approval','locked_at','approval_instruction','anchor_lock_history'])if(prior?.[key]!==undefined)record[key]=structuredClone(prior[key]);
    clean[type][id]=record;
   }
  }
