@@ -6,7 +6,7 @@ export function inspectorEntity(record,manifest={}){
  if(record.category==='references'||record.sourceReference||manifest.references?.[id])return 'reference';
  if(record.category==='scenes')return 'scene';
  if(record.category==='projects')return 'project';
- return record.asset_type||({characters:'character',creatures:'creature',props:'prop',locations:'location',vehicles:'vehicle',shots:'keyframe'})[record.category]||'keyframe';
+ return record.asset_type||({characters:'character',creatures:'creature',props:'prop',locations:'location',vehicles:'vehicle',wardrobe:'wardrobe',rooms:'room',scenes_and_shots:'keyframe',shots:'keyframe'})[record.category]||'keyframe';
 }
 
 export function needsAssetIntake(record,action,manifest){

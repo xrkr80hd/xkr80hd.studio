@@ -34,3 +34,5 @@ test('saved characters and attached references retain their record management ac
  assert.equal(inspectorEntity({id:'P',category:'projects'},m),'project');
  assert.equal(inspectorEntity({scene_id:'S',category:'scenes'},m),'scene');
 });
+
+test('native library categories resolve through the shared studio inspector',()=>{for(const [category,entity] of Object.entries({characters:'character',props:'prop',vehicles:'vehicle',locations:'location',wardrobe:'wardrobe',rooms:'room',scenes_and_shots:'keyframe'}))assert.equal(inspectorEntity({id:'N',category},{}),entity)});
