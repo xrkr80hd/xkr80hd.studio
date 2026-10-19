@@ -307,3 +307,7 @@ Expose the existing owner image-lock workflow for props, creatures/beasts, vehic
 
 ## 2026-10-18 — Unified asset editor and compact menus
 Combine saved asset name, category, classification, short description and character sorting in one closed Edit / Rename section. Use dropdown choices, remove picker-only description/research editing, and show descriptions on library cards. Preserve descriptions during asset transfer. User authorized all current fixes and push after verification.
+
+## 2026-10-18 — Categorize the scene-reference character list
+Recording identifies SceneCastPicker's uncategorized native select, separate from Composer. Add one role/category dropdown, alphabetical filtered character choices and search; isolate beasts/creatures from cast roles. Retain selected IDs across category changes and remove draft/lock suffixes. Verify and publish this correction within the already authorized simplification work.
+Reuse the categorized character picker for prop-character clauses and character relationship clauses, removing the same long mixed dropdown from those editors too. Keep scene choices and existing clause targets intact when browsing another category.
