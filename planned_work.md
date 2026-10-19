@@ -324,3 +324,7 @@ Every asset viewer, regardless of category or native/legacy record type, must sh
 
 ## 2026-10-18 — Switches for on/off settings
 Record the user's build preference and apply switch styling/semantics to clause enable controls, crop square lock and linked-delete option. Preserve item-selection and explicit-approval checkboxes. Retain always-on viewer advance without a toggle. User authorized push after fixes.
+
+
+## 2026-10-18 — Refresh restores the current project/page
+Fix restoreNavigation's unconditional project-picker reset. Restore validated saved page, project, search, scene and scroll; explicit URL targets take priority. Keep the last asset category per project. A locked restored project prompts for its PIN without erasing the desired page/project and returns there after unlocking. Verify and publish with the authorized fixes.
