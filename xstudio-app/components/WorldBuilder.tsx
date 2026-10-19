@@ -1,5 +1,6 @@
 'use client';
-import {useEffect,useRef,useState} from 'react';
+import {useEffect,useId,useRef,useState} from 'react';
+import {Box,ClipboardList,ChevronDown} from 'lucide-react';
 import {WORLD_BUILDER_FIELDS,worldBuilderText} from '../lib/xce/world-builder-fields.mjs';
 import {parseStoryImport} from '../lib/xce/story-import.mjs';
 import {studioFetch} from '../lib/xce/studio-network.mjs';
@@ -11,6 +12,7 @@ function StoryImport({manifest,project,onSaved}:{manifest:any,project:string,onS
  const [fields,setFields]=useState(()=>worldBuilderText(manifest.world_builder));
  const [input,setInput]=useState(''),[busy,setBusy]=useState(false),[message,setMessage]=useState(''),[error,setError]=useState(false),[tab,setTab]=useState(1);
  const revision=useRef(manifest.revision),inFlight=useRef(false),mounted=useRef(true);
+ const sectionId=useId(),tabButtons=useRef<(HTMLButtonElement|null)[]>([]);
  useEffect(()=>{mounted.current=true;return()=>{mounted.current=false}},[]);
  useEffect(()=>{if(!inFlight.current){setFields(worldBuilderText(manifest.world_builder));revision.current=manifest.revision}},[manifest]);
  async function ingest(text:string){
@@ -31,13 +33,13 @@ function StoryImport({manifest,project,onSaved}:{manifest:any,project:string,onS
   finally{inFlight.current=false;if(mounted.current)setBusy(false)}
  }
  return <section className="world-builder">
-  <p>Brainstorm with XCE_FIRESTARTER, run US, then paste its complete output here and press Enter. It saves to this project automatically.</p>
+  <p className="world-import-hint">Brainstorm with XCE_FIRESTARTER, run US, then paste its complete output here and press Enter. It saves to this project automatically.</p>
   <label className="story-field">Import story · {manifest.campaign_name||project}
    <textarea aria-label="Paste Firestarter story" rows={4} style={{height:130,resize:'none',overflowY:'auto'}} value={input} disabled={busy} placeholder="Paste the six tagged sections here…" onChange={e=>setInput(e.target.value)} onKeyDown={e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.nativeEvent.isComposing){e.preventDefault();void ingest(input)}}} onDragOver={e=>e.preventDefault()} onDrop={e=>{e.preventDefault();setInput(e.dataTransfer.getData('text/plain'))}}/>
   </label>
   <button type="button" className="button primary" disabled={busy||!input.trim()} onClick={()=>void ingest(input)}>Enter</button>
-  <p role={error?'alert':'status'} aria-live="polite" style={{maxHeight:90,overflowY:'auto'}}>{busy?'Saving story…':message}</p>
-  <div role="tablist" aria-label="Story sections" style={{display:'flex',gap:8}}>{['World Builder','Production & Continuity'].map((label,i)=><button key={label} type="button" role="tab" aria-selected={tab===i+1} aria-controls="story-fields" className="button secondary" onClick={()=>setTab(i+1)}>{label}</button>)}</div>
-  <div id="story-fields" role="tabpanel">{Object.entries(WORLD_BUILDER_FIELDS).filter(([key])=>tab===1?!['production_brief','notes'].includes(key):['production_brief','notes'].includes(key)).map(([key,field]:any)=><details key={key} className="panel"><summary>{field.label}</summary><textarea aria-label={field.label} readOnly rows={4} style={{maxHeight:180,overflowY:'auto'}} value={fields[key]}/></details>)}</div>
+  <p className="world-import-status" role={error?'alert':'status'} aria-live="polite">{busy?'Saving story…':message}</p>
+  <div className="world-section-tabs" role="tablist" aria-label="Story sections">{[{label:'World Builder',Icon:Box},{label:'Production & Continuity',Icon:ClipboardList}].map(({label,Icon},i)=><button key={label} ref={node=>{tabButtons.current[i]=node}} id={`${sectionId}-tab-${i+1}`} type="button" role="tab" tabIndex={tab===i+1?0:-1} aria-selected={tab===i+1} aria-controls={`${sectionId}-fields`} onClick={()=>setTab(i+1)} onKeyDown={e=>{const next=e.key==='Home'?0:e.key==='End'?1:e.key==='ArrowRight'?(i+1)%2:e.key==='ArrowLeft'?(i+1)%2:null;if(next!==null){e.preventDefault();setTab(next+1);tabButtons.current[next]?.focus()}}}><Icon size={22} aria-hidden="true"/><span>{label}</span></button>)}</div>
+  <div className="world-saved-fields" id={`${sectionId}-fields`} role="tabpanel" aria-labelledby={`${sectionId}-tab-${tab}`}>{Object.entries(WORLD_BUILDER_FIELDS).filter(([key])=>tab===1?!['production_brief','notes'].includes(key):['production_brief','notes'].includes(key)).map(([key,field]:any)=><details key={key} className="world-saved-field"><summary><span>{field.label}</span><ChevronDown size={18} aria-hidden="true"/></summary><div className="world-saved-text" role="region" aria-label={field.label} tabIndex={0}>{fields[key]||<span className="world-empty-field">Nothing saved yet.</span>}</div></details>)}</div>
  </section>;
 }

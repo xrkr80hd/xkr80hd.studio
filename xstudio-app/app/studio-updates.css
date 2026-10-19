@@ -74,3 +74,30 @@
 .world-editor.asset-unified-editor{width:100%;max-width:100%;max-height:none;margin:0;padding:0;overflow:visible;overscroll-behavior:auto}
 
 .scene-reference-beats,.scene-reference-ledger{max-height:320px;overflow-y:auto;overscroll-behavior:contain}.scene-reference-beats>details>summary{display:flex;align-items:center;gap:10px;min-width:0}.scene-reference-beats summary>.preview-frame{width:64px;height:44px;flex:none;min-height:0}.scene-reference-beats summary>span{min-width:0;overflow-wrap:anywhere}.scene-reference-beats input,.scene-reference-beats textarea{width:100%;min-width:0}.scene-reference-sequence .button-row{display:flex;flex-wrap:wrap;gap:8px}
+
+/* World Builder uses the same compact icon-tab language as studio navigation. */
+.world-builder{display:grid;gap:16px;min-width:0;max-width:100%}
+.world-builder .world-import-hint{color:var(--muted);font-size:14px;line-height:1.6}
+.world-builder>.story-field{display:grid;gap:8px;min-width:0;margin:0;font-weight:600}
+.world-builder>.story-field textarea{display:block;width:100%;min-width:0;font-size:16px}
+.world-builder>.button{justify-self:start;min-height:44px}
+.world-import-status{max-height:90px;overflow-y:auto;overflow-wrap:anywhere;font-size:13px}
+.world-import-status:empty{display:none}
+.world-section-tabs{display:flex;align-items:stretch;gap:4px;border-bottom:1px solid var(--line);min-width:0}
+.world-section-tabs>button{display:flex;flex:1;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-width:0;min-height:78px;padding:12px 8px;background:transparent;border:1px solid transparent;border-bottom:3px solid transparent;border-radius:10px 10px 0 0;color:var(--muted);font-size:14px;font-weight:600;line-height:1.35;text-align:center}
+.world-section-tabs>button[aria-selected=true]{color:#a8ebff;background:#103340;border-color:#285562;border-bottom-color:var(--cyan)}
+.world-section-tabs>button:hover{background:#172b36;color:var(--text)}
+.world-section-tabs>button:focus-visible{outline:2px solid var(--cyan);outline-offset:-3px}
+.world-saved-fields{display:grid;gap:12px;min-width:0}
+.world-saved-field{min-width:0;overflow:hidden;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+.world-saved-field>summary{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:52px;padding:14px 16px;cursor:pointer;list-style:none;font-size:15px;font-weight:600;line-height:1.4}
+.world-saved-field>summary::-webkit-details-marker{display:none}
+.world-saved-field>summary:focus-visible{outline:2px solid var(--cyan);outline-offset:-3px}
+.world-saved-field>summary>svg{transition:transform .15s}
+.world-saved-field[open]>summary>svg{transform:rotate(180deg)}
+.world-saved-field[open]>summary{border-bottom:1px solid var(--line)}
+.world-saved-text{width:100%;min-width:0;max-height:240px;overflow-y:auto;overscroll-behavior:contain;padding:16px;font-size:16px;line-height:1.65;white-space:pre-wrap;overflow-wrap:anywhere;scrollbar-gutter:stable}
+.world-saved-text:focus-visible{outline:2px solid var(--cyan);outline-offset:-3px}
+.world-empty-field{color:var(--muted);font-size:14px}
+@media(min-width:760px){.world-section-tabs>button{flex:0 1 230px}}
+@media(prefers-reduced-motion:reduce){.world-saved-field>summary>svg{transition:none}}
