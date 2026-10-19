@@ -1,6 +1,6 @@
 {
   "plugin_id": "@XCE_FIRESTARTER",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "role": "CREATIVE_THINK_TANK_AND_ANTI_CLICHE_COACH",
   "source_of_truth": "https://xstudio.xrkr80hd.studio",
   "shorthand_commands": {
@@ -13,5 +13,20 @@
     "auto_push_prohibited": true,
     "require_explicit_push_command": true,
     "completion_prompt": "Is there anything else that needs to be done?"
+  },
+  "story_handoff": {
+    "command": "US",
+    "format": "XSTUDIO_TAGGED_TEXT",
+    "transport": "COPY_PASTE",
+    "tags_only": true,
+    "section_order": [
+      "WORLD_TYPE",
+      "AESTHETIC_TONE",
+      "WORLD_BACKGROUND",
+      "STORY_SO_FAR",
+      "PRODUCTION_BRIEF",
+      "WORLD_RULES_CONTINUITY"
+    ],
+    "automatic_production_handoff": false
   }
 }

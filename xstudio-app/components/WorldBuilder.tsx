@@ -1,11 +1,43 @@
 'use client';
-import {useMemo,useState,useEffect} from 'react';
-import {compileWorld,worldContextHeader} from '../lib/xce/world-builder.mjs';
+import {useEffect,useRef,useState} from 'react';
 import {WORLD_BUILDER_FIELDS,worldBuilderText} from '../lib/xce/world-builder-fields.mjs';
+import {parseStoryImport} from '../lib/xce/story-import.mjs';
 import {studioFetch} from '../lib/xce/studio-network.mjs';
-export default function WorldBuilder({manifest,project,onSaved}:{manifest:any,project:string,onSaved:()=>Promise<any>}){
- const context=useMemo(()=>compileWorld(manifest,project),[manifest,project]),[draft,setDraft]=useState<any>(()=>worldBuilderText(manifest.world_builder)),[busy,setBusy]=useState(false),[message,setMessage]=useState('');
- useEffect(()=>{setDraft(worldBuilderText(manifest.world_builder));setMessage('')},[project]);
- async function save(){setBusy(true);setMessage('');try{const r=await studioFetch('/api/world-builder',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({project_id:project,expected_revision:manifest.revision,world_builder:draft})});const data=await r.json();if(!r.ok)throw Error(data.error||'Save failed');await onSaved();setMessage('World Builder saved')}catch(e){setMessage((e as Error).message)}finally{setBusy(false)}}
- return <section className="world-builder"><p className="step-description">Describe your world and paste your story here. Saved assets build the directory below automatically, with no AI or external API calls.</p><details className="panel workflow-step" open><summary><span><strong>World & story</strong><small>{context.character_directory.length} characters · {context.locations_and_rooms.length} locations / rooms · {context.scenes.length} scenes</small></span></summary><div className="accordion-content"><p>{context.world_bible.saved_project_description}</p><form onSubmit={e=>{e.preventDefault();void save()}}>{Object.entries(WORLD_BUILDER_FIELDS).map(([key,field]:any)=><label key={key} className="story-field">{field.label}<textarea rows={field.rows} maxLength={field.limit} value={draft[key]} onChange={e=>setDraft({...draft,[key]:e.target.value})} placeholder={'Paste or write your '+field.label.toLowerCase()+'…'}/></label>)}<button type="submit" className="button primary" disabled={busy||JSON.stringify(draft)===JSON.stringify(worldBuilderText(manifest.world_builder))}>{busy?'Saving…':'Save world & story'}</button>{message&&<p role="status">{message}</p>}</form></div></details><details className="panel workflow-step"><summary><span><strong>Character Role Directory</strong><small>Saved cast tiers, details, equipment and scene links</small></span></summary><div className="accordion-content world-directory">{context.character_directory.map((c:any)=><article key={c.character_id}><h3>{c.name}</h3><p>{c.cast_tier} · {c.anchor_status}</p><code>{c.asset_code||c.character_id}</code><p>{c.saved_traits_and_role.join(' · ')||'No saved role details yet'}</p>{c.saved_objective&&<p>Objective: {c.saved_objective}</p>}{c.linked_assets.length>0&&<p>Linked: {c.linked_assets.map((id:string)=>context.asset_directory.find((a:any)=>a.asset_id===id)?.name||id).join(', ')}</p>}{c.filename_role_hint&&<p className="step-hint">Title hint: {c.filename_role_hint}</p>}</article>)}{!context.character_directory.length&&<p>No saved project characters yet.</p>}</div></details><details className="panel workflow-step"><summary><span><strong>Title hints & scene couplings</strong><small>Labels are suggestions; saved IDs and rules stay authoritative</small></span></summary><div className="accordion-content">{context.world_bible.title_tags.map((t:any)=><p key={t.reference_id}>{t.title}{t.category_label?' · '+t.category_label:''}</p>)}{context.scenes.map((s:any)=><p key={s.scene_id}>{s.name} · {s.character_ids.length} assigned actors · {s.scene_intent||'Intent not saved'}</p>)}</div></details><details className="panel workflow-step"><summary><span><strong>Bulk Action Manifest</strong><small>{context.bulk_action_manifest.length} unorganized uploads</small></span></summary><div className="accordion-content">{context.bulk_action_manifest.map((a:any)=><p key={a.reference_id}>{a.name} · {a.suggested_category||'Choose category'}</p>)}<p className="step-hint">Use long-press selection in Assets to apply categories or cast groups. No project changes are made by parsing.</p></div></details><details className="panel workflow-step"><summary><span><strong>Saved context & export</strong><small>Automatically included in scene prompts and GPT handoffs</small></span></summary><div className="accordion-content"><textarea readOnly rows={7} value={worldContextHeader(context)} aria-label="World Builder context"/><button type="button" className="button secondary" onClick={()=>{const blob=new Blob([JSON.stringify(context,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download=project+'_world-builder.json';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}}>Download World Builder JSON</button></div></details></section>;
+
+export default function WorldBuilder(props:{manifest:any,project:string,onSaved:()=>Promise<any>}){
+ return <StoryImport key={props.project} {...props}/>;
+}
+function StoryImport({manifest,project,onSaved}:{manifest:any,project:string,onSaved:()=>Promise<any>}){
+ const [fields,setFields]=useState(()=>worldBuilderText(manifest.world_builder));
+ const [input,setInput]=useState(''),[busy,setBusy]=useState(false),[message,setMessage]=useState(''),[error,setError]=useState(false),[tab,setTab]=useState(1);
+ const revision=useRef(manifest.revision),inFlight=useRef(false),mounted=useRef(true);
+ useEffect(()=>{mounted.current=true;return()=>{mounted.current=false}},[]);
+ useEffect(()=>{if(!inFlight.current){setFields(worldBuilderText(manifest.world_builder));revision.current=manifest.revision}},[manifest]);
+ async function ingest(text:string){
+  if(inFlight.current)return;
+  setInput(text);setError(false);setMessage('');
+  let parsed;try{parsed=parseStoryImport(text)}catch(e){setError(true);setMessage((e as Error).message);return}
+  const keys=Object.keys(parsed.patch);
+  if(!keys.length){setMessage('All six sections are empty. Existing fields preserved. '+parsed.warnings.join(' '));return}
+  const previous=fields;inFlight.current=true;setBusy(true);setFields({...fields,...parsed.patch});
+  try{
+   const response=await studioFetch('/api/world-builder',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({project_id:project,expected_revision:revision.current,tagged_text:text})});
+   const data=await response.json();if(!response.ok)throw Error(data.error||'Import failed');
+   if(!mounted.current)return;
+   revision.current=data.revision;setFields(worldBuilderText(data.world_builder));setInput('');
+   setMessage('Saved '+keys.map(key=>(WORLD_BUILDER_FIELDS as any)[key].label).join(', ')+'. '+(data.warnings||[]).join(' '));
+   try{await onSaved()}catch{if(mounted.current)setMessage('Story saved. Refresh the page to reload other project views.')}
+  }catch(e){if(mounted.current){setFields(previous);setError(true);setMessage((e as Error).message)}}
+  finally{inFlight.current=false;if(mounted.current)setBusy(false)}
+ }
+ return <section className="world-builder">
+  <p>Brainstorm with XCE_FIRESTARTER, run US, then paste its complete output here and press Enter. It saves to this project automatically.</p>
+  <label className="story-field">Import story · {manifest.campaign_name||project}
+   <textarea aria-label="Paste Firestarter story" rows={4} style={{height:130,resize:'none',overflowY:'auto'}} value={input} disabled={busy} placeholder="Paste the six tagged sections here…" onChange={e=>setInput(e.target.value)} onKeyDown={e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.nativeEvent.isComposing){e.preventDefault();void ingest(input)}}} onDragOver={e=>e.preventDefault()} onDrop={e=>{e.preventDefault();setInput(e.dataTransfer.getData('text/plain'))}}/>
+  </label>
+  <button type="button" className="button primary" disabled={busy||!input.trim()} onClick={()=>void ingest(input)}>Enter</button>
+  <p role={error?'alert':'status'} aria-live="polite" style={{maxHeight:90,overflowY:'auto'}}>{busy?'Saving story…':message}</p>
+  <div role="tablist" aria-label="Story sections" style={{display:'flex',gap:8}}>{['World Builder','Production & Continuity'].map((label,i)=><button key={label} type="button" role="tab" aria-selected={tab===i+1} aria-controls="story-fields" className="button secondary" onClick={()=>setTab(i+1)}>{label}</button>)}</div>
+  <div id="story-fields" role="tabpanel">{Object.entries(WORLD_BUILDER_FIELDS).filter(([key])=>tab===1?!['production_brief','notes'].includes(key):['production_brief','notes'].includes(key)).map(([key,field]:any)=><details key={key} className="panel"><summary>{field.label}</summary><textarea aria-label={field.label} readOnly rows={4} style={{maxHeight:180,overflowY:'auto'}} value={fields[key]}/></details>)}</div>
+ </section>;
 }
