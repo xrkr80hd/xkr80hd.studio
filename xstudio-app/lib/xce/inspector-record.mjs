@@ -12,3 +12,12 @@ export function inspectorEntity(record,manifest={}){
 export function needsAssetIntake(record,action,manifest){
  return ['move','duplicate'].includes(action)&&inspectorEntity(record,manifest)==='reference'&&!attachmentInfo(manifest,record).attached;
 }
+
+// Match ownership by explicit reference edges, never by a guessed name or image.
+export function referenceAssetOwners(manifest,id){
+ const linked=r=>(r.intake_source_reference_ids||[]).includes(id)||(r.reference_ids||[]).includes(id)||r.source_image_id===id||r.blueprint_id===id;
+ return [
+  ...Object.entries(manifest.manifest_store||{}).flatMap(([category,items])=>Object.values(items).filter(linked).map(record=>({...record,category}))),
+  ...Object.values(manifest.scenes||{}).filter(linked).map(record=>({...record,category:'scenes'}))
+ ];
+}

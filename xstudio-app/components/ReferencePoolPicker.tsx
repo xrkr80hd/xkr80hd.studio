@@ -1,7 +1,7 @@
 'use client';
 import {useEffect,useState} from 'react';
 import {studioFetch as fetch} from '../lib/xce/studio-network.mjs';
-import {referencePoolRows,filterReferencePool} from '../lib/xce/reference-pool.mjs';
+import {referencePoolRows,filterReferencePool,referencePoolGroups} from '../lib/xce/reference-pool.mjs';
 import PreviewImage from './PreviewImage';
 
 type PoolImage={id:string;project:string;title:string;name:string;role:string;asset_type:string};
@@ -9,7 +9,7 @@ type Props={project:string;manifest:any;selected:string[];disabled:boolean;onCho
 export default function ReferencePoolPicker({project,manifest,selected,disabled,onChoose,onClose}:Props){
  const [rows,setRows]=useState<PoolImage[]>(()=>referencePoolRows(manifest,project,manifest.campaign_name||'This project'));
  const [projects,setProjects]=useState<{id:string;title:string}[]>([{id:project,title:manifest.campaign_name||'This project'}]);
- const [query,setQuery]=useState(''),[source,setSource]=useState(''),[loading,setLoading]=useState(true),[error,setError]=useState('');
+ const [query,setQuery]=useState(''),[category,setCategory]=useState(''),[source,setSource]=useState(''),[loading,setLoading]=useState(true),[error,setError]=useState('');
  useEffect(()=>{
   const abort=new AbortController();
   async function load(){
@@ -34,17 +34,17 @@ export default function ReferencePoolPicker({project,manifest,selected,disabled,
   }
   void load();return()=>abort.abort();
  },[project,manifest.campaign_name]);
- const visible=filterReferencePool(rows,query,source,project,selected);
+ const groups=referencePoolGroups(filterReferencePool(rows,'',source,project,selected)),currentCategory=category||groups[0]?.id;
+ const visible=referencePoolGroups(filterReferencePool(rows,query,source,project,selected)).find((g:any)=>g.id===currentCategory)?.records||[];
  return <section className="asset-pool-picker" aria-label="Reference library" aria-busy={loading}>
   <div className="entity-card-heading"><strong>Reference library</strong><button type="button" className="button secondary" disabled={disabled} onClick={onClose}>Close library</button></div>
   <label>Search asset pool<input autoFocus type="search" placeholder="Search images, assets or projects…" value={query} onChange={e=>setQuery(e.target.value)}/></label>
   <label>Asset pool<select value={source} onChange={e=>setSource(e.target.value)}><option value="">All available projects &amp; Lost Assets</option>{projects.map(p=><option key={p.id} value={p.id}>{p.title}</option>)}</select></label>
   <p role="status">{visible.length} images{loading?' · Loading asset pools…':''}</p>
-  <div className="reference-picker-grid">{visible.map((r:PoolImage)=><button type="button" className="reference-picker-tile" key={r.project+':'+r.id} disabled={disabled} onClick={()=>void onChoose(r)} aria-label={'Use '+r.name+' from '+r.title}>
+  <label>Category<select value={currentCategory||''} onChange={e=>setCategory(e.target.value)}>{groups.map((group:any)=><option key={group.id} value={group.id}>{group.label}</option>)}</select></label><div className="reference-picker-grid">{visible.map((r:PoolImage)=><button type="button" className="reference-picker-tile" key={r.project+':'+r.id} disabled={disabled} onClick={()=>void onChoose(r)} aria-label={'Use '+r.name+' from '+r.title}>
    <PreviewImage thumbnail src={'/api/manifest?'+new URLSearchParams({project:r.project,file:r.id})} alt={r.name}/><span className="reference-picker-name">{r.name}</span><small>{r.title}</small>
   </button>)}</div>
   {!loading&&!visible.length&&<p>No matching images. Try another search or asset pool.</p>}
-  <small>Includes uploaded images and images already assigned to assets. Locked folders stay protected.</small>
   {error&&<p className="error-text" role="alert">{error}</p>}
  </section>;
 }

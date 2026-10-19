@@ -958,6 +958,11 @@
       "properties": {},
       "additionalProperties": true
     },
+    "asset_continuity": {
+      "type": "object",
+      "properties": {},
+      "additionalProperties": true
+    },
     "entity_bindings": {
       "type": "object",
       "properties": {},

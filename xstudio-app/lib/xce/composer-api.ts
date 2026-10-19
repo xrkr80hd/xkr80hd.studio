@@ -1,3 +1,5 @@
+import {editAsset} from './asset-edit.mjs';
+import {saveAssetDetails} from './asset-details.mjs';
 import {byteStream} from './response-stream.mjs';
 import {saveSceneCast} from './scene-cast.mjs';
 import 'server-only';
@@ -72,6 +74,16 @@ export async function composerRequest(req:Request){
    if(args.confirm!==true)throw Error('Explicit save confirmation required');
    const next=assignCastGroup(m,args.character_id,args.group,worldRecords(m));
    const updated=await write(next);return json({saved:true,revision:updated,character_cast_groups:next.character_cast_groups});
+  }
+  if(action==='asset_edit'){
+   if(args.confirm!==true)throw Error('Choose Save to apply your edits');
+   const result=editAsset(m,args.asset_id,args.details),next=result.manifest;
+   const updated=await write(next);return json({saved:true,revision:updated,asset:result.asset,asset_id:result.asset_id,asset_details:next.asset_details,character_network:next.character_network,character_cast_groups:next.character_cast_groups});
+  }
+  if(action==='asset_details'){
+   if(args.confirm!==true)throw Error('Explicit save confirmation required');
+   const next=saveAssetDetails(m,args.asset_id,args.details);
+   const updated=await write(next);return json({saved:true,revision:updated,asset_details:next.asset_details});
   }
   if(action==='character_details'){
    if(args.confirm!==true)throw Error('Explicit save confirmation required');

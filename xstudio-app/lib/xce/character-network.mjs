@@ -1,3 +1,4 @@
+import {CHARACTER_GENDERS} from './character-labels.mjs';
 export const CHARACTER_RELATIONS={equal_height:'Same height as',shorter_than:'Shorter than',taller_than:'Taller than',opposes:'Opposes',custom:'Your rule'};
 const clone=v=>structuredClone(v);
 const inverse={equal_height:'equal_height',shorter_than:'taller_than',taller_than:'shorter_than',opposes:'opposes',custom:'custom'};
@@ -17,7 +18,8 @@ export function saveCharacterDetails(m,id,details,records){
  const chars=records.filter(a=>a.type==='characters'&&!a.deleted_at&&!m.manifest_store?.creatures?.[a.id]);
  if(!chars.some(a=>a.id===id))throw Error('Choose a character in this project');
  if(!details||typeof details.quick_details!=='string'||details.quick_details.length>4000||!Array.isArray(details.links)||details.links.length>50)throw Error('Invalid Quick Details');
- const next=clone(m);next.character_network||={};next.character_network.details||={};next.character_network.details[id]={text:details.quick_details.trim(),source:'USER_SAVED',updated_at:new Date().toISOString()};
+ if(details.gender!==undefined&&!Object.hasOwn(CHARACTER_GENDERS,details.gender))throw Error('Choose a saved gender label');
+ const next=clone(m);next.character_network||={};next.character_network.details||={};next.character_network.details[id]={text:details.quick_details.trim(),gender:details.gender||m.character_network?.details?.[id]?.gender||'unspecified',source:'USER_SAVED',updated_at:new Date().toISOString()};
  const links=(m.character_network?.relationships||[]).filter(r=>r.subject_id!==id&&r.object_id!==id),seen=new Set();
  for(const r of details.links){if(!Object.hasOwn(CHARACTER_RELATIONS,r.kind)||r.target_id===id||!chars.some(a=>a.id===r.target_id))throw Error('Choose a different character from this project');if(r.kind==='custom'&&((r.enabled!==undefined&&typeof r.enabled!=='boolean')||(r.clause_type!==undefined&&!['relationship','synergy'].includes(r.clause_type))))throw Error('Invalid relationship / synergy clause');if(r.kind==='custom'&&(typeof r.text!=='string'||!r.text.trim()||r.text.length>2000))throw Error('Write your linked rule (up to 2,000 characters)');const key=r.kind+'|'+r.target_id+'|'+(r.text||'');if(seen.has(key))continue;seen.add(key);links.push({subject_id:id,kind:r.kind,object_id:r.target_id,...(r.kind==='custom'?{text:r.text.trim(),enabled:r.enabled!==false,clause_type:r.clause_type||'relationship'}:{})});}
  if(links.length>1000)throw Error('Character relationship limit reached');graph(chars,links);next.character_network.relationships=links;return next;

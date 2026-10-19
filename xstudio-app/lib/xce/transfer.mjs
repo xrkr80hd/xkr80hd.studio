@@ -1,3 +1,6 @@
+function copyAssetDetails(source,dest,mapping){
+ for(const [oldId,newId] of mapping){const details=source.asset_details?.[oldId];if(!details)continue;dest.asset_details||={};dest.asset_details[newId]={...structuredClone(details),clauses:(details.clauses||[]).flatMap(c=>{const character=mapping.get(c.character_id)||(source===dest?c.character_id:null);return character&&(dest.manifest_store?.characters?.[character]||dest.world_library?.characters?.[character])?[{...c,character_id:character}]:[]})};}
+}
 import {allocate,newSceneId,annotate,shotId} from './namespace.mjs';
 import {need,categories,findAsset} from './core.mjs';
 import {manage} from './manage.mjs';
@@ -25,6 +28,7 @@ export function transfer(source,dest,a){
  }else copy.asset_id=a.destination_id;
  if(a.operation==='duplicate'){delete copy.asset_code;delete copy.asset_code_record_id}else copy.asset_code_record_id=copy.asset_id||copy.scene_id||copy.id;
  copy.name=a.name?.trim()||copy.name||a.destination_id;copy.copied_from={project_id:a.project_id,id:a.id};dst[a.destination_id]=copy;
+ copyAssetDetails(source,dest,new Map([[a.id,a.destination_id],...[...dependencies.values()].filter(d=>d.type!=='reference').map(d=>[d.id,d.id])]));
  if(a.operation==='move')manage(source,{entity:a.entity,action:'delete',id:a.id,confirm:true});
  dest.permits={};dest.history.push({kind:'transfer',...a,date:new Date().toISOString()});
  return {saved:true,operation:a.operation,id:a.destination_id,copied_dependencies:dependencies.size};
@@ -50,6 +54,7 @@ function transferAutomatic(source,dest,a){
  const arrays=new Set(['reference_ids','assigned_reference_ids','character_ids','prop_ids','location_ids','assigned_character_ids','anchor_ids']);
  const rewire=(o)=>{if(!o||typeof o!=='object')return;for(const [k,v]of Object.entries(o)){if(scalar.has(k)&&typeof v==='string'&&mapping.has(v))o[k]=mapping.get(v);else if(arrays.has(k)&&Array.isArray(v))o[k]=v.map(id=>mapping.get(id)||id);else if(k!=='copied_from')rewire(v)}};
  for(const [id,c]of copies){const r=c.record;rewire(r);if(c.type==='reference')r.id=c.next;else if(c.type==='scene')r.scene_id=c.next;else r.asset_id=c.next;if(c.name)r.name=c.name;if(a.operation==='move'&&id===a.id)r.asset_code_record_id=c.next;else{delete r.asset_code;delete r.asset_code_record_id;}annotate(r,dest,c.type==='reference'?(r.asset_type||'character'):c.type);r.copied_from={project_id:a.project_id,id};const dst=c.type==='reference'?dest.references:c.type==='scene'?dest.scenes:dest.manifest_store[categories[c.type]];need(!dst[c.next]&&!findAsset(dest,c.next),'Destination ID already exists');dst[c.next]=r;}
+ copyAssetDetails(source,dest,mapping);
  if(a.operation==='move')manage(source,{entity:a.entity,action:'delete',id:a.id,confirm:true});
  dest.permits={};dest.history.push({kind:'transfer',...a,destination_id:main,date:new Date().toISOString()});
  return {saved:true,operation:a.operation,id:main,copied_dependencies:copies.size-1};

@@ -55,7 +55,7 @@ export function manage(m,a){
    }else if(action==='update'){
     const keys=Object.keys(data);need(keys.length,'No changes supplied');
     need(!keys.some(k=>['asset_id','asset_type','id','scene_id','status','key','generation_review','approval_instruction','locked_at','shots'].includes(k)),'IDs and approval fields cannot be edited');
-    if(keys.length===1&&keys[0]==='name'){need(typeof data.name==='string'&&data.name.trim()&&data.name.length<=200,'Name required (max 200 characters)');record.name=data.name.trim()}
+    if(keys.length===1&&keys[0]==='name'){need(typeof data.name==='string'&&data.name.trim()&&data.name.length<=200,'Name required (max 200 characters)');record.name=data.name.trim();if(entity==='reference'){if(record.asset_name)record.asset_name=record.name;if(record.presort)record.presort={...record.presort,display_name:record.name};}}
     else{
      need(entity!=='reference','Reference image and role are immutable; upload a replacement reference');
      const allowed=entity==='scene'?['name','blueprint_id','subject_count','character_ids','prop_ids','location_ids','blocking','lighting_palette']:['name','immutable_traits','reference_ids','lighting_palette','action','mode','medium','equipment_callouts'];
@@ -79,5 +79,6 @@ export function manage(m,a){
   }
  }
  m.permits={};m.history.push({kind:'manage_record',entity,action,id,date:new Date().toISOString()});
- return {saved:true,entity,action,id,record:collection?.[a.new_version_id||id]?clean(collection[a.new_version_id||id]):undefined};
+ const saved=collection?.[a.new_version_id]||collection?.[id];
+ return {saved:true,entity,action,id,record:saved?clean(saved):undefined};
 }

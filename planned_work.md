@@ -287,3 +287,23 @@ Trace the reported Kutan save error; preserve reference identity in the inspecto
 
 ## 2026-10-18 — Alternate form reference pool
 Replace the empty project-image dropdown with a searchable thumbnail picker across available asset pools. Do not require private storage keys in public manifests; import a selected cross-project reference before assigning it. Preserve existing local carousel fixes.
+
+
+## 2026-10-18 — Stable asset rename and consumed upload cards
+Reproduced Name & Save leaving a presorted source upload visible after reference normalization, because the browser manifest omits storage keys. Use reference lineage/attachment IDs to hide consumed upload cards. Route a reference already owned by a single saved legacy asset to that existing editor, and retain stable IDs and lock on name-only updates. Verify without deleting historical data or pushing.
+
+
+## 2026-10-18 — Prop descriptions, character clauses, project builder page
+Add user-authored prop descriptions and repeatable character-linked clauses, applied only when both assets are selected in scene prompts. Preserve lock/image identity and validate project scope. Move the embedded Assets project-prompt builder to the dedicated project Composer page. Keep rename fixes local; no push.
+
+
+## 2026-10-18 — Simple scene inventory and descriptions
+Use closed category/cast accordions, name sorting and explicit gender labels. Remove drag/drop and research-profile UI. Show image and human name only; retain approved-only scene eligibility. Add a simple description to saved items and scene prompts, with optional prop-character clauses. Verify all changes locally.
+
+
+## 2026-10-18 — Missing non-character approval action
+Expose the existing owner image-lock workflow for props, creatures/beasts, vehicles and locations. Verify exact saved bytes and project revision, preserve asset identity, and retain explicit approval.
+
+
+## 2026-10-18 — Unified asset editor and compact menus
+Combine saved asset name, category, classification, short description and character sorting in one closed Edit / Rename section. Use dropdown choices, remove picker-only description/research editing, and show descriptions on library cards. Preserve descriptions during asset transfer. User authorized all current fixes and push after verification.

@@ -1,3 +1,4 @@
+import {assetContext,assetContextPrompt} from './asset-details.mjs';
 import {projectPromptHeader} from './project-identity.mjs';
 import {characterContext,characterContextPrompt} from './character-network.mjs';
 export const WORLD_TYPES={characters:'Characters',wardrobe:'Wardrobe',props:'Props',vehicles:'Vehicles',locations:'Locations',rooms:'Rooms',scenes_and_shots:'Scenes & Shots'};
@@ -40,7 +41,8 @@ export function validateWorld(world,manifest){
    }
    const prior=manifest.world_library?.[type]?.[id];
    const record={id,type,name:a.name.trim(),status:a.status,reference_ids:[...new Set(a.reference_ids)],thumbnail_reference_id:a.reference_ids[0]||'',metadata,...(prior?.asset_code?{asset_code:prior.asset_code,asset_code_record_id:prior.asset_code_record_id||id}:{})};
-   if(prior?.status==='LOCKED'){const immutable=r=>({id:r.id,type:r.type,name:r.name.trim(),status:r.status,reference_ids:[...new Set(r.reference_ids)],thumbnail_reference_id:r.reference_ids[0]||'',metadata:Object.fromEntries(WORLD_FIELDS[type].filter(k=>!['voice','traits'].includes(k)).map(k=>[k,r.metadata?.[k]||'']))});if(JSON.stringify(immutable(record))!==JSON.stringify(immutable(prior)))throw Error('Locked assets are immutable. Duplicate a draft variant.');}
+   if(prior?.status==='LOCKED'){const immutable=r=>({id:r.id,type:r.type,status:r.status,reference_ids:[...new Set(r.reference_ids)],thumbnail_reference_id:r.reference_ids[0]||'',metadata:Object.fromEntries(WORLD_FIELDS[type].filter(k=>!['voice','traits'].includes(k)).map(k=>[k,r.metadata?.[k]||'']))});if(JSON.stringify(immutable(record))!==JSON.stringify(immutable(prior)))throw Error('Locked assets are immutable. Duplicate a draft variant.');}
+   for(const key of ['source_image_id','owner_image_approval','locked_at','approval_instruction','anchor_lock_history'])if(prior?.[key]!==undefined)record[key]=structuredClone(prior[key]);
    clean[type][id]=record;
   }
  }
@@ -56,6 +58,7 @@ export function bindProjectPrompt(manifest,projectId,text){
  const referenceIds=[...new Set([...bound.values()].flatMap(a=>a.reference_ids))];
  const references=referenceIds.map(id=>({reference_id:id,url:'/api/manifest?project='+encodeURIComponent(projectId)+'&file='+encodeURIComponent(id),role:manifest.references[id].role}));
  const continuity=characterContext(manifest,[...bound.keys()],assets);
+ const props=assetContext(manifest,[...bound.keys()],assets);
  const locks=[...bound.values()].map(a=>({asset_id:a.id,name:a.name,type:a.type,anchor_tokens:Object.fromEntries(Object.entries(a.metadata||{}).map(([key,value])=>[key,IMAGE_FIELDS.includes(key)&&value?'/api/manifest?project='+encodeURIComponent(projectId)+'&file='+encodeURIComponent(value):value])),visual_parameters:a.immutable_traits||{},reference_ids:a.reference_ids}));
- return {character_continuity:continuity,project_id:projectId,source_origin:'LOCAL_PROJECT_STORE',allow_external_defaults:false,anchor_binding_verified:true,character_anchors:locks.filter(a=>a.type==='characters'),assets:locks,references,prompt:[projectPromptHeader(manifest,projectId),characterContextPrompt(continuity),'Use only the attached saved project anchors. Never substitute franchise, public-web, remembered or generic character designs. Preserve identity, wardrobe, scale, materials, geometry and style. If a reference is inaccessible, stop.',...locks.map(a=>'LOCK '+a.name+' '+JSON.stringify(a.anchor_tokens)),text].join('\n'),rendered:false};
+ return {asset_continuity:props,character_continuity:continuity,project_id:projectId,source_origin:'LOCAL_PROJECT_STORE',allow_external_defaults:false,anchor_binding_verified:true,character_anchors:locks.filter(a=>a.type==='characters'),assets:locks,references,prompt:[projectPromptHeader(manifest,projectId),characterContextPrompt(continuity),assetContextPrompt(props),'Use only the attached saved project anchors. Never substitute franchise, public-web, remembered or generic character designs. Preserve identity, wardrobe, scale, materials, geometry and style. If a reference is inaccessible, stop.',...locks.map(a=>'LOCK '+a.name+' '+JSON.stringify(a.anchor_tokens)),text].join('\n'),rendered:false};
 }

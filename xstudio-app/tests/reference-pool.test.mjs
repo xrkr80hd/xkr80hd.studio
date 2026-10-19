@@ -31,3 +31,8 @@ test('an image selected from another pool attaches as the same character costume
  assert.equal(saved.references[result.id].key,'private/costume.png');
  assert.ok(source.references.ALT);
 });
+
+test('reference library groups by saved category and character role without an all-category group',async()=>{
+ const {referencePoolGroups}=await import('../lib/xce/reference-pool.mjs');const m={references:{C:{role:'IDENTITY'},P:{role:'PROP'},U:{}},manifest_store:{characters:{H:{asset_id:'H',name:'Hero',reference_ids:['C']}},props:{S:{asset_id:'S',name:'Sword',reference_ids:['P']}}},character_cast_groups:{H:'main'}};
+ const groups=referencePoolGroups(referencePoolRows(m,'P','Project'));assert.deepEqual(groups.map(g=>g.id),['cast:main','props','uploads']);assert.equal(groups[0].records[0].name,'Hero');assert.equal(groups[1].records[0].name,'Sword');
+});

@@ -31,3 +31,11 @@ test('deleted characters and non-character assets cannot be locked through the c
  const deleted=fixture();deleted.manifest_store.characters.A.deleted_at='2026-10-18';assert.throws(()=>approveCharacterAnchor(deleted,args),/not found/);
  const prop=fixture();prop.manifest_store.characters.A.asset_type='prop';assert.throws(()=>approveCharacterAnchor(prop,args),/not found/);
 });
+
+const {approveAssetAnchor,unlockAssetAnchor}=await import('../lib/xce/anchor-approval.mjs');
+for(const [type,asset_type] of [['props','prop'],['creatures','creature'],['vehicles','vehicle'],['locations','location']])test(type+' can be explicitly locked, used and unlocked without duplication',()=>{
+ const m={manifest_store:{[type]:{A:{asset_id:'A',asset_type,name:'Asset',status:'DRAFT',source_image_id:'R',reference_ids:['R']}}},references:{R:{key:'private/image',role:type==='locations'?'LOCATION':'PROP'}}},before=structuredClone(m);
+ const locked=approveAssetAnchor(m,args);assert.deepEqual(m,before);assert.equal(locked.asset.status,'LOCKED');assert.equal(Object.keys(locked.manifest.manifest_store[type]).length,1);assert.deepEqual(locked.manifest.references,m.references);
+ assert.deepEqual(approveAssetAnchor(locked.manifest,args).manifest,locked.manifest);assert.throws(()=>approveAssetAnchor(m,{...args,confirm:false}),/Lock asset/);assert.throws(()=>approveAssetAnchor(m,{...args,source_image_id:'FOREIGN'}),/changed/);assert.throws(()=>approveAssetAnchor(locked.manifest,{...args,sha256:'b'.repeat(64)}),/bytes changed/);
+ assert.equal(unlockAssetAnchor(locked.manifest,args).asset.status,'DRAFT');
+});
