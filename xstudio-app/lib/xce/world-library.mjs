@@ -19,7 +19,7 @@ export function worldRecords(manifest){
  for(const [type,items] of Object.entries(manifest.manifest_store||{})){
   const mapped=type==='creatures'?'characters':type==='shots'?'scenes_and_shots':type;
   if(!WORLD_TYPES[mapped])continue;
-  for(const a of Object.values(items||{})){const id=a.asset_id||a.id;if(rows.some(x=>x.id===id))continue;rows.push({...a,id,type:mapped,legacy:true,reference_ids:[...new Set((a.status==='LOCKED'&&a.source_image_id?[a.source_image_id]:[a.source_image_id,...(a.reference_ids||[])]).filter(Boolean))],metadata:{identity_lock:a.generation_prompt||JSON.stringify(a.immutable_traits||{}),traits:JSON.stringify(a.immutable_traits||{}),style_anchor:a.medium||'',...(a.wardrobe_lock?{wardrobe_lock:JSON.stringify(a.wardrobe_lock)}:{})}});}
+  for(const a of Object.values(items||{})){const id=a.asset_id||a.id;if(rows.some(x=>x.id===id))continue;rows.push({...a,id,type:mapped,legacy:true,reference_ids:[...new Set((a.status==='LOCKED'&&a.source_image_id?[a.source_image_id]:[a.source_image_id,...(a.reference_ids||[])]).filter(Boolean))],metadata:{identity_lock:a.generation_prompt||JSON.stringify(a.immutable_traits||{}),traits:JSON.stringify(a.immutable_traits||{}),style_anchor:a.medium||'',...(a.metadata||{}),...(a.wardrobe_lock?{wardrobe_lock:JSON.stringify(a.wardrobe_lock)}:{})}});}
  }
  return rows;
 }

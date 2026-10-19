@@ -1,4 +1,5 @@
 'use client';
+import {useCharacterRequest,useCharacterSection} from './CharacterFormContext';
 import OverlaySelect from './OverlaySelect';
 import {useEffect,useRef,useState} from 'react';
 import PreviewImage from './PreviewImage';
@@ -10,6 +11,7 @@ type Props={project:string;manifest:any;characterId:string;onSaved:(result:any)=
 // Retain edits when the parent asset viewer unmounts. Scope by project and character.
 const drafts=new Map<string,CharacterState>();
 export default function CharacterStates({project,manifest,characterId,onSaved}:Props){
+ const formRequest=useCharacterRequest();
  const scope=project+':'+characterId;
  const [draft,setDraftValue]=useState<CharacterState|null>(()=>drafts.get(scope)||null);
  const [states,setStates]=useState<CharacterState[]>(()=>Object.values(manifest.state_variants?.[characterId]||{}));
@@ -22,9 +24,10 @@ export default function CharacterStates({project,manifest,characterId,onSaved}:P
  useEffect(()=>{setDraftValue(drafts.get(scope)||null);setPoolOpen(false);setError('');},[scope]);
  const previous=states.find(s=>s.id===draft?.id),locked=draft?.status==='LOCKED';
  const dirty=!!draft&&JSON.stringify(draft)!==JSON.stringify(previous);
+ useCharacterSection('state',()=>dirty&&draft&&!locked?{action:'character_state',state:draft,operation:'save',expected_version:previous?draft.version:0}:null);
  async function request(body:any){
   if(activeScope.current!==scope)throw Error('The active character changed. Reopen the original character to continue.');
-  const response=await fetch('/api/composer',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...body,project_id:project,character_id:characterId,expected_revision:revision.current,confirm:true})});
+  const response=await formRequest('/api/composer',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...body,project_id:project,character_id:characterId,expected_revision:revision.current,confirm:true})});
   const result=await response.json();if(!response.ok)throw Error(result.error||'Could not save costume');return result;
  }
  async function accept(result:any,next:CharacterState|null){
@@ -62,8 +65,8 @@ export default function CharacterStates({project,manifest,characterId,onSaved}:P
   try{
    if(file.size>6*1024*1024)throw Error('Choose an image up to 6 MB');
    const form=new FormData();form.set('file',file);form.set('project_id',project);form.set('role','COSTUME');
-   const response=await fetch('/api/upload',{method:'POST',body:form}),result=await response.json();if(!response.ok)throw Error(result.error||'Upload failed');
-   const read=await fetch('/api/manifest?project='+encodeURIComponent(project),{cache:'no-store'}),data=await read.json();if(!read.ok)throw Error('Image uploaded. Reopen the project to attach it from assets.');
+   const response=await formRequest('/api/upload',{method:'POST',body:form}),result=await response.json();if(!response.ok)throw Error(result.error||'Upload failed');
+   const read=await formRequest('/api/manifest?project='+encodeURIComponent(project),{cache:'no-store'}),data=await read.json();if(!read.ok)throw Error('Image uploaded. Reopen the project to attach it from assets.');
    if(activeScope.current!==scope)return;
    const current=data.manifest||data;revision.current=current.revision;
    await attach(result.reference_id,file.name);

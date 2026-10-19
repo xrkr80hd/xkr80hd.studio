@@ -1,3 +1,4 @@
+import {saveCharacterForm} from './character-form.mjs';
 import {METADATA_SCHEMA,assetMetadata,updateAssetMetadata,updateGenerationPrompt,bulkMetadata} from './asset-metadata.mjs';
 import {CLASSIFICATION_SCHEMA,classificationRows,classifyAssets} from './classifications.mjs';
 import {editSceneRecord} from './scene-editor.mjs';
@@ -65,6 +66,7 @@ export async function composerRequest(req:Request){
   }
   if(req.method!=='POST')throw Error('Use POST for this operation');
   const write=(next:any)=>persistComposition(request,p,next,revision,args.expected_revision);
+  if(action==='character_form'){if(args.confirm!==true)throw Error('Choose Save to apply character changes');const next=saveCharacterForm({...m,revision},p,args);const updated=await write(next);return json({saved:true,manifest:{...next,revision:updated}});}
   if(['metadata_update','metadata_bulk','generation_prompt_update'].includes(action)){
    if(args.confirm!==true)throw new ApiError('Explicit metadata confirmation required');
    if(args.expected_revision!==revision)throw new ApiError('Project changed; reload before saving',409);
