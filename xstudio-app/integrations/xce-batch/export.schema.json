@@ -18,6 +18,11 @@
     "project_id": {
       "type": "string"
     },
+    "project_metadata": {
+      "type": "object",
+      "properties": {},
+      "additionalProperties": true
+    },
     "scene_id": {
       "type": "string"
     },
@@ -287,10 +292,7 @@
           ]
         },
         "enforce_4_distinct_16x9_angles": {
-          "type": "boolean",
-          "enum": [
-            true
-          ]
+          "type": "boolean"
         },
         "master_reference_frame": {
           "type": "object",
@@ -306,7 +308,7 @@
           "items": {
             "type": "string"
           },
-          "minItems": 4,
+          "minItems": 0,
           "maxItems": 4
         },
         "mandatory_questions": {
@@ -422,6 +424,7 @@
     "module",
     "source_site",
     "project_id",
+    "project_metadata",
     "scene_id",
     "project_revision",
     "export_timestamp",

@@ -1,3 +1,4 @@
+import {sceneSequenceLedger} from './scene-sequence.mjs';
 import {assetCategory} from './equipment.mjs';
 import {CAST_GROUPS,characterGroup} from './cast-groups.mjs';
 import {worldRecords} from './world-library.mjs';
@@ -13,7 +14,7 @@ export function saveSceneCast(m,sceneId,ids){
  next.scenes[sceneId].character_ids=cast;next.scenes[sceneId].character_counts=Object.fromEntries(cast.map(id=>[id,next.scenes[sceneId].character_counts?.[id]||1]));next.scenes[sceneId].subject_count=Object.values(next.scenes[sceneId].character_counts).reduce((a,b)=>a+b,0);
  return next;
 }
-export function sceneReferences(m){const records=worldRecords(m);return Object.entries(m.scenes||{}).filter(([,s])=>!s.deleted_at).map(([id,s])=>({id,name:s.name||id,asset_code:s.asset_code||id,kind:'Scene / Storyboard Reference',source_kind:s.source_kind||'scene_blueprint',reference_ids:[...new Set([s.blueprint_id,...(s.reference_ids||[])].filter(Boolean))],character_ids:s.character_ids||[],character_counts:s.character_counts||{},subject_count:s.subject_count,characters:(s.character_ids||[]).map(id=>{const a=records.find(a=>a.id===id);return {id,count:s.character_counts?.[id]||1,name:a?.name||id,status:a?.status||'MISSING',reference_ids:a?.reference_ids||[]}}),identity_authority:'COMPOSITION_REFERENCE_ONLY',analysis_pending:!!s.analysis_pending}));}
+export function sceneReferences(m){const records=worldRecords(m);return [...Object.entries(m.scenes||{}),...Object.entries(m.world_library?.scenes_and_shots||{})].filter(([,s])=>!s.deleted_at).map(([id,s])=>({id,name:s.name||id,asset_code:s.asset_code||id,kind:'Scene / Storyboard Reference',reference_sequence:sceneSequenceLedger({...s,scene_id:id},m),source_kind:s.source_kind||'scene_blueprint',reference_ids:[...new Set([s.blueprint_id,...(s.reference_ids||[])].filter(Boolean))],character_ids:s.character_ids||[],character_counts:s.character_counts||{},subject_count:s.subject_count,characters:(s.character_ids||[]).map(id=>{const a=records.find(a=>a.id===id);return {id,count:s.character_counts?.[id]||1,name:a?.name||id,status:a?.status||'MISSING',reference_ids:a?.reference_ids||[]}}),identity_authority:'COMPOSITION_REFERENCE_ONLY',analysis_pending:!!s.analysis_pending}));}
 
 export function sceneCastGroups(m){
  const records=worldRecords(m).filter(a=>a.type==='characters'&&!a.deleted_at),beast=a=>!!m.manifest_store?.creatures?.[a.id];

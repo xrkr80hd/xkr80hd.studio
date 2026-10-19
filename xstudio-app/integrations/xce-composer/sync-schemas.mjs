@@ -1,3 +1,4 @@
+import {SCENE_SEQUENCE_SCHEMA} from '../../lib/xce/scene-sequence.mjs';
 import {METADATA_FIELDS,METADATA_SCHEMA} from '../../lib/xce/asset-metadata.mjs';
 import {CLASSIFICATIONS,CLASSIFICATION_SCHEMA} from '../../lib/xce/classifications.mjs';
 import {EQUIPMENT_BINDING_SCHEMA,CHARACTER_DIRECTION_SCHEMA,SCENE_SETTING_SCHEMA} from '../../lib/xce/scene-context.mjs';
@@ -17,6 +18,10 @@ properties.character_ids={type:'array',maxItems:50,items:{type:'string',maxLengt
 properties.state=CHARACTER_STATE_SCHEMA;
 properties.operation={type:'string',enum:['save','lock','unlock','delete']};
 properties.expected_version={type:'integer',minimum:0};
+if(!properties.action.enum.includes('scene_record'))properties.action.enum.push('scene_record');
+properties.entity={type:'string',enum:['scene','keyframe']};
+properties.data={type:'object',description:'Existing scene/keyframe editor fields; omitted reference_sequence preserves the saved stack',properties:{name:{type:'string',maxLength:200},character_ids:properties.character_ids,character_counts:{type:'object',additionalProperties:{type:'integer',minimum:1,maximum:100}},prop_ids:{type:'array',items:{type:'string'}},location_ids:{type:'array',items:{type:'string'}},blocking:{type:'string',maxLength:10000},lighting_palette:{type:'string',maxLength:10000},camera_spec:{type:'object'},action_continuity:{type:'object'},reference_sequence:SCENE_SEQUENCE_SCHEMA}};
+api.components.schemas.SceneReferenceSequence=SCENE_SEQUENCE_SCHEMA;
 for(const action of ['classify','classify_bulk','metadata_update','metadata_bulk','generation_prompt_update'])if(!properties.action.enum.includes(action))properties.action.enum.push(action);
 properties.patch={type:'object',additionalProperties:false,properties:{...Object.fromEntries(Object.keys(METADATA_FIELDS).map(k=>[k,{type:'string',maxLength:10000}])),display_name:{type:'string',maxLength:200},quick_details:{type:'string',maxLength:4000},cast_role:{type:'string'},base_character_id:{type:'string'},analysis_status:{type:'string',enum:METADATA_SCHEMA.analysis_status},provenance:{type:'object'},append_relationships:{type:'array',maxItems:50}}};
 properties.text={type:'string',maxLength:30000};

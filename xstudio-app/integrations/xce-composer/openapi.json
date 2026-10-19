@@ -134,7 +134,8 @@
                       "classify_bulk",
                       "metadata_update",
                       "metadata_bulk",
-                      "generation_prompt_update"
+                      "generation_prompt_update",
+                      "scene_record"
                     ]
                   },
                   "project_id": {
@@ -1371,6 +1372,108 @@
                         "maxItems": 30
                       }
                     }
+                  },
+                  "entity": {
+                    "type": "string",
+                    "enum": [
+                      "scene",
+                      "keyframe"
+                    ]
+                  },
+                  "data": {
+                    "type": "object",
+                    "description": "Existing scene/keyframe editor fields; omitted reference_sequence preserves the saved stack",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "maxLength": 200
+                      },
+                      "character_ids": {
+                        "type": "array",
+                        "maxItems": 50,
+                        "items": {
+                          "type": "string",
+                          "maxLength": 128
+                        }
+                      },
+                      "character_counts": {
+                        "type": "object",
+                        "additionalProperties": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 100
+                        }
+                      },
+                      "prop_ids": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "location_ids": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "blocking": {
+                        "type": "string",
+                        "maxLength": 10000
+                      },
+                      "lighting_palette": {
+                        "type": "string",
+                        "maxLength": 10000
+                      },
+                      "camera_spec": {
+                        "type": "object"
+                      },
+                      "action_continuity": {
+                        "type": "object"
+                      },
+                      "reference_sequence": {
+                        "type": "array",
+                        "maxItems": 100,
+                        "items": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "id",
+                            "reference_id",
+                            "description",
+                            "camera",
+                            "advance_seconds",
+                            "continuity"
+                          ],
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "pattern": "^[a-zA-Z0-9_-]{1,128}$"
+                            },
+                            "reference_id": {
+                              "type": "string",
+                              "description": "Existing image ID in this project"
+                            },
+                            "description": {
+                              "type": "string",
+                              "maxLength": 2000
+                            },
+                            "camera": {
+                              "type": "string",
+                              "maxLength": 2000
+                            },
+                            "advance_seconds": {
+                              "type": "number",
+                              "minimum": 0,
+                              "maximum": 600
+                            },
+                            "continuity": {
+                              "type": "string",
+                              "maxLength": 2000
+                            }
+                          }
+                        }
+                      }
+                    }
                   }
                 },
                 "additionalProperties": false
@@ -1787,6 +1890,49 @@
       "AssetMetadata": {
         "type": "object",
         "description": "{\"version\":\"1.0.0\",\"text_fields\":[\"full_name\",\"description\",\"biography\",\"species\",\"distinguishing_characteristics\",\"appearance\",\"anatomy\",\"facial_features\",\"hair\",\"skin\",\"fur\",\"scales\",\"markings\",\"wardrobe\",\"armor\",\"accessories\",\"equipment\",\"personality\",\"motivations\",\"abilities\",\"background\"],\"text_limit\":10000,\"other_fields\":[\"display_name\",\"quick_details\",\"cast_role\",\"base_character_id\",\"analysis_status\",\"provenance\",\"append_relationships\"],\"read_only\":[\"primary_category\",\"asset_id\",\"asset_code\",\"reference_ids\",\"approval_status\",\"immutable_traits\"],\"analysis_status\":[\"unverified\",\"user_confirmed\",\"reference_verified\"],\"write_scope\":\"asset:metadata\",\"versions\":\"expected_version is metadata version, independent of classification and prompt versions\",\"relationships\":\"Append explicitly supplied clauses only. Omitted fields and existing clauses are preserved. Use existing relationship editor for explicit removal.\",\"prompts\":{\"scope\":\"asset:metadata\",\"expected_version\":\"prompt version\",\"provenance_required\":true,\"reference_ids\":\"Must match saved LOCKED source images\",\"original_versions_retained\":true},\"unknown_information\":\"Leave absent; do not infer from names or franchise familiarity\"}"
+      },
+      "SceneReferenceSequence": {
+        "type": "array",
+        "maxItems": 100,
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "id",
+            "reference_id",
+            "description",
+            "camera",
+            "advance_seconds",
+            "continuity"
+          ],
+          "properties": {
+            "id": {
+              "type": "string",
+              "pattern": "^[a-zA-Z0-9_-]{1,128}$"
+            },
+            "reference_id": {
+              "type": "string",
+              "description": "Existing image ID in this project"
+            },
+            "description": {
+              "type": "string",
+              "maxLength": 2000
+            },
+            "camera": {
+              "type": "string",
+              "maxLength": 2000
+            },
+            "advance_seconds": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 600
+            },
+            "continuity": {
+              "type": "string",
+              "maxLength": 2000
+            }
+          }
+        }
       }
     }
   }

@@ -72,3 +72,5 @@
 
 /* Embedded native forms share the studio dialog and its single scroll container. */
 .world-editor.asset-unified-editor{width:100%;max-width:100%;max-height:none;margin:0;padding:0;overflow:visible;overscroll-behavior:auto}
+
+.scene-reference-beats,.scene-reference-ledger{max-height:320px;overflow-y:auto;overscroll-behavior:contain}.scene-reference-beats>details>summary{display:flex;align-items:center;gap:10px;min-width:0}.scene-reference-beats summary>.preview-frame{width:64px;height:44px;flex:none;min-height:0}.scene-reference-beats summary>span{min-width:0;overflow-wrap:anywhere}.scene-reference-beats input,.scene-reference-beats textarea{width:100%;min-width:0}.scene-reference-sequence .button-row{display:flex;flex-wrap:wrap;gap:8px}

@@ -1,3 +1,4 @@
+import {sceneSequenceLedger} from '../xce/scene-sequence.mjs';
 import {METADATA_SCHEMA,assetMetadata,updateAssetMetadata,updateGenerationPrompt,bulkMetadata} from '../xce/asset-metadata.mjs';
 import {CLASSIFICATION_SCHEMA,classificationRows,classifyAssets} from '../xce/classifications.mjs';
 import {XSTUDIO_ENDPOINT} from '../xce/xstudio-bridge.mjs';
@@ -105,7 +106,7 @@ export function dataSource(auth,request=backend(auth.backendToken,fetch,{allowCl
   if(name==='get_composition_rules')return {project_id:p,character_network:publicData(m.character_network||{}),compositions:publicData(m.composer?.compositions||{}),intelligence:publicData(m.composer?.intelligence||{}),...(a.character_ids?{applicable:publicData(characterContext(m,a.character_ids,worldRecords(m)))}:{}),application_rule:'Apply enabled saved clauses only when both linked characters are selected. Never add a character to activate a clause.'};
   if(name==='get_scene_references'){
    const entry=find(m,a.scene_id);if(entry.type!=='scene'&&entry.type!=='keyframe'&&entry.record.type!=='scenes_and_shots')notFound();
-   const ids=referenceIds(entry.record,entry.type);return {...packed(p,entry),references:await references(m,p,ids,a.include_media)};
+   const sequence=entry.type==='scene'||entry.record.type==='scenes_and_shots'?sceneSequenceLedger({...entry.record,scene_id:a.scene_id},m):null;const ids=[...new Set([...referenceIds(entry.record,entry.type),...(sequence?.anchors||[]).map(b=>b.reference_id)])];return {...packed(p,entry),...(sequence?{reference_sequence:sequence}:{}),references:await references(m,p,ids,a.include_media)};
   }
   const entry=find(m,a.asset_id);
   const classification=classificationRows(m,p,revision).find(r=>r.asset_id===recordId(entry.record));
