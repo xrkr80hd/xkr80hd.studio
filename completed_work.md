@@ -303,3 +303,6 @@ Inspected the supplied seven-second recording and identified SceneCastPicker's i
 
 ## 2026-10-18 — Restore direct inspector buttons and compact sizing
 Restored visible Edit / Rename, Duplicate, Move and Delete buttons; removed the More action dropdown. Edit / Rename opens the combined saved-asset editor containing category, classification and description. Removed the Share accordion and restored direct Copy code and Copy for ChatGPT buttons. Scoped controls to consistent 44px height with compact padding and equal-width wrapping; copy buttons sit side by side. Validation: TypeScript, targeted ESLint, production webpack build and diff check passed. Attempted standalone responsive browser checks, but the local Playwright browser executable is unavailable; no mobile screenshot verification claimed. No asset data changes.
+
+## 2026-10-18 — Human edit-field cleanup
+Character Edit / Rename retains name, category, character role and gender, while hiding the duplicate description and classification. Classification now appears only for props; prop descriptions remain available. Existing saved text is preserved. Validation: rendered character/prop comparison, TypeScript, targeted ESLint and diff check passed. Local changes only; not pushed.

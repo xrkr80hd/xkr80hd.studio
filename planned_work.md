@@ -314,3 +314,6 @@ Reuse the categorized character picker for prop-character clauses and character 
 
 ## 2026-10-18 — Restore visible compact inspector buttons
 User clarified category dropdowns were not authorization to hide action/copy buttons. Restore visible Edit / Rename, Duplicate, Move, Delete, Copy code and Copy for ChatGPT buttons. Replace oversized Share accordion and saved-asset Edit accordion with compact controls; retain the unified editor behind Edit / Rename. Scope styling to the inspector and keep consistent 44px button height.
+
+## 2026-10-18 — Remove redundant human edit fields
+Keep character role and gender in Edit / Rename. Hide its duplicate description for characters and show classification only for props. Retain existing saved text without deleting it; keep the original character details area. Verify rendered character and prop editors. Hold publishing for the user's push instruction.
