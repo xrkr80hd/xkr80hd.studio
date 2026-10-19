@@ -14,6 +14,6 @@ test('composer retrieves source scene and exact character anchors and blocks mis
 test('scene-reference choices separate saved cast roles and creatures without changing selected IDs',async()=>{
  const {sceneCastGroups,sceneCastIds}=await import('../lib/xce/scene-cast.mjs');
  const m={manifest_store:{characters:{A:{asset_id:'A',name:'Hero'},V:{asset_id:'V',name:'Villain'},U:{asset_id:'U',name:'Unsorted'},X:{asset_id:'X',name:'Deleted',deleted_at:'today'}},creatures:{B:{asset_id:'B',name:'Beast'}}},character_cast_groups:{A:'main',V:'villain'}};
- const before=structuredClone(m),groups=sceneCastGroups(m);assert.deepEqual(groups.map(g=>g.id),['main','villain','general','creatures']);assert.deepEqual(groups[0].records.map(a=>a.id),['A']);assert.deepEqual(groups[1].records.map(a=>a.id),['V']);assert.deepEqual(groups.at(-1).records.map(a=>a.id),['B']);assert.deepEqual(m,before);
+ const before=structuredClone(m),groups=sceneCastGroups(m);assert.deepEqual(groups.filter(g=>g.records.length).map(g=>g.id),['main','villain','general','creatures']);assert.ok(groups.some(g=>g.id==='background'));assert.ok(groups.some(g=>g.id==='supporting'));assert.deepEqual(groups[0].records.map(a=>a.id),['A']);assert.deepEqual(groups.find(g=>g.id==='villain').records.map(a=>a.id),['V']);assert.deepEqual(groups.at(-1).records.map(a=>a.id),['B']);assert.deepEqual(m,before);
  const selected=['A','V','B'];assert.deepEqual(sceneCastIds(m,selected),selected);assert.deepEqual(selected,['A','V','B']);
 });

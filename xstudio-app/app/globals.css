@@ -209,3 +209,14 @@ input.xce-toggle[role="switch"]:checked::before{transform:translateX(20px);backg
 input.xce-toggle[role="switch"]:focus-visible{outline:2px solid #8eeaff;outline-offset:3px}
 input.xce-toggle[role="switch"]:disabled{opacity:.45;cursor:default}
 @media(prefers-reduced-motion:reduce){input.xce-toggle[role="switch"]::before{transition:none}}
+
+/* Compact project identity; editable fields appear only after Edit. */
+.project-identity{margin-top:12px;max-width:420px;font-size:14px;color:var(--muted)}
+.project-identity p{display:flex;align-items:center;gap:7px;margin:0 0 8px;flex-wrap:wrap}
+.project-identity p span{color:var(--text);overflow-wrap:anywhere}
+.project-identity .button{min-height:40px;height:40px;width:auto;padding:8px 14px;font-size:14px}
+.project-identity form{display:grid;gap:12px}.project-identity label{display:grid;gap:6px}
+.project-identity input{width:100%;min-width:0;font-size:16px;padding:10px 12px}
+.project-identity-actions{display:flex;gap:8px}
+.project-id-copy{display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;padding:0;background:transparent;border:0;color:var(--muted);cursor:pointer}
+.project-id-copy:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}

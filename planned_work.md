@@ -328,3 +328,21 @@ Record the user's build preference and apply switch styling/semantics to clause 
 
 ## 2026-10-18 — Refresh restores the current project/page
 Fix restoreNavigation's unconditional project-picker reset. Restore validated saved page, project, search, scene and scroll; explicit URL targets take priority. Keep the last asset category per project. A locked restored project prompts for its PIN without erasing the desired page/project and returns there after unlocking. Verify and publish with the authorized fixes.
+
+
+## 2026-10-19 — Compact project identity and working ID edits
+Show project title and Project ID as plain text with a compact Edit button underneath. Open an ID field only during editing with Save and Cancel and inline errors. Add an owner-scoped atomic project-key rename preserving assets, codes, active context/order and metadata. Reject conflicts, invalid IDs, stale revisions and system pools; retain the folder PIN gate. Verify locally and hold publication for the user's push instruction.
+
+
+## 2026-10-19 — Short trash action labels
+Label the selection action Delete permanently; preserve disabled-until-selected behavior. Keep Empty trash applying to all trashed items independently of selection and retain the existing confirmation.
+
+
+## 2026-10-19 — Upload directly into a chosen category
+Replace broad upload image types with the actual cast groups and distinct prop/vehicle/creature/location categories. Classify each batch image as selected and create its saved asset and cast assignment in the same manifest write. Preserve existing attach-image editing and Lost Assets intake behavior. Verify category assignments persist through the normal saved-asset library and picker.
+
+
+## 2026-10-19 — Create Scene Reference starts with category selection
+Trace the exact Create Scene Reference cast picker. Load all saved project cast roles and creatures; show all category choices before any character list instead of silently defaulting to Main Characters. Hydration/category changes must not reset already-added cast. Verify villains and background cast can be selected and saved together.
+
+The picker also needs an explicit Back to categories button; returning to categories must preserve all added cast IDs.

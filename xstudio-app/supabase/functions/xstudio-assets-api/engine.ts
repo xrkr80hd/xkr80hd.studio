@@ -22,6 +22,13 @@ export async function engine(request,admin,token){
   if(result.error?.code==='23505')return reply({changes:0});
   if(!result.error)return reply({changes:result.data.length});
  }
+ else if(a.op==='edit_project'){
+  check(typeof a.new_project==='string'&&ID.test(a.new_project)&&Number.isInteger(a.revision)&&a.revision>0,'Invalid project edit');
+  check(typeof a.manifest==='string'&&a.manifest.length<1_900_000,'Invalid manifest');
+  const saved=await admin.rpc('xstudio_edit_project',{p_owner:owner,p_project:a.project,p_new_project:a.new_project,p_revision:a.revision,p_manifest:a.manifest});
+  if(saved.error){const known=['Project not found','Project changed. Refresh and try again.','That project ID is already in use.','Choose an active project.','Invalid project ID','Invalid project edit'];return reply({error:saved.error.code==='23505'?'That project ID is already in use.':known.includes(saved.error.message)?saved.error.message:'Could not save the project. Try again.'});}
+  return reply(saved.data);
+ }
  else if(a.op==='context')result=await context().select('project,project_order,legacy_imported').eq('owner_id',owner).maybeSingle();
  else if(a.op==='context_save'){
   const row={owner_id:owner};if(a.project!==undefined)row.project=a.project;

@@ -1,5 +1,5 @@
 import {isReferenceAttached} from './attachments.mjs';
-const types={character:'characters',creature:'creatures',prop:'props',vehicle:'vehicles',location:'locations',scene:'scenes_and_shots'};
+const types={wardrobe:'wardrobe',character:'characters',creature:'creatures',prop:'props',vehicle:'vehicles',location:'locations',scene:'scenes_and_shots'};
 export function presortedLibraryRows(manifest,assets){
  const attached=new Set(assets.flatMap(a=>[...(a.reference_ids||[]),...(a.intake_source_reference_ids||[]),a.source_image_id,a.blueprint_id].filter(Boolean)));
  const attachedKeys=new Set([...attached].map(id=>manifest.references?.[id]?.key).filter(Boolean));

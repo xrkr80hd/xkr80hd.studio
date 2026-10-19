@@ -1,4 +1,5 @@
 import {stampProjectIdentity} from './project-identity.mjs';
+import {editedProjectManifest} from './project-edit.mjs';
 import {projectSummary} from './project-summary.mjs';
 import {fresh} from './core.mjs';
 import {emptyWorld} from './world-library.mjs';
@@ -18,3 +19,19 @@ export async function saveWorldDraft(project,manifest,world){const existing=awai
 export async function storeImage(project,file){if(!['image/png','image/jpeg','image/webp'].includes(file.type)||file.size>4*1024*1024)throw Error('Choose a PNG, JPEG or WebP image up to 4 MB');const data=await new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=reject;r.readAsDataURL(file)});const id='local-'+crypto.randomUUID();let thumbnail=data;try{const bitmap=await createImageBitmap(file);const canvas=document.createElement('canvas');const ratio=Math.min(1,480/Math.max(bitmap.width,bitmap.height));canvas.width=Math.round(bitmap.width*ratio);canvas.height=Math.round(bitmap.height*ratio);canvas.getContext('2d').drawImage(bitmap,0,0,canvas.width,canvas.height);bitmap.close();thumbnail=canvas.toDataURL('image/webp',0.82);}catch{}await localPut('image:'+project+':'+id,{data,thumbnail,mime_type:file.type,name:file.name});return {id,mime_type:file.type,name:file.name,role:'IDENTITY',local:true,size:file.size};}
 export async function readLocalImage(project,id){return localGet('image:'+project+':'+id);}
 export async function localSnapshot(){const projects=(await localProjects()).map(p=>p.manifest?{...p,manifest:stampProjectIdentity(structuredClone(p.manifest),p.id)}:p),images={};for(const p of projects)for(const id of Object.keys(p.manifest?.references||{})){const image=await readLocalImage(p.id,id);if(image)images[p.id+':'+id]=image;}return {format:'XSTUDIO_LOCAL_BACKUP_V1',projects,images};}
+// Invalidate old navigation/cache entries only after the server confirms the edit.
+export function finishProjectEdit(oldId,newId,title,revision){
+ const result=projectWrites.then(async()=>{
+  const current=await localGet('project:'+oldId),list=await localProjects();
+  if(current?.sync_status==='synced'){
+   const next={...current,id:newId,title,revision,base_revision:revision,manifest:{...editedProjectManifest(current.manifest,{project_id:oldId,new_project_id:newId,name:title,expected_revision:revision}),revision}};
+   stampProjectIdentity(next.manifest,newId);await localPut('project:'+newId,next);
+   await localPut('projects',[...list.filter(p=>p.id!==oldId&&p.id!==newId),next]);
+   if(oldId!==newId)await localPut('project:'+oldId,null);
+  }
+  await localPut('response:/api/projects',null);
+  await localPut('response:/api/manifest?project='+encodeURIComponent(oldId),null);
+  await localPut('response:/api/manifest?project='+encodeURIComponent(newId),null);
+  try{const category=localStorage.getItem('xce:asset-category:'+oldId);if(category&&newId!==oldId){localStorage.setItem('xce:asset-category:'+newId,category);localStorage.removeItem('xce:asset-category:'+oldId)}}catch{}
+ });projectWrites=result.catch(()=>{});return result;
+}
