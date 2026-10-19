@@ -317,3 +317,10 @@ User clarified category dropdowns were not authorization to hide action/copy but
 
 ## 2026-10-18 — Remove redundant human edit fields
 Keep character role and gender in Edit / Rename. Hide its duplicate description for characters and show classification only for props. Retain existing saved text without deleting it; keep the original character details area. Verify rendered character and prop editors. Hold publishing for the user's push instruction.
+
+## 2026-10-18 — Universal viewer arrows and always-on advance
+Every asset viewer, regardless of category or native/legacy record type, must show previous/next arrows on the image's left/right edges. Remove both Auto-Next checkboxes and always advance after saves. Keep the last saved asset open until the user closes it. Preserve existing character rule data; the user's “rule” refers to universal viewer navigation.
+
+
+## 2026-10-18 — Switches for on/off settings
+Record the user's build preference and apply switch styling/semantics to clause enable controls, crop square lock and linked-delete option. Preserve item-selection and explicit-approval checkboxes. Retain always-on viewer advance without a toggle. User authorized push after fixes.

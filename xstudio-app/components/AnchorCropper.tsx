@@ -22,7 +22,7 @@ export default function AnchorCropper({file,title,onCancel,onCrop}:{file:File,ti
  {['n','ne','e','se','s','sw','w','nw'].map(h=><span key={h} data-handle={h} className={'anchor-crop-handle handle-'+h}/>)}
  </div>}
  </div>
- <div className="anchor-crop-tools"><label className="anchor-square-toggle"><input type="checkbox" checked={square} disabled={busy} onChange={e=>{setSquare(e.target.checked);if(e.target.checked)setCrop(initialCrop(size.w,size.h))}}/>Keep square</label><button type="button" className="text-button" disabled={busy||!size.w} onClick={()=>setCrop(initialCrop(size.w,size.h))}>Reset crop</button></div>
+ <div className="anchor-crop-tools"><label className="anchor-square-toggle"><input type="checkbox" role="switch" className="xce-toggle" checked={square} disabled={busy} onChange={e=>{setSquare(e.target.checked);if(e.target.checked)setCrop(initialCrop(size.w,size.h))}}/>Keep square</label><button type="button" className="text-button" disabled={busy||!size.w} onClick={()=>setCrop(initialCrop(size.w,size.h))}>Reset crop</button></div>
  {error&&<p className="error-text" role="alert">{error}</p>}
  <footer className="button-row"><button type="button" className="button secondary" disabled={busy} onClick={onCancel}>Cancel</button><button type="button" className="button primary" disabled={busy||!size.w} onClick={()=>void done()}>{busy?'Saving crop…':'Use crop'}</button></footer>
  </dialog>;

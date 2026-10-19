@@ -21,3 +21,13 @@ export function queueAfterDelete(queue,removedKeys,manifest){
  }
  return {...queue,records,index:next?records.indexOf(next):-1,completed};
 }
+
+// Finishing a queue retains its last asset for review; only the owner closes it.
+export function advanceAssetQueue(records,index,completed=new Set()){
+ const done=new Set(completed);
+ if(!records.length)return {index:-1,completed:done,finished:true};
+ const current=Math.max(0,Math.min(index,records.length-1));
+ done.add(recordKey(records[current]));
+ const next=nextPendingIndex(records,current,done);
+ return {index:next<0?current:next,completed:done,finished:next<0};
+}

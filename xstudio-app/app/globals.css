@@ -198,3 +198,14 @@ label.anchor-square-toggle{display:flex;align-items:center;gap:8px;text-transfor
 .asset-detail .asset-detail-code>div{grid-column:1/-1}
 .asset-detail .asset-detail-code>.button{grid-column:auto;min-height:44px;height:44px;margin:0;padding:8px;font-size:12px;line-height:1.2;justify-content:center;white-space:normal}
 .asset-unified-editor{margin-block:12px}
+
+.world-asset-viewer{position:relative}.world-asset-viewer>.inspector-arrow{position:absolute;top:50%;transform:translateY(-50%);width:44px;height:44px;min-height:44px;padding:0;z-index:2}.world-asset-viewer>.prev{left:5px}.world-asset-viewer>.next{right:5px}.world-editor .dialog-drag-header{display:flex;align-items:center;gap:8px;flex-wrap:nowrap}.world-editor .dialog-drag-header h2{font-size:20px;line-height:1.2;margin:0;min-width:0;flex:1}.world-editor .asset-queue-position{font-size:12px;white-space:nowrap;flex:none}.world-editor .dialog-drag-header .icon-button{width:44px;height:44px;flex:none}
+
+/* Boolean settings use switches; item selection keeps checkboxes. */
+.app-shell input.xce-toggle[role="switch"],input.xce-toggle[role="switch"]{appearance:none;-webkit-appearance:none;display:inline-block;position:relative;width:44px;min-width:44px;height:24px;min-height:24px;flex:0 0 44px;padding:0;margin:0;border:2px solid #69818d;border-radius:999px;background:#33434e;cursor:pointer;vertical-align:middle;box-sizing:border-box}
+input.xce-toggle[role="switch"]::before{content:"";position:absolute;left:2px;top:2px;width:16px;height:16px;border-radius:50%;background:#f3f7fa;transition:transform .15s ease}
+input.xce-toggle[role="switch"]:checked{background:#00bed5;border-color:#00bed5}
+input.xce-toggle[role="switch"]:checked::before{transform:translateX(20px);background:#05222b}
+input.xce-toggle[role="switch"]:focus-visible{outline:2px solid #8eeaff;outline-offset:3px}
+input.xce-toggle[role="switch"]:disabled{opacity:.45;cursor:default}
+@media(prefers-reduced-motion:reduce){input.xce-toggle[role="switch"]::before{transition:none}}
