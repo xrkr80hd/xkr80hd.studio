@@ -49,10 +49,13 @@ export default function CharacterForm({project,manifest,assetId,initial,onSaved,
       <CharacterStory project={project} manifest={draft} characterId={id} onSaved={async()=>{}} renderSections={({details,advanced})=><>
        <CharacterAccordion number={1} title="Name & Core Identity" defaultOpen>{identity}</CharacterAccordion>
        <CharacterAccordion number={2} title="Visual Assets & References">
-        <div className="character-anchor-grid">{['body_anchor_url','face_anchor_url'].map(key=><AnchorImageField key={key} label={key==='body_anchor_url'?'Body':'Face'} project={project} value={anchors[key]||''} references={refs} disabled={busy||locked} onSelect={ref=>setImages([...(record?.reference_ids||[]),...(ref?[ref]:[])],{...anchors,[key]:ref})} onFile={file=>upload(file,key)}/>)}</div>
-        {sheet&&<div className="asset-sheet-previews"><div><ReferenceThumbnail src={image(String(sheet))} label="Character sheet"/><span className="reference-image-label">Character sheet</span></div></div>}
+        <section className="master-character-sheet" aria-label="Master Character Sheet">
+         <header><strong>Master Character Sheet</strong><span>Primary Anchor</span></header>
+        {sheet?<div className="asset-sheet-previews"><div><ReferenceThumbnail src={image(String(sheet))} label="Character sheet"/><span className="reference-image-label">Character sheet</span></div></div>:<div className="master-sheet-empty">No master sheet uploaded</div>}
         <label>Character sheet images<input type="file" accept="image/png,image/jpeg,image/webp" disabled={busy||locked} onChange={e=>{const file=e.target.files?.[0];e.target.value='';if(file)void upload(file).catch(()=>{})}}/></label>
         <button type="button" className="button secondary" disabled={busy||locked} onClick={()=>setPool(true)}>Add from assets</button>
+        </section>
+        <div className="character-anchor-grid">{['body_anchor_url','face_anchor_url'].map(key=><AnchorImageField key={key} label={key==='body_anchor_url'?'Body':'Face'} project={project} value={anchors[key]||''} references={refs} disabled={busy||locked} onSelect={ref=>setImages([...(record?.reference_ids||[]),...(ref?[ref]:[])],{...anchors,[key]:ref})} onFile={file=>upload(file,key)}/>)}</div>
        </CharacterAccordion>
        <CharacterAccordion number={3} title="Gear, Props & Weapons">{gear}</CharacterAccordion>
        <CharacterAccordion number={4} title="Style & Technical Details">{style}<CharacterQuickDetails project={project} manifest={draft} characterId={id} onSaved={async()=>{}}/>{details}</CharacterAccordion>

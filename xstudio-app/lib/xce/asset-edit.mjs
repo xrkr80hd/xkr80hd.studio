@@ -3,7 +3,7 @@ import {saveAssetDetails} from './asset-details.mjs';
 import {reclassify} from './reclassify.mjs';
 import {worldRecords,WORLD_TYPES,validateWorld} from './world-library.mjs';
 import {CAST_GROUPS,assignCastGroup} from './cast-groups.mjs';
-import {CHARACTER_GENDERS} from './character-labels.mjs';
+import {CHARACTER_GENDERS,ENTITY_TYPES} from './character-labels.mjs';
 const legacyTypes={characters:'character',creatures:'creature',props:'prop',vehicles:'vehicle',locations:'location'};
 export function editAsset(m,id,details){
  let next=structuredClone(m),asset=worldRecords(next).find(a=>a.id===id&&!a.deleted_at);
@@ -29,6 +29,7 @@ export function editAsset(m,id,details){
  if(details.equipment_ids!==undefined){if(type!=='characters')throw Error('Assign equipment to a character');next.asset_details[id].equipment_ids=equipmentIds(next,details.equipment_ids,worldRecords(next));}
  next.asset_details[id].classification=(details.classification||'').trim();
  if(type==='characters'){
+  if(details.entity_type!==undefined){if(details.entity_type!==''&&!Object.hasOwn(ENTITY_TYPES,details.entity_type))throw Error('Choose an entity type');next.asset_details[id].entity_type=details.entity_type;}
   if(details.medium!==undefined){
    if(!['RL','CB'].includes(details.medium))throw Error('Choose Realistic or Comic book');
    if(asset.legacy)next.manifest_store.characters[id].medium=details.medium;

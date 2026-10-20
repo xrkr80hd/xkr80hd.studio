@@ -9,3 +9,18 @@ const payload={asset_id:'NEW',create:true,expected_revision:4,operations:[images
 test('shared form creates all sections atomically and updates the same ID without duplicating sheets',()=>{const original=fixture(),saved=saveCharacterForm(original,'A',payload);assert.equal(original.world_library.characters.NEW,undefined);assert.equal(saved.world_library.characters.NEW.name,'User character');assert.deepEqual(saved.world_library.characters.NEW.reference_ids,['S','F','B']);assert.equal(saved.world_library.characters.NEW.metadata.face_anchor_url,'F');assert.equal(saved.character_stories.NEW.text,'User biography');assert.equal(saved.character_network.details.NEW.text,'User details');assert.equal(classificationValue(saved,'NEW'),'main_cast');assert.deepEqual(saved.asset_details.NEW.equipment_ids,['P']);assert.equal(saved.character_network.relationships[0].text,'Exact synergy');const updated=saveCharacterForm(saved,'A',{asset_id:'NEW',create:false,expected_revision:4,operations:[{...identity,details:{...identity.details,name:'Renamed'}}]});assert.equal(Object.keys(updated.world_library.characters).length,2);assert.equal(updated.world_library.characters.NEW.name,'Renamed');assert.throws(()=>saveCharacterForm(saved,'A',payload),/already exists/)});
 test('stale revisions, invalid project references and cross-character updates fail without mutation',()=>{const m=fixture(),before=structuredClone(m);for(const p of [{...payload,expected_revision:3},{...payload,operations:[{...images,reference_ids:['FOREIGN']},identity]},{...payload,operations:[{...identity,asset_id:'OTHER'}]},{...payload,operations:[identity,{action:'delete'}]}])assert.throws(()=>saveCharacterForm(m,'A',p));assert.deepEqual(m,before)});
 test('locked character images cannot be replaced through shared form',()=>{const m=saveCharacterForm(fixture(),'A',payload);m.world_library.characters.NEW.status='LOCKED';const before=structuredClone(m);assert.throws(()=>saveCharacterForm(m,'A',{asset_id:'NEW',create:false,expected_revision:4,operations:[images]}),/Unlock/);assert.deepEqual(m,before)});
+
+test('entity type and narrative role save independently without changing category or references',()=>{
+ const original=fixture();
+ const created=saveCharacterForm(original,'A',{...payload,operations:[images,{...identity,details:{...identity.details,entity_type:'magical_being',cast_group:'villain'}}]});
+ assert.equal(created.asset_details.NEW.entity_type,'magical_being');
+ assert.equal(created.character_cast_groups.NEW,'villain');
+ const changed=saveCharacterForm(created,'A',{asset_id:'NEW',expected_revision:4,operations:[{...identity,details:{...identity.details,entity_type:'magical_being',cast_group:'supporting'}}]});
+ assert.equal(changed.asset_details.NEW.entity_type,'magical_being');
+ assert.equal(changed.character_cast_groups.NEW,'supporting');
+ assert.equal(changed.world_library.characters.NEW.type,'characters');
+ assert.deepEqual(changed.world_library.characters.NEW.reference_ids,['S','F','B']);
+ const before=structuredClone(changed);
+ assert.throws(()=>saveCharacterForm(changed,'A',{asset_id:'NEW',expected_revision:4,operations:[{...identity,details:{...identity.details,entity_type:'vehicle'}}]}),/entity type/);
+ assert.deepEqual(changed,before);
+});

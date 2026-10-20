@@ -150,3 +150,29 @@
 .world-library>.library-category-filter>label{display:grid;gap:7px;width:100%;max-width:none;min-width:0;flex:1 1 100%}
 .world-library>.library-category-filter .overlay-select{width:100%;max-width:none}
 .universal-asset-editor .asset-sheet-previews>div:only-child{grid-column:1/-1}
+
+/* Primary turnaround sheet and secondary references share a fluid, mobile layout. */
+.character-creator .master-character-sheet{display:grid;gap:12px;min-width:0;width:100%;box-sizing:border-box;padding:14px;background:#0f1726;border:1px solid #22d3ee66;border-radius:12px}
+.master-character-sheet>header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px 12px;font-size:13px;line-height:1.4}
+.master-character-sheet>header strong{color:#67e8f9;font-weight:600}
+.master-character-sheet>header span{color:#94a3b8;font-size:11px}
+.character-creator .master-character-sheet .asset-sheet-previews{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:0;min-width:0}
+.master-character-sheet .asset-sheet-previews>div{min-width:0}
+.master-character-sheet .asset-sheet-previews>div:first-child{grid-column:1/-1}
+.character-creator .master-character-sheet .reference-thumbnail{width:100%;max-width:none;aspect-ratio:16/9;border-radius:8px}
+.character-creator .master-character-sheet .reference-thumbnail .preview-frame{width:100%;height:100%;min-height:0}
+.character-creator .master-character-sheet .reference-thumbnail img{width:100%;height:100%;object-fit:cover!important;object-position:center}
+.master-sheet-empty{display:grid;place-items:center;width:100%;aspect-ratio:16/9;box-sizing:border-box;padding:12px;background:#080e18;border:1px dashed #334155;border-radius:8px;color:#94a3b8;font-size:12px;text-align:center}
+.master-character-sheet>.button{width:100%;min-height:44px;white-space:normal}
+.master-character-sheet input[type=file]{padding:8px;font-size:13px}
+.character-creator .character-anchor-grid{margin:0;gap:12px}
+.character-creator .character-anchor-grid>.anchor-image-field{padding:12px;border:1px solid #334155;border-radius:10px;background:#121a28;margin:0}
+.character-creator .character-anchor-grid .anchor-image-summary{gap:8px}
+.character-creator .character-anchor-grid .anchor-image-preview{width:100%;max-width:none;aspect-ratio:1;margin:0}
+.character-creator .character-anchor-grid .reference-thumbnail{width:100%;max-width:none;aspect-ratio:1;border-radius:8px}
+.character-creator .character-anchor-grid .reference-thumbnail>.preview-frame{width:100%;height:100%;min-height:0}
+.character-creator .character-anchor-grid .reference-thumbnail img{width:100%;height:100%;object-fit:cover}
+.character-creator .character-anchor-grid .anchor-image-empty{display:grid;place-items:center;aspect-ratio:1;width:100%;box-sizing:border-box;padding:8px;background:#080e18;border:1px dashed #334155;border-radius:8px;text-align:center}
+.character-classification-fields{display:grid;grid-template-columns:minmax(0,1fr);gap:14px}
+@media(min-width:760px){.character-classification-fields{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:360px){.character-creator .master-character-sheet{padding:10px}.character-creator .character-anchor-grid{grid-template-columns:minmax(0,1fr)}}
