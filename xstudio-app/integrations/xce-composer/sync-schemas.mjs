@@ -13,6 +13,9 @@ api.components.schemas={...(api.components.schemas||{}),...ENTITY_SCHEMAS,Equipm
 const properties=api.paths['/api/composer'].post.requestBody.content['application/json'].schema.properties;
 if(!properties.action.enum.includes('character_state'))properties.action.enum.push('character_state');
 if(!properties.action.enum.includes('scene_cast'))properties.action.enum.push('scene_cast');
+properties.category={type:'string',description:'Use cref for locked character image retrieval; scene_batch for a scene handoff'};
+properties.asset_id={type:'string',maxLength:128,description:'Exact saved record ID. execution + asset_id without configuration retrieves a LOCKED character CREF.'};
+properties.asset_code={type:'string',maxLength:128,description:'Exact saved asset code; supported for CREF resolve and execution'};
 properties.scene_id={type:'string',maxLength:128};
 properties.character_ids={type:'array',maxItems:50,items:{type:'string',maxLength:128}};
 properties.state=CHARACTER_STATE_SCHEMA;

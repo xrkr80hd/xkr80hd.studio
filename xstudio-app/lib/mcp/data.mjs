@@ -1,3 +1,5 @@
+import {characterCref,prepareCharacterCref} from '../xce/character-cref.mjs';
+import {referenceReader} from '../xce/composer-media.mjs';
 import {sceneSequenceLedger} from '../xce/scene-sequence.mjs';
 import {METADATA_SCHEMA,assetMetadata,updateAssetMetadata,updateGenerationPrompt,bulkMetadata} from '../xce/asset-metadata.mjs';
 import {CLASSIFICATION_SCHEMA,classificationRows,classifyAssets} from '../xce/classifications.mjs';
@@ -41,7 +43,7 @@ export function referenceIds(r,type){
  if(r.status==='LOCKED'&&r.source_image_id)return [r.source_image_id];
  return [...new Set([...(r.reference_ids||r.assigned_reference_ids||[]),r.source_image_id,r.output_reference_id,r.blueprint_id,r.thumbnail_reference_id,...['face_anchor_url','body_anchor_url','costume_anchors','exterior_anchor','interior_anchor','exterior_environment_anchor'].map(k=>r.metadata?.[k])].filter(v=>typeof v==='string'&&v))];
 }
-export function dataSource(auth,request=backend(auth.backendToken,fetch,{allowClassificationSave:auth.scopes?.has('asset:classify')||auth.scopes?.has('asset:metadata')})){
+export function dataSource(auth,request=backend(auth.backendToken,fetch,{allowClassificationSave:auth.scopes?.has('asset:classify')||auth.scopes?.has('asset:metadata')}),{getImage=referenceReader(request)}={}){
  async function project(p){
   if(!auth.projects.has(p))notFound();
   const row=(await request({op:'load',project:p})).data;if(!row)notFound();const m=manifest(row);if(!m)notFound();return {m,revision:row.revision};
@@ -111,9 +113,14 @@ export function dataSource(auth,request=backend(auth.backendToken,fetch,{allowCl
   const entry=find(m,a.asset_id);
   const classification=classificationRows(m,p,revision).find(r=>r.asset_id===recordId(entry.record));
   if(name==='get_character_cref'){
-   if(entry.type!=='character'||entry.record.status!=='LOCKED')throw new GatewayError('Choose a saved LOCKED character',404);
-   const source=entry.record.source_image_id;const ids=source?[source]:[];if(entry.record.owner_image_approval?.reference_id&&entry.record.owner_image_approval.reference_id!==source)throw new GatewayError('Locked reference approval mismatch',409);if(!ids.length||ids.some(id=>!m.references?.[id]||m.references[id].deleted_at||m.references[id].role==='DIAGNOSTIC'||['DRAFT','UNLOCKED'].includes(m.references[id].status)))throw new GatewayError('Approved character references unavailable',404);
-   return {...classification,cref:{project_id:p,asset_id:recordId(entry.record),asset_code:entry.record.asset_code||null,reference_ids:ids,source_url:'https://xstudio.xrkr80hd.studio',identity_authority:'LOCKED_REFERENCE_IMAGES'},references:await references(m,p,ids,a.include_media)};
+   try{
+    const cref=characterCref(m,p,a.asset_id,revision);
+    if(a.include_media===false)return {...classification,cref,references:await references(m,p,cref.reference_ids,false)};
+    const result=await prepareCharacterCref(m,p,a.asset_id,revision,getImage);
+    const current=await project(p);if(current.revision!==revision)throw new GatewayError('Project changed while loading CREF. Retry retrieval.',409);
+    return {...classification,...result,references:await references(m,p,cref.reference_ids,false)};
+   }catch(e){if(e instanceof GatewayError)throw e;throw new GatewayError(e.message,400);}
+
   }
   if(name.startsWith('get_character_')&&entry.type!=='character')notFound();
   if(name==='get_character_anchor'&&entry.record.status!=='LOCKED')throw new GatewayError('No saved locked character anchor',404);

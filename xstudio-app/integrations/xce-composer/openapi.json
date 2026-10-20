@@ -863,7 +863,9 @@
                     "type": "boolean"
                   },
                   "asset_id": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 128,
+                    "description": "Exact saved record ID. execution + asset_id without configuration retrieves a LOCKED character CREF."
                   },
                   "approve": {
                     "type": "boolean"
@@ -1474,6 +1476,15 @@
                         }
                       }
                     }
+                  },
+                  "category": {
+                    "type": "string",
+                    "description": "Use cref for locked character image retrieval; scene_batch for a scene handoff"
+                  },
+                  "asset_code": {
+                    "type": "string",
+                    "maxLength": 128,
+                    "description": "Exact saved asset code; supported for CREF resolve and execution"
                   }
                 },
                 "additionalProperties": false

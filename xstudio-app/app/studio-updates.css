@@ -101,3 +101,42 @@
 .world-empty-field{color:var(--muted);font-size:14px}
 @media(min-width:760px){.world-section-tabs>button{flex:0 1 230px}}
 @media(prefers-reduced-motion:reduce){.world-saved-field>summary>svg{transition:none}}
+
+
+/* One compact master form for character creation and editing. */
+.asset-unified-editor.character-creator{--character-cyan:#00f2fe;--character-line:#2a3449;width:100%;max-width:480px;margin-inline:auto;display:flex;flex-direction:column;max-height:76dvh;min-height:0;background:#161c27;border:1px solid var(--character-line);border-radius:12px;color:#f8fafc;overflow:visible}
+.character-creator-body{min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:12px;scrollbar-gutter:stable}
+.character-creator .character-creator-fieldset{display:grid;gap:12px;border:0;padding:0;margin:0;min-width:0}
+.character-accordion{min-width:0;background:#1e2636;border:1px solid var(--character-line);border-radius:9px;transition:border-color .2s ease,box-shadow .2s ease}
+.character-accordion.is-open{border-color:var(--character-cyan);box-shadow:0 0 12px #00f2fe12}
+.character-accordion>h3{margin:0;font-size:14px;font-weight:600;line-height:1.45;letter-spacing:0}
+.character-accordion>h3>button{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;min-height:52px;padding:14px;border:0;border-radius:8px;background:transparent;color:inherit;font:inherit;text-align:left}
+.character-accordion>h3>button:hover{background:#ffffff06}
+.character-accordion>h3>button>svg{flex:none;color:#94a3b8;transition:transform .25s ease,color .2s ease}
+.character-accordion.is-open>h3>button>svg{transform:rotate(180deg);color:var(--character-cyan)}
+.character-accordion-reveal{display:grid;grid-template-rows:0fr;visibility:hidden;transition:grid-template-rows .25s ease,visibility .25s}
+.character-accordion.is-open>.character-accordion-reveal{grid-template-rows:1fr;visibility:visible}
+.character-accordion-reveal>div{min-height:0;overflow:hidden}
+.character-accordion-fields{display:grid;gap:14px;padding:0 14px 16px;min-width:0}
+.character-creator label{display:grid;gap:7px;min-width:0;margin:0;color:#cbd5e1;font-size:13px;line-height:1.5}
+.character-creator :is(input:not([type=checkbox]),textarea){width:100%;min-width:0;max-width:100%;padding:10px 12px;background:#0f141d;color:#f8fafc;border:1px solid var(--character-line);border-radius:6px;font-size:16px;box-sizing:border-box}
+.character-creator .overlay-select-trigger{width:100%;min-height:44px;background:#0f141d;border-color:var(--character-line);color:#f8fafc;font-size:16px}
+.character-creator :is(button,input,textarea,summary):focus-visible{outline:2px solid var(--character-cyan);outline-offset:2px}
+.character-creator .character-quick-details,.character-creator .character-story{margin:0;min-width:0}
+.character-creator .form-accordion{margin:0;padding:0 12px 12px;min-width:0;border-color:var(--character-line)}
+.character-creator .form-accordion:not([open]){padding-bottom:0}
+.character-creator .form-accordion>summary{min-height:46px;padding:12px 0;font-size:14px;font-weight:600;line-height:1.4;cursor:pointer}
+.character-creator .form-accordion>label,.character-creator .form-accordion>.form-accordion{margin-top:12px}
+.character-creator .character-anchor-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.character-creator .checkbox-choice,.character-creator .clause-enable{display:flex}
+.character-creator .button-row{flex-wrap:wrap;min-width:0}
+.character-creator-footer{position:sticky;bottom:0;z-index:5;flex:none;padding:12px;border-top:1px solid var(--character-line);border-radius:0 0 12px 12px;background:#0f141df5;display:grid;gap:10px}
+.character-creator-footer>.step-hint{margin:0;color:#94a3b8;font-size:11px;line-height:1.5;text-align:center}
+.character-creator-footer>[role]{max-height:72px;overflow-y:auto;overflow-wrap:anywhere;font-size:13px}
+.character-creator-actions{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:8px}
+.character-creator-actions>.button{min-height:44px;min-width:0;padding:10px 8px;font-size:13px;white-space:normal}
+.character-creator-actions>.primary{background:linear-gradient(135deg,#00f2fe,#4facfe);color:#001015;border-color:#00f2fe}
+.character-creator-actions>.primary:hover{box-shadow:0 0 12px #00f2fe40}
+.character-creator-actions>.character-creator-close{grid-column:1/-1;background:transparent;color:#94a3b8}
+@media(max-width:360px){.character-creator-body,.character-creator-footer{padding:8px}.character-accordion-fields{padding-inline:10px}.character-creator .character-anchor-grid{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){.character-accordion,.character-accordion>h3>button>svg,.character-accordion-reveal{transition:none}}

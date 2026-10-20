@@ -29,7 +29,7 @@ export const toolSpecs=[
  ['get_asset_classifications','Read primary categories and secondary classifications; includes available choices, metadata versions and revision.',{project_id,asset_ids:z.array(id).max(50).optional()}],
  ['update_asset_classification','Update classification metadata only; requires explicit asset:classify permission. Preserves locked images and primary category.',{project_id,...update.shape,expected_revision:z.number().int().min(1),confirm:z.literal(true)}],
  ['bulk_update_asset_classifications','Classify existing IDs with per-item errors and project revision protection. No duplicates or category moves.',{project_id,updates:z.array(update).min(1).max(50),expected_revision:z.number().int().min(1),confirm:z.literal(true)}],
- ['get_character_cref','Get a cref binding to one saved LOCKED character and its exact reference IDs. Optional signed image URLs expire in 60 seconds; no invented identity.',{project_id,asset_id:id,...media}],
+ ['get_character_cref','Retrieve a saved LOCKED character and verified original image blocks by exact ID or code. Images are included by default; include_media=false returns metadata only. Never substitutes draft images or invents identity.',{project_id,asset_id:id,include_media:z.boolean().default(true)}],
  ['list_projects','List explicitly authorized, available XSTUDIO projects.',{...page}],
  ['get_project','Get saved project metadata and canonical scene IDs.',{project_id}],
  ['list_project_assets','List saved asset IDs, names and metadata in one project.',{project_id,category:category.optional(),...page}],
@@ -49,8 +49,10 @@ export function makeServer(execute,audit=()=>{}){
  for(const [name,description,shape] of toolSpecs)server.registerTool(name,{description,inputSchema:z.strictObject(shape),annotations:{readOnlyHint:!writeScope(name),destructiveHint:false,idempotentHint:true,openWorldHint:false},_meta:{securitySchemes:[{type:'oauth2',scopes:writeScope(name)?[SCOPE,writeScope(name)]:[SCOPE]}]}},async args=>{
   try{
    const result={source_url:'https://xstudio.xrkr80hd.studio',...await execute(name,args)};
-   const text=JSON.stringify(result);if(Buffer.byteLength(text)>1_500_000)throw new GatewayError('Result too large; narrow the request',413);
-   audit({tool:name,outcome:'success'});return {content:[{type:'text',text}],structuredContent:result};
+   const {images,...structured}=result;
+   const imageBlocks=name==='get_character_cref'?(images||[]).map(i=>({type:'image',data:i.image_base64,mimeType:i.mime_type})):[];
+   const text=JSON.stringify(structured);if(Buffer.byteLength(text)>1_500_000)throw new GatewayError('Result too large; narrow the request',413);
+   audit({tool:name,outcome:'success'});return {content:[{type:'text',text},...imageBlocks],structuredContent:structured};
   }catch(error){
    const safe=error instanceof GatewayError?error.message:'Reference retrieval failed';
    audit({tool:name,outcome:'denied_or_failed'});
