@@ -18,3 +18,5 @@ export const ASSET_FORM_SECTIONS={
  general:[['Identity & Classification',['name','classification']],['Visual Anchors & References',['references','textures','world_metadata']],['Metadata & Details',['description','relationships','technical_notes','visual_style']],['Prompts & Continuity',['generation_prompt','status']]]
 };
 export const ASSET_FORM_SCHEMA={version:'1.0.0',action:'asset_form',required:['asset_id','primary_category','expected_revision','confirm'],text_fields:ASSET_FORM_FIELDS,sections:ASSET_FORM_SECTIONS,primary_category_immutable:true,reference_changes:'DRAFT assets only; saved project references',empty_fields:'Only changed fields are written',save:'Single authenticated project revision check and atomic persistence'};
+
+ASSET_FORM_SCHEMA.continuity={fields:['vin','edit_instruction','intent'],vehicle_vin_optional:true,identity_schema:'1.0.0',same_creation_and_editing:true,endpoint:'/api/continuity',source:'Supabase project manifest'};

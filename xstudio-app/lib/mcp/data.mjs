@@ -1,3 +1,5 @@
+import {continuityOperation} from '../xce/continuity-service.mjs';
+import {generationReferenceIds} from '../xce/visual-identity.mjs';
 import {characterCref,prepareCharacterCref} from '../xce/character-cref.mjs';
 import {referenceReader} from '../xce/composer-media.mjs';
 import {sceneSequenceLedger} from '../xce/scene-sequence.mjs';
@@ -40,6 +42,7 @@ const packed=(p,entry)=>({project_id:p,asset_id:recordId(entry.record),category:
 function find(m,id){const hits=allRecords(m).filter(({record:r})=>recordId(r)===id||r.asset_code===id);if(hits.length!==1)notFound();return hits[0];}
 export function referenceIds(r,type){
  if(type==='reference')return [r.id];
+ if(r.visual_identity)return generationReferenceIds({...r,reference_ids:[...(r.reference_ids||[]),...(r.source_image_id?[r.source_image_id]:[])]});
  if(r.status==='LOCKED'&&r.source_image_id)return [r.source_image_id];
  return [...new Set([...(r.reference_ids||r.assigned_reference_ids||[]),r.source_image_id,r.output_reference_id,r.blueprint_id,r.thumbnail_reference_id,...['face_anchor_url','body_anchor_url','costume_anchors','exterior_anchor','interior_anchor','exterior_environment_anchor'].map(k=>r.metadata?.[k])].filter(v=>typeof v==='string'&&v))];
 }
@@ -77,6 +80,14 @@ export function dataSource(auth,request=backend(auth.backendToken,fetch,{allowCl
    return {results};
   }
   const {m,revision}=await project(a.project_id);const p=a.project_id;
+  if(['get_asset_identity','verify_vehicle_vin','manage_asset_identity'].includes(name)){
+   if(name==='manage_asset_identity'&&!auth.scopes?.has('asset:metadata'))throw new GatewayError('Metadata permission required; reconnect with asset:metadata',403);
+   if(name==='manage_asset_identity'&&a.expected_revision!==revision)throw new GatewayError('Project changed; reload before updating identity',409);
+   try{const result=await continuityOperation(m,p,revision,name==='get_asset_identity'?{action:'read',...a}:name==='verify_vehicle_vin'?{action:'decode_vin',...a}:a,{getImage});
+    if(result.manifest){const value=JSON.stringify(result.manifest);if(Buffer.byteLength(value)>1900000)throw new GatewayError('Project manifest too large',413);const saved=await request({op:'save',project:p,revision,manifest:value});if(saved.changes!==1)throw new GatewayError('Concurrent project update; reload',409);const verified=await project(p);if(verified.revision!==revision+1||JSON.stringify(verified.m)!==value)throw new GatewayError('Save verification uncertain; reload before retrying',409);}
+    const {images,...details}=result.data;const safe=publicData(details);const provenance=(raw,clean)=>{if(!raw||!clean||typeof raw!=='object'||typeof clean!=='object')return;for(const [key,value]of Object.entries(raw)){if(key==='source_url'&&typeof value==='string'&&/^https:\/\/vpic\.nhtsa\.dot\.gov\/api\/vehicles\//.test(value))clean[key]=value;else provenance(value,clean[key]);}};provenance(details,safe);return {...safe,...(images?{images}:{}),project_id:p,revision:revision+(result.manifest?1:0)};
+   }catch(e){if(e instanceof GatewayError)throw e;throw new GatewayError(e.message,400)}
+  }
   if(name==='get_project_classification_schema')return {project_id:p,revision,schema:CLASSIFICATION_SCHEMA,metadata_schema:METADATA_SCHEMA};
   if(['get_asset_details','get_asset_generation_prompt'].includes(name)){let detail;try{detail=assetMetadata(m,p,revision,a.asset_id)}catch(e){throw new GatewayError(e.message,404)}return name==='get_asset_details'?detail:{asset_id:a.asset_id,project_id:p,revision,...detail.generation_prompt};}
   if(['update_asset_details','bulk_update_asset_details','update_asset_generation_prompt'].includes(name)){

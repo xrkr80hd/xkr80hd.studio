@@ -1,3 +1,4 @@
+import {continuityFormData} from './continuity-service.mjs';
 import {saveAssetDetails} from './asset-details.mjs';
 import {worldRecords,emptyWorld,validateWorld,WORLD_FIELDS,IMAGE_FIELDS} from './world-library.mjs';
 import {assetMetadata,updateAssetMetadata,updateGenerationPrompt} from './asset-metadata.mjs';
@@ -51,5 +52,5 @@ export function saveAssetForm(m,p,args){
  if(args.create&&!row.reference_ids.length)throw Error('Choose an asset reference image');
  // Validate native structural fields without rebuilding legacy records or visual prompts.
  if(!row.legacy)validateWorld(next.world_library,m);
- if(args.create){const only=rows=>Object.fromEntries(Object.entries(rows||{}).map(([type,records])=>[type,Object.fromEntries(Object.entries(records).filter(([key])=>key===id))]));assignAssetCodes({...next,references:{},scenes:{},world_library:only(next.world_library),manifest_store:only(next.manifest_store)},codedRecords(m).map(x=>x.record.asset_code).filter(Boolean));}return next;
+ if(args.create){const only=rows=>Object.fromEntries(Object.entries(rows||{}).map(([type,records])=>[type,Object.fromEntries(Object.entries(records).filter(([key])=>key===id))]));assignAssetCodes({...next,references:{},scenes:{},world_library:only(next.world_library),manifest_store:only(next.manifest_store)},codedRecords(m).map(x=>x.record.asset_code).filter(Boolean));}if(args.continuity)next=continuityFormData(next,id,args.continuity);return next;
 }

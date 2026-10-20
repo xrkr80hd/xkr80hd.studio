@@ -1,5 +1,6 @@
 'use client';
 import {useMemo,useRef,useState} from 'react';
+import AssetContinuity,{ContinuityFields} from './AssetContinuity';
 import {CharacterFormContext} from './CharacterFormContext';
 import AssetDetails from './AssetDetails';
 import CharacterAccordion from './AssetAccordion';
@@ -17,6 +18,7 @@ export default function CharacterForm({project,manifest,assetId,initial,onSaved,
  const [id]=useState(()=>assetId||crypto.randomUUID()),[created,setCreated]=useState(!!assetId);
  const [draft,setDraft]=useState<any>(()=>{const m=assetId?structuredClone(manifest):characterDraft(manifest,id);if(!assetId){m.world_library.characters[id].name=initial?.name||'';m.world_library.characters[id].reference_ids=initial?.reference_ids||[];}return m});
  const current=useRef(draft),operations=useRef<any[]>([]),baseRevision=useRef(manifest.revision),sections=useRef(new Map<string,()=>any>());
+ const [continuity,setContinuity]=useState<any>({});
  const [busy,setBusy]=useState(false),[error,setError]=useState(''),[message,setMessage]=useState(''),[pool,setPool]=useState(false);
  const publish=(m:any)=>{current.current=m;setDraft(m)};
  function stage(a:any){const result=applyCharacterAction(current.current,project,id,a);operations.current.push(a);publish(result.manifest);return result.result}
@@ -30,10 +32,10 @@ export default function CharacterForm({project,manifest,assetId,initial,onSaved,
   // Flush the current field values, including sections that have never been individually saved.
   let next=structuredClone(current.current);const pending=[];
   for(const key of ['identity','quick','metadata','prompt','classification','state']){const a=sections.current.get(key)?.();if(a){next=applyCharacterAction(next,project,id,a).manifest;pending.push(a)}}
-  const request={action:'character_form',asset_id:id,project_id:project,create:!created,expected_revision:baseRevision.current,confirm:true,operations:[...operations.current,...pending]};
+  const request={action:'character_form',asset_id:id,project_id:project,create:!created,expected_revision:baseRevision.current,confirm:true,...(continuity.edit_instruction?{continuity}:{}),operations:[...operations.current,...pending]};
   if(!created&&initial?.reference_ids?.length)request.operations.unshift({action:'character_images',reference_ids:initial.reference_ids,anchors:{}});
   const r=await studioFetch('/api/composer',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(request)}),result=await r.json();if(!r.ok)throw Error(result.error||'Character not saved');
-  operations.current=[];baseRevision.current=result.manifest.revision;setCreated(true);publish(result.manifest);if(notify)await onSaved(result.manifest);setMessage('Character saved.');return result.manifest;
+  operations.current=[];baseRevision.current=result.manifest.revision;setCreated(true);setContinuity({});publish(result.manifest);if(notify)await onSaved(result.manifest);setMessage('Character saved.');return result.manifest;
  }catch(e){setError((e as Error).message)}finally{setBusy(false)}}
  async function toggleLock(){const saved=await save(false);if(!saved)return;setBusy(true);try{const r=await studioFetch('/api/anchor-lock',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({project_id:project,asset_id:id,source_image_id:sheet,expected_revision:saved.revision,action:locked?'unlock':'lock',confirm:true})});const result=await r.json();if(!r.ok)throw Error(result.error||'Lock change failed');const reload=await studioFetch('/api/manifest?project='+encodeURIComponent(project));if(!reload.ok)throw Error('Saved. Reopen to refresh.');const next=await reload.json();baseRevision.current=next.revision;publish(next);await onSaved(next)}catch(e){setError((e as Error).message)}finally{setBusy(false)}}
  return <CharacterFormContext.Provider value={context}>
@@ -57,7 +59,7 @@ export default function CharacterForm({project,manifest,assetId,initial,onSaved,
        <CharacterAccordion number={5} title="Advanced Prompts & Continuity">{advanced}<CharacterStates project={project} manifest={draft} characterId={id} onSaved={async()=>{}}/></CharacterAccordion>
       </>}/>
      }/>
-    </fieldset>
+    <CharacterAccordion number={6} title="Identity & Approved Customization"><ContinuityFields type="character" value={continuity} onChange={setContinuity}/>{created&&<AssetContinuity project={project} manifest={{...draft,revision:baseRevision.current}} assetId={id} onSaved={async next=>{operations.current=[];baseRevision.current=next.revision;publish(next);await onSaved(next)}}/>}</CharacterAccordion></fieldset>
    <ReferencePoolPicker project={project} manifest={draft} open={pool} selected={record?.reference_ids||[]} disabled={busy||locked} onChoose={async(asset:any)=>{setImages([...(record?.reference_ids||[]),asset.id]);setPool(false)}} onClose={()=>setPool(false)}/>
   </AssetAccordionLayout>
  </CharacterFormContext.Provider>;

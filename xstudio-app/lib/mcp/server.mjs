@@ -1,3 +1,4 @@
+import {CONTINUITY_SCHEMA} from '../xce/continuity-service.mjs';
 import {ASSET_FORM_FIELDS} from '../xce/asset-form-layout.mjs';
 import {METADATA_FIELDS} from '../xce/asset-metadata.mjs';
 import {CLASSIFICATIONS} from '../xce/classifications.mjs';
@@ -19,8 +20,12 @@ const link=z.strictObject({kind:z.enum(['equal_height','shorter_than','taller_th
 const patch=z.strictObject({...Object.fromEntries(Object.keys({...METADATA_FIELDS,...ASSET_FORM_FIELDS}).map(k=>[k,z.string().max(10000).optional()])),display_name:z.string().min(1).max(200).optional(),quick_details:z.string().max(4000).optional(),cast_role:z.enum(['main','supporting','villain','sub_villain','general','background','extras','military']).optional(),base_character_id:z.string().max(128).optional(),analysis_status:z.enum(['unverified','user_confirmed','reference_verified']).optional(),provenance:proof.optional(),append_relationships:z.array(link).max(50).optional()});
 const metadataUpdate=z.strictObject({asset_id:id,expected_version:z.number().int().min(0),patch});
 const metadataBatch={project_id,expected_revision:z.number().int().min(1),updates:z.array(metadataUpdate).min(1).max(50)};
-const writeScope=name=>['update_asset_details','bulk_update_asset_details','update_asset_generation_prompt'].includes(name)?'asset:metadata':name.includes('update_asset_classification')?'asset:classify':null;
+const writeScope=name=>['update_asset_details','bulk_update_asset_details','update_asset_generation_prompt','manage_asset_identity'].includes(name)?'asset:metadata':name.includes('update_asset_classification')?'asset:classify':null;
+const continuityShape=z.fromJSONSchema(CONTINUITY_SCHEMA).shape;
 export const toolSpecs=[
+ ['get_asset_identity','Read saved base identity, approved edits, active appearance and individually reusable camera references. include_media returns actual private reference image blocks.',{project_id,asset_id:id,include_media:z.boolean().default(false)}],
+ ['verify_vehicle_vin','Validate a complete VIN and decode only legitimate NHTSA fields. Exact appearance/options remain unverified without evidence.',{project_id,vin:z.string().min(1).max(17)}],
+ ['manage_asset_identity','Revision-checked identity, explicit edit:, evidence, individual camera preparation/review/approval and reference-sheet operations. Uses the same native editor and API service; requires asset:metadata.',{...continuityShape,project_id,action:z.enum(CONTINUITY_SCHEMA.properties.action.enum.filter(a=>!['read','sheet','parse_command','decode_vin'].includes(a))),expected_revision:z.number().int().min(1),confirm:z.literal(true)}],
  ['get_project_classification_schema','Discover classification choices, allowed metadata fields, scopes and version contracts.',{project_id}],
  ['get_asset_details','Read descriptive metadata, missing fields, existing relationships, approval status and prompt versions.',{project_id,asset_id:id}],
  ['update_asset_details','Patch existing metadata only. Omitted fields and user clauses remain unchanged. Requires asset:metadata.',{project_id,...metadataUpdate.shape,expected_revision:z.number().int().min(1),confirm:z.literal(true)}],
@@ -47,11 +52,11 @@ const headers={'cache-control':'private, no-store, max-age=0','x-content-type-op
 const response=(body,status=200,extra={})=>Response.json(body,{status,headers:{...headers,...extra}});
 export function makeServer(execute,audit=()=>{}){
  const server=new McpServer({name:'xstudio-reference-gateway',version:'1.0.0'},{maxToolInputElements:500});
- for(const [name,description,shape] of toolSpecs)server.registerTool(name,{description,inputSchema:z.strictObject(shape),annotations:{readOnlyHint:!writeScope(name),destructiveHint:false,idempotentHint:true,openWorldHint:false},_meta:{securitySchemes:[{type:'oauth2',scopes:writeScope(name)?[SCOPE,writeScope(name)]:[SCOPE]}]}},async args=>{
+ for(const [name,description,shape] of toolSpecs)server.registerTool(name,{description,inputSchema:z.strictObject(shape),annotations:{readOnlyHint:!writeScope(name),destructiveHint:false,idempotentHint:!writeScope(name),openWorldHint:['verify_vehicle_vin','manage_asset_identity'].includes(name)},_meta:{securitySchemes:[{type:'oauth2',scopes:writeScope(name)?[SCOPE,writeScope(name)]:[SCOPE]}]}},async args=>{
   try{
    const result={source_url:'https://xstudio.xrkr80hd.studio',...await execute(name,args)};
    const {images,...structured}=result;
-   const imageBlocks=name==='get_character_cref'?(images||[]).map(i=>({type:'image',data:i.image_base64,mimeType:i.mime_type})):[];
+   const imageBlocks=['get_character_cref','get_asset_identity','manage_asset_identity'].includes(name)?(images||[]).map(i=>({type:'image',data:i.image_base64,mimeType:i.mime_type})):[];
    const text=JSON.stringify(structured);if(Buffer.byteLength(text)>1_500_000)throw new GatewayError('Result too large; narrow the request',413);
    audit({tool:name,outcome:'success'});return {content:[{type:'text',text},...imageBlocks],structuredContent:structured};
   }catch(error){

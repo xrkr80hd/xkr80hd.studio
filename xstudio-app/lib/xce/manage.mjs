@@ -1,9 +1,10 @@
+import {identityReferenceIds} from './visual-identity.mjs';
 import {editProjectDetails} from './project-summary.mjs';
 import {intakeReferences} from './intake-references.mjs';
 import {annotate} from './namespace.mjs';
 import {need,categories,findAsset} from './core.mjs';
 import {tools,validate} from './tools.mjs';
-const uses=(r,id)=>['reference_ids','assigned_reference_ids','character_ids','prop_ids','location_ids','assigned_character_ids','anchor_ids'].some(k=>r[k]?.includes(id))||['source_image_id','output_reference_id','preview_reference_id','blueprint_id'].some(k=>r[k]===id)||(r.equipment_callouts||[]).some(c=>c.source_reference_id===id)||Object.values(r.shots||{}).some(s=>uses(s,id));
+const uses=(r,id)=>identityReferenceIds(r).includes(id)||['reference_ids','assigned_reference_ids','character_ids','prop_ids','location_ids','assigned_character_ids','anchor_ids'].some(k=>r[k]?.includes(id))||['source_image_id','output_reference_id','preview_reference_id','blueprint_id'].some(k=>r[k]===id)||(r.equipment_callouts||[]).some(c=>c.source_reference_id===id)||Object.values(r.shots||{}).some(s=>uses(s,id));
 const clean=r=>{const v=structuredClone(r);const walk=o=>{if(!o||typeof o!=='object')return;delete o.key;for(const x of Object.values(o))walk(x)};walk(v);return v};
 export function manage(m,a){
  const {entity,action,id,data={}}=a;

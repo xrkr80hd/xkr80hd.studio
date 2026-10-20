@@ -1,5 +1,6 @@
 'use client';
 import {useState,type ReactNode} from 'react';
+import AssetContinuity,{ContinuityFields} from './AssetContinuity';
 import AssetAccordion from './AssetAccordion';
 import AssetAccordionLayout from './AssetAccordionLayout';
 import OverlaySelect from './OverlaySelect';
@@ -25,6 +26,7 @@ const labels:Record<string,string>={prop:'Prop',creature:'Creature',vehicle:'Veh
 export default function AssetForm({project,manifest,assetId,primaryCategory='prop',initial,onSaved,onClose}:Props){
  const [id]=useState(()=>assetId||initial?.id||crypto.randomUUID());
  const [snapshot,setSnapshot]=useState(()=>assetId?structuredClone(manifest):assetFormDraft(manifest,id,primaryCategory));
+ const [continuity,setContinuity]=useState<any>({});
  const [created,setCreated]=useState(!!assetId),[baseRevision,setBaseRevision]=useState(manifest.revision);
  const record=worldRecords(snapshot).find((a:any)=>a.id===id),primary=codedRecords(snapshot).find((e:any)=>(e.record.asset_id||e.record.id)===id)?.type||primaryCategory;
  const saved=assetMetadata(snapshot,project,baseRevision,id);
@@ -53,7 +55,7 @@ export default function AssetForm({project,manifest,assetId,primaryCategory='pro
   const patch=Object.fromEntries(Object.entries(values).filter(([key,value])=>value!==(saved.fields as any)[key]));
   const originalMetadata={...record?.metadata,...(!record?.metadata?.style_anchor&&record?.medium?{style_anchor:record.medium}:{})};
   const anchorPatch=Object.fromEntries(Object.entries(metadata).filter(([key,value])=>nativeKeys.includes(key)&&value!==(originalMetadata[key]||'')));
-  const payload={action:'asset_form',project_id:project,asset_id:id,primary_category:primary,create:!created,expected_revision:baseRevision,confirm:true,metadata_patch:patch,expected_metadata_version:saved.version,
+  const payload={action:'asset_form',project_id:project,asset_id:id,primary_category:primary,create:!created,expected_revision:baseRevision,confirm:true,...(primary==='vehicle'&&(continuity.vin||continuity.edit_instruction)?{continuity}:{}),metadata_patch:patch,expected_metadata_version:saved.version,
    ...(JSON.stringify(references)!==JSON.stringify(record?.reference_ids||[])?{reference_ids:references}:{}),...(Object.keys(anchorPatch).length?{world_metadata:anchorPatch}:{}),
    ...(classification!==classificationValue(snapshot,id)?{classification,expected_classification_version:snapshot.asset_details?.[id]?.classification_version||0}:{}),
    ...(gender!==(snapshot.character_network?.details?.[id]?.gender||'unspecified')?{gender}:{}),
@@ -67,7 +69,7 @@ export default function AssetForm({project,manifest,assetId,primaryCategory='pro
    const result=await r.json();if(!r.ok){setSnapshot(next);setBaseRevision(next.revision);setCreated(true);throw Error('Asset saved. '+(result.error||'Lock change failed'));}
    const reload=await studioFetch('/api/manifest?project='+encodeURIComponent(project));if(!reload.ok){setSnapshot(next);setBaseRevision(next.revision);setCreated(true);throw Error('Asset saved. Reopen to refresh lock status');}next=await reload.json();
   }
-  setSnapshot(next);setBaseRevision(next.revision);setCreated(true);setMessage(assetLabel+' saved.');await onSaved(next,worldRecords(next).find((a:any)=>a.id===id));
+  setSnapshot(next);setBaseRevision(next.revision);setCreated(true);setContinuity({});setMessage(assetLabel+' saved.');await onSaved(next,worldRecords(next).find((a:any)=>a.id===id));
  }catch(e){setError((e as Error).message)}finally{setBusy(false)}}
  function referenceFields(){const images=references.filter(ref=>kind!=='character'||![metadata.body_anchor_url,metadata.face_anchor_url].includes(ref));return <>
   {kind==='character'&&<div className="character-anchor-grid">{['body_anchor_url','face_anchor_url'].map(key=><AnchorImageField key={key} label={key==='body_anchor_url'?'Body':'Face'} project={project} value={metadata[key]||''} references={entries} disabled={busy||locked} onSelect={value=>anchor(key,value)} onFile={file=>upload(file,key)}/>)}</div>}
@@ -99,7 +101,7 @@ export default function AssetForm({project,manifest,assetId,primaryCategory='pro
   {error&&<p role="alert" className="error-text">{error}</p>}{message&&<p role="status">{message}</p>}
   <div className="character-creator-actions"><button type="button" className="button primary" disabled={busy} onClick={()=>void save()}>{busy?'Saving…':(created?'Save ':'Create ')+assetLabel}</button><button type="button" className="button secondary" disabled={busy||!references.length} onClick={()=>void save(true)}>{locked?'Save & unlock':'Save & lock'}</button><button type="button" className="button secondary character-creator-close" disabled={busy} onClick={onClose}>Close</button></div>
  </>}>
-  <fieldset disabled={busy} className="character-creator-fieldset">{(ASSET_FORM_SECTIONS[kind] as Array<[string,string[]]>).map(([title,keys],index)=><AssetAccordion key={kind+':'+title} number={index+1} title={title} defaultOpen={index===0}>{(keys as string[]).map(key=><div className="asset-field-slot" key={key}>{field(key)}</div>)}</AssetAccordion>)}</fieldset>
+  <fieldset disabled={busy} className="character-creator-fieldset">{(ASSET_FORM_SECTIONS[kind] as Array<[string,string[]]>).map(([title,keys],index)=><AssetAccordion key={kind+':'+title} number={index+1} title={title} defaultOpen={index===0}>{(keys as string[]).map(key=><div className="asset-field-slot" key={key}>{field(key)}</div>)}</AssetAccordion>)}{primary==='vehicle'&&<AssetAccordion number={ASSET_FORM_SECTIONS[kind].length+1} title="Vehicle Identity & Camera References"><ContinuityFields type="vehicle" value={continuity} onChange={setContinuity}/>{created&&<AssetContinuity project={project} manifest={{...snapshot,revision:baseRevision}} assetId={id} onSaved={async next=>{setSnapshot(next);setBaseRevision(next.revision);setContinuity({});await onSaved(next,worldRecords(next).find((a:any)=>a.id===id))}}/>}</AssetAccordion>}</fieldset>
   <ReferencePoolPicker project={project} manifest={snapshot} open={pool} selected={references} disabled={busy||locked} onChoose={async(a:any)=>{setReferences(ids=>[...new Set([...ids,a.id])]);setPool(false)}} onClose={()=>setPool(false)}/>
  </AssetAccordionLayout>;
 }

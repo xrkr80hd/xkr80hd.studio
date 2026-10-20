@@ -1,6 +1,6 @@
 ---
 name: xce-save-generated-assets
-description: Use XCE_COMPOSER for site-synchronized scene prompts and user-authored relationship or synergy clauses. Resolve private XCE asset codes and saved project references before web search. Apply to bare codes, Copy for ChatGPT, saved asset lookup, scenes and storyboards. Execute XCE image requests through the available ChatGPT image tool immediately, then save completed images when supported. Apply to MCS/CRS/PRS/RVH/LOC, SMPL/CMPLX, generate, regenerate, RGEN and authorized XCE_MV image requests. Never stop after describing or preparing the requested image.
+description: Use XCE_COMPOSER for site-synchronized scene prompts and user-authored relationship or synergy clauses. Resolve private XCE asset codes and saved project references before web search. Apply to bare codes, Copy for ChatGPT, saved asset lookup, scenes and storyboards. Execute XCE image requests through the available ChatGPT image tool immediately, then save completed images when supported. Apply to MVS/MCS/CRS/PRS/RVH/LOC, SMPL/CMPLX, generate, regenerate, RGEN and authorized XCE_MV image requests. Never stop after describing or preparing the requested image.
 ---
 
 ## CREF — saved locked characters
@@ -134,3 +134,9 @@ Compile / execution / save use the same live configuration. Recompile after edit
 
 
 For saved establishing images, reuse the Scene / Storyboard Reference category. Read inventory.scene_references for original image references and user-assigned cast; use configuration.source_scene.scene_id to build from it with those named characters explicitly placed. Use action=scene_cast with scene_id, character_ids, current expected_revision and confirm=true only for requested cast assignments. This preserves source media, shot lists and per-shot cast/approvals; naming characters never approves them or splits a storyboard into panels.
+
+
+
+## Universal vehicle turnaround, VIN fidelity and edit: customization
+
+Read [the shared vehicle and character continuity contract](references/vehicle-continuity.md) for vehicle turnaround sheets, VIN input, or vehicle/character edit: commands. MVS is Make Vehicle Sheet: mvsrlsmpl - make - model - trim [optional VIN], then multiline edit instructions with or without a colon. MCS remains Make Character Sheet. Use the live shared parser and native manage_asset_identity workflow when available; retrieve actual images with get_asset_identity include_media=true. Preserve existing character formats and all earlier safety, retrieval, generation, approval and storage requirements. Vehicle requests use nine camera views with neutral compositing backgrounds; do not add dealership scene or header branding. Audit live routing to https://xstudio.xrkr80hd.studio before production. Treat unresolved factory details as unverified. These source instructions do not prove an undeployed API or MCP tool is available; report missing runtime capabilities honestly.

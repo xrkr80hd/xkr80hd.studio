@@ -1,3 +1,4 @@
+import {assertIdentity} from './visual-identity.mjs';
 import {assetPreviewReference} from './asset-preview.mjs';
 // Explicit owner lock of an existing image, separate from renderer review.
 export function approveCharacterAnchor(manifest,{asset_id,source_image_id,confirm,sha256,now=new Date().toISOString()}){
@@ -5,6 +6,7 @@ export function approveCharacterAnchor(manifest,{asset_id,source_image_id,confir
  if(!/^[a-f0-9]{64}$/.test(sha256||''))throw Error('Stored image bytes must be verified before locking');
  const next=structuredClone(manifest),asset=next.manifest_store?.characters?.[asset_id];
  if(!asset||asset.deleted_at||asset.asset_type!=='character')throw Error('Character not found in this project');
+ if(asset.visual_identity)assertIdentity({...asset,asset_type:'character',immutable_traits:asset.immutable_traits||asset.visual_identity.active_visual_reference},{production:true});
  const expected=assetPreviewReference(asset,next.references);
  if(!expected||source_image_id!==expected)throw Error('The character image changed. Reopen it and review the current image');
  const ref=next.references?.[source_image_id];
@@ -50,6 +52,7 @@ export function approveAssetAnchor(manifest,args){
  if(args.confirm!==true)throw Error('Choose Lock asset to approve this reference');
  if(!/^[a-f0-9]{64}$/.test(args.sha256||''))throw Error('Stored image bytes must be verified before locking');
  const next=structuredClone(manifest),{asset}=anchorAsset(next,args.asset_id),expected=assetPreviewReference(asset,next.references),ref=next.references?.[args.source_image_id];
+ if(asset.visual_identity)assertIdentity({...asset,asset_type:asset.asset_type||({characters:'character',vehicles:'vehicle'})[asset.type],immutable_traits:asset.immutable_traits||asset.visual_identity.active_visual_reference},{production:true});
  if(!expected||args.source_image_id!==expected)throw Error('The asset image changed. Reopen it and review the current image');
  if(!ref?.key||ref.deleted_at||ref.role==='DIAGNOSTIC')throw Error('A saved production image is required');
  if(asset.status==='LOCKED'&&asset.owner_image_approval?.sha256){if(asset.owner_image_approval.sha256!==args.sha256)throw Error('The locked asset image bytes changed');return {manifest:next,asset};}

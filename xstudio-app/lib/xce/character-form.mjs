@@ -1,3 +1,4 @@
+import {continuityFormData} from './continuity-service.mjs';
 import {worldRecords,emptyWorld,validateWorld} from './world-library.mjs';
 import {editAsset} from './asset-edit.mjs';
 import {saveCharacterDetails} from './character-network.mjs';
@@ -39,5 +40,5 @@ export function saveCharacterForm(m,p,args){
  const row=worldRecords(next).find(r=>r.id===args.asset_id&&r.type==='characters');if(!row?.name?.trim())throw Error('Enter a character name');
  if(args.create&&!row.reference_ids.length)throw Error('Choose a character sheet or reference image');
  if(args.create)next.world_library=validateWorld(next.world_library,m);
- assignAssetCodes(next);return next;
+ assignAssetCodes(next);if(args.continuity)next=continuityFormData(next,args.asset_id,args.continuity);return next;
 }
