@@ -1,0 +1,23 @@
+{
+  "interface": {
+    "capabilities": [
+      "Interactive"
+    ],
+    "category": "Productivity",
+    "defaultPrompt": "SL: Use my uploaded shot. Ask SS or AS, recommend and confirm each shot, confirm FF, then repeat the full list and ask Y / GEN / N / MOD before rendering seven separate 16:9 images.",
+    "developerName": "Travis Wilkinson",
+    "displayName": "XCE_MV",
+    "longDescription": "Upload references and enter SL. Ask SS (Same Shot) or AS (Advancing Shot), recommend and confirm seven shots individually, explicitly confirm FF (Final Frame), repeat the complete list, then ask: Generate these now? Y / GEN / N / MOD. Y or GEN renders the approved list as seven separate full-bleed 16:9 images; N stands by; MOD revises numbered shots and repeats the full list and choice.",
+    "shortDescription": "Upload → seven cinematic shots"
+  },
+  "name": "xce-mv",
+  "version": "2.4.2",
+  "description": "Plan and approve seven cinematic shots with SL, SS/AS and FF. Y or GEN renders images; MOD revises the list.",
+  "author": {
+    "name": "Travis Wilkinson",
+    "email": "xrkr80hd@gmail.com"
+  },
+  "keywords": [],
+  "skills": "./skills",
+  "apps": "./.app.json"
+}

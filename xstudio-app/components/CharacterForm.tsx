@@ -2,7 +2,8 @@
 import {useMemo,useRef,useState} from 'react';
 import {CharacterFormContext} from './CharacterFormContext';
 import AssetDetails from './AssetDetails';
-import CharacterAccordion from './CharacterAccordion';
+import CharacterAccordion from './AssetAccordion';
+import AssetAccordionLayout from './AssetAccordionLayout';
 import CharacterQuickDetails from './CharacterQuickDetails';
 import CharacterStory from './CharacterStory';
 import CharacterStates from './CharacterStates';
@@ -36,8 +37,11 @@ export default function CharacterForm({project,manifest,assetId,initial,onSaved,
  }catch(e){setError((e as Error).message)}finally{setBusy(false)}}
  async function toggleLock(){const saved=await save(false);if(!saved)return;setBusy(true);try{const r=await studioFetch('/api/anchor-lock',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({project_id:project,asset_id:id,source_image_id:sheet,expected_revision:saved.revision,action:locked?'unlock':'lock',confirm:true})});const result=await r.json();if(!r.ok)throw Error(result.error||'Lock change failed');const reload=await studioFetch('/api/manifest?project='+encodeURIComponent(project));if(!reload.ok)throw Error('Saved. Reopen to refresh.');const next=await reload.json();baseRevision.current=next.revision;publish(next);await onSaved(next)}catch(e){setError((e as Error).message)}finally{setBusy(false)}}
  return <CharacterFormContext.Provider value={context}>
-  <section className="asset-unified-editor character-creator" aria-label={created?'Edit character':'Create character'}>
-   <div className="character-creator-body">
+  <AssetAccordionLayout label={created?'Edit character':'Create character'} footer={<>
+    <p className="step-hint">Save character applies all fields and reference selections together.</p>
+    {error&&<p role="alert" className="error-text">{error}</p>}{message&&<p role="status">{message}</p>}
+    <div className="character-creator-actions"><button type="button" className="button primary" disabled={busy} onClick={()=>void save()}>{busy?'Saving…':created?'Save character':'Create character'}</button><button type="button" className="button secondary" disabled={busy||!sheet} onClick={()=>void toggleLock()}>{locked?'Save & unlock':'Save & lock'}</button>{onCancel&&<button type="button" className="button secondary character-creator-close" disabled={busy} onClick={onCancel}>Close</button>}</div>
+   </>}>
     <fieldset disabled={busy} className="character-creator-fieldset">
      <AssetDetails project={project} manifest={draft} assetId={id} onSaved={async()=>{}} renderCharacter={({identity,gear,style})=>
       <CharacterStory project={project} manifest={draft} characterId={id} onSaved={async()=>{}} renderSections={({details,advanced})=><>
@@ -54,13 +58,7 @@ export default function CharacterForm({project,manifest,assetId,initial,onSaved,
       </>}/>
      }/>
     </fieldset>
-   </div>
-   <footer className="character-creator-footer">
-    <p className="step-hint">Save character applies all fields and reference selections together.</p>
-    {error&&<p role="alert" className="error-text">{error}</p>}{message&&<p role="status">{message}</p>}
-    <div className="character-creator-actions"><button type="button" className="button primary" disabled={busy} onClick={()=>void save()}>{busy?'Saving…':created?'Save character':'Create character'}</button><button type="button" className="button secondary" disabled={busy||!sheet} onClick={()=>void toggleLock()}>{locked?'Save & unlock':'Save & lock'}</button>{onCancel&&<button type="button" className="button secondary character-creator-close" disabled={busy} onClick={onCancel}>Close</button>}</div>
-   </footer>
    <ReferencePoolPicker project={project} manifest={draft} open={pool} selected={record?.reference_ids||[]} disabled={busy||locked} onChoose={async(asset:any)=>{setImages([...(record?.reference_ids||[]),asset.id]);setPool(false)}} onClose={()=>setPool(false)}/>
-  </section>
+  </AssetAccordionLayout>
  </CharacterFormContext.Provider>;
 }

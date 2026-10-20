@@ -140,3 +140,13 @@
 .character-creator-actions>.character-creator-close{grid-column:1/-1;background:transparent;color:#94a3b8}
 @media(max-width:360px){.character-creator-body,.character-creator-footer{padding:8px}.character-accordion-fields{padding-inline:10px}.character-creator .character-anchor-grid{grid-template-columns:1fr}}
 @media(prefers-reduced-motion:reduce){.character-accordion,.character-accordion>h3>button>svg,.character-accordion-reveal{transition:none}}
+/* Shared cinematic editor; category switches preserve controlled field drafts. */
+.universal-asset-editor .asset-field-slot{min-width:0;display:grid;gap:12px}
+.universal-asset-editor .asset-field-slot:empty{display:none}
+.universal-asset-editor .asset-sheet-previews{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.universal-asset-editor .character-creator-actions>.primary:only-child{grid-column:1/-1}
+.universal-asset-editor .character-creator-actions:has(>.button:nth-child(2):last-child)>.primary{grid-column:1/-1}
+.world-library>.library-category-filter{display:block;width:100%;min-width:0}
+.world-library>.library-category-filter>label{display:grid;gap:7px;width:100%;max-width:none;min-width:0;flex:1 1 100%}
+.world-library>.library-category-filter .overlay-select{width:100%;max-width:none}
+.universal-asset-editor .asset-sheet-previews>div:only-child{grid-column:1/-1}

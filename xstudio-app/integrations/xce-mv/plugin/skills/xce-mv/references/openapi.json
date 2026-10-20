@@ -1,0 +1,676 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "xce - multiview (Hardened)",
+    "description": "Seven-image generation contract; internal prompt planning is not the deliverable. No deployed endpoint implied.",
+    "version": "2.2.0"
+  },
+  "servers": [
+    {
+      "url": "https://xrkr80hd.studio"
+    }
+  ],
+  "paths": {
+    "/multiview/batch": {
+      "post": {
+        "summary": "Generate seven separate cinematic 16:9 images",
+        "operationId": "generateMultiViewShots",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MultiViewRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Seven actual images generated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MultiViewResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "MultiViewRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "image_reference",
+          "aspect_ratio",
+          "shot_count",
+          "start_command",
+          "list_reviewed",
+          "final_frame_confirmed",
+          "shot_confirmations",
+          "list_revision",
+          "approved_revision",
+          "last_frame"
+        ],
+        "properties": {
+          "image_reference": {
+            "type": "string",
+            "format": "uri"
+          },
+          "aspect_ratio": {
+            "const": "16:9"
+          },
+          "shot_count": {
+            "const": 7
+          },
+          "advance_scene": {
+            "type": "boolean",
+            "default": false
+          },
+          "last_frame": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Confirmed FF (Final Frame); LF is a compatibility alias."
+          },
+          "start_command": {
+            "enum": [
+              "Y",
+              "GEN"
+            ]
+          },
+          "list_reviewed": {
+            "const": true
+          },
+          "final_frame_confirmed": {
+            "const": true
+          },
+          "shot_confirmations": {
+            "type": "array",
+            "minItems": 7,
+            "maxItems": 7,
+            "items": {
+              "const": true
+            }
+          },
+          "list_revision": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "approved_revision": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "description": "Internal render plan only after approval. Runtime must ensure approved_revision equals list_revision, all confirmations are genuine, and Y/GEN is a fresh generation-gate response. JSON validation alone is not authorization."
+      },
+      "MultiViewResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "shot_count",
+          "images"
+        ],
+        "properties": {
+          "shot_count": {
+            "const": 7
+          },
+          "images": {
+            "type": "array",
+            "minItems": 7,
+            "maxItems": 7,
+            "items": false,
+            "prefixItems": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "shot_number",
+                  "shot_type",
+                  "aspect_ratio",
+                  "image_reference"
+                ],
+                "properties": {
+                  "shot_number": {
+                    "const": 1
+                  },
+                  "shot_type": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "Approved shot role for this numbered image."
+                  },
+                  "aspect_ratio": {
+                    "const": "16:9"
+                  },
+                  "image_reference": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "Real generated image result identifier or supported file reference; never fabricated."
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "shot_number",
+                  "shot_type",
+                  "aspect_ratio",
+                  "image_reference"
+                ],
+                "properties": {
+                  "shot_number": {
+                    "const": 2
+                  },
+                  "shot_type": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "Approved shot role for this numbered image."
+                  },
+                  "aspect_ratio": {
+                    "const": "16:9"
+                  },
+                  "image_reference": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "Real generated image result identifier or supported file reference; never fabricated."
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "shot_number",
+                  "shot_type",
+                  "aspect_ratio",
+                  "image_reference"
+                ],
+                "properties": {
+                  "shot_number": {
+                    "const": 3
+                  },
+                  "shot_type": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "Approved shot role for this numbered image."
+                  },
+                  "aspect_ratio": {
+                    "const": "16:9"
+                  },
+                  "image_reference": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "Real generated image result identifier or supported file reference; never fabricated."
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "shot_number",
+                  "shot_type",
+                  "aspect_ratio",
+                  "image_reference"
+                ],
+                "properties": {
+                  "shot_number": {
+                    "const": 4
+                  },
+                  "shot_type": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "Approved shot role for this numbered image."
+                  },
+                  "aspect_ratio": {
+                    "const": "16:9"
+                  },
+                  "image_reference": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "Real generated image result identifier or supported file reference; never fabricated."
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "shot_number",
+                  "shot_type",
+                  "aspect_ratio",
+                  "image_reference"
+                ],
+                "properties": {
+                  "shot_number": {
+                    "const": 5
+                  },
+                  "shot_type": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "Approved shot role for this numbered image."
+                  },
+                  "aspect_ratio": {
+                    "const": "16:9"
+                  },
+                  "image_reference": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "Real generated image result identifier or supported file reference; never fabricated."
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "shot_number",
+                  "shot_type",
+                  "aspect_ratio",
+                  "image_reference"
+                ],
+                "properties": {
+                  "shot_number": {
+                    "const": 6
+                  },
+                  "shot_type": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "Approved shot role for this numbered image."
+                  },
+                  "aspect_ratio": {
+                    "const": "16:9"
+                  },
+                  "image_reference": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "Real generated image result identifier or supported file reference; never fabricated."
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "shot_number",
+                  "shot_type",
+                  "aspect_ratio",
+                  "image_reference"
+                ],
+                "properties": {
+                  "shot_number": {
+                    "const": 7
+                  },
+                  "shot_type": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "Approved shot role for this numbered image."
+                  },
+                  "aspect_ratio": {
+                    "const": "16:9"
+                  },
+                  "image_reference": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "Real generated image result identifier or supported file reference; never fabricated."
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      "InternalGenerationPlan": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "title": "XCE_MV internal seven-image execution plan",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "shot_count",
+          "aspect_ratio",
+          "full_bleed",
+          "generate_images",
+          "generate_media",
+          "style",
+          "shared_seed",
+          "locked_anchors",
+          "negative_prompt",
+          "shots",
+          "advance_scene",
+          "last_frame",
+          "start_command",
+          "list_reviewed",
+          "final_frame_confirmed",
+          "shot_confirmations",
+          "list_revision",
+          "approved_revision"
+        ],
+        "properties": {
+          "shot_count": {
+            "const": 7
+          },
+          "aspect_ratio": {
+            "const": "16:9"
+          },
+          "full_bleed": {
+            "const": true
+          },
+          "generate_images": {
+            "const": true
+          },
+          "generate_media": {
+            "const": true
+          },
+          "style": {
+            "enum": [
+              "photorealistic",
+              "comic_book"
+            ]
+          },
+          "shared_seed": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "locked_anchors": {
+            "type": "string",
+            "minLength": 1
+          },
+          "negative_prompt": {
+            "type": "string",
+            "minLength": 1
+          },
+          "shots": {
+            "type": "array",
+            "minItems": 7,
+            "maxItems": 7,
+            "prefixItems": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "shot_number",
+                  "shot_type",
+                  "initial_state",
+                  "terminating_state",
+                  "prompt"
+                ],
+                "properties": {
+                  "shot_number": {
+                    "const": 1
+                  },
+                  "shot_type": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "User-approved shot role; default recommendations may be modified."
+                  },
+                  "initial_state": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "terminating_state": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "prompt": {
+                    "type": "string",
+                    "minLength": 1,
+                    "pattern": "--ar 16:9$"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "shot_number",
+                  "shot_type",
+                  "initial_state",
+                  "terminating_state",
+                  "prompt"
+                ],
+                "properties": {
+                  "shot_number": {
+                    "const": 2
+                  },
+                  "shot_type": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "User-approved shot role; default recommendations may be modified."
+                  },
+                  "initial_state": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "terminating_state": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "prompt": {
+                    "type": "string",
+                    "minLength": 1,
+                    "pattern": "--ar 16:9$"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "shot_number",
+                  "shot_type",
+                  "initial_state",
+                  "terminating_state",
+                  "prompt"
+                ],
+                "properties": {
+                  "shot_number": {
+                    "const": 3
+                  },
+                  "shot_type": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "User-approved shot role; default recommendations may be modified."
+                  },
+                  "initial_state": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "terminating_state": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "prompt": {
+                    "type": "string",
+                    "minLength": 1,
+                    "pattern": "--ar 16:9$"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "shot_number",
+                  "shot_type",
+                  "initial_state",
+                  "terminating_state",
+                  "prompt"
+                ],
+                "properties": {
+                  "shot_number": {
+                    "const": 4
+                  },
+                  "shot_type": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "User-approved shot role; default recommendations may be modified."
+                  },
+                  "initial_state": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "terminating_state": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "prompt": {
+                    "type": "string",
+                    "minLength": 1,
+                    "pattern": "--ar 16:9$"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "shot_number",
+                  "shot_type",
+                  "initial_state",
+                  "terminating_state",
+                  "prompt"
+                ],
+                "properties": {
+                  "shot_number": {
+                    "const": 5
+                  },
+                  "shot_type": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "User-approved shot role; default recommendations may be modified."
+                  },
+                  "initial_state": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "terminating_state": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "prompt": {
+                    "type": "string",
+                    "minLength": 1,
+                    "pattern": "--ar 16:9$"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "shot_number",
+                  "shot_type",
+                  "initial_state",
+                  "terminating_state",
+                  "prompt"
+                ],
+                "properties": {
+                  "shot_number": {
+                    "const": 6
+                  },
+                  "shot_type": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "User-approved shot role; default recommendations may be modified."
+                  },
+                  "initial_state": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "terminating_state": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "prompt": {
+                    "type": "string",
+                    "minLength": 1,
+                    "pattern": "--ar 16:9$"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "shot_number",
+                  "shot_type",
+                  "initial_state",
+                  "terminating_state",
+                  "prompt"
+                ],
+                "properties": {
+                  "shot_number": {
+                    "const": 7
+                  },
+                  "shot_type": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "User-approved shot role; default recommendations may be modified."
+                  },
+                  "initial_state": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "terminating_state": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "prompt": {
+                    "type": "string",
+                    "minLength": 1,
+                    "pattern": "--ar 16:9$"
+                  }
+                }
+              }
+            ],
+            "items": false
+          },
+          "advance_scene": {
+            "type": "boolean"
+          },
+          "last_frame": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Confirmed FF (Final Frame); LF is a compatibility alias."
+          },
+          "start_command": {
+            "enum": [
+              "Y",
+              "GEN"
+            ]
+          },
+          "list_reviewed": {
+            "const": true
+          },
+          "final_frame_confirmed": {
+            "const": true
+          },
+          "shot_confirmations": {
+            "type": "array",
+            "minItems": 7,
+            "maxItems": 7,
+            "items": {
+              "const": true
+            }
+          },
+          "list_revision": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "approved_revision": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "description": "Internal render plan only after approval. Runtime must ensure approved_revision equals list_revision, all confirmations are genuine, and Y/GEN is a fresh generation-gate response. JSON validation alone is not authorization."
+      }
+    }
+  }
+}

@@ -17,7 +17,7 @@
         "defaultPrompt": [
           "SS: help me develop my world and story.",
           "STF: recap our established story and open questions.",
-          "US: compile and save this project\u2019s agreed World Builder state."
+          "US: compile and save this project’s agreed World Builder state."
         ],
         "developerName": "Travis Wilkinson",
         "displayName": "XCE_FIRESTARTER",
@@ -28,5 +28,5 @@
     }
   },
   "name": "xce-firestarter",
-  "version": "1.2.0"
+  "version": "1.2.1"
 }

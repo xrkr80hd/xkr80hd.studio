@@ -1,3 +1,4 @@
+import {ASSET_FORM_FIELDS} from '../xce/asset-form-layout.mjs';
 import {METADATA_FIELDS} from '../xce/asset-metadata.mjs';
 import {CLASSIFICATIONS} from '../xce/classifications.mjs';
 import {McpServer} from '@modelcontextprotocol/sdk/server/mcp.js';
@@ -15,7 +16,7 @@ const classification=z.enum(['',...Object.keys(CLASSIFICATIONS)]);
 const update=z.strictObject({asset_id:id,classification,expected_version:z.number().int().min(0)});
 const proof=z.strictObject({source:z.enum(['USER_AUTHORED','USER_CONFIRMED','REFERENCE_VERIFIED']),reference_ids:z.array(id).max(30),notes:z.string().max(4000)});
 const link=z.strictObject({kind:z.enum(['equal_height','shorter_than','taller_than','opposes','custom']),target_id:id,text:z.string().max(2000).optional(),enabled:z.boolean().optional(),clause_type:z.enum(['relationship','synergy']).optional()});
-const patch=z.strictObject({...Object.fromEntries(Object.keys(METADATA_FIELDS).map(k=>[k,z.string().max(10000).optional()])),display_name:z.string().min(1).max(200).optional(),quick_details:z.string().max(4000).optional(),cast_role:z.enum(['main','supporting','villain','sub_villain','general','background','extras','military']).optional(),base_character_id:z.string().max(128).optional(),analysis_status:z.enum(['unverified','user_confirmed','reference_verified']).optional(),provenance:proof.optional(),append_relationships:z.array(link).max(50).optional()});
+const patch=z.strictObject({...Object.fromEntries(Object.keys({...METADATA_FIELDS,...ASSET_FORM_FIELDS}).map(k=>[k,z.string().max(10000).optional()])),display_name:z.string().min(1).max(200).optional(),quick_details:z.string().max(4000).optional(),cast_role:z.enum(['main','supporting','villain','sub_villain','general','background','extras','military']).optional(),base_character_id:z.string().max(128).optional(),analysis_status:z.enum(['unverified','user_confirmed','reference_verified']).optional(),provenance:proof.optional(),append_relationships:z.array(link).max(50).optional()});
 const metadataUpdate=z.strictObject({asset_id:id,expected_version:z.number().int().min(0),patch});
 const metadataBatch={project_id,expected_revision:z.number().int().min(1),updates:z.array(metadataUpdate).min(1).max(50)};
 const writeScope=name=>['update_asset_details','bulk_update_asset_details','update_asset_generation_prompt'].includes(name)?'asset:metadata':name.includes('update_asset_classification')?'asset:classify':null;

@@ -1,13 +1,14 @@
 'use client';
 import {useEffect,useState} from 'react';
 import AssetDetails from './AssetDetails';
+import AssetForm from './AssetForm';
 import OverlaySelect from './OverlaySelect';
 import ReferenceThumbnail from './ReferenceThumbnail';
 import PropAssetCrop from './PropAssetCrop';
 import {WORLD_FIELDS,IMAGE_FIELDS,emptyWorld,worldRecords,validateWorld} from '../lib/xce/world-library.mjs';
 import {saveWorldDraft,storeImage} from '../lib/xce/local-store.mjs';
 import {syncLocalProjects} from '../lib/xce/studio-network.mjs';
-export default function WorldAssetForm({project,manifest,initial,onSaved,onClose,showDetails=false}:{project:string;manifest:any;initial:any;onSaved:(m:any,asset:any)=>Promise<void>;onClose:()=>void;showDetails?:boolean}){
+function LegacyWorldAssetForm({project,manifest,initial,onSaved,onClose,showDetails=false}:{project:string;manifest:any;initial:any;onSaved:(m:any,asset:any)=>Promise<void>;onClose:()=>void;showDetails?:boolean}){
  const [editing,setEditing]=useState(initial),[draft,setDraft]=useState(manifest),[busy,setBusy]=useState(false),[error,setError]=useState('');
  useEffect(()=>{setDraft(manifest);const saved=worldRecords(manifest).find((a:any)=>a.id===initial.id);if(saved)setEditing(saved)},[manifest.revision,initial.id]);
  const saved=!!manifest.world_library?.[editing.type]?.[editing.id],locked=editing.status==='LOCKED',refs=Object.values(draft.references||{}) as any[],records=worldRecords(draft);
@@ -22,4 +23,11 @@ export default function WorldAssetForm({project,manifest,initial,onSaved,onClose
  <details className="form-accordion"><summary>Optional details</summary>{((WORLD_FIELDS as any)[editing.type]||[]).map((key:string)=><label className="story-field" key={key}>{key.replaceAll('_url',' image').replaceAll('_',' ')}{['parent_character_id','parent_location_id'].includes(key)?<OverlaySelect value={editing.metadata[key]||''} onChange={e=>setEditing({...editing,metadata:{...editing.metadata,[key]:e.target.value}})}><option value="">Choose parent</option>{records.filter((a:any)=>a.type===(key==='parent_character_id'?'characters':'locations')).map((a:any)=><option key={a.id} value={a.id}>{a.name}</option>)}</OverlaySelect>:IMAGE_FIELDS.includes(key)?<OverlaySelect value={editing.metadata[key]||''} onChange={e=>setEditing({...editing,metadata:{...editing.metadata,[key]:e.target.value}})}><option value="">Choose image</option>{editing.reference_ids.map((id:string)=><option key={id} value={id}>{draft.references[id]?.name||id}</option>)}</OverlaySelect>:<textarea rows={2} value={editing.metadata[key]||''} onChange={e=>setEditing({...editing,metadata:{...editing.metadata,[key]:e.target.value}})}/>}</label>)}</details></fieldset>
  {error&&<p role="alert" className="error-text">{error}</p>}<div className="button-row asset-editor-actions"><button type="button" className="button primary" disabled={busy||locked} onClick={()=>void save()}>{busy?'Saving…':'Save asset'}</button>{!saved&&!locked&&<button type="button" className="button secondary" disabled={busy||!editing.reference_ids.length||!editing.name.trim()} onClick={()=>void save(true)}>Save &amp; lock</button>}<button type="button" className="button secondary" disabled={busy} onClick={onClose}>Close</button></div>
  </section>;
+}
+
+export default function WorldAssetForm(props:Parameters<typeof LegacyWorldAssetForm>[0]){
+ const type=props.initial.type,primary=({props:'prop',vehicles:'vehicle',locations:'location',rooms:'room',wardrobe:'wardrobe'} as Record<string,string>)[type];
+ if(!primary)return <LegacyWorldAssetForm {...props}/>;
+ const saved=!!props.manifest.world_library?.[type]?.[props.initial.id];
+ return <AssetForm project={props.project} manifest={props.manifest} assetId={saved?props.initial.id:undefined} initial={props.initial} primaryCategory={primary} onSaved={props.onSaved} onClose={props.onClose}/>;
 }

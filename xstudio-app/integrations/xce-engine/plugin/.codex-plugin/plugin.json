@@ -1,0 +1,21 @@
+{
+  "apps": "./.app.json",
+  "interface": {
+    "capabilities": [],
+    "category": "Other",
+    "defaultPrompt": null,
+    "developerName": "App developer",
+    "displayName": "XCE — Xstudio Cinematic Engine",
+    "longDescription": "A unified cinematic studio with persistent locked anchors, deterministic prompt validation, and storyboard preparation.",
+    "shortDescription": "A unified cinematic studio with persistent locked anchors, deterministic prompt validation, and storyboard preparation.",
+    "websiteURL": "https://xce-cinematic-engine.xrkr80hd.chatgpt.site"
+  },
+  "name": "dev-30ca9592f7f481919e6e5e704289ff37",
+  "version": "1.0.10",
+  "description": "A unified cinematic studio with persistent locked anchors, deterministic prompt validation, and storyboard preparation.",
+  "author": {
+    "name": "App developer"
+  },
+  "keywords": [],
+  "skills": "./skills"
+}

@@ -1,6 +1,5 @@
 import {equipmentIds,assetCategory} from './equipment.mjs';
 import {saveAssetDetails} from './asset-details.mjs';
-import {storePrompts} from './core.mjs';
 import {reclassify} from './reclassify.mjs';
 import {worldRecords,WORLD_TYPES,validateWorld} from './world-library.mjs';
 import {CAST_GROUPS,assignCastGroup} from './cast-groups.mjs';
@@ -38,7 +37,8 @@ export function editAsset(m,id,details){
   if(details.cast_group!==undefined)next=assignCastGroup(next,id,details.cast_group,worldRecords(next));
   if(details.gender!==undefined){if(!Object.hasOwn(CHARACTER_GENDERS,details.gender))throw Error('Choose a gender label');next.character_network||={};next.character_network.details||={};next.character_network.details[id]={...next.character_network.details[id],gender:details.gender};}
  }
- next.permits={};next.history||=[];next.history.push({kind:'edit_asset',id,date:new Date().toISOString()});storePrompts({...next,manifest_store:next.manifest_store||{},scenes:next.scenes||{}});
+ next.permits={};next.history||=[];next.history.push({kind:'edit_asset',id,date:new Date().toISOString()});
+ // Descriptive edits never rewrite saved generation prompts or unrelated visual anchors.
  const saved=worldRecords(next).find(a=>a.id===id);
  return {manifest:next,asset:{...saved,category:type},asset_id:id};
 }
