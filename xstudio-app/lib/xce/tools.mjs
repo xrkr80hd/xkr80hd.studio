@@ -1,3 +1,4 @@
+import {SHEET_LAYOUT_SCHEMA} from './sheet-contract.mjs';
 import {UPLOAD_CATEGORIES} from './upload-category.mjs';
 const str={type:'string',minLength:1,maxLength:10000};const id={type:'string',pattern:'^[a-zA-Z0-9_-]{1,80}$'};const boolean={type:'boolean'};const integer={type:'integer',minimum:0};const arr=(items)=>({type:'array',items,maxItems:100});const obj=(properties,required=Object.keys(properties))=>({type:'object',properties,required,additionalProperties:false});const en=(values)=>({type:'string',enum:values});
 const optionalText={type:'string',maxLength:10000};
@@ -74,3 +75,5 @@ tools.push(tool('resolve_asset_code','MANDATORY for an XCE asset code or Copy fo
 tools.find(t=>t.name==='intake_asset').inputSchema.properties.library_category=en(['weapons','beasts','magical_beings','creatures']);
 
 for(const name of ['intake_asset','save_draft_asset'])Object.assign(tools.find(t=>t.name===name).inputSchema.properties,{vin:str,baseline:packageSchema,edit_instruction:str,edit_intent:en(['modify','verify'])});
+
+tools.find(t=>t.name==='record_generation').inputSchema.properties.visual_checks.properties.sheet_layout=SHEET_LAYOUT_SCHEMA;

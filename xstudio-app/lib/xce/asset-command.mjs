@@ -1,3 +1,4 @@
+import {sheetContract} from './sheet-contract.mjs';
 import {splitEdit,validateVin} from './visual-identity.mjs';
 const need=(ok,message)=>{if(!ok)throw Error(message)};
 export function parseAssetCommand(text,defaults={}){
@@ -26,7 +27,8 @@ export function parseAssetCommand(text,defaults={}){
  }else if(parts.length===3){vin=validateVin(parts.pop()).vin;}
  need(parts.length>=1&&parts.length<=2&&parts.every(Boolean),'Use command, project, name, optional VIN, then optional edit:.');
  let type={MVS:'vehicle',MCS:'character',CRS:'creature',BEAST:'creature',CREATURE:'creature',PRS:'prop',RVH:'vehicle',VH:'vehicle',LOC:'location'}[match[1]];
- if(match[1]==='MCS')need(!vin&&defaults.asset_type!=='vehicle','Use MVS (Make Vehicle Sheet) for vehicles; MCS is Make Character Sheet.');
+ if(match[1]==='MCS')need(!vin,'Use MVS (Make Vehicle Sheet) for vehicles; MCS is Make Character Sheet.');
  need(!vin||type==='vehicle','VIN is only supported for vehicle assets');
- return {asset_type:type,mode:['CMPLX','COMPLEX'].includes(match[3])?'complex':'simple',medium:match[2]||'RL',...(parts.length===2?{project_name:parts[0]}:{}),name:parts.at(-1),...(vin?{vin}:{}),...(vehicleDescription?{vehicle_description:vehicleDescription}:{}),...(edit.edit_instruction?{edit_instruction:edit.edit_instruction,edit_intent:edit.edit_intent}:{})};
+ const parsed={asset_type:type,mode:['CMPLX','COMPLEX'].includes(match[3])?'complex':'simple',medium:match[2]||'RL',...(parts.length===2?{project_name:parts[0]}:{}),name:parts.at(-1),...(vin?{vin}:{}),...(vehicleDescription?{vehicle_description:vehicleDescription}:{}),...(edit.edit_instruction?{edit_instruction:edit.edit_instruction,edit_intent:edit.edit_intent}:{})};
+ const contract=sheetContract(parsed);return {...parsed,...(contract?{target_deliverable:contract.target_deliverable,render_contract:contract}:{})};
 }

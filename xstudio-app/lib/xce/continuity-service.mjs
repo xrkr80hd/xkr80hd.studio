@@ -1,3 +1,4 @@
+import {sheetContract,assertSheetReview,SHEET_LAYOUT_SCHEMA} from './sheet-contract.mjs';
 import {codedRecords,recordId} from './asset-codes.mjs';
 import {canonical} from './core.mjs';
 import {parseAssetCommand} from './asset-command.mjs';
@@ -11,7 +12,7 @@ const checkNames=['body_configuration','paint','wheels_tires','grille_lights','t
 export const CONTINUITY_SCHEMA={type:'object',additionalProperties:false,required:['action'],properties:{
  action:{type:'string',enum:actions},project_id:{...id,maxLength:80},asset_id:id,asset_name:str,asset_type:{type:'string',enum:['character','vehicle']},command_text:str,vin:str,baseline:any,state:{type:'string',enum:['Factory Original','Custom Modified','Reference Matched']},instruction:str,intent:{type:'string',enum:['modify','verify']},changes:any,request_id:id,
  evidence:{type:'array',maxItems:100,items:{type:'object',additionalProperties:false,required:['field','value','source_type','source_reference_id'],properties:{field:str,value:str,source_type:{type:'string',enum:['build_sheet','reference_image','user_confirmed']},source_reference_id:id}}},
- discrepancy_index:{type:'integer',minimum:0},resolution:{type:'string',enum:['reference_corrected','authorized_customization']},view_id:str,aspect_ratio:str,mode:{type:'string',enum:['simple','complex']},medium:{type:'string',enum:['RL','CB']},reference_id:id,checks:{type:'object',additionalProperties:false,required:checkNames,properties:Object.fromEntries(checkNames.map(k=>[k,{type:'boolean'}]))},sheet_checks:{type:'object',additionalProperties:false,required:['face_identity','anatomy','wardrobe','format'],properties:Object.fromEntries(['face_identity','anatomy','wardrobe','format'].map(k=>[k,{type:'boolean'}]))},observations:str,approve:{type:'boolean'},approval_instruction:str,expected_identity_revision:{type:'integer',minimum:1},expected_revision:{type:'integer',minimum:1},confirm:{type:'boolean'},include_media:{type:'boolean'}
+ discrepancy_index:{type:'integer',minimum:0},resolution:{type:'string',enum:['reference_corrected','authorized_customization']},view_id:str,aspect_ratio:str,mode:{type:'string',enum:['simple','complex']},medium:{type:'string',enum:['RL','CB']},reference_id:id,checks:{type:'object',additionalProperties:false,required:checkNames,properties:Object.fromEntries(checkNames.map(k=>[k,{type:'boolean'}]))},sheet_checks:{type:'object',additionalProperties:false,required:['face_identity','anatomy','wardrobe','format'],properties:Object.fromEntries(['face_identity','anatomy','wardrobe','format'].map(k=>[k,{type:'boolean'}]))},sheet_layout:SHEET_LAYOUT_SCHEMA,observations:str,approve:{type:'boolean'},approval_instruction:str,expected_identity_revision:{type:'integer',minimum:1},expected_revision:{type:'integer',minimum:1},confirm:{type:'boolean'},include_media:{type:'boolean'}
 }};
 export const continuityRead=action=>['read','parse_command','decode_vin','sheet'].includes(action);
 const requireValue=(ok,message)=>{if(!ok)throw Error(message)};
@@ -48,7 +49,7 @@ export async function continuityOperation(manifest,project,revision,args,options
  requireValue(!args.asset_type||args.asset_type===type,'Asset category mismatch');
  const model=asset.visual_identity;
  if(action==='read'){
-  const ids=generationReferenceIds(asset);return {data:{asset:record,asset_id:asset.asset_id,name:asset.name,asset_type:type,project_id:project,revision,identity:model||null,available_views:type==='vehicle'?vehicleViewList(asset):[],prompt:prompt(asset,m),reference_ids:ids,rendered:false,...(args.include_media?{images:await media(m,ids,getImage)}:{})}};
+  const ids=generationReferenceIds(asset);return {data:{asset:record,asset_id:asset.asset_id,name:asset.name,asset_type:type,project_id:project,revision,identity:model||null,available_views:type==='vehicle'?vehicleViewList(asset):[],render_contract:sheetContract(asset),prompt:prompt(asset,m),reference_ids:ids,rendered:false,...(args.include_media?{images:await media(m,ids,getImage)}:{})}};
  }
  if(action==='sheet'){
   requireValue(type==='vehicle'&&model?.combined_sheet?.identity_revision===model.revision,'Combine the current approved views first');
@@ -92,11 +93,11 @@ export async function continuityOperation(manifest,project,revision,args,options
  }else if(action==='record_sheet'){
   requireValue(type==='character'&&model&&asset.sheet_preparation?.identity_revision===model.revision&&args.expected_identity_revision===model.revision,'Prepare this character sheet against the current identity first');
   const ref=m.references?.[args.reference_id];requireValue(ref?.key&&!ref.deleted_at&&ref.role!=='DIAGNOSTIC','Saved character-sheet output required');requireValue(args.observations?.trim()&&args.sheet_checks,'Actual sheet inspection and all four checks required');
-  const prior=model.active_sheet,passed=Object.values(args.sheet_checks).every(Boolean);model.active_sheet={reference_id:args.reference_id,identity_revision:model.revision,status:passed?'reviewed':'flagged',checks:args.sheet_checks,observations:args.observations,history:[...(prior?.history||[]),...(prior?[{...prior,history:undefined}]:[])]};
+  assertSheetReview(asset,args.sheet_layout);const prior=model.active_sheet,passed=Object.values(args.sheet_checks).every(Boolean);model.active_sheet={reference_id:args.reference_id,identity_revision:model.revision,status:passed?'reviewed':'flagged',checks:args.sheet_checks,sheet_layout:args.sheet_layout,observations:args.observations,history:[...(prior?.history||[]),...(prior?[{...prior,history:undefined}]:[])]};
   Object.assign(ref,{parent_asset_id:model.root_asset_id,identity_revision:model.revision});
  }else if(action==='approve_sheet'){
   const sheet=model?.active_sheet;requireValue(type==='character'&&sheet?.status==='reviewed'&&sheet.identity_revision===model.revision&&sheet.reference_id===args.reference_id&&args.approval_instruction?.trim(),'Explicit approval of the exact current reviewed character sheet required');
-  sheet.status='approved';sheet.approval_instruction=args.approval_instruction;record.source_image_id=args.reference_id;
+  assertSheetReview(asset,sheet.sheet_layout);sheet.status='approved';sheet.approval_instruction=args.approval_instruction;record.source_image_id=args.reference_id;
  }else if(action==='prepare_view'){
   requireValue(type==='vehicle'&&model,'Establish the vehicle identity first');asset.mode=args.mode||asset.mode;asset.medium=args.medium||asset.medium;prepareVehicleView(asset,args.view_id,args.aspect_ratio||'16:9');asset.view_preparations={...asset.view_preparations,[args.view_id]:{identity_revision:model.revision,aspect_ratio:asset.aspect_ratio,prepared_at:new Date().toISOString()}};
  }else if(action==='record_view'){
@@ -120,5 +121,5 @@ export async function continuityOperation(manifest,project,revision,args,options
  Object.assign(record,{visual_identity:asset.visual_identity,...(asset.sheet_preparation?{sheet_preparation:asset.sheet_preparation}:{}),...(asset.view_preparations?{view_preparations:asset.view_preparations}:{}),...(asset.active_reference_view?{active_reference_view:asset.active_reference_view,aspect_ratio:asset.aspect_ratio}:{}),immutable_traits:asset.immutable_traits,mode:asset.mode,medium:asset.medium,status:asset.status,reference_ids:asset.reference_ids});
  if(asset.status==='DRAFT'){delete record.owner_image_approval;delete record.locked_at;delete record.approval_instruction;}
  const ids=generationReferenceIds(asset);m.permits={};
- return {manifest:m,data:{asset:record,asset_type:type,asset_id:asset.asset_id,project_id:project,identity:asset.visual_identity,reference_ids:ids,prompt:prompt(asset,m),rendered:false,...(asset.visual_identity?.combined_sheet?{combined_sheet_url:'/api/continuity?'+new URLSearchParams({action:'sheet',project_id:project,asset_id:asset.asset_id})}:{}),...(args.include_media?{images:await media(m,ids,getImage)}:{})}};
+ return {manifest:m,data:{asset:record,asset_type:type,asset_id:asset.asset_id,project_id:project,identity:asset.visual_identity,reference_ids:ids,render_contract:sheetContract(asset),prompt:prompt(asset,m),rendered:false,...(asset.visual_identity?.combined_sheet?{combined_sheet_url:'/api/continuity?'+new URLSearchParams({action:'sheet',project_id:project,asset_id:asset.asset_id})}:{}),...(args.include_media?{images:await media(m,ids,getImage)}:{})}};
 }

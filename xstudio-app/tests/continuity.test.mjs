@@ -71,8 +71,11 @@ test('native character edits preserve original locked version, face and proporti
  await assert.rejects(act(m,'edit',{instruction:'Change uniform',changes:{face_features:'different face'}},'C'),/facial identity/);
  assert.equal(m.world_library.characters.C.visual_identity.active_visual_reference.face_features,face);
  ({next:m}=await act(m,'prepare_sheet',{mode:'complex',medium:'CB'},'C'));assert.match((await act(m,'read',{},'C')).result.data.prompt,/complex six-view/);assert.equal(m.world_library.characters.C.medium,'CB');
+ ({next:m}=await act(m,'prepare_sheet',{mode:'simple',medium:'RL'},'C'));
+ await assert.rejects(act(m,'record_sheet',{reference_id:'O',expected_identity_revision:m.world_library.characters.C.visual_identity.revision,sheet_checks:{face_identity:true,anatomy:true,wardrobe:true,format:true},sheet_layout:{asset_type:'character',mode:'simple',medium:'RL',core_views:['front_body','profile_body','three_quarter_body','rear_body','front_face','profile_face'],total_panels:9,rows:2},observations:'Seven body images above two faces'},'C'),/six columns/);
+ ({next:m}=await act(m,'prepare_sheet',{mode:'complex',medium:'CB'},'C'));
  const sheet_checks={face_identity:true,anatomy:true,wardrobe:true,format:true};
- ({next:m}=await act(m,'record_sheet',{reference_id:'O',expected_identity_revision:m.world_library.characters.C.visual_identity.revision,sheet_checks,observations:'Inspected face, anatomy, uniform and requested complex comic layout'},'C'));
+ ({next:m}=await act(m,'record_sheet',{reference_id:'O',expected_identity_revision:m.world_library.characters.C.visual_identity.revision,sheet_checks,sheet_layout:{asset_type:'character',mode:'complex',medium:'CB',core_views:['front_body','profile_body','three_quarter_body','rear_body','front_face','profile_face'],total_panels:6,rows:2},observations:'Inspected face, anatomy, uniform and requested complex comic layout'},'C'));
  ({next:m}=await act(m,'approve_sheet',{reference_id:'O',approval_instruction:'Approve the displayed sheet'},'C'));
  assert.equal(m.world_library.characters.C.source_image_id,'O');assert.equal(m.world_library.characters.C.visual_identity.active_sheet.status,'approved');
  const read=(await act(m,'read',{},'C')).result.data;assert.ok(read.reference_ids.includes('O'));
