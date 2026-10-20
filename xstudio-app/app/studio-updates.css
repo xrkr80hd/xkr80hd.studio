@@ -130,7 +130,7 @@
 .character-creator .character-anchor-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
 .character-creator .checkbox-choice,.character-creator .clause-enable{display:flex}
 .character-creator .button-row{flex-wrap:wrap;min-width:0}
-.character-creator-footer{position:sticky;bottom:0;z-index:5;flex:none;padding:12px;border-top:1px solid var(--character-line);border-radius:0 0 12px 12px;background:#0f141df5;display:grid;gap:10px}
+.character-creator-footer{position:static;margin-top:12px;padding:12px;border-top:1px solid var(--character-line);border-radius:0 0 12px 12px;background:#0f141df5;display:grid;gap:10px}
 .character-creator-footer>.step-hint{margin:0;color:#94a3b8;font-size:11px;line-height:1.5;text-align:center}
 .character-creator-footer>[role]{max-height:72px;overflow-y:auto;overflow-wrap:anywhere;font-size:13px}
 .character-creator-actions{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:8px}
