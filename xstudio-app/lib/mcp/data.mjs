@@ -123,20 +123,19 @@ export function dataSource(auth,request=backend(auth.backendToken,fetch,{allowCl
   }
   const entry=find(m,a.asset_id);
   const classification=classificationRows(m,p,revision).find(r=>r.asset_id===recordId(entry.record));
-  if(name==='get_character_cref'){
+  if(['get_character_cref','get_character_anchor'].includes(name)){
    try{
     const cref=characterCref(m,p,a.asset_id,revision);
-    if(a.include_media===false)return {...classification,cref,references:await references(m,p,cref.reference_ids,false)};
+    const identity={...packed(p,entry),...classification};
+    if(a.include_media===false||(name==='get_character_anchor'&&a.include_media!==true))return {...identity,cref,references:await references(m,p,cref.reference_ids,false)};
     const result=await prepareCharacterCref(m,p,a.asset_id,revision,getImage);
     const current=await project(p);if(current.revision!==revision)throw new GatewayError('Project changed while loading CREF. Retry retrieval.',409);
-    return {...classification,...result,references:await references(m,p,cref.reference_ids,false)};
+    return {...identity,...result,references:await references(m,p,cref.reference_ids,false)};
    }catch(e){if(e instanceof GatewayError)throw e;throw new GatewayError(e.message,400);}
 
   }
   if(name.startsWith('get_character_')&&entry.type!=='character')notFound();
-  if(name==='get_character_anchor'&&entry.record.status!=='LOCKED')throw new GatewayError('No saved locked character anchor',404);
   const ids=referenceIds(entry.record,entry.type);
-  if(name==='get_character_anchor'&&!ids.length)throw new GatewayError('Saved anchor references are missing',404);
   return {...packed(p,entry),...classification,references:await references(m,p,ids,a.include_media)};
  };
 }

@@ -1,5 +1,15 @@
 # XSTUDIO Universal MCP gateway
 
+## Current exact-image correction — 2026-10-21 (local, not deployed)
+
+The older release/audit sections below are historical and are not proof of current deployment. Current source registers 24 tools, including `get_character_cref`. See [EXACT_REFERENCE_HANDOFF.md](EXACT_REFERENCE_HANDOFF.md) for the verified trace, patch, tests, live Gau retrieval, and remaining generation-client check.
+
+Use `get_character_cref(project_id, asset_id=<exact code>, include_media=true)` for a saved character image. It defaults media on. `get_character_anchor` defaults media off; with media on it now shares CREF retrieval and returns actual MCP image blocks. Both fail on invalid locked source associations. Explicit `include_media=false` performs no image download. General asset/reference tools still return metadata and optional short-lived URLs, not pixel delivery.
+
+The metadata text cap remains 1,500,000 bytes. The complete MCP tool-result envelope, including base64 images and duplicated structured metadata, is capped at 4,000,000 bytes. Originals above that response budget fail explicitly; they are never resized, reinterpreted or silently replaced. The shared private reader separately retains its 6 MiB original-file cap. Use a direct original attachment fallback for images exceeding the envelope budget.
+
+
+
 Status: release authorized by Trav with “deploy all.” Deployment is based on commit `8345976d230871d9712480cd6d6b0d4cb163a21e`. Production state storage is activated on Fuchsia Lighthouse. Website release verification is recorded below.
 
 Server URL after activation: **https://xstudio.xrkr80hd.studio/mcp**

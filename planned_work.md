@@ -352,3 +352,6 @@ Replace the native character select that obscures category navigation with an in
 
 ### Shared viewer centering
 Restore explicit auto margins and fixed viewport positioning for native dialogs after Tailwind reset. Preserve desktop drag overrides and full-screen shot modal. Existing Tailwind 4 and lucide dependencies already provide styling/icons; avoid duplicate framework.
+
+## 2026-10-21 Exact character image handoff
+Trace exact-code authorization and locked source retrieval; reuse CREF for anchor media; improve discovery guidance and bounded image responses; add regression tests and report client/deployment limits. No production changes or push.

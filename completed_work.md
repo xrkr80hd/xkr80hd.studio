@@ -340,3 +340,6 @@ Trav explicitly authorized push after reviewing the pending changes. Applied xst
 
 ### Mobile character picker Back correction
 Replaced native character select with inline touch buttons in a bounded scrolling list. Categories Back sits beside current category above search/list, outside its scroll area. Category selection remains a dropdown; returning does not mutate selected cast. Shared picker covers all consumers. Targeted ESLint, four scene-cast tests, actual React interaction hydration/selection/Back test and diff whitespace check passed. No device visual check performed. Local only, not pushed.
+
+## 2026-10-21 Exact character image handoff
+Local correction reuses CREF for anchor image requests, improves discovery/initialization guidance, retains metadata-only reads and bounds the full MCP image envelope. 411 full-suite tests and modified-file lint pass; 61 focused tests pass. Read-only live XCE bridge test delivered actual Gau PNG (FF6-CH-GAU-v1) for locked FF6-CH-GAU-v2, final-fantasy-vi revision 177. Renderer consumption and authenticated deployed universal MCP remain unverified. Vercel connector could not access named xstudio-private project. Detailed evidence: xstudio-app/docs/EXACT_REFERENCE_HANDOFF.md. No commits, pushes, deployments or production mutations.

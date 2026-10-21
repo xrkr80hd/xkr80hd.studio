@@ -35,12 +35,12 @@ export const toolSpecs=[
  ['get_asset_classifications','Read primary categories and secondary classifications; includes available choices, metadata versions and revision.',{project_id,asset_ids:z.array(id).max(50).optional()}],
  ['update_asset_classification','Update classification metadata only; requires explicit asset:classify permission. Preserves locked images and primary category.',{project_id,...update.shape,expected_revision:z.number().int().min(1),confirm:z.literal(true)}],
  ['bulk_update_asset_classifications','Classify existing IDs with per-item errors and project revision protection. No duplicates or category moves.',{project_id,updates:z.array(update).min(1).max(50),expected_revision:z.number().int().min(1),confirm:z.literal(true)}],
- ['get_character_cref','Retrieve a saved LOCKED character and verified original image blocks by exact ID or code. Images are included by default; include_media=false returns metadata only. Never substitutes draft images or invents identity.',{project_id,asset_id:id,include_media:z.boolean().default(true)}],
+ ['get_character_cref','Use for exact saved character reference requests such as reference FF6-CH-GAU. Retrieve verified original LOCKED anchor image blocks by exact ID/code, not a description or URL. First list authorized projects and resolve the exact owning project; ask if ambiguous, never assume the active project. Images default on; include_media=false is metadata only. Never substitute drafts. Image delivery to the client does not prove delivery to its generation tool.',{project_id,asset_id:id,include_media:z.boolean().default(true)}],
  ['list_projects','List explicitly authorized, available XSTUDIO projects.',{...page}],
  ['get_project','Get saved project metadata and canonical scene IDs.',{project_id}],
  ['list_project_assets','List saved asset IDs, names and metadata in one project.',{project_id,category:category.optional(),...page}],
  ['get_asset','Retrieve one saved asset and its exact reference associations. Signed media is opt-in.',{project_id,asset_id:id,...media}],
- ['get_character_anchor','Retrieve a saved LOCKED character anchor. Missing references are never substituted.',{project_id,asset_id:id,...media}],
+ ['get_character_anchor','Retrieve the exact saved LOCKED character anchor. Prefer get_character_cref for visual reference requests. include_media=true returns verified original image blocks using CREF; false (default) returns metadata only. Never substitutes missing references.',{project_id,asset_id:id,...media}],
  ['get_character_references','Retrieve saved character reference associations and optional 60-second media URLs.',{project_id,asset_id:id,...media}],
  ['list_establishing_shots','List records explicitly marked as establishing shots; do not infer a shot type.',{project_id,...page}],
  ['get_scene_references','Retrieve saved scene or shot references and saved cast metadata.',{project_id,scene_id:id,...media}],
@@ -51,14 +51,17 @@ export const toolSpecs=[
 const headers={'cache-control':'private, no-store, max-age=0','x-content-type-options':'nosniff','referrer-policy':'no-referrer'};
 const response=(body,status=200,extra={})=>Response.json(body,{status,headers:{...headers,...extra}});
 export function makeServer(execute,audit=()=>{}){
- const server=new McpServer({name:'xstudio-reference-gateway',version:'1.0.0'},{maxToolInputElements:500});
+ const server=new McpServer({name:'xstudio-reference-gateway',version:'1.0.0'},{maxToolInputElements:500,instructions:'For exact saved character references, use get_character_cref with media enabled. Discover authorized projects; match the exact code within the intended project and ask when ambiguous. Do not choose the active project implicitly. Metadata, descriptions and signed URLs are not image inputs. Never substitute another character or draft. Confirm actual image delivery separately from generation-tool reference delivery.'});
  for(const [name,description,shape] of toolSpecs)server.registerTool(name,{description,inputSchema:z.strictObject(shape),annotations:{readOnlyHint:!writeScope(name),destructiveHint:false,idempotentHint:!writeScope(name),openWorldHint:['verify_vehicle_vin','manage_asset_identity'].includes(name)},_meta:{securitySchemes:[{type:'oauth2',scopes:writeScope(name)?[SCOPE,writeScope(name)]:[SCOPE]}]}},async args=>{
   try{
    const result={source_url:'https://xstudio.xrkr80hd.studio',...await execute(name,args)};
    const {images,...structured}=result;
-   const imageBlocks=['get_character_cref','get_asset_identity','manage_asset_identity'].includes(name)?(images||[]).map(i=>({type:'image',data:i.image_base64,mimeType:i.mime_type})):[];
-   const text=JSON.stringify(structured);if(Buffer.byteLength(text)>1_500_000)throw new GatewayError('Result too large; narrow the request',413);
-   audit({tool:name,outcome:'success'});return {content:[{type:'text',text},...imageBlocks],structuredContent:structured};
+   const imageBlocks=['get_character_cref','get_character_anchor','get_asset_identity','manage_asset_identity'].includes(name)?(images||[]).map(i=>({type:'image',data:i.image_base64,mimeType:i.mime_type})):[];
+   const text=JSON.stringify(structured);
+   // Bound the complete duplicated MCP envelope, including base64 image blocks.
+   const envelope={content:[{type:'text',text},...imageBlocks],structuredContent:structured};
+   if(Buffer.byteLength(text)>1_500_000||Buffer.byteLength(JSON.stringify(envelope))>4_000_000)throw new GatewayError('Result too large; request metadata only or retrieve fewer original references',413);
+   audit({tool:name,outcome:'success'});return envelope;
   }catch(error){
    const safe=error instanceof GatewayError?error.message:'Reference retrieval failed';
    audit({tool:name,outcome:'denied_or_failed'});

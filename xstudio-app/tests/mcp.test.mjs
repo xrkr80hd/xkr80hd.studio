@@ -8,6 +8,7 @@ import {gateway,toolSpecs} from '../lib/mcp/server.mjs';
 import {authenticate,digest,settings,RESOURCE,redisLimiter,resourceMetadata} from '../lib/mcp/security.mjs';
 import {dataSource,backend} from '../lib/mcp/data.mjs';
 
+const imageBytes=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aX1sAAAAASUVORK5CYII=','base64');
 const owner='11111111-1111-4111-8111-111111111111';
 const token='xmc_'+'a'.repeat(64);
 const upstreamToken='xst_'+'c'.repeat(64);
@@ -21,7 +22,7 @@ const base={campaign_name:'Saved project',references:{REF:reference},manifest_st
 function source(m=base,extra={}){
  const calls=[];
  const request=async args=>{calls.push(args);if(args.op==='projects')return {data:[{project:'P',revision:3,manifest:JSON.stringify(m)},{project:'OTHER',revision:1,manifest:JSON.stringify(base)}]};if(args.op==='load')return {data:{revision:3,manifest:JSON.stringify(m)}};if(args.op==='file_get')return {file:{url:'https://osbsjjoxepxezcmupcak.supabase.co/storage/v1/object/sign/xstudio-assets/path?token=test',mime_type:'image/png',size:8}};throw Error('Unexpected operation');};
- return {run:dataSource(principal,extra.request||request),calls};
+ return {run:dataSource(principal,extra.request||request,{getImage:async key=>{await request({op:'file_get',key});return {size:imageBytes.length,arrayBuffer:async()=>imageBytes,httpMetadata:{contentType:'image/png'}}}}),calls};
 }
 const rpc=(method,params={},opts={})=>new Request(RESOURCE,{method:'POST',headers:{authorization:'Bearer '+token,'content-type':'application/json',accept:'application/json, text/event-stream',...opts.headers},body:JSON.stringify({jsonrpc:'2.0',id:1,method,params})});
 const deps={config,limit:async()=>{},backend:async()=>({data:null}),audit:()=>{}};
@@ -47,11 +48,11 @@ test('project retrieval preserves IDs and names',async()=>{const {run}=source();
 test('cross-project access denied before backend lookup',async()=>{const {run,calls}=source();await assert.rejects(run('get_project',{project_id:'OTHER'}),/not found/);assert.equal(calls.length,0);});
 test('project discovery filters unauthorized projects',async()=>{const {run}=source();assert.deepEqual((await run('list_projects',{limit:30,offset:0})).projects.map(p=>p.project_id),['P']);});
 for(const state of ['deleted_at','folder_lock'])test(state+' projects stay unavailable',async()=>{const {run}=source({...base,[state]:state==='folder_lock'?{session_hash:'secret',session_expires:Date.now()+60000}:'date'});await assert.rejects(run('get_project',{project_id:'P'}),/not found/);assert.deepEqual((await run('list_projects',{limit:30,offset:0})).projects,[]);});
-test('locked anchor uses exact saved identity and authoritative sheet only',async()=>{const {run,calls}=source();const r=await run('get_character_anchor',{project_id:'P',asset_id:'P-CH-CHAR',include_media:true});assert.equal(r.metadata.name,character.name);assert.deepEqual(r.references.map(r=>r.reference_id),['REF']);assert.equal(r.references[0].media.expires_in,60);assert.equal(calls.filter(c=>c.op==='file_get').length,1);assert.ok(!JSON.stringify(r).includes('REF-uuid'));});
+test('locked anchor uses exact saved identity and authoritative sheet only',async()=>{const {run,calls}=source();const r=await run('get_character_anchor',{project_id:'P',asset_id:'P-CH-CHAR',include_media:true});assert.equal(r.metadata.name,character.name);assert.deepEqual(r.references.map(r=>r.reference_id),['REF']);assert.equal(r.images[0].image_base64,imageBytes.toString('base64'));assert.equal(r.references[0].media,undefined);assert.equal(calls.filter(c=>c.op==='file_get').length,1);assert.ok(!JSON.stringify(r).includes('REF-uuid'));});
 test('metadata retrieval does not sign media without explicit opt-in',async()=>{const {run,calls}=source();const r=await run('get_asset',{project_id:'P',asset_id:'CHAR',include_media:false});assert.ok(!r.references[0].media);assert.ok(!calls.some(c=>c.op==='file_get'));});
-test('missing saved reference is explicit, never substituted',async()=>{const {run}=source({...base,references:{}});const r=await run('get_character_anchor',{project_id:'P',asset_id:'CHAR',include_media:true});assert.deepEqual(r.references,[{reference_id:'REF',status:'missing'}]);});
+test('missing saved reference is explicit, never substituted',async()=>{const {run}=source({...base,references:{}});await assert.rejects(run('get_character_anchor',{project_id:'P',asset_id:'CHAR',include_media:true}),/references unavailable/);});
 test('missing asset does not fall back to another character',async()=>{const {run}=source();await assert.rejects(run('get_asset',{project_id:'P',asset_id:'ABSENT'}),/not found/);});
-test('draft is not returned as locked anchor',async()=>{const m=structuredClone(base);m.manifest_store.characters.CHAR.status='DRAFT';await assert.rejects(source(m).run('get_character_anchor',{project_id:'P',asset_id:'CHAR'}),/locked/);});
+test('draft is not returned as locked anchor',async()=>{const m=structuredClone(base);m.manifest_store.characters.CHAR.status='DRAFT';await assert.rejects(source(m).run('get_character_anchor',{project_id:'P',asset_id:'CHAR'}),/LOCKED/);});
 test('migrated and intentionally copied saved associations preserve original keys',async()=>{const m=structuredClone(base);m.references.REF.key='xce/legacy-owner/OLD-PROJECT/REF';const {run,calls}=source(m);const r=await run('get_asset',{project_id:'P',asset_id:'CHAR',include_media:true});assert.ok(r.references[0].media);assert.equal(calls.find(c=>c.op==='file_get').key,m.references.REF.key);});
 test('signed URL origin is checked',async()=>{const request=async a=>a.op==='load'?{data:{manifest:JSON.stringify(base),revision:1}}:{file:{url:'https://evil.example/file?token=secret'}};await assert.rejects(source(base,{request}).run('get_asset',{project_id:'P',asset_id:'CHAR',include_media:true}),/media destination/);});
 test('only explicit establishing shots are listed',async()=>{const r=await source().run('list_establishing_shots',{project_id:'P',limit:30,offset:0});assert.deepEqual(r.assets.map(a=>a.asset_id),['SCENE']);});
