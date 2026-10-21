@@ -343,3 +343,12 @@ Replaced native character select with inline touch buttons in a bounded scrollin
 
 ## 2026-10-21 Exact character image handoff
 Local correction reuses CREF for anchor image requests, improves discovery/initialization guidance, retains metadata-only reads and bounds the full MCP image envelope. 411 full-suite tests and modified-file lint pass; 61 focused tests pass. Read-only live XCE bridge test delivered actual Gau PNG (FF6-CH-GAU-v1) for locked FF6-CH-GAU-v2, final-fantasy-vi revision 177. Renderer consumption and authenticated deployed universal MCP remain unverified. Vercel connector could not access named xstudio-private project. Detailed evidence: xstudio-app/docs/EXACT_REFERENCE_HANDOFF.md. No commits, pushes, deployments or production mutations.
+## Asset Library viewer and batch inspection (2026-10-21)
+- Replaced editable detail forms with a dedicated read-only AssetViewerModal across the shared library. Header and image-edge arrows stay within the current visible category/cast group; editing requires Edit.
+- Presents saved sheets, canonical metadata/specifications, biography, prompt anchors, tags and variations; preserves image download and asset-code handoff.
+- Extracted cancellable useLongPress; keeps checkbox/shift selection. View Selected resolves exact selection keys into a responsive comparison. Edit Selected opens the existing classification/categorization/cast/move batch controller; no new write endpoint.
+- Verified: 409 Node tests pass (four new regression tests), TypeScript and changed-file ESLint pass, production webpack build passes, git diff --check passes. SSR checks confirm single/comparison viewers render saved details with no editable fields.
+- Browser gesture/visual verification unavailable: no installed Chromium. Nothing committed, pushed or deployed.
+
+## Complete large read-only preview (2026-10-21)
+Added full saved character relationships and synergy clauses from both directions, including disabled status, assigned equipment, reverse prop usage and character clauses, plus core identity attributes. Enlarged the preview dialog and fixed hero image sizing through the PreviewImage wrapper. Verification: 416 Node tests pass; changed-file ESLint passes; SSR confirms saved attributes, synergy text and navigation without any form controls.

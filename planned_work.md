@@ -355,3 +355,8 @@ Restore explicit auto margins and fixed viewport positioning for native dialogs 
 
 ## 2026-10-21 Exact character image handoff
 Trace exact-code authorization and locked source retrieval; reuse CREF for anchor media; improve discovery guidance and bounded image responses; add regression tests and report client/deployment limits. No production changes or push.
+## Asset Library viewer and batch inspection (2026-10-21)
+Implement read-only asset inspection before explicit editing for every library category; preserve category navigation; reuse long-press selection and existing batch controller for selected comparison and explicit batch edits. Verify types, regression tests and interaction rendering. No commit, push or deployment.
+
+## Complete preview attributes (2026-10-21)
+Show saved relationships and synergies (including disabled rules), equipment and reverse prop links, and gender/core details in the large read-only preview. Publish to the already-authorized branch.
