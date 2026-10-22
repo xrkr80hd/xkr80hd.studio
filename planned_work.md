@@ -360,3 +360,6 @@ Implement read-only asset inspection before explicit editing for every library c
 
 ## Complete preview attributes (2026-10-21)
 Show saved relationships and synergies (including disabled rules), equipment and reverse prop links, and gender/core details in the large read-only preview. Publish to the already-authorized branch.
+
+## Compact character preview accordions (2026-10-21)
+Keep the large image and viewer controls; collapse attributes, biography, relationships, synergies, equipment, variations and continuity into categorized accordions. Isolate anchor prompts from attributes and group GPT prompt handoff and codes in a separate accordion.

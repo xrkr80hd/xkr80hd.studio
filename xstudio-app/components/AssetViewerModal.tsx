@@ -15,6 +15,7 @@ export function AssetReadOnlyCard({asset,manifest,project,onPrev,onNext,prevDisa
  const [imageIndex,setImageIndex]=useState(0);
  const classification=classificationValue(manifest,data.id),character=a.type==='characters'||a.asset_type==='character';
  const image=(ref:string)=>'/api/manifest?'+new URLSearchParams({project,file:ref});
+ const promptFields=new Set(['identity_lock','detail_prompt','generation_prompt','prompt','anchor_prompt']);
  const shown=data.imageIds[Math.min(imageIndex,Math.max(0,data.imageIds.length-1))];
  return <article className="asset-read-only" aria-label={'View '+(a.name||data.id)}>
   <header><h2>{a.name||a.asset_name||data.id}</h2><p>{character?(CAST_GROUPS as any)[characterGroup(manifest,data.id)]:label(classification||a.asset_type||a.type||asset.category||'Reference')}{a.status?' · '+a.status:''}</p>{a.asset_code&&<code>{a.asset_code}</code>}</header>
@@ -27,16 +28,16 @@ export function AssetReadOnlyCard({asset,manifest,project,onPrev,onNext,prevDisa
   {classification&&<p>{(CLASSIFICATIONS as any)[classification]||label(classification)}</p>}
   {data.description&&<p>{data.description}</p>}
   {data.tags.length>0&&<p><strong>Tags:</strong> {text(data.tags)}</p>}
-  {data.quickDetails&&<section><h3>Details</h3><p>{data.quickDetails}</p></section>}
-  {data.biography&&<section><h3>Biography</h3><p>{data.biography}</p></section>}
-  {(['relationship','synergy'] as const).map(kind=>{const links=data.relationships.filter((r:any)=>(r.clause_type||'relationship')===kind);return <section key={kind}><h3>{kind==='synergy'?'Synergies':'Relationships'}</h3>{links.length?<ul>{links.map((r:any,i:number)=><li key={i}><strong>{r.target_name}</strong>: {r.kind==='custom'?r.text:(CHARACTER_RELATIONS as any)[r.kind]||label(r.kind)}{r.enabled===false?' (Disabled)':''}</li>)}</ul>:<p>None saved.</p>}</section>})}
-  {data.equipment.length>0&&<section><h3>Assigned equipment</h3><ul>{data.equipment.map((r:any)=><li key={r.id}>{r.name}</li>)}</ul></section>}
-  {data.assignedTo.length>0&&<section><h3>Used by</h3><ul>{data.assignedTo.map((r:any)=><li key={r.id}>{r.name}</li>)}</ul></section>}
-  {data.clauses.length>0&&<section><h3>Prop and character rules</h3><ul>{data.clauses.map((r:any,i:number)=><li key={i}><strong>{r.asset_name}</strong>: {r.text}{r.enabled===false?' (Disabled)':''}</li>)}</ul></section>}
-  <dl>{Object.entries(data.fields).filter(([key,value])=>!['description','biography'].includes(key)&&text(value)&&!data.imageIds.includes(value)).map(([key,value])=><div key={key}><dt>{label(key)}</dt><dd>{text(value)}</dd></div>)}</dl>
-  {data.prompt&&<section><h3>Prompt anchor</h3><p className="asset-viewer-prompt">{data.prompt}</p></section>}
-  {a.action_continuity&&<section><h3>Continuity</h3><p>{text(a.action_continuity)}</p></section>}
-  {data.variations.length>0&&<section><h3>Variations</h3><ul>{data.variations.map((variant:any,i:number)=><li key={variant.id||i}>{typeof variant==='string'?variant:variant.name||variant.id||text(variant)}{variant.status?' · '+variant.status:''}</li>)}</ul></section>}
+  {data.quickDetails&&<details className="asset-viewer-accordion"><summary>Quick details</summary><p>{data.quickDetails}</p></details>}
+  {data.biography&&<details className="asset-viewer-accordion"><summary>Biography & background</summary><p>{data.biography}</p></details>}
+  {(['relationship','synergy'] as const).map(kind=>{const links=data.relationships.filter((r:any)=>(r.clause_type||'relationship')===kind);return <details className="asset-viewer-accordion" key={kind}><summary>{kind==='synergy'?'Synergies':'Relationships'}</summary>{links.length?<ul>{links.map((r:any,i:number)=><li key={i}><strong>{r.target_name}</strong>: {r.kind==='custom'?r.text:(CHARACTER_RELATIONS as any)[r.kind]||label(r.kind)}{r.enabled===false?' (Disabled)':''}</li>)}</ul>:<p>None saved.</p>}</details>})}
+  {data.equipment.length>0&&<details className="asset-viewer-accordion"><summary>Assigned equipment</summary><ul>{data.equipment.map((r:any)=><li key={r.id}>{r.name}</li>)}</ul></details>}
+  {data.assignedTo.length>0&&<details className="asset-viewer-accordion"><summary>Used by</summary><ul>{data.assignedTo.map((r:any)=><li key={r.id}>{r.name}</li>)}</ul></details>}
+  {data.clauses.length>0&&<details className="asset-viewer-accordion"><summary>Prop and character rules</summary><ul>{data.clauses.map((r:any,i:number)=><li key={i}><strong>{r.asset_name}</strong>: {r.text}{r.enabled===false?' (Disabled)':''}</li>)}</ul></details>}
+  <details className="asset-viewer-accordion"><summary>Attributes & specifications</summary><dl>{Object.entries(data.fields).filter(([key,value])=>!['description','biography'].includes(key)&&!promptFields.has(key)&&text(value)&&!data.imageIds.includes(value)).map(([key,value])=><div key={key}><dt>{label(key)}</dt><dd>{text(value)}</dd></div>)}</dl></details>
+  <details className="asset-viewer-accordion"><summary>Anchor prompts</summary>{data.prompt&&<section><h3>Saved anchor prompt</h3><p className="asset-viewer-prompt">{data.prompt}</p></section>}{Object.entries(data.fields).filter(([key,value])=>promptFields.has(key)&&text(value)&&text(value)!==data.prompt).map(([key,value])=><section key={key}><h3>{label(key)}</h3><p className="asset-viewer-prompt">{text(value)}</p></section>)}{!data.prompt&&!Object.entries(data.fields).some(([key,value])=>promptFields.has(key)&&text(value))&&<p>No anchor prompts saved.</p>}</details>
+  {a.action_continuity&&<details className="asset-viewer-accordion"><summary>Continuity</summary><p>{text(a.action_continuity)}</p></details>}
+  {data.variations.length>0&&<details className="asset-viewer-accordion"><summary>Variations</summary><ul>{data.variations.map((variant:any,i:number)=><li key={variant.id||i}>{typeof variant==='string'?variant:variant.name||variant.id||text(variant)}{variant.status?' · '+variant.status:''}</li>)}</ul></details>}
   {shown&&<a className="button secondary" href={image(shown)}>Download image</a>}
  </article>;
 }

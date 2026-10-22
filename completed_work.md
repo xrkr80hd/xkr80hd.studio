@@ -352,3 +352,6 @@ Local correction reuses CREF for anchor image requests, improves discovery/initi
 
 ## Complete large read-only preview (2026-10-21)
 Added full saved character relationships and synergy clauses from both directions, including disabled status, assigned equipment, reverse prop usage and character clauses, plus core identity attributes. Enlarged the preview dialog and fixed hero image sizing through the PreviewImage wrapper. Verification: 416 Node tests pass; changed-file ESLint passes; SSR confirms saved attributes, synergy text and navigation without any form controls.
+
+## Compact character preview accordions (2026-10-21)
+Kept the large asset image and preview navigation. Added closed-by-default accordions for quick details, biography/background, attributes/specifications, relationships, synergies, equipment, linked prop rules, continuity, variations, anchor prompts, and GPT handoff/asset code. Long identity/anchor prompts are excluded from attributes and grouped under Anchor prompts. TypeScript, changed-file ESLint, SSR collapsed-section/no-edit-field checks and git diff --check pass. Awaiting push instruction for these additional edits.
