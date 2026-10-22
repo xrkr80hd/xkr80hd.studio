@@ -360,3 +360,15 @@ Kept the large asset image and preview navigation. Added closed-by-default accor
 Horizontal swipes on the large preview image now browse previous/next assets, respecting first/last boundaries and ignoring vertical movement, short gestures, multitouch and cancellation. Desktop arrows stay available. TypeScript, changed-file lint and 15 relevant regression tests pass. Mobile browser gesture verification remains outstanding. Not pushed.
 
 Mobile swipe refinement: small unobtrusive arrow glyphs on touch phones, with 44px tap targets; desktop arrow styling retained. CSS diff whitespace check passes.
+
+## Silhouette choices and clean preview (2026-10-21)
+Added character Appearance & Anatomy silhouette dropdown with common body shapes and retention of custom saved values. Saves as descriptive metadata; locked visual identity is unchanged. Preview attributes now omit Material Spec and recursively remove empty serialized JSON placeholders. TypeScript, changed-file ESLint, 10 relevant tests and targeted metadata save/preview/lock-preservation check pass. Not pushed.
+
+## No preselected project assets (2026-10-21)
+Explicit project selection (including folder unlock) clears selected assets, batch mode and previous scene/filter state. The library starts without an active category, shows a choose-category hint and disables Add until a category is chosen. TypeScript, changed-file ESLint, initial SSR no-preselected-category/cards and diff checks pass. Not pushed.
+
+## Cover photo picker (2026-10-21)
+Changed only the folder-cover file input to image/* and labeled it Choose project cover photo. This requests a mobile photo chooser without forcing a camera or specific app. The OS/browser controls the available picker. Existing cover upload validation remains intact; diff check passes. Not pushed.
+
+## Cover source selection (2026-10-21)
+Add/Change Cover now offers phone/device or assets in that exact project. The asset chooser loads the target project independently of the active workspace, starts at project folders without selection, shows saved image thumbnails and uses exact saved bytes with the existing authenticated cover upload/validation. Back navigation and errors remain in the chooser; cover success closes it. TypeScript, changed-file ESLint, relevant reference-pool/project-edit tests and whitespace checks pass. Not pushed; native phone picker and authenticated image-to-cover flow still require browser verification.

@@ -14,13 +14,20 @@ export function selectedViewerRecords(manifest,keys){
  return keys.flatMap(key=>byKey.has(key)?[byKey.get(key)]:[]);
 }
 
+// Hide empty serialized placeholders and internal material specifications in previews.
+export function previewAttributes(value){
+ if(typeof value==='string'){try{const parsed=JSON.parse(value);if(parsed&&typeof parsed==='object')return previewAttributes(parsed)}catch{}return value;}
+ if(Array.isArray(value))return value.map(previewAttributes).filter(v=>v!==''&&v!==null&&v!==undefined&&(typeof v!=='object'||Object.keys(v).length));
+ if(value&&typeof value==='object')return Object.fromEntries(Object.entries(value).filter(([key])=>key!=='material_spec').map(([key,v])=>[key,previewAttributes(v)]).filter(([,v])=>v!==''&&v!==null&&v!==undefined&&(typeof v!=='object'||Object.keys(v).length)));
+ return value;
+}
 /** Data only: never mount editors or create drafts during inspection. */
 export function assetViewData(manifest,asset){
  const id=assetId(asset),details=manifest.asset_details?.[id]||{},profile=details.metadata_profile||{};
  const current=worldRecords(manifest).find(a=>a.id===id)||manifest.scenes?.[id]||manifest.references?.[id]||asset;
  const record={...asset,...current},references=manifest.references||{},primary=assetPreviewReference(record,references);
  const imageIds=[...new Set([primary,...(record.reference_ids||[]),...Object.values(record.metadata||{}).filter(value=>typeof value==='string'&&Object.hasOwn(references,value))].filter(ref=>ref&&references[ref]&&!references[ref].deleted_at&&references[ref].role!=='DIAGNOSTIC'))];
- const fields={...profile,...record.immutable_traits,...record.metadata,...manifest.character_network?.details?.[id]};
+ const fields=previewAttributes({...profile,...record.immutable_traits,...record.metadata,...manifest.character_network?.details?.[id],...(Object.hasOwn(profile,'silhouette')?{silhouette:profile.silhouette}:{})});
  for(const key of ['text','source','updated_at'])delete fields[key];
  for(const key of ['provenance','analysis_status'])delete fields[key];
  const records=worldRecords(manifest),name=target=>records.find(a=>a.id===target)?.name||target;

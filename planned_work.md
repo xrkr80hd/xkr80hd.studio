@@ -366,3 +366,15 @@ Keep the large image and viewer controls; collapse attributes, biography, relati
 
 ## Mobile asset preview swipe (2026-10-21)
 Add horizontal touch swiping across the large asset image, reusing the existing swipe threshold and respecting carousel boundaries, scrolling and pinch gestures. Keep desktop arrows.
+
+## Silhouette choices and clean preview (2026-10-21)
+Add silhouette dropdown to character appearance metadata; preserve custom saved values and locked image identity. Remove Material Spec and empty JSON placeholders from preview attributes.
+
+## No preselected project assets (2026-10-21)
+Explicit project selection clears active asset, selected items and scene/filter state. Asset library starts with no category selected; user chooses what to browse.
+
+## Cover photo picker (2026-10-21)
+Request image/* for project cover selection so mobile browsers can offer their native photo picker. Keep camera capture optional and server image validation intact.
+
+## Cover source selection (2026-10-21)
+Offer phone/device or current project assets for a folder cover. Load the selected folder’s manifest, browse categories with nothing preselected and use exact saved image bytes via the existing validated cover upload endpoint.
