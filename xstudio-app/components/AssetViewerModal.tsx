@@ -1,5 +1,6 @@
 'use client';
-import {useState} from 'react';
+import {useRef,useState} from 'react';
+import {swipeStep} from '../lib/xce/inspector-queue.mjs';
 import {assetViewData,assetId} from '../lib/xce/asset-viewer.mjs';
 import {classificationValue,CLASSIFICATIONS} from '../lib/xce/classifications.mjs';
 import {CAST_GROUPS,characterGroup} from '../lib/xce/cast-groups.mjs';
@@ -13,13 +14,19 @@ function text(value:any):string{if(value===null||value===undefined)return '';if(
 export function AssetReadOnlyCard({asset,manifest,project,onPrev,onNext,prevDisabled=true,nextDisabled=true}:{asset:any;manifest:any;project:string;onPrev?:()=>void;onNext?:()=>void;prevDisabled?:boolean;nextDisabled?:boolean}){
  const data=assetViewData(manifest,asset),a=data.record;
  const [imageIndex,setImageIndex]=useState(0);
+ const swipeStart=useRef<{x:number;y:number}|null>(null);
  const classification=classificationValue(manifest,data.id),character=a.type==='characters'||a.asset_type==='character';
  const image=(ref:string)=>'/api/manifest?'+new URLSearchParams({project,file:ref});
  const promptFields=new Set(['identity_lock','detail_prompt','generation_prompt','prompt','anchor_prompt']);
  const shown=data.imageIds[Math.min(imageIndex,Math.max(0,data.imageIds.length-1))];
  return <article className="asset-read-only" aria-label={'View '+(a.name||data.id)}>
   <header><h2>{a.name||a.asset_name||data.id}</h2><p>{character?(CAST_GROUPS as any)[characterGroup(manifest,data.id)]:label(classification||a.asset_type||a.type||asset.category||'Reference')}{a.status?' · '+a.status:''}</p>{a.asset_code&&<code>{a.asset_code}</code>}</header>
-  <div className="asset-viewer-image">
+  <div className="asset-viewer-image" onTouchStart={e=>{const touch=e.touches[0];swipeStart.current=e.touches.length===1?{x:touch.clientX,y:touch.clientY}:null}} onTouchCancel={()=>{swipeStart.current=null}} onTouchEnd={e=>{
+   const start=swipeStart.current;swipeStart.current=null;const touch=e.changedTouches[0];
+   if(!start||!touch||e.touches.length)return;
+   const step=swipeStep(touch.clientX-start.x,touch.clientY-start.y);
+   if(step===1&&!nextDisabled)onNext?.();else if(step===-1&&!prevDisabled)onPrev?.();
+  }}>
    {shown?<PreviewImage src={image(shown)} alt={a.name||'Saved reference'} loading="lazy"/>:<p>No saved reference image.</p>}
    {onPrev&&<button type="button" className="asset-viewer-prev icon-button" aria-label="Previous asset" disabled={prevDisabled} onClick={onPrev}>‹</button>}
    {onNext&&<button type="button" className="asset-viewer-next icon-button" aria-label="Next asset" disabled={nextDisabled} onClick={onNext}>›</button>}

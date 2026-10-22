@@ -355,3 +355,8 @@ Added full saved character relationships and synergy clauses from both direction
 
 ## Compact character preview accordions (2026-10-21)
 Kept the large asset image and preview navigation. Added closed-by-default accordions for quick details, biography/background, attributes/specifications, relationships, synergies, equipment, linked prop rules, continuity, variations, anchor prompts, and GPT handoff/asset code. Long identity/anchor prompts are excluded from attributes and grouped under Anchor prompts. TypeScript, changed-file ESLint, SSR collapsed-section/no-edit-field checks and git diff --check pass. Awaiting push instruction for these additional edits.
+
+## Mobile asset preview swipe (2026-10-21)
+Horizontal swipes on the large preview image now browse previous/next assets, respecting first/last boundaries and ignoring vertical movement, short gestures, multitouch and cancellation. Desktop arrows stay available. TypeScript, changed-file lint and 15 relevant regression tests pass. Mobile browser gesture verification remains outstanding. Not pushed.
+
+Mobile swipe refinement: small unobtrusive arrow glyphs on touch phones, with 44px tap targets; desktop arrow styling retained. CSS diff whitespace check passes.

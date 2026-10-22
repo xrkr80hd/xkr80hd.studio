@@ -363,3 +363,6 @@ Show saved relationships and synergies (including disabled rules), equipment and
 
 ## Compact character preview accordions (2026-10-21)
 Keep the large image and viewer controls; collapse attributes, biography, relationships, synergies, equipment, variations and continuity into categorized accordions. Isolate anchor prompts from attributes and group GPT prompt handoff and codes in a separate accordion.
+
+## Mobile asset preview swipe (2026-10-21)
+Add horizontal touch swiping across the large asset image, reusing the existing swipe threshold and respecting carousel boundaries, scrolling and pinch gestures. Keep desktop arrows.
