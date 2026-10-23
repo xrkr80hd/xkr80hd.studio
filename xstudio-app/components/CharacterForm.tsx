@@ -42,7 +42,7 @@ export default function CharacterForm({project,manifest,assetId,initial,onSaved,
   <AssetAccordionLayout label={created?'Edit character':'Create character'} footer={<>
     <p className="step-hint">Save character applies all fields and reference selections together.</p>
     {error&&<p role="alert" className="error-text">{error}</p>}{message&&<p role="status">{message}</p>}
-    <div className="character-creator-actions"><button type="button" className="button primary" disabled={busy} onClick={()=>void save()}>{busy?'Saving…':created?'Save character':'Create character'}</button><button type="button" className="button secondary" disabled={busy||!sheet} onClick={()=>void toggleLock()}>{locked?'Save & unlock':'Save & lock'}</button>{onCancel&&<button type="button" className="button secondary character-creator-close" disabled={busy} onClick={onCancel}>Close</button>}</div>
+    <div className="character-creator-actions"><button type="button" className="button primary" disabled={busy} onClick={()=>void save()}>{busy?'Saving…':created?'Save character':'Create character'}</button><button type="button" className={"button " + (locked ? "secondary" : "primary")} style={locked ? { border: '1px solid #10b981', color: '#6ee7b7' } : {}} disabled={busy||!sheet} onClick={()=>void toggleLock()}>{locked?'🔒 Hard Locked (Click to Unlock)':'🔒 Hard Lock Character Sheet'}</button>{onCancel&&<button type="button" className="button secondary character-creator-close" disabled={busy} onClick={onCancel}>Close</button>}</div>
    </>}>
     <fieldset disabled={busy} className="character-creator-fieldset">
      <AssetDetails project={project} manifest={draft} assetId={id} onSaved={async()=>{}} renderCharacter={({identity,gear,style})=>
@@ -50,7 +50,27 @@ export default function CharacterForm({project,manifest,assetId,initial,onSaved,
        <CharacterAccordion number={1} title="Name & Core Identity" defaultOpen>{identity}</CharacterAccordion>
        <CharacterAccordion number={2} title="Visual Assets & References">
         <section className="master-character-sheet" aria-label="Master Character Sheet">
-         <header><strong>Master Character Sheet</strong><span>Primary Anchor</span></header>
+         <header style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+           <strong>Master Character Sheet</strong>
+           <span style={{
+             display: 'inline-flex',
+             alignItems: 'center',
+             gap: '4px',
+             fontSize: '11px',
+             fontWeight: 700,
+             letterSpacing: '0.04em',
+             padding: '3px 8px',
+             borderRadius: '4px',
+             background: locked ? 'rgba(16, 185, 129, 0.2)' : 'rgba(245, 158, 11, 0.2)',
+             color: locked ? '#6ee7b7' : '#fcd34d',
+             border: locked ? '1px solid rgba(16, 185, 129, 0.4)' : '1px solid rgba(245, 158, 11, 0.4)'
+           }}>
+             {locked ? '🔒 HARD LOCK: ACTIVE' : '⚠️ UNLOCKED DRAFT'}
+           </span>
+         </header>
+         <div style={{ fontSize: '11px', color: '#94a3b8', background: 'rgba(0,0,0,0.3)', padding: '6px 10px', borderRadius: '6px', marginBottom: '10px', borderLeft: '3px solid #6366f1' }}>
+           <strong>STRICT CONTRACT:</strong> 16:9 widescreen · 6 full-height columns (Front Body, Exact Side, 3/4 Angle, Rear Body, Front Face CU, Profile Face CU). 0% drift tolerance.
+         </div>
         {sheet?<div className="asset-sheet-previews"><div><ReferenceThumbnail src={image(String(sheet))} label="Character sheet"/><span className="reference-image-label">Character sheet</span></div></div>:<div className="master-sheet-empty">No master sheet uploaded</div>}
         <label>Character sheet images<input type="file" accept="image/png,image/jpeg,image/webp" disabled={busy||locked} onChange={e=>{const file=e.target.files?.[0];e.target.value='';if(file)void upload(file).catch(()=>{})}}/></label>
         <button type="button" className="button secondary" disabled={busy||locked} onClick={()=>setPool(true)}>Add from assets</button>

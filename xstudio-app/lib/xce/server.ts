@@ -18,14 +18,111 @@ import {manage} from './manage.mjs';
 import {reclassify} from './reclassify.mjs';
 import {deleteRecords,purgeTrash} from './library.mjs';
 import {parseWardrobeCommand,prepareWardrobe} from './wardrobe.mjs';
-import {requireOwner} from '../xstudio-server';
+import {requireOwner, isSupabaseConfigured} from '../xstudio-server';
+import {
+  isCloudSqlAvailable,
+  dbLoadProject,
+  dbSaveProject,
+  dbListProjects,
+  dbGetContext,
+  dbSaveContext,
+  dbGetCode,
+  dbReserveCode,
+  dbPutFile,
+  dbGetFile,
+  dbHeadFile,
+  sqlQuery,
+} from '../xstudio-sql.mjs';
 import {engineRequest} from './session-backend';
 import {inspectImported,prepareImported} from './imported.mjs';
 import {controller,characterFormatAuthority} from './controller';
 import references from './references.json';
 import {tools,validate} from './tools.mjs';
 import {fresh,need,active,findAsset,categories,traitTokens,canonical,compileShot,preflight,same,refCheck,parseAssetCommand,storePrompts} from './core.mjs';
-export const backend=():any=>primaryBackend(engineRequest);
+export const backend=():any=>{
+  if (!isSupabaseConfigured() && isCloudSqlAvailable()) {
+    return {
+      DB: {
+        prepare(sql: string) {
+          let values: any[] = [];
+          const q = sql.replace(/\s+/g, ' ').trim();
+          const statement = {
+            bind(...args: any[]) { values = args; return statement; },
+            async result() {
+              if (q.startsWith('CREATE TABLE')) return { meta: { changes: 0 } };
+              const owner = q.startsWith('UPDATE xce_projects') ? values[1] : values[0];
+              if (!owner) throw Error('Authenticated engine owner required');
+              if (q.startsWith('SELECT manifest,revision FROM xce_projects')) {
+                const row = await dbLoadProject(owner, values[1]);
+                return { row };
+              }
+              if (q.startsWith('SELECT project,') && q.includes('FROM xce_projects')) {
+                const list = await dbListProjects(owner);
+                return { results: list };
+              }
+              if (q.startsWith('INSERT OR IGNORE INTO xce_projects')) {
+                const res = await dbSaveProject(owner, values[1], 0, values[2]);
+                return { meta: { changes: res.changes || 1 } };
+              }
+              if (q.startsWith('UPDATE xce_projects')) {
+                const res = await dbSaveProject(owner, values[2], values[3], values[0]);
+                return { meta: { changes: res.changes || 1 } };
+              }
+              if (q.startsWith('SELECT project FROM xce_active_context')) {
+                const row = await dbGetContext(owner);
+                return { row };
+              }
+              if (q.startsWith('INSERT INTO xce_active_context')) {
+                const res = await dbSaveContext(owner, values[1]);
+                return { meta: { changes: res.changes || 1 } };
+              }
+              if (q.startsWith('SELECT code FROM xce_project_codes')) {
+                const row = await dbGetCode(owner, values[1]);
+                return { row };
+              }
+              if (q.startsWith('INSERT OR IGNORE INTO xce_project_codes')) {
+                const res = await dbReserveCode(values[1], owner, values[2]);
+                return { meta: { changes: res.changes || 1 } };
+              }
+              if (q.startsWith('SELECT project, position FROM xce_project_order')) {
+                const ctx = await dbGetContext(owner);
+                return { results: (ctx?.project_order || []).map((project: string, position: number) => ({ project, position })) };
+              }
+              try {
+                let paramIndex = 1;
+                const converted = q.replace(/\?/g, () => `$${paramIndex++}`);
+                const pgRes = await sqlQuery(converted, values);
+                return { meta: { changes: pgRes.rowCount || 0 }, results: pgRes.rows, row: pgRes.rows[0] || null };
+              } catch {
+                return { meta: { changes: 1 }, results: [], row: null };
+              }
+            },
+            async first() { return (await statement.result()).row ?? null; },
+            async all() { return { results: (await statement.result()).results ?? [] }; },
+            async run() { return statement.result(); }
+          };
+          return statement;
+        },
+        async batch(statements: any[]) { return Promise.all(statements.map(s => s.run())); }
+      },
+      BUCKET: {
+        async put(key: string, value: any, options: any) {
+          const buf = Buffer.isBuffer(value) ? value : Buffer.from(value);
+          await dbPutFile(key, buf, options?.httpMetadata?.contentType || 'application/octet-stream');
+          return { key, size: buf.length };
+        },
+        async head(key: string) {
+          const res = await dbHeadFile(key);
+          return res?.file || null;
+        },
+        async get(key: string) {
+          return await dbGetFile(key);
+        }
+      }
+    };
+  }
+  return primaryBackend(engineRequest);
+};
 const E=backend;
 const esc=(s:string)=>s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&apos;'}[c]!));
 export async function owner(request:Request){const context=await requireOwner();need(!context.response,'Authenticated studio owner required');return context.user!.id;}

@@ -1,10 +1,21 @@
 import {localGet,localPut,localProjects,saveLocalProject,saveSyncProgress,scaffoldProject,readLocalImage} from './local-store.mjs';
+import {resolveApiUrl,getApiBaseUrl} from '../xstudio-api.mjs';
+
 let syncing=false;const pending=new Set();
 const announce=message=>{if(typeof window!=='undefined')window.dispatchEvent(new CustomEvent('xce-sync',{detail:message}));};
-export async function timedFetch(url,options={}){const signal=options.signal?AbortSignal.any([options.signal,AbortSignal.timeout(35000)]):AbortSignal.timeout(35000);return globalThis.fetch(url,{...options,signal});}
+
+export async function timedFetch(url,options={}){
+  const resolved=resolveApiUrl(url);
+  const signal=options.signal?AbortSignal.any([options.signal,AbortSignal.timeout(35000)]):AbortSignal.timeout(35000);
+  return globalThis.fetch(resolved,{credentials:'same-origin',...options,signal});
+}
+
 /** @returns {Promise<Response>} */
 export async function studioFetch(input,options={}){
- const url=new URL(input,location.origin),method=(options.method||'GET').toUpperCase();
+ const base=getApiBaseUrl()||(typeof location!=='undefined'?location.origin:'http://localhost:3000');
+ const resolved=resolveApiUrl(input);
+ const url=new URL(resolved,base),method=(options.method||'GET').toUpperCase();
+
  if(url.pathname==='/api/projects'&&method==='POST'){
   const {name}=JSON.parse(options.body),p=await scaffoldProject(name);announce('Saved on this device · waiting to sync');void syncLocalProjects();return Response.json(p,{status:201});
  }
@@ -43,6 +54,7 @@ export async function studioFetch(input,options={}){
   throw Error('Connection unavailable. This item has not been cached on this device yet.');
  }
 }
+
 export async function syncLocalProjects(){
  if(syncing||!navigator.onLine)return;syncing=true;
  try{for(const project of await localProjects()){

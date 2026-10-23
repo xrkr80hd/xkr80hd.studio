@@ -3,19 +3,284 @@
 .page-breadcrumbs{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0 0 22px;padding:0;overflow:visible;font-size:13px;color:var(--muted)}.page-breadcrumbs button,.page-breadcrumbs a{display:inline-flex;align-items:center;min-height:44px;padding:8px 12px;border:1px solid var(--line);border-radius:7px;background:var(--surface);color:#a8e6fa}.page-breadcrumbs button:hover,.page-breadcrumbs a:hover{border-color:var(--cyan);color:white}.page-breadcrumbs [aria-current=page]{color:var(--text);overflow-wrap:anywhere}.page-breadcrumbs>span{min-width:0}.page-breadcrumbs button{margin-right:4px}@media(max-width:600px){.page-breadcrumbs{font-size:12px;gap:6px;margin-bottom:16px}.page-breadcrumbs a,.page-breadcrumbs button{padding:8px 10px}}
 
 /* Align the studio identity, project controls and status on one stable grid. */
-.studio-header{display:grid;grid-template-columns:208px minmax(0,1fr) 16px;align-items:center;gap:24px;padding:12px 28px;height:88px}
-.studio-header .header-brand{justify-self:center;width:auto;gap:10px;max-width:100%}
-.studio-header .header-brand>.preview-frame{width:36px;height:36px;flex:none}
-.studio-header .header-brand>span{display:flex;flex-direction:column;align-items:flex-start;gap:3px;min-width:0}
-.studio-header .header-brand strong{font-size:21px;letter-spacing:1px;line-height:1.1}
-.studio-header .header-brand small{font-size:11px;line-height:1.3;margin:0;max-width:150px}
-.studio-header .top-actions{display:flex;width:100%;margin:0;gap:12px;align-items:center;justify-content:flex-start}
-.studio-header .project-switch{order:0;min-width:190px;max-width:320px;min-height:46px}
-.studio-header .refresh-button{order:1;min-height:46px}
-.studio-header .asset-view-controls{order:2;margin-left:auto;align-self:center;width:auto}
-.studio-header .connection-status{position:static;justify-self:end;align-self:center;margin:0}
-@media(max-width:1000px){.studio-header{grid-template-columns:165px minmax(0,1fr) 12px;gap:16px;padding:12px 20px}.studio-header .header-brand small{max-width:115px}.studio-header .project-switch{min-width:0}.studio-header .top-actions{gap:8px}}
-@media(max-width:700px){.studio-header{grid-template-columns:minmax(0,1fr) 16px;height:auto;min-height:0;gap:14px;padding:14px 16px}.studio-header .header-brand{justify-self:start;width:auto}.studio-header .header-brand>span{display:flex;flex-direction:column;align-items:flex-start}.studio-header .header-brand small{max-width:none}.studio-header .connection-status{grid-column:2;grid-row:1}.studio-header .top-actions{grid-column:1/-1;grid-row:2;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px}.studio-header .project-switch{width:100%;max-width:none;grid-column:1;grid-row:1}.studio-header .refresh-button{grid-column:2;grid-row:1;padding:10px 12px}.studio-header .asset-view-controls{grid-column:1/-1;grid-row:2;margin:0;justify-self:end;width:auto}.studio-header .project-switch small{max-width:calc(100vw - 210px)}}
+/* Sleek Cyberpunk Dark-Glass Studio Header */
+.studio-header {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 18px;
+  padding: 10px 24px;
+  min-height: 68px;
+  background: rgba(9, 10, 15, 0.94);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(99, 102, 241, 0.25);
+  box-shadow: 0 4px 25px -2px rgba(0, 0, 0, 0.8), 0 0 15px rgba(99, 102, 241, 0.1);
+  position: relative;
+  z-index: 30;
+}
+.studio-header .header-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: #f8fafc;
+  padding-right: 18px;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+}
+.studio-header .header-brand strong {
+  font-size: 19px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  background: linear-gradient(135deg, #ffffff 0%, #818cf8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  line-height: 1.1;
+}
+.studio-header .header-brand small {
+  font-size: 10px;
+  color: #94a3b8;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.studio-header .top-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+/* Project Selector */
+.studio-header .project-switch {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 40px;
+  min-height: 40px;
+  padding: 0 14px;
+  border-radius: 8px;
+  background: rgba(19, 21, 31, 0.9);
+  border: 1px solid rgba(99, 102, 241, 0.35);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  color: #f1f5f9;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  max-width: 260px;
+}
+.studio-header .project-switch:hover {
+  background: rgba(30, 34, 53, 0.95);
+  border-color: rgba(99, 102, 241, 0.7);
+  box-shadow: 0 0 16px rgba(99, 102, 241, 0.25);
+  transform: translateY(-1px);
+}
+.studio-header .project-switch>span {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  line-height: 1.2;
+  overflow: hidden;
+}
+.studio-header .project-switch strong {
+  font-size: 12px;
+  font-weight: 700;
+  color: #f8fafc;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 170px;
+}
+.studio-header .project-switch small {
+  font-size: 10px;
+  color: #818cf8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 170px;
+}
+
+/* Gemini Skills Neural HUD Button */
+.studio-header .gemini-skills-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 40px;
+  min-height: 40px;
+  padding: 0 14px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.18) 0%, rgba(56, 189, 248, 0.14) 100%);
+  border: 1px solid rgba(99, 102, 241, 0.5);
+  color: #e0e7ff;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  box-shadow: 0 0 14px rgba(99, 102, 241, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  cursor: pointer;
+  transition: all 0.18s ease;
+  white-space: nowrap;
+}
+.studio-header .gemini-skills-btn:hover {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.3) 0%, rgba(56, 189, 248, 0.24) 100%);
+  border-color: #818cf8;
+  box-shadow: 0 0 22px rgba(99, 102, 241, 0.45);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+.studio-header .gemini-skills-btn .skills-badge {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: rgba(56, 189, 248, 0.2);
+  border: 1px solid rgba(56, 189, 248, 0.45);
+  color: #38bdf8;
+}
+
+/* Refresh Button */
+.studio-header .refresh-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 40px;
+  min-height: 40px;
+  padding: 0 14px;
+  border-radius: 8px;
+  background: rgba(19, 21, 31, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #cbd5e1;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  white-space: nowrap;
+}
+.studio-header .refresh-button:hover:not(:disabled) {
+  background: rgba(30, 34, 53, 0.95);
+  border-color: rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+/* Asset View Controls (Grid / List) */
+.studio-header .asset-view-controls {
+  margin-left: auto;
+  display: flex;
+  background: #090a0f;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  padding: 3px;
+  gap: 2px;
+  align-items: center;
+}
+.studio-header .asset-view-controls button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  min-height: 32px;
+  padding: 0 12px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.studio-header .asset-view-controls button:hover {
+  color: #cbd5e1;
+}
+.studio-header .asset-view-controls button[aria-pressed=true] {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.3) 0%, rgba(56, 189, 248, 0.2) 100%);
+  border: 1px solid rgba(56, 189, 248, 0.45);
+  color: #38bdf8;
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.2);
+}
+
+/* Connection Status */
+.studio-header .connection-status {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.studio-header .connection-status i {
+  display: block;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 10px #10b981;
+}
+.studio-header .connection-status.disconnected i {
+  background: #ef4444;
+  box-shadow: 0 0 10px #ef4444;
+}
+.studio-header .connection-status.syncing i {
+  background: #f59e0b;
+  box-shadow: 0 0 10px #f59e0b;
+}
+
+/* Responsive adjustments */
+@media (max-width: 950px) {
+  .studio-header {
+    grid-template-columns: 1fr auto;
+    height: auto;
+    padding: 10px 16px;
+    gap: 10px;
+  }
+  .studio-header .header-brand {
+    border-right: none;
+    padding-right: 0;
+  }
+  .studio-header .top-actions {
+    grid-column: 1 / -1;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .studio-header .project-switch {
+    flex: 1 1 180px;
+    max-width: none;
+  }
+  .studio-header .asset-view-controls {
+    margin-left: auto;
+  }
+}
+
+@media (max-width: 600px) {
+  .studio-header .top-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .studio-header .project-switch {
+    width: 100%;
+    max-width: none;
+  }
+  .studio-header .gemini-skills-btn {
+    flex: 1;
+    justify-content: center;
+  }
+  .studio-header .refresh-button {
+    flex: 1;
+    justify-content: center;
+  }
+  .studio-header .asset-view-controls {
+    width: 100%;
+    margin-left: 0;
+    justify-content: stretch;
+  }
+  .studio-header .asset-view-controls button {
+    flex: 1;
+    justify-content: center;
+  }
+}
 
 .cast-section{margin-bottom:14px}.cast-group-field{margin:0;padding:12px;border-top:1px solid var(--line);text-align:left}.cast-group-field select{margin-top:7px;min-height:44px}.cast-section>.accordion-content>.step-hint{margin:0}
 

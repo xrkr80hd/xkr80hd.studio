@@ -35,3 +35,6 @@ composer.lock
 
 # Reproducible viewport captures; reviewed JPEGs remain versioned.
 studio-production-suite/docs/game-night-screenshots/*.png
+-e 
+.aistudio/
+public/assets/aistudio/

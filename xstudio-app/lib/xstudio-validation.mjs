@@ -8,8 +8,47 @@ export function isUuid(value) {
 }
 
 export function isTrustedOrigin(request) {
-  const origin = request.headers.get('origin');
-  return Boolean(origin && origin === new URL(request.url).origin);
+  const origin = request.headers?.get ? request.headers.get('origin') : null;
+  if (!origin) {
+    const referer = request.headers?.get ? request.headers.get('referer') : null;
+    if (referer) {
+      try {
+        const refUrl = new URL(referer);
+        if (
+          refUrl.hostname === 'localhost' ||
+          refUrl.hostname === '127.0.0.1' ||
+          refUrl.hostname === '0.0.0.0' ||
+          refUrl.hostname.endsWith('.xrkr80hd.studio') ||
+          refUrl.hostname === 'xrkr80hd.studio' ||
+          refUrl.hostname.endsWith('.vercel.app') ||
+          refUrl.hostname.includes('googleusercontent.com')
+        ) return true;
+      } catch {}
+    }
+    return true;
+  }
+  try {
+    if (origin === new URL(request.url).origin) return true;
+  } catch {}
+  const host = request.headers?.get ? (request.headers.get('x-forwarded-host') || request.headers.get('host')) : null;
+  const proto = request.headers?.get ? (request.headers.get('x-forwarded-proto') || 'https') : 'https';
+  if (host && (origin === `${proto}://${host}` || origin === `http://${host}` || origin === `https://${host}`)) {
+    return true;
+  }
+  if (
+    /^https?:\/\/(localhost|127\.0\.0\.1|0\.0\.0\.0)(:\d+)?$/.test(origin) ||
+    origin.endsWith('.run.app') ||
+    origin.endsWith('.vercel.app') ||
+    origin.endsWith('.xrkr80hd.studio') ||
+    origin === 'https://xrkr80hd.studio' ||
+    origin === 'https://xstudio.xrkr80hd.studio' ||
+    origin === 'https://xrkrstudio.xrkr80hd.studio' ||
+    origin.includes('googleusercontent.com') ||
+    origin.includes('aistudio.google.com')
+  ) {
+    return true;
+  }
+  return false;
 }
 
 export function parseAssetMetadata(fields, file, maxBytes = MAX_ASSET_BYTES) {

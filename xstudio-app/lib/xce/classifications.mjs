@@ -1,6 +1,6 @@
 import {codedRecords,recordId} from './asset-codes.mjs';
-export const CLASSIFICATIONS={main_cast:'Main Cast',supporting_cast:'Supporting Cast',villain:'Villain',background_character:'Background Character',magical_being:'Magical Being / Esper',creature_beast:'Creature / Beast',weapon:'Weapon',equipment:'Equipment',general_prop:'General Prop',vehicle:'Vehicle',location:'Location'};
-export const CLASSIFICATION_TYPES={main_cast:['character'],supporting_cast:['character'],villain:['character','creature'],background_character:['character','creature'],magical_being:['character','creature'],creature_beast:['character','creature'],weapon:['prop'],equipment:['prop'],general_prop:['prop'],vehicle:['vehicle'],location:['location','room']};
+export const CLASSIFICATIONS={main_cast:'Main Cast',supporting_cast:'Supporting Cast',villain:'Villain',background_character:'Background Character',anthropomorphic:'Anthropomorphic / Beastfolk',magical_being:'Magical Being / Esper',creature_beast:'Creature / Beast',weapon:'Weapon',equipment:'Equipment',general_prop:'General Prop',vehicle:'Vehicle',location:'Location'};
+export const CLASSIFICATION_TYPES={main_cast:['character'],supporting_cast:['character'],villain:['character','creature'],background_character:['character','creature'],anthropomorphic:['character','creature'],magical_being:['character','creature'],creature_beast:['character','creature'],weapon:['prop'],equipment:['prop'],general_prop:['prop'],vehicle:['vehicle'],location:['location','room']};
 export function classificationValue(m,id){
  const d=m.asset_details?.[id];if(d&&Object.hasOwn(d,'secondary_classification'))return d.secondary_classification;
  const known={weapons:'weapon',magical_beings:'magical_being',beasts:'creature_beast'}[d?.library_category];

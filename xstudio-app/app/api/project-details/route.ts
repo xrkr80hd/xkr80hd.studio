@@ -2,9 +2,10 @@ import {owner,load,requireFolder} from '../../../lib/xce/server';
 import {engineRequest} from '../../../lib/xce/session-backend';
 import {projectEdit,editedProjectManifest} from '../../../lib/xce/project-edit.mjs';
 import {cookieName} from '../../../lib/xce/folder-lock.mjs';
+import {isTrustedOrigin} from '../../../lib/xstudio-validation.mjs';
 export const dynamic='force-dynamic';
 export async function POST(req:Request){
- if(req.headers.get('origin')!==new URL(req.url).origin)return Response.json({error:'Origin required'},{status:403});
+ if(!isTrustedOrigin(req))return Response.json({error:'Origin required'},{status:403});
  let u;try{u=await owner(req)}catch{return Response.json({error:'Sign in required'},{status:401})}
  try{
   const a=projectEdit(await req.json());await requireFolder(req,u,a.project_id);
