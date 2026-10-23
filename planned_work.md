@@ -378,3 +378,6 @@ Request image/* for project cover selection so mobile browsers can offer their n
 
 ## Cover source selection (2026-10-21)
 Offer phone/device or current project assets for a folder cover. Load the selected folder’s manifest, browse categories with nothing preselected and use exact saved image bytes via the existing validated cover upload endpoint.
+
+## XSTUDIO deployment repair (2026-10-23)
+Verify the latest main branch after the failed 20b636c deployment, use the checked-in pnpm lockfile for reproducible Vercel installs, and correct local/deployment instructions. Run the production build and relevant checks before publishing.
