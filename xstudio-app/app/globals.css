@@ -257,8 +257,8 @@ dialog.gemini-skills-dialog{width:min(840px,calc(100vw - 24px));max-height:calc(
 .gemini-heading>div:last-child{white-space:nowrap}
 .gemini-skills-content [class*="shadow-"]{box-shadow:none}
 .gemini-skills-content [class*="animate-"]{animation:none}
-.gemini-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;padding-bottom:14px;border-bottom:1px solid var(--line)}
-.gemini-tabs .gemini-tab{justify-content:center;min-height:44px;padding:10px 8px;font-size:12px;font-weight:500;line-height:1.3;white-space:normal;text-align:center;background:#151f29;border:1px solid #3e4855;color:#93a1b0;border-radius:6px;box-shadow:none}
+.gemini-tabs{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;padding-bottom:14px;border-bottom:1px solid var(--line)}
+.gemini-tabs .gemini-tab{width:100%;justify-content:flex-start;min-height:44px;padding:10px 8px;font-size:12px;font-weight:500;line-height:1.3;white-space:normal;text-align:center;background:#151f29;border:1px solid #3e4855;color:#93a1b0;border-radius:6px;box-shadow:none}
 .gemini-tabs .gemini-tab[aria-pressed=true]{background:#20323e;border-color:#355262;color:#9ae4f9}
 .gemini-tabs .gemini-tab:hover{color:white;border-color:#677c91}
 .gemini-skills-content [class*="bg-[#13151f]"]{background:linear-gradient(130deg,#1c222a,#151a21 40%,#11161d);border-color:var(--line);border-radius:var(--radius)}
@@ -277,7 +277,7 @@ dialog.gemini-skills-dialog{width:min(840px,calc(100vw - 24px));max-height:calc(
  .gemini-skills-dialog>.modal-header{top:-16px;margin:-16px -16px 16px;padding:10px 16px}
  .gemini-title{font-size:20px}
  .gemini-heading-main{flex-basis:100%}
- .gemini-tabs .gemini-tab{flex-direction:column;gap:5px;font-size:12px;padding:10px 4px}
+ .gemini-tabs .gemini-tab{flex-direction:row;gap:10px;font-size:13px;padding:12px;text-align:left}
  .gemini-command-form{flex-direction:column}
  .gemini-command-form>button{width:100%}
  .gemini-result-summary{grid-template-columns:1fr;gap:4px}
