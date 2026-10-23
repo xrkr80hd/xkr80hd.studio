@@ -1,0 +1,5 @@
+interface:
+  default_prompt: "MCSCB Night Sentinel"
+  display_name: "xstudio"
+  short_description: "Consistent anchors, scene planning and Flow-ready prompts"
+

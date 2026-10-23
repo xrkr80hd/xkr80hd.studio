@@ -1,0 +1,251 @@
+[
+  {
+    "id": "CG-001",
+    "slug": "storm-slate",
+    "name": "Storm Slate",
+    "version": 1,
+    "factoryPreset": true,
+    "description": "Stormy, blue-gray cinematic realism.",
+    "category": "Cinematic",
+    "bestFor": [
+      "Helicopters",
+      "Oceans",
+      "Storms",
+      "Suspense",
+      "Aerial"
+    ],
+    "palette": {
+      "shadows": "#334C61",
+      "midtones": "#727F7A",
+      "highlights": "#CBD2D5",
+      "blacks": "#101A22"
+    },
+    "settings": {
+      "temperature": -16,
+      "contrast": 20,
+      "saturation": -18,
+      "shadowTint": 15,
+      "highlightTint": -2,
+      "blackLevel": -8,
+      "grain": 10,
+      "haze": 0
+    },
+    "intensity": 75,
+    "prompt": "Cool slate-blue shadows, restrained saturation, natural green preservation, dramatic atmospheric cloud contrast, realistic diffused daylight, organic deep blacks, subtle 35mm grain, cinematic photorealism.",
+    "negativePrompt": "Unwanted oversaturation, artificial HDR halos, plastic textures, uncontrolled color casts, crushed detail, clipped highlights, inconsistent grading between related shots.",
+    "previewAssetId": null,
+    "lutAssetId": null
+  },
+  {
+    "id": "CG-002",
+    "slug": "teal-and-orange",
+    "name": "Teal & Orange",
+    "version": 1,
+    "factoryPreset": true,
+    "description": "Modern action cinema.",
+    "category": "Cinematic",
+    "bestFor": [
+      "Action",
+      "Adventure",
+      "Dramatic exteriors"
+    ],
+    "palette": {
+      "shadows": "#24545B",
+      "midtones": "#887D6C",
+      "highlights": "#E3AF70",
+      "blacks": "#101C22"
+    },
+    "settings": {
+      "temperature": -4,
+      "contrast": 18,
+      "saturation": -8,
+      "shadowTint": 22,
+      "highlightTint": 22,
+      "blackLevel": -6,
+      "grain": 6,
+      "haze": 0
+    },
+    "intensity": 75,
+    "prompt": "Filmic teal shadows, restrained amber highlights, natural skin-tone preservation, balanced cinematic contrast, controlled color separation, realistic organic detail.",
+    "negativePrompt": "Unwanted oversaturation, artificial HDR halos, plastic textures, uncontrolled color casts, crushed detail, clipped highlights, inconsistent grading between related shots.",
+    "previewAssetId": null,
+    "lutAssetId": null
+  },
+  {
+    "id": "CG-003",
+    "slug": "golden-hour",
+    "name": "Golden Hour",
+    "version": 1,
+    "factoryPreset": true,
+    "description": "Warm cinematic realism.",
+    "category": "Cinematic",
+    "bestFor": [
+      "Emotional scenes",
+      "Travel",
+      "Sunset"
+    ],
+    "palette": {
+      "shadows": "#5B5350",
+      "midtones": "#B08A63",
+      "highlights": "#F1CA88",
+      "blacks": "#231F1A"
+    },
+    "settings": {
+      "temperature": 20,
+      "contrast": -8,
+      "saturation": -4,
+      "shadowTint": -4,
+      "highlightTint": 18,
+      "blackLevel": 3,
+      "grain": 5,
+      "haze": 0
+    },
+    "intensity": 75,
+    "prompt": "Soft golden-hour color treatment, warm amber highlights, natural skin tones, gentle cinematic contrast, luminous atmosphere, preserved organic texture.",
+    "negativePrompt": "Unwanted oversaturation, artificial HDR halos, plastic textures, uncontrolled color casts, crushed detail, clipped highlights, inconsistent grading between related shots.",
+    "previewAssetId": null,
+    "lutAssetId": null
+  },
+  {
+    "id": "CG-004",
+    "slug": "forest-noir",
+    "name": "Forest Noir",
+    "version": 1,
+    "factoryPreset": true,
+    "description": "Dark atmospheric thriller.",
+    "category": "Cinematic",
+    "bestFor": [
+      "Jungles",
+      "Mystery",
+      "Survival",
+      "Suspense"
+    ],
+    "palette": {
+      "shadows": "#283C31",
+      "midtones": "#666B49",
+      "highlights": "#B8B695",
+      "blacks": "#101A14"
+    },
+    "settings": {
+      "temperature": -8,
+      "contrast": 24,
+      "saturation": -25,
+      "shadowTint": 18,
+      "highlightTint": -6,
+      "blackLevel": -12,
+      "grain": 8,
+      "haze": 0
+    },
+    "intensity": 75,
+    "prompt": "Deep natural forest greens, subdued olive midtones, rich organic shadows, restrained saturation, atmospheric depth, moody cinematic contrast.",
+    "negativePrompt": "Unwanted oversaturation, artificial HDR halos, plastic textures, uncontrolled color casts, crushed detail, clipped highlights, inconsistent grading between related shots.",
+    "previewAssetId": null,
+    "lutAssetId": null
+  },
+  {
+    "id": "CG-005",
+    "slug": "neon-midnight",
+    "name": "Neon Midnight",
+    "version": 1,
+    "factoryPreset": true,
+    "description": "Futuristic nighttime cinema.",
+    "category": "Cinematic",
+    "bestFor": [
+      "Sci-Fi",
+      "Futuristic cities",
+      "Night"
+    ],
+    "palette": {
+      "shadows": "#192743",
+      "midtones": "#4B586D",
+      "highlights": "#70CCDA",
+      "blacks": "#090F1B"
+    },
+    "settings": {
+      "temperature": -18,
+      "contrast": 22,
+      "saturation": 4,
+      "shadowTint": 28,
+      "highlightTint": 18,
+      "blackLevel": -10,
+      "grain": 6,
+      "haze": 0
+    },
+    "intensity": 75,
+    "prompt": "Deep midnight-blue shadows, selective cyan and magenta illumination, natural cinematic blacks, controlled neon color separation, realistic nighttime exposure.",
+    "negativePrompt": "Unwanted oversaturation, artificial HDR halos, plastic textures, uncontrolled color casts, crushed detail, clipped highlights, inconsistent grading between related shots.",
+    "previewAssetId": null,
+    "lutAssetId": null
+  },
+  {
+    "id": "CG-006",
+    "slug": "vintage-35mm",
+    "name": "Vintage 35mm",
+    "version": 1,
+    "factoryPreset": true,
+    "description": "Organic analog film.",
+    "category": "Cinematic",
+    "bestFor": [
+      "Nostalgia",
+      "Memories",
+      "Documentary"
+    ],
+    "palette": {
+      "shadows": "#514D47",
+      "midtones": "#9A8A76",
+      "highlights": "#D9C8A9",
+      "blacks": "#2C2B29"
+    },
+    "settings": {
+      "temperature": 8,
+      "contrast": -15,
+      "saturation": -18,
+      "shadowTint": 3,
+      "highlightTint": 8,
+      "blackLevel": 14,
+      "grain": 18,
+      "haze": 0
+    },
+    "intensity": 75,
+    "prompt": "Organic 35mm film color response, subtle fine grain, softened highlight rolloff, muted natural saturation, gentle contrast, warm neutral midtones.",
+    "negativePrompt": "Unwanted oversaturation, artificial HDR halos, plastic textures, uncontrolled color casts, crushed detail, clipped highlights, inconsistent grading between related shots.",
+    "previewAssetId": null,
+    "lutAssetId": null
+  },
+  {
+    "id": "CG-007",
+    "slug": "ridley-realness",
+    "name": "Ridley Realness",
+    "version": 1,
+    "factoryPreset": true,
+    "description": "Epic atmospheric cinematic realism.",
+    "category": "Cinematic",
+    "bestFor": [
+      "Epic",
+      "Sci-Fi",
+      "Industrial",
+      "Adventure"
+    ],
+    "palette": {
+      "shadows": "#263947",
+      "midtones": "#68716B",
+      "highlights": "#D6AE79",
+      "blacks": "#111B23"
+    },
+    "settings": {
+      "temperature": -12,
+      "contrast": 18,
+      "saturation": -22,
+      "shadowTint": 14,
+      "highlightTint": 10,
+      "blackLevel": -8,
+      "grain": 12,
+      "haze": 0
+    },
+    "intensity": 75,
+    "prompt": "Epic atmospheric cinematic realism, cool steel-blue shadows, earthy restrained color palette, warm practical highlights, deep organic blacks, subtle photochemical film texture, dramatic natural contrast, atmospheric depth, grounded physical realism.",
+    "negativePrompt": "Unwanted oversaturation, artificial HDR halos, plastic textures, uncontrolled color casts, crushed detail, clipped highlights, inconsistent grading between related shots.",
+    "previewAssetId": null,
+    "lutAssetId": null
+  }
+]

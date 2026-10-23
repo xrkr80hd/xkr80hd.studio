@@ -1,0 +1,22 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import ts from 'typescript';
+import * as cref from '../lib/xce/character-cref.mjs';
+import * as access from '../lib/xce/composer-access.mjs';
+import {byteStream} from '../lib/xce/response-stream.mjs';
+test('actual composer handler retrieves locked character without scene configuration; no writes or fallback',async()=>{
+ const bytes=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aX1sAAAAASUVORK5CYII=','base64');
+ const m={references:{R:{id:'R',key:'xce/owner/P/R',mime_type:'image/png',role:'IDENTITY'}},manifest_store:{characters:{C:{asset_id:'C',asset_type:'character',asset_code:'P-CH-C',name:'Saved name',status:'LOCKED',source_image_id:'R'}}}};
+ let revision=1,drift=false,loads=0,downloads=0;
+ const backend=async a=>{assert.equal(a.op,'load');loads++;return {data:{manifest:JSON.stringify(m),revision:drift&&loads%2===0?revision+1:revision}}};
+ const module={exports:{}},code=ts.transpileModule(readFileSync(new URL('../lib/xce/composer-api.ts',import.meta.url),'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS}}).outputText;
+ new Function('require','module','exports',code)(name=>name.includes('character-cref')?cref:name.includes('composer-access')?access:name.includes('response-stream')?{byteStream}:name.includes('xstudio-providers')?{readBounded:async req=>Buffer.from(await req.text())}:name.includes('composer-media')?{referenceReader:()=>async()=>{downloads++;return {size:bytes.length,arrayBuffer:async()=>bytes,httpMetadata:{contentType:'image/png'}}}}:name.includes('session-backend')?{engineRequest:backend}:name.includes('xstudio-server')?{requireOwner:async()=>({})}:{},module,module.exports);
+ const api=module.exports.composerRequest,call=body=>api(new Request('https://xstudio.xrkr80hd.studio/api/composer',{method:'POST',headers:{origin:'https://xstudio.xrkr80hd.studio','content-type':'application/json'},body:JSON.stringify({project_id:'P',...body})}));
+ let r=await call({action:'execution',asset_id:'C'});let d=await r.json();assert.equal(r.status,200,JSON.stringify(d));assert.equal(d.images[0].image_base64,bytes.toString('base64'));assert.equal(d.output.asset_id,'C');assert.equal(d.rendered,false);assert.equal(downloads,1);
+ r=await call({action:'resolve',category:'cref',asset_code:'P-CH-C'});assert.equal(r.status,200);d=await r.json();assert.equal(d.cref.asset_id,'C');assert.equal(downloads,1);
+ m.manifest_store.characters.C.status='DRAFT';r=await call({action:'execution',category:'cref',asset_id:'C'});assert.equal(r.status,400);assert.equal(downloads,1);
+ m.manifest_store.characters.C.status='LOCKED';loads=0;drift=true;r=await call({action:'execution',category:'cref',asset_id:'C'});assert.equal(r.status,409);
+ r=await api(new Request('https://xstudio.xrkr80hd.studio/api/composer',{method:'POST',headers:{origin:'https://evil.example','content-type':'application/json'},body:JSON.stringify({action:'execution',category:'cref',project_id:'P',asset_id:'C'})}));assert.equal(r.status,403);
+ m.folder_lock={};r=await call({action:'execution',category:'cref',asset_id:'C'});assert.equal(r.status,423);
+});

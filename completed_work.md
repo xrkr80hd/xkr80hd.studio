@@ -1,3 +1,38 @@
+## Composer layered worldbuilding presets · 2026-10-17
+
+- Expanded grouped base selections to 415 choices, including 125 terrains and 106 architectural styles (historic, regional, civic, industrial, futuristic and imaginative).
+- Added 116 stackable terrain/architecture/weather/element details in compact accordions with per-item removal. Desert + buried ruins + broken walls and overcast + rain + mist are supported without manual prose.
+- Added Write here near the top of the main dropdowns, including architecture, with editable text preserving prior custom values. Creative choices include cliff cities, living-tree settlements, crystal palaces, machine complexes, floating temples and other original worldbuilding directions.
+- Optional scene_details arrays preserve compatibility with earlier saved compositions. Compiler/preview/JSON/export include the combined details, preserving approved anchor authority. No project/asset/grade records were duplicated or changed.
+- Added optional Inspired by world context at the end, with FF6/StarTropics presets and Write here. Prompt instructions borrow mood/world feel only and explicitly preserve approved asset designs and selected rendering style.
+- All 81 tests pass, including combined terrain/weather/world parsing, layered save/reopen/ZIP continuity, existing custom/legacy scenes, array limits and existing-module regressions. Production build/type checks pass; signed-in visual/mobile checks remain unavailable in the test browser session.
+
+## Composer dropdown presets and action guidance · 2026-10-17
+
+- Added 228 preloaded choices across 15 fields: terrain, architecture, atmosphere, weather, time of day, lighting direction/quality, camera lens/angle/elevation/distance/framing/composition/movement and overall scene action. Native selects keep mobile interaction familiar; every field offers Custom without erasing existing values.
+- Added “What’s happening?” with reusable action descriptions and custom prose. Optional scene_action remains backward compatible with previous saves. New assets follow overall scene action by default; explicit per-asset actions take priority.
+- Injected bounded action-enhancement guidance into preview/final prompts and exported JSON: clarify motion, direction, speed, timing and interaction only as needed, preserving intent and approved references; never add new assets/events or override identity locks.
+- Preset choices use existing scene configuration fields; no database migrations, approved asset changes or grade changes. Other pages/forms are untouched.
+- All 78 tests pass, including preset-to-prompt/JSON compilation, legacy/custom preservation and action/save/reopen/ZIP guardrail retention. Type checking and the clean production build pass. Signed-in browser controls remain unverified because the cloud browser is at owner sign-in.
+
+## XCE_COMPOSER mobile recheck · 2026-10-17
+
+- Rechecked forms, canvas controls, modal focus/close, navigation and narrow-screen wrapping after the user requested a mobile review.
+- Set Composer inputs to 16px to avoid iOS focus zoom; maintained 44px touch targets; stacked relation selectors and a two-column wrapping action grid on mobile; used two thumbnail columns below 360px.
+- Kept scene nodes within visible canvas bounds, spread initial click-added references across the canvas and made reselecting an asset preserve its placement; made the dialog X sticky with safe-area padding; added a vertical scroll region for the longer desktop sidebar so all existing destinations remain reachable on short windows. Composer form CSS is scoped to its module; no other page forms changed.
+- Production release 13e9bd2 reached READY. Live checks: OpenAPI 200, private inventory 401 without sign-in, malformed connector 401, cross-origin/missing-origin POST 403, private Composer redirects to owner login.
+- Cloud browser is available but at owner sign-in. Signed-in live drag/touch and actual project save remain unverified; code-level controls, exports, permissions, revisions and existing regressions are covered by the 75 passing tests. Vercel runtime-log access returned 403, so no clean runtime-log claim is made.
+
+# XCE_COMPOSER implementation · 2026-10-17
+
+- Added the native /composer project page and shared navigation entry. Existing and newly created projects resolve their own inventory, grades, shot lists and compositions without initialization writes or a second database.
+- Added thumbnail inventory, click/desktop drag placement, mobile long-press selection and position-slider fallback, depth/actions/relationships, simple look controls and advanced accordions, live unverified prompt/JSON preview, server-verified output, copy/save/edit/duplicate and ZIP exports with actual image bytes.
+- Added a strict versioned compiler. Exact project assets, LOCKED references and required parents are resolved; current image bytes are downloaded from allowlisted authenticated storage and bounded/hashed. Missing/deleted/foreign/diagnostic/draft anchors fail without substitution. The mandatory XSTUDIO directive is compiler-injected on regenerated and exported outputs. Hash validation proves retrieval, not visual fidelity.
+- Compositions, bounded configuration history and staged/reviewed asset intelligence live additively in existing manifests. Existing assets/IDs/grades/anchors are unchanged. Research Asset prepares a source-aware brief; automated online research is not wired to a provider.
+- Added owner-session/scoped-token API with CSRF checks, existing folder-lock enforcement, optimistic project/record revisions and save readback. Prepared OpenAPI integration and synchronized JSON schema; no new registered ChatGPT plugin or MCP transport was published.
+- Verification: 75 Node tests pass (41 composer tests plus existing regressions); production Next build/type check pass. Browser automation is unavailable in this session, so desktop pointer/mobile touch visual E2E and authenticated live saves are not claimed as tested. No database migration or test records were introduced into production.
+- Release authorized by the user after local checks. Production branch and project verified against the current Vercel deployment before pushing.
+
 # Completed Work
 
 ## 2026-06-28
@@ -173,3 +208,167 @@ Production commit a19133e reached Vercel READY and custom domain. Live checks: h
 Confirmed user screenshot and enabled admin_users record xrkr80hdadmin (Travis). Game owner configuration corrected to that account. Game login validates its existing site credentials; regular site login also issues signed Game Night session. Site authorization, account record and password unchanged. Game token binds to current admin password hash and is revoked if account disabled/password changed. Regression verifies Game Night lookup failure cannot interrupt main-site login. Six auth/security tests and production build pass.
 
 - Added Game Master eight-step clickable walkthrough and contextual next-action card, automatic walkthrough for new games, explicit local-vs-phone status, and clearer player waiting text. Online clue picks require Start game. Popout uses a short-lived same-browser, account-bound handoff of the current session to avoid stale cloud snapshots after save conflicts. Verified syntax, 9 guidance states, 14 engine checks, Next production build, mobile join/team/pick/buzz, desktop scoring/undo/media, walkthrough clicks, and 1980×1020/4K public layouts.
+
+## XSTUDIO private workspace — 2026-10-16
+
+- Agents inspected the installed XSTUDIO plugin, studio repository and deployment, and Fuschia Light House project before implementation. XSTUDIO was an installed prompt/asset workflow, not an existing web app. A separate `xstudio-app` was added on `codex/xstudio-private`; the main studio app and WAMarket were not edited.
+- Reused XSTUDIO's logo, production contract, references, and validation scripts. Built an owner-only library with private upload/download, source and approval status, owner token management, and optional Gemini/xAI image adapters. Flow and Video Express AI remain manual sources pending verified APIs and credentials.
+- Applied XSTUDIO-only tables, RLS, private storage bucket, token table, workflow status, and bucket limits in Fuschia; seeded only verified Auth UID `112e268b-1af9-42e7-b8cb-877b63f74344` for `xrkr80hd@gmail.com`. Deployed `xstudio-assets-api` version 3 with scoped token upload/download and owner-JWT token management. Anonymous token and asset requests return 401.
+- Local Next 16.4.2 production build passed, seven focused tests passed, npm production audit found zero vulnerabilities, and anonymous/local negative auth checks passed. A short-lived, scoped integration-check token was accepted by both Edge read and write paths (read returned 404 for a nonexistent asset; invalid upload returned 415), then revoked; zero active tokens remain. Owner password login, authorized file transfer, and owner token issuance through the UI still need a live owner session to verify.
+- Live SQL changes were applied through the connector but were not recorded in Supabase's migration ledger. Do not run `db push` until that ledger is repaired by an authenticated project CLI account. The 100 MiB owner upload path also needs verification against the project-wide Supabase limit.
+- Created separate Vercel project `xstudio-private` under EBEN, set Next.js and root `xstudio-app`, configured production Fuschia public variables and owner UID, connected `xrkr80hd/xkr80hd.studio`, tracked only `codex/xstudio-private` for production, and added `xstudio.xrkr80hd.studio`. Deployment `9naDgEg17JwfDcQYz8PwmFVPXXaP` from commit `2a7930d` is READY. Its production alias serves login with HTTP 200, redirects anonymous `/` to login, and returns 401 for anonymous asset/token routes.
+- After owner sign-in to name.com, added only the `xstudio` CNAME to `91e60a87ff492a95.vercel-dns-017.com` with TTL 300. Name.com's record list confirms the saved value; its authoritative nameserver, Cloudflare DNS, and Google DNS return the same CNAME. Vercel shows `xstudio.xrkr80hd.studio` as `Valid Configuration` for Production. HTTPS certificate and routing verified against the Vercel target with SNI (`/` redirects to `/login`, `/login` returns 200, anonymous asset and token endpoints return 401). The local resolver/browser still cached an earlier NXDOMAIN at the time of verification, so direct browser navigation awaits cache expiry. Owner login and positive asset transfer still need the owner to sign in to XSTUDIO.
+
+### Owner password recovery
+
+- Added a password reset request to the XSTUDIO login for the existing `xrkr80hd@gmail.com` Fuschia Auth user. It uses browser-side Supabase PKCE and redirects to `https://xstudio.xrkr80hd.studio/auth/callback`; the user must open the recovery email in the same browser.
+- The callback accepts only a recovery-code exchange, verifies owner identity and membership, and sets a signed, HttpOnly 10-minute grant tied to that Auth session. Both `/update-password` and its same-origin POST require the grant; successful password update clears it and signs out. No new user or service-role key was added.
+- Build and focused tests passed. Local anonymous checks: `/update-password` redirects to login, password update POST returns 401, callback without code redirects to login with an invalid-link notice.
+- Handoff: add `https://xstudio.xrkr80hd.studio/auth/callback` to Fuschia Auth allowed redirect URLs, set server-only `XSTUDIO_RECOVERY_COOKIE_SECRET` to a random 32-byte base64url value in Vercel, deploy this branch, then have the owner request and use a recovery link in the same browser. The shared Auth email template was not changed.
+
+## XSTUDIO migrated library access (2026-10-17)
+
+- Replaced the owner library's silent 100-record cutoff with stable 100-record pages and complete client retrieval, retaining owner authorization, no-store responses, and ID deduplication.
+- Verified eight existing security/provider/recovery tests and a successful Next.js 16.4.2 production build. Live deployment verification follows publication.
+- Migration storage was independently verified: 502 unique files / 942,196,738 bytes copied to Fuschia, 55 deleted-only files purged, existing active project records and short codes retained. XCE connector hosting remains on the ChatGPT Site; storage migration alone is not permission to suspend that connector host.
+
+## XCE online studio restoration — 2026-10-17
+
+- Restored the original XCE project, workspace, reference, story, shot-list and color-grade interface from the read-only Sites snapshot (0ca93b08), adapted to the online studio's existing owner session and Supabase engine. The GPT Site source is unchanged.
+- Added immediate UUID project scaffolding, seven local asset libraries, IndexedDB with localStorage fallback, queued revision-checked synchronization, conflict preservation, local backup export, and an offline application shell. Local storage availability is reported honestly; export is required before clearing device data.
+- Added cached inline previews, generated thumbnail previews, shared persistent Grid/List controls, native asset dialogs, larger touch controls, a dedicated Rules route, and preserved connection creation/revocation in its own page.
+- Added strict project-only @Asset binding, immutable reviewed locks, parent character/location binding, attached-image selectors, and actual reference-byte injection in the Gemini adapter. Missing, ambiguous, unlocked and cross-project references stop compilation. The text-only Grok adapter is blocked for anchored production; no paid generation was invoked in verification.
+- Extended the existing Edge engine authorization to accept a verified allow-listed owner session as well as its existing scoped connector tokens. No service-role key is exposed to the browser.
+- Verification: production Next build and TypeScript passed; 21 tests passed, including concurrent local creation, stale-sync edit preservation, offline creation/cache, reference injection, auth-origin validation and recovery checks. Browser checks confirmed local project creation, image attachment, reviewed lock, bound prompt, persisted List view, and asset/image persistence after a fresh reload. Local test records remain on localhost only. Live release verification follows the authorized Git push.
+
+## Connections and key visibility (2026-10-17)
+
+- Rotated the revoked XCE token into a new owner-scoped 30-day read/write credential, installed as a Sites server secret; deployment succeeded and live XCE returned all 11 active projects. Revoked tokens remain revoked, primary Supabase storage unchanged.
+- Updated the current ConnectionsPanel with separate tool choices, custom tool support, named one-time key display, Copy key feedback/manual fallback, and active/revoked/expired history with dates. No existing token plaintext is retrievable.
+- JSX compilation passed. Existing eight security/provider/recovery tests passed. Signed-in UI verification remains unavailable in the agent browser; no provider generation or credit spend was performed.
+
+## Thumbnail and navigation repair (2026-10-17)
+- Fixed preview selection choosing asset IDs before existing attached references. Four focused regression tests and eight existing tests passed.
+- Added Back and Overview / Project / Current page breadcrumbs throughout the studio, plus View reference uploads beside the workspace upload action, opening and scrolling to the project's image gallery.
+- Studio TSX compilation passed for the navigation changes. Live signed-in visual verification unavailable to agent browser.
+
+## Character cast organization (2026-10-17)
+- Added Main Cast, Supporting Cast, Background Cast and Unsorted Characters accordions. A dropdown on each character card persists its group, including for existing legacy/locked characters. Other asset libraries remain unchanged. Existing characters remain unsorted until assigned.
+- Group metadata lives separately from immutable visual anchors. The mutation route verifies origin, owner session, folder access, character membership and current revision. Creature records are excluded.
+- Three focused regression tests passed (locked record/code preservation, invalid/non-character rejection and group moves); UI TSX compilation passed. Production build verification follows publication; signed-in browser visual verification is unavailable.
+
+## CGE profile storage and editing (2026-10-17)
+- Added XCE_COLOR_GRADE adapter and validation, preserving the complete canonical object under cge_profile, including source text and extended parameters. Existing native format remains supported; no database schema/data migration or factory file change.
+- Added Add grade, staged JSON upload/paste, editable parameter accordion and canonical export. Import no longer saves immediately. Save remains explicit; factory edits require duplication; current version history and assignment protections remain.
+- Added authenticated owner-session GET/POST /api/color-grades and PATCH /api/color-grades/[grade_id], with folder checks, same-origin mutation checks, explicit confirm flag, required project/revision, create collision protection, version checks and readback verification. These routes are not a new external bearer-token connector.
+- Six focused tests passed: canonical round-trip, existing-grade/factory/assignment preservation, history and stale versions, native compatibility, malformed input rejection and parameter prompt inclusion. UI/API TS syntax checks passed; production build follows Git publication. Signed-in browser verification unavailable in the agent session.
+
+## Asset presort and character inspector (2026-10-18)
+- Reviewed 500 live library entries against project manifests and inspected 128 ambiguous/unlinked images. Presorted 439 references: 423 in existing project/category groups and 16 unresolved files moved atomically to the universal Lost Assets pool. Preserved all source IDs, bytes, codes, roles, existing anchors/scenes, deleted entries, cover art, grades and compositions. New database read-back confirmed invariants for all seven updated projects.
+- Removed tile-level cast selectors. Added a choice dialog inside character details, compact image-first mobile inspection, removed generic character prompt/background color samples, and added editable Character story with independent owner/folder/CAS-protected saving.
+- Narrative context feeds Composer as user-saved background/motivation with visual locks and explicit scene actions retaining priority. Presorted source uploads are visible by category without gaining approval.
+- Full suite passed 84 tests and production build passed. Cloud browser is at the owner sign-in page, so signed-in device interaction remains unverified.
+
+## Delete confirmation checkbox layout (2026-10-18)
+- Moved the linked-record checkbox after its sentence in the shared single/bulk delete confirmation. Added scoped horizontal alignment, wrapping text and a fixed 22px checkbox with a 44px label target. Deletion state and behavior are unchanged.
+- Diff check and production build passed.
+
+## 2026-10-18 — Anchor crops and cast/pool follow-up (local, not pushed)
+- Inspected NEXTDOCS image-cropper-modal.tsx and existing studio BlogAvatarCropper before implementation. Adapted original-image canvas export and native pointer controls; added resizable/movable selection rather than reusing the fixed avatar window.
+- Face/body anchor fields now accept device or saved project images and crop the same source independently. Crop starts square, supports all eight edge/corner handles and keyboard move/resize, optional square lock, reset, cancel and X. Saves actual source-pixel crops as separate files using existing local-store/sync and world metadata; retains originals and existing locked-asset protections.
+- Added in-flight save protection and clearing of image metadata when its reference is removed.
+- General Cast is the default, consolidating legacy background/unassigned display without rewriting asset IDs or images. Cast saves resolve unique project-local record/reference aliases and reject ambiguous/foreign/non-character targets.
+- Attachment pool checks now include world_library records across categories; project reference picker hides attached images except current selections. This is a project-manifest check, not a cross-project scan of copied Lost Assets originals.
+- Verification: all 125 existing/new Node tests passed, Next production build and TypeScript passed, git diff --check passed. Geometry bounds, free vs square resize, independent face/body reference round-trip, original preservation, cast mapping and world-category pool filtering covered.
+- Browser preview unavailable through the connected local browser capability; did not claim a signed-in browser save or visual mobile QA. No production DB edits, commit or push for these follow-up changes; awaiting user review/push.
+
+
+## 2026-10-18 — Unsaved carousel character save
+Fixed inspector classification so uploaded references retain reference identity instead of resolving their intended character type as a saved character. Unassigned-image Move/Duplicate actions now open asset intake with name/category and a destination selector, including the current project. Canonical source IDs and reference queue keys stay intact. Added regression coverage reproducing the reported missing-character error and validating intake. Validation: 15 targeted tests passed, TypeScript and targeted ESLint passed, production build compiled and generated all routes. Changes remain local; no commit, push, deployment, or live project data changes.
+
+
+## 2026-10-18 — Alternate costume asset library picker
+Found the empty dropdown was filtering on reference.key, which the authenticated browser manifest deliberately removes. Replaced it in CharacterStates with Add from assets: a searchable thumbnail library of all available owned project pools and Lost Assets, including already assigned images. Selected same-project images attach directly; cross-project images duplicate only the chosen reference, refresh the destination revision, and attach to the current character state. Baseline character is preserved. Locked folders remain unavailable. Added mobile two-column styling and regression tests covering key-free browser manifests and cross-pool costume attachment without creating a second character. Validation: 12 targeted tests, TypeScript, targeted ESLint and production build passed. React review checked effects, cancellation, loading/error states, explicit button types and labeled controls. Changes local only.
+
+## 2026-10-18 — Simpler asset editing, approval and scene selection
+- Unified saved asset name, category dropdown, classification, short description, character role and gender in Edit / Rename. Replaced inspector action grids and cast-choice button grids with dropdowns. Moved share codes beneath a closed Share section. Kept existing creative/image tools available separately.
+- Removed the embedded Assets prompt builder and picker-only Asset Intelligence/research editor. Scene Builder has its own project page. Cards show images/names, with saved short descriptions on library cards; no code/suffix/approval text on scene picker tiles.
+- Categorized both the scene picker and Add from assets reference library with one category dropdown, including cast groups. No All Categories entry. Scene selections persist while changing category/search/gender until Add to Prompt. Batch add supports 20+ assets, rejects stale/unlocked items, and does not duplicate existing placements. Removed scene drag/drop; retained desktop dialog dragging.
+- Added user-authored descriptions/classifications to scene previews, verified prompts, canonical prompts and project prompt binding. Optional prop-character clauses apply only with both assets selected. Descriptions/classifications copy during legacy asset transfer; clauses retain only destination-valid character links.
+- Added image lock/unlock actions for legacy props, creatures/beasts, vehicles and locations, reusing exact saved image verification, revision checks and explicit owner approval. Native assets retain Save & lock. Name-only updates preserve stable IDs and lock state; consumed source-image cards are hidden using explicit attachment/lineage edges rather than private storage keys. Native locked names can also change without changing their visual reference.
+- Verification: 300 Node tests pass, full ESLint and TypeScript pass, production webpack build passes. Covered stable rename, native rename, item descriptions/clauses in actual compiled output, explicit gender, mixed-category selection of 20 assets, categorized reference pools, non-character locking and description transfer. No live user records modified during QA. Signed-in browser/mobile visual QA was not performed.
+
+## 2026-10-18 — Categorized scene-reference and clause character lists
+Inspected the supplied seven-second recording and identified SceneCastPicker's independent, uncategorized Add a project character select. Added a shared ProjectCharacterPicker with one category dropdown, alphabetical choices within that group and search. Reused it for scene-reference cast, prop-character clauses and character relationship clauses. Creatures/beasts have their own scene-reference group; clause selectors remain character-only. Category/search browsing does not mutate parent selected IDs or saved clause targets. Removed draft/lock suffixes and redundant explanation from scene-reference choices. Validation: all 301 Node tests, full ESLint, TypeScript and production webpack build passed; rendered UI check confirms the main-character list excludes villain names until that category is chosen and does not expose status suffixes. No production records altered during verification.
+
+## 2026-10-18 — Restore direct inspector buttons and compact sizing
+Restored visible Edit / Rename, Duplicate, Move and Delete buttons; removed the More action dropdown. Edit / Rename opens the combined saved-asset editor containing category, classification and description. Removed the Share accordion and restored direct Copy code and Copy for ChatGPT buttons. Scoped controls to consistent 44px height with compact padding and equal-width wrapping; copy buttons sit side by side. Validation: TypeScript, targeted ESLint, production webpack build and diff check passed. Attempted standalone responsive browser checks, but the local Playwright browser executable is unavailable; no mobile screenshot verification claimed. No asset data changes.
+
+## 2026-10-18 — Human edit-field cleanup
+Character Edit / Rename retains name, category, character role and gender, while hiding the duplicate description and classification. Classification now appears only for props; prop descriptions remain available. Existing saved text is preserved. Validation: rendered character/prop comparison, TypeScript, targeted ESLint and diff check passed. Local changes only; not pushed.
+
+## 2026-10-18 — Viewer image-edge arrows, automatic advance and switches
+Moved native-library previous/next controls from the crowded header onto the left/right edges of the asset preview, using the same arrows as the legacy/reference inspector. Both viewer paths show the arrows for every category, disabled at a boundary/single item. Removed both Auto-Next checkboxes and made save advancement unconditional, including unified asset edits. Shared queue transition marks saved items without removing them from navigation; a finished queue retains the last saved asset until the owner closes the viewer. Kept manual arrow/keyboard navigation and compact position labels.
+Applied accessible switch semantics and sliding-track appearance to clause enable settings, crop square lock and the linked-delete option. Item selection and explicit approval confirmations keep checkboxes. Recorded this user control preference in AGENT_SYSTEM.md for future builds.
+Verification: all 311 Node tests, full ESLint, TypeScript and production webpack build passed. Added queue transition coverage for eight categories, single-item completion and skipping completed entries. Rendered switch check confirms the existing enabled state and exact clause survive the UI change. No production asset data modified during verification.
+
+
+## 2026-10-19 — Keep the current page and project on refresh
+Replaced the unconditional Projects reset with validated restoration of the saved project, page, scene, search and scroll. Explicit URL project/page destinations take priority and changing projects cannot inherit the previous project's scene or scroll. Asset libraries remember their last category per project. Refreshing a locked project keeps the requested page/project and resumes it after the existing PIN gate succeeds.
+Verification: all 318 Node tests passed, including seven navigation regression cases for refresh, Composer, explicit destinations and malformed state. Full ESLint and production webpack build (including TypeScript) passed; diff check passed. No signed-in browser verification or production data changes.
+
+
+## 2026-10-19 — Compact project identity and editable project ID (local)
+Replaced the read-only Project ID input and oversized copy button with plain text, an inline copy icon and a compact Edit button below. Edit opens project title/ID with Save and Cancel. Added an authenticated, same-origin save endpoint and an atomic owner-scoped database function to update the project key, manifest metadata, reserved-code mapping, active context and project order without duplicating assets or changing existing image storage keys. Exact current project selectors follow the new ID; asset codes and history remain intact. Stale revisions, duplicate IDs, invalid IDs and system pools fail without partial updates. Folder access is checked and an existing unlock cookie follows an ID rename. Pending local edits block renaming; confirmed edits invalidate old caches and preserve the selected category/page.
+Verification: rendered default identity contains no input/form; Node tests cover metadata preservation, invalid edits, local cache replacement and engine owner/scope forwarding. Isolated PostgreSQL-compatible PGlite execution verified successful transaction, early/late conflict rollback, stale revision rejection, foreign owner isolation, project order/code updates, unchanged image keys, and service-only function permission. Live schema/constraints were inspected read-only; no production writes or migrations applied. New SQL migration and edge-function change must be published together with the application after push authorization.
+
+## 2026-10-19 — Short trash labels (local)
+Shortened the selected-trash action to Delete permanently. It stays disabled with no selection. Empty trash retains its independent empty_all request, so selecting one item does not limit it. Existing confirmation remains. Added behavior tests for selected-only deletion and empty-all ignoring selection; no actual user records deleted.
+
+## 2026-10-19 — Direct classified uploads (local)
+Upload Category dropdown now lists all eight saved cast groups plus distinct creature/beast, prop, vehicle, location, costume, scene, style and failed-output categories. Each cast/asset upload creates its reference and saved asset in the same manifest write and stores the selected cast group; the normal library/picker therefore reads the actual saved classification. Uploaded scenes use existing scene intake; costumes remain reusable wardrobe references. Existing image attachment editors and Lost Assets intake retain their flow. Classified uploads require a synced creative project, preserving the local draft when it is not ready. No automatic approval or lock is applied.
+Verification across these changes: all 337 Node tests, full ESLint, TypeScript and production webpack build passed. Twelve upload tests include every cast group, a 20-image villain batch, distinct asset categories, wardrobe references and malformed category rejection. Final targeted lint/diff checks passed. No signed-in browser or production upload verification claimed. All changes remain local and uncommitted pending the user's required pre-push review.
+
+
+## 2026-10-19 — Category-first Create Scene Reference cast picker (local)
+Verified the actual FF6 saved project has 14 main, 2 villain, 3 background and 2 supporting cast-group assignments; both villain character IDs exist and are active. The shared scene-reference picker was automatically opening the first nonempty group (Main Characters). It now starts with Choose category and shows characters only after a category is chosen. All cast categories remain available, including empty groups, and existing clause targets still hydrate their saved category when manifest data arrives. Added Back to categories. Neither category changes nor Back alters the parent's added character IDs.
+Verification: real React component interaction check mounted the actual SceneCastPicker, hydrated an initially empty manifest, chose villain/main/background cast, switched categories and pressed Back. All three selected IDs remained intact and passed scene-cast save validation. Existing group tests now verify availability of empty categories; all 337 Node tests, full lint and production webpack build (including TypeScript) passed. Final Back-button interaction/targeted lint passed. Production project inspection was read-only; no cast assignments changed. Changes remain local pending push authorization.
+
+
+## 2026-10-19 — Authorized release
+Trav explicitly authorized push after reviewing the pending changes. Applied xstudio_project_id_edit on Fuchsia Lighthouse and deployed xstudio-assets-api v7 after verifying its live v6 entrypoint and engine matched the repository base. Retained the existing authentication configuration. Verified the new SQL function uses invoker security, rejects invalid IDs, and is executable only by service_role; anon/authenticated execution is denied. Security advisor found no finding for the new function; existing service-only RLS tables remain closed to direct clients. Site release includes project title/ID editing, simplified trash labels, classified category uploads and the category-first scene cast picker with Back and persistent selections. Local verification: 337 tests, full lint, TypeScript/build and React interaction checks passed.
+
+### Mobile character picker Back correction
+Replaced native character select with inline touch buttons in a bounded scrolling list. Categories Back sits beside current category above search/list, outside its scroll area. Category selection remains a dropdown; returning does not mutate selected cast. Shared picker covers all consumers. Targeted ESLint, four scene-cast tests, actual React interaction hydration/selection/Back test and diff whitespace check passed. No device visual check performed. Local only, not pushed.
+
+## 2026-10-21 Exact character image handoff
+Local correction reuses CREF for anchor image requests, improves discovery/initialization guidance, retains metadata-only reads and bounds the full MCP image envelope. 411 full-suite tests and modified-file lint pass; 61 focused tests pass. Read-only live XCE bridge test delivered actual Gau PNG (FF6-CH-GAU-v1) for locked FF6-CH-GAU-v2, final-fantasy-vi revision 177. Renderer consumption and authenticated deployed universal MCP remain unverified. Vercel connector could not access named xstudio-private project. Detailed evidence: xstudio-app/docs/EXACT_REFERENCE_HANDOFF.md. No commits, pushes, deployments or production mutations.
+## Asset Library viewer and batch inspection (2026-10-21)
+- Replaced editable detail forms with a dedicated read-only AssetViewerModal across the shared library. Header and image-edge arrows stay within the current visible category/cast group; editing requires Edit.
+- Presents saved sheets, canonical metadata/specifications, biography, prompt anchors, tags and variations; preserves image download and asset-code handoff.
+- Extracted cancellable useLongPress; keeps checkbox/shift selection. View Selected resolves exact selection keys into a responsive comparison. Edit Selected opens the existing classification/categorization/cast/move batch controller; no new write endpoint.
+- Verified: 409 Node tests pass (four new regression tests), TypeScript and changed-file ESLint pass, production webpack build passes, git diff --check passes. SSR checks confirm single/comparison viewers render saved details with no editable fields.
+- Browser gesture/visual verification unavailable: no installed Chromium. Nothing committed, pushed or deployed.
+
+## Complete large read-only preview (2026-10-21)
+Added full saved character relationships and synergy clauses from both directions, including disabled status, assigned equipment, reverse prop usage and character clauses, plus core identity attributes. Enlarged the preview dialog and fixed hero image sizing through the PreviewImage wrapper. Verification: 416 Node tests pass; changed-file ESLint passes; SSR confirms saved attributes, synergy text and navigation without any form controls.
+
+## Compact character preview accordions (2026-10-21)
+Kept the large asset image and preview navigation. Added closed-by-default accordions for quick details, biography/background, attributes/specifications, relationships, synergies, equipment, linked prop rules, continuity, variations, anchor prompts, and GPT handoff/asset code. Long identity/anchor prompts are excluded from attributes and grouped under Anchor prompts. TypeScript, changed-file ESLint, SSR collapsed-section/no-edit-field checks and git diff --check pass. Awaiting push instruction for these additional edits.
+
+## Mobile asset preview swipe (2026-10-21)
+Horizontal swipes on the large preview image now browse previous/next assets, respecting first/last boundaries and ignoring vertical movement, short gestures, multitouch and cancellation. Desktop arrows stay available. TypeScript, changed-file lint and 15 relevant regression tests pass. Mobile browser gesture verification remains outstanding. Not pushed.
+
+Mobile swipe refinement: small unobtrusive arrow glyphs on touch phones, with 44px tap targets; desktop arrow styling retained. CSS diff whitespace check passes.
+
+## Silhouette choices and clean preview (2026-10-21)
+Added character Appearance & Anatomy silhouette dropdown with common body shapes and retention of custom saved values. Saves as descriptive metadata; locked visual identity is unchanged. Preview attributes now omit Material Spec and recursively remove empty serialized JSON placeholders. TypeScript, changed-file ESLint, 10 relevant tests and targeted metadata save/preview/lock-preservation check pass. Not pushed.
+
+## No preselected project assets (2026-10-21)
+Explicit project selection (including folder unlock) clears selected assets, batch mode and previous scene/filter state. The library starts without an active category, shows a choose-category hint and disables Add until a category is chosen. TypeScript, changed-file ESLint, initial SSR no-preselected-category/cards and diff checks pass. Not pushed.
+
+## Cover photo picker (2026-10-21)
+Changed only the folder-cover file input to image/* and labeled it Choose project cover photo. This requests a mobile photo chooser without forcing a camera or specific app. The OS/browser controls the available picker. Existing cover upload validation remains intact; diff check passes. Not pushed.
+
+## Cover source selection (2026-10-21)
+Add/Change Cover now offers phone/device or assets in that exact project. The asset chooser loads the target project independently of the active workspace, starts at project folders without selection, shows saved image thumbnails and uses exact saved bytes with the existing authenticated cover upload/validation. Back navigation and errors remain in the chooser; cover success closes it. TypeScript, changed-file ESLint, relevant reference-pool/project-edit tests and whitespace checks pass. Not pushed; native phone picker and authenticated image-to-cover flow still require browser verification.

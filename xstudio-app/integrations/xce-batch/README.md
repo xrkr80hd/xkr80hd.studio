@@ -1,0 +1,11 @@
+# XSTUDIO scene batch handoff
+
+Scene workspace → Export Scene Batch for GPT opens a live, read-only preview. Preview refreshes on script edits, local project revision updates and reopening. Downloads re-resolve current records, retrieve original references, verify signatures/MIME/size/SHA256 and reject project changes during retrieval. Missing/unlocked links block the ZIP. Planning scenes retain LTSTLK and pending camera/continuation approvals; export never approves rendering.
+
+POST `/api/scenes/export`: action `inspect`, `download`, or `schema`; project_id, scene_id, optional current script `document`, composition_id, master_reference_id, expected_revision. Uses the existing owner or scoped-token access, folder locks and same-origin protection. No new credential store or database writes.
+
+Existing connected `xce_composer` supports scene batches without a new tool: read the live schema, inventory to resolve exact scene IDs, then `action=read, category=scene_batch, id=<scene ID>` for preview or `action=execution, category=scene_batch, id=<scene ID>` for master JSON and original reference bytes. Project selection remains explicit. Saved scene data only; unsaved script edits must be saved or exported via ZIP. No tunnel or automatic upload into an arbitrary chat. The site’s Copy UNIFY load request provides exact routing without exposing credentials. A connected host must preserve/inspect returned image blocks.
+
+All five XCE component blocks are present. Native forms, mount/equipment bindings, anatomical side, formation counts/multipliers, spatial metadata and grade definitions are retained. No fabricated public image URLs, canon roster, faction, LUT, production approval or pixel-consistency guarantee. Original PNG/JPEG/WebP extensions and bytes are preserved. Archives contain master JSON/prompt, script JSON/document, schema, image reference map and actual images. Reference URLs require existing authorization; no keys/tokens/private storage paths are exported.
+
+Limits: 6 MB per image and 40 MB total image bytes. Metadata preview does not download/hash all files or prove visual identity. Before rendering, UNIFY still requires actual image inspection, MV questions and continuation selection. Browser sign-in and real project/mobile download flows need production verification.

@@ -1,0 +1,4 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {fresh} from '../lib/xce/core.mjs';import {purgeTrash} from '../lib/xce/library.mjs';
+function trash(){const m=fresh();m.trash={'prop:ONE':{record:{asset_id:'ONE',name:'One'}},'prop:TWO':{record:{asset_id:'TWO',name:'Two'}}};return m}
+test('delete permanently deletes only the selected trash entry',()=>{const m=trash();assert.throws(()=>purgeTrash(m,{keys:[],confirm:true}),/Select deleted/);purgeTrash(m,{keys:['prop:ONE'],confirm:true});assert.deepEqual(Object.keys(m.trash),['prop:TWO'])});
+test('empty trash removes all trash entries regardless of selection',()=>{const m=trash();const result=purgeTrash(m,{empty_all:true,keys:['prop:ONE'],confirm:true});assert.equal(result.permanently_deleted,2);assert.deepEqual(m.trash,{})});

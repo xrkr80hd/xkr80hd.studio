@@ -1,0 +1,7 @@
+{
+  "name": "XSTUDIO",
+  "description": "XSTUDIO | Private production library",
+  "capabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

@@ -1,0 +1,1950 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "XCE_COMPOSER",
+    "version": "1.0.0",
+    "description": "Authenticated native XSTUDIO scene compilation and persistence. No image generation. Send exact project/asset IDs. Execution returns real images; do not rely on URL text."
+  },
+  "servers": [
+    {
+      "url": "https://xstudio.xrkr80hd.studio"
+    }
+  ],
+  "security": [
+    {
+      "StudioConnector": []
+    }
+  ],
+  "paths": {
+    "/api/composer": {
+      "get": {
+        "operationId": "discoverComposer",
+        "summary": "Discover projects, inventory/grades, saved compositions or research brief.",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "schema",
+                "projects",
+                "inventory",
+                "read",
+                "research",
+                "resolve",
+                "classifications",
+                "metadata_read",
+                "generation_prompt"
+              ]
+            }
+          },
+          {
+            "name": "project_id",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "asset_id",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "asset_code",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Authenticated result or verified image package"
+          },
+          "400": {
+            "description": "Invalid scene or missing references"
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Permission denied"
+          },
+          "409": {
+            "description": "Stale project/composition version"
+          },
+          "423": {
+            "description": "Folder locked"
+          }
+        }
+      },
+      "post": {
+        "operationId": "operateComposer",
+        "summary": "Compile or retrieve actual execution images; explicitly save/edit/duplicate a composition or stage/approve intelligence. Read-only tokens cannot save.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "action",
+                  "project_id"
+                ],
+                "properties": {
+                  "action": {
+                    "type": "string",
+                    "enum": [
+                      "compile",
+                      "execution",
+                      "save",
+                      "duplicate",
+                      "intelligence",
+                      "character_details",
+                      "cast_group",
+                      "character_state",
+                      "scene_cast",
+                      "classify",
+                      "classify_bulk",
+                      "metadata_update",
+                      "metadata_bulk",
+                      "generation_prompt_update",
+                      "scene_record"
+                    ]
+                  },
+                  "project_id": {
+                    "type": "string"
+                  },
+                  "configuration": {
+                    "type": "object",
+                    "properties": {
+                      "placements": {
+                        "type": "array",
+                        "maxItems": 20,
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "asset_id": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 128,
+                              "pattern": "^[a-zA-Z0-9_-]+$"
+                            },
+                            "x": {
+                              "type": "integer",
+                              "minimum": 0,
+                              "maximum": 100
+                            },
+                            "y": {
+                              "type": "integer",
+                              "minimum": 0,
+                              "maximum": 100
+                            },
+                            "plane": {
+                              "type": "string",
+                              "enum": [
+                                "foreground",
+                                "midground",
+                                "background"
+                              ]
+                            },
+                            "action": {
+                              "type": "string",
+                              "enum": [
+                                "as described",
+                                "standing",
+                                "walking",
+                                "running",
+                                "flying",
+                                "arriving",
+                                "interacting",
+                                "observing",
+                                "sitting",
+                                "turning",
+                                "jumping",
+                                "landing",
+                                "climbing",
+                                "swimming",
+                                "driving",
+                                "riding",
+                                "reaching",
+                                "holding",
+                                "crouching",
+                                "looking back",
+                                "departing"
+                              ]
+                            },
+                            "state_id": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 128,
+                              "pattern": "^[a-zA-Z0-9_-]+$"
+                            },
+                            "state_version": {
+                              "type": "integer",
+                              "minimum": 1
+                            }
+                          },
+                          "required": [
+                            "asset_id",
+                            "x",
+                            "y",
+                            "plane",
+                            "action"
+                          ],
+                          "additionalProperties": false
+                        }
+                      },
+                      "relationships": {
+                        "type": "array",
+                        "maxItems": 50,
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "subject_id": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 128,
+                              "pattern": "^[a-zA-Z0-9_-]+$"
+                            },
+                            "relation": {
+                              "type": "string",
+                              "enum": [
+                                "inside",
+                                "outside",
+                                "on",
+                                "underneath",
+                                "beside",
+                                "behind",
+                                "in front of",
+                                "above",
+                                "below",
+                                "approaching",
+                                "departing",
+                                "flying over",
+                                "traveling through"
+                              ]
+                            },
+                            "object_id": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 128,
+                              "pattern": "^[a-zA-Z0-9_-]+$"
+                            }
+                          },
+                          "required": [
+                            "subject_id",
+                            "relation",
+                            "object_id"
+                          ],
+                          "additionalProperties": false
+                        }
+                      },
+                      "camera": {
+                        "type": "object",
+                        "properties": {
+                          "shot": {
+                            "type": "string",
+                            "enum": [
+                              "establishing",
+                              "wide",
+                              "medium",
+                              "close-up",
+                              "aerial",
+                              "tracking",
+                              "over-the-shoulder",
+                              "POV"
+                            ]
+                          },
+                          "lens": {
+                            "type": "string",
+                            "maxLength": 2000
+                          },
+                          "angle": {
+                            "type": "string",
+                            "maxLength": 2000
+                          },
+                          "elevation": {
+                            "type": "string",
+                            "maxLength": 2000
+                          },
+                          "distance": {
+                            "type": "string",
+                            "maxLength": 2000
+                          },
+                          "framing": {
+                            "type": "string",
+                            "maxLength": 2000
+                          },
+                          "composition": {
+                            "type": "string",
+                            "maxLength": 2000
+                          },
+                          "movement": {
+                            "type": "string",
+                            "maxLength": 2000
+                          }
+                        },
+                        "required": [
+                          "shot",
+                          "lens",
+                          "angle",
+                          "elevation",
+                          "distance",
+                          "framing",
+                          "composition",
+                          "movement"
+                        ],
+                        "additionalProperties": false
+                      },
+                      "environment": {
+                        "type": "object",
+                        "properties": {
+                          "terrain": {
+                            "type": "string",
+                            "maxLength": 2000
+                          },
+                          "architecture": {
+                            "type": "string",
+                            "maxLength": 2000
+                          },
+                          "atmosphere": {
+                            "type": "string",
+                            "maxLength": 2000
+                          },
+                          "weather": {
+                            "type": "string",
+                            "maxLength": 2000
+                          },
+                          "time_of_day": {
+                            "type": "string",
+                            "maxLength": 2000
+                          }
+                        },
+                        "required": [
+                          "terrain",
+                          "architecture",
+                          "atmosphere",
+                          "weather",
+                          "time_of_day"
+                        ],
+                        "additionalProperties": false
+                      },
+                      "lighting": {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "natural",
+                              "studio",
+                              "cinematic",
+                              "directional",
+                              "ambient",
+                              "volumetric"
+                            ]
+                          },
+                          "direction": {
+                            "type": "string",
+                            "maxLength": 2000
+                          },
+                          "quality": {
+                            "type": "string",
+                            "maxLength": 2000
+                          }
+                        },
+                        "required": [
+                          "type",
+                          "direction",
+                          "quality"
+                        ],
+                        "additionalProperties": false
+                      },
+                      "source_shot": {
+                        "type": "object",
+                        "properties": {
+                          "list_id": {
+                            "type": "string",
+                            "maxLength": 2000
+                          },
+                          "shot_id": {
+                            "type": "string",
+                            "maxLength": 2000
+                          }
+                        },
+                        "required": [
+                          "list_id",
+                          "shot_id"
+                        ],
+                        "additionalProperties": false
+                      },
+                      "grade_id": {
+                        "type": "string",
+                        "maxLength": 2000
+                      },
+                      "grade_version": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "aspect_ratio": {
+                        "type": "string",
+                        "enum": [
+                          "16:9",
+                          "9:16",
+                          "1:1",
+                          "4:3",
+                          "2.39:1"
+                        ]
+                      },
+                      "style": {
+                        "type": "string",
+                        "enum": [
+                          "Approved project style",
+                          "RL",
+                          "CB",
+                          "photorealistic",
+                          "comic_book"
+                        ]
+                      },
+                      "negative_constraints": {
+                        "type": "string",
+                        "maxLength": 2000
+                      },
+                      "composite_bindings": {
+                        "type": "array",
+                        "maxItems": 20,
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 128,
+                              "pattern": "^[a-zA-Z0-9_-]+$"
+                            },
+                            "character_id": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 128,
+                              "pattern": "^[a-zA-Z0-9_-]+$"
+                            },
+                            "mount_asset_id": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 128,
+                              "pattern": "^[a-zA-Z0-9_-]+$"
+                            },
+                            "mode": {
+                              "type": "string",
+                              "enum": [
+                                "riding",
+                                "piloting",
+                                "driving"
+                              ]
+                            },
+                            "seat": {
+                              "type": "string",
+                              "maxLength": 2000
+                            },
+                            "posture": {
+                              "type": "string",
+                              "maxLength": 2000
+                            },
+                            "equipment": {
+                              "type": "string",
+                              "maxLength": 2000
+                            },
+                            "movement": {
+                              "type": "string",
+                              "maxLength": 2000
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "character_id",
+                            "mount_asset_id",
+                            "mode",
+                            "seat",
+                            "posture",
+                            "equipment",
+                            "movement"
+                          ],
+                          "additionalProperties": false
+                        }
+                      },
+                      "character_directions": {
+                        "type": "array",
+                        "maxItems": 20,
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "character_id": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 128,
+                              "pattern": "^[a-zA-Z0-9_-]+$"
+                            },
+                            "handedness": {
+                              "type": "string",
+                              "enum": [
+                                "unspecified",
+                                "left",
+                                "right",
+                                "ambidextrous"
+                              ]
+                            },
+                            "stance": {
+                              "type": "string",
+                              "maxLength": 2000
+                            },
+                            "facing": {
+                              "type": "string",
+                              "maxLength": 2000
+                            },
+                            "body_relations": {
+                              "type": "array",
+                              "maxItems": 20,
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "body_part": {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 100
+                                  },
+                                  "relation": {
+                                    "type": "string",
+                                    "enum": [
+                                      "toward",
+                                      "away from",
+                                      "closer to",
+                                      "facing",
+                                      "pointing toward"
+                                    ]
+                                  },
+                                  "target_id": {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 128,
+                                    "pattern": "^[a-zA-Z0-9_-]+$"
+                                  }
+                                },
+                                "required": [
+                                  "body_part",
+                                  "relation",
+                                  "target_id"
+                                ],
+                                "additionalProperties": false
+                              }
+                            }
+                          },
+                          "required": [
+                            "character_id",
+                            "handedness",
+                            "stance",
+                            "facing",
+                            "body_relations"
+                          ],
+                          "additionalProperties": false
+                        }
+                      },
+                      "equipment_bindings": {
+                        "type": "array",
+                        "maxItems": 30,
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 128,
+                              "pattern": "^[a-zA-Z0-9_-]+$"
+                            },
+                            "character_id": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 128,
+                              "pattern": "^[a-zA-Z0-9_-]+$"
+                            },
+                            "prop_id": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 128,
+                              "pattern": "^[a-zA-Z0-9_-]+$"
+                            },
+                            "usage": {
+                              "type": "string",
+                              "enum": [
+                                "wielding",
+                                "holding",
+                                "wearing",
+                                "using"
+                              ]
+                            },
+                            "attachment": {
+                              "type": "string",
+                              "maxLength": 2000
+                            },
+                            "instruction": {
+                              "type": "string",
+                              "maxLength": 2000
+                            },
+                            "body_region": {
+                              "type": "string",
+                              "enum": [
+                                "hands",
+                                "arms",
+                                "head",
+                                "back",
+                                "torso",
+                                "waist",
+                                "feet",
+                                "custom"
+                              ]
+                            },
+                            "side": {
+                              "type": "string",
+                              "enum": [
+                                "unspecified",
+                                "left",
+                                "right",
+                                "both",
+                                "center"
+                              ]
+                            },
+                            "orientation": {
+                              "type": "string",
+                              "maxLength": 2000
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "character_id",
+                            "prop_id",
+                            "usage",
+                            "attachment",
+                            "instruction"
+                          ],
+                          "additionalProperties": false
+                        }
+                      },
+                      "scene_setting": {
+                        "type": "object",
+                        "properties": {
+                          "mode": {
+                            "type": "string",
+                            "enum": [
+                              "build",
+                              "reference",
+                              "atmosphere"
+                            ]
+                          },
+                          "location_id": {
+                            "type": "string",
+                            "maxLength": 128
+                          },
+                          "relation": {
+                            "type": "string",
+                            "enum": [
+                              "at",
+                              "inside"
+                            ]
+                          },
+                          "description": {
+                            "type": "string",
+                            "maxLength": 2000
+                          },
+                          "theme": {
+                            "type": "string",
+                            "enum": [
+                              "none",
+                              "fantasy",
+                              "sci_fi",
+                              "steampunk",
+                              "cyberpunk",
+                              "futuristic",
+                              "retro_futuristic"
+                            ]
+                          },
+                          "theme_details": {
+                            "type": "string",
+                            "maxLength": 2000
+                          }
+                        },
+                        "required": [
+                          "mode",
+                          "location_id",
+                          "relation",
+                          "description",
+                          "theme",
+                          "theme_details"
+                        ],
+                        "additionalProperties": false
+                      },
+                      "source_scene": {
+                        "type": "object",
+                        "properties": {
+                          "scene_id": {
+                            "type": "string",
+                            "maxLength": 2000
+                          }
+                        },
+                        "required": [
+                          "scene_id"
+                        ],
+                        "additionalProperties": false
+                      },
+                      "formations": {
+                        "type": "array",
+                        "maxItems": 20,
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 128,
+                              "pattern": "^[a-zA-Z0-9_-]+$"
+                            },
+                            "target_type": {
+                              "type": "string",
+                              "enum": [
+                                "asset",
+                                "composite"
+                              ]
+                            },
+                            "target_id": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 128,
+                              "pattern": "^[a-zA-Z0-9_-]+$"
+                            },
+                            "preset": {
+                              "type": "string",
+                              "enum": [
+                                "pair",
+                                "patrol",
+                                "squad",
+                                "company",
+                                "battalion",
+                                "army",
+                                "custom"
+                              ]
+                            },
+                            "count": {
+                              "type": "integer",
+                              "minimum": 1,
+                              "maximum": 100000
+                            },
+                            "arrangement": {
+                              "type": "string",
+                              "maxLength": 2000
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "target_type",
+                            "target_id",
+                            "preset",
+                            "count",
+                            "arrangement"
+                          ],
+                          "additionalProperties": false
+                        }
+                      },
+                      "scene_action": {
+                        "type": "string",
+                        "maxLength": 2000
+                      },
+                      "world_inspiration": {
+                        "type": "string",
+                        "maxLength": 2000
+                      },
+                      "scene_details": {
+                        "type": "object",
+                        "properties": {
+                          "terrain_features": {
+                            "type": "array",
+                            "maxItems": 20,
+                            "items": {
+                              "type": "string",
+                              "maxLength": 2000
+                            }
+                          },
+                          "architecture_features": {
+                            "type": "array",
+                            "maxItems": 20,
+                            "items": {
+                              "type": "string",
+                              "maxLength": 2000
+                            }
+                          },
+                          "weather_layers": {
+                            "type": "array",
+                            "maxItems": 20,
+                            "items": {
+                              "type": "string",
+                              "maxLength": 2000
+                            }
+                          },
+                          "elements": {
+                            "type": "array",
+                            "maxItems": 20,
+                            "items": {
+                              "type": "string",
+                              "maxLength": 2000
+                            }
+                          }
+                        },
+                        "required": [
+                          "terrain_features",
+                          "architecture_features",
+                          "weather_layers",
+                          "elements"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "required": [
+                      "placements",
+                      "relationships",
+                      "camera",
+                      "environment",
+                      "lighting",
+                      "source_shot",
+                      "grade_id",
+                      "grade_version",
+                      "aspect_ratio",
+                      "style",
+                      "negative_constraints"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "id": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "expected_revision": {
+                    "type": "integer"
+                  },
+                  "expected_version": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "confirm": {
+                    "type": "boolean"
+                  },
+                  "asset_id": {
+                    "type": "string",
+                    "maxLength": 128,
+                    "description": "Exact saved record ID. execution + asset_id without configuration retrieves a LOCKED character CREF."
+                  },
+                  "approve": {
+                    "type": "boolean"
+                  },
+                  "profile": {
+                    "type": "object",
+                    "additionalProperties": {
+                      "type": "string"
+                    }
+                  },
+                  "character_id": {
+                    "type": "string",
+                    "maxLength": 128
+                  },
+                  "details": {
+                    "type": "object",
+                    "properties": {
+                      "quick_details": {
+                        "type": "string",
+                        "maxLength": 4000
+                      },
+                      "links": {
+                        "type": "array",
+                        "maxItems": 50,
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "kind": {
+                              "type": "string",
+                              "enum": [
+                                "equal_height",
+                                "shorter_than",
+                                "taller_than",
+                                "opposes",
+                                "custom"
+                              ]
+                            },
+                            "target_id": {
+                              "type": "string"
+                            },
+                            "text": {
+                              "type": "string",
+                              "maxLength": 2000
+                            },
+                            "enabled": {
+                              "type": "boolean"
+                            },
+                            "clause_type": {
+                              "type": "string",
+                              "enum": [
+                                "relationship",
+                                "synergy"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "kind",
+                            "target_id"
+                          ],
+                          "additionalProperties": false
+                        }
+                      }
+                    },
+                    "required": [
+                      "quick_details",
+                      "links"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "group": {
+                    "type": "string",
+                    "enum": [
+                      "main",
+                      "supporting",
+                      "background",
+                      "villain",
+                      "sub_villain",
+                      "unassigned"
+                    ]
+                  },
+                  "state": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 128,
+                        "pattern": "^[a-zA-Z0-9_-]+$"
+                      },
+                      "character_id": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 128,
+                        "pattern": "^[a-zA-Z0-9_-]+$"
+                      },
+                      "name": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 100
+                      },
+                      "status": {
+                        "type": "string",
+                        "enum": [
+                          "DRAFT",
+                          "LOCKED"
+                        ]
+                      },
+                      "version": {
+                        "type": "integer",
+                        "minimum": 1
+                      },
+                      "reference_ids": {
+                        "type": "array",
+                        "maxItems": 6,
+                        "items": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 128,
+                          "pattern": "^[a-zA-Z0-9_-]+$"
+                        }
+                      },
+                      "visual_description": {
+                        "type": "string",
+                        "maxLength": 2000
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "character_id",
+                      "name",
+                      "status",
+                      "version",
+                      "reference_ids",
+                      "visual_description"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "operation": {
+                    "type": "string",
+                    "enum": [
+                      "save",
+                      "lock",
+                      "unlock",
+                      "delete"
+                    ]
+                  },
+                  "scene_id": {
+                    "type": "string",
+                    "maxLength": 128
+                  },
+                  "character_ids": {
+                    "type": "array",
+                    "maxItems": 50,
+                    "items": {
+                      "type": "string",
+                      "maxLength": 128
+                    }
+                  },
+                  "classification": {
+                    "type": "string",
+                    "enum": [
+                      "",
+                      "main_cast",
+                      "supporting_cast",
+                      "villain",
+                      "background_character",
+                      "magical_being",
+                      "creature_beast",
+                      "weapon",
+                      "equipment",
+                      "general_prop",
+                      "vehicle",
+                      "location"
+                    ]
+                  },
+                  "updates": {
+                    "type": "array",
+                    "minItems": 1,
+                    "maxItems": 50,
+                    "items": {
+                      "oneOf": [
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "asset_id",
+                            "classification",
+                            "expected_version"
+                          ],
+                          "properties": {
+                            "asset_id": {
+                              "type": "string"
+                            },
+                            "classification": {
+                              "type": "string",
+                              "enum": [
+                                "",
+                                "main_cast",
+                                "supporting_cast",
+                                "villain",
+                                "background_character",
+                                "magical_being",
+                                "creature_beast",
+                                "weapon",
+                                "equipment",
+                                "general_prop",
+                                "vehicle",
+                                "location"
+                              ]
+                            },
+                            "expected_version": {
+                              "type": "integer",
+                              "minimum": 0
+                            }
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "asset_id",
+                            "expected_version",
+                            "patch"
+                          ],
+                          "properties": {
+                            "asset_id": {
+                              "type": "string"
+                            },
+                            "expected_version": {
+                              "type": "integer",
+                              "minimum": 0
+                            },
+                            "patch": {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "properties": {
+                                "full_name": {
+                                  "type": "string",
+                                  "maxLength": 10000
+                                },
+                                "description": {
+                                  "type": "string",
+                                  "maxLength": 10000
+                                },
+                                "biography": {
+                                  "type": "string",
+                                  "maxLength": 10000
+                                },
+                                "species": {
+                                  "type": "string",
+                                  "maxLength": 10000
+                                },
+                                "distinguishing_characteristics": {
+                                  "type": "string",
+                                  "maxLength": 10000
+                                },
+                                "appearance": {
+                                  "type": "string",
+                                  "maxLength": 10000
+                                },
+                                "anatomy": {
+                                  "type": "string",
+                                  "maxLength": 10000
+                                },
+                                "facial_features": {
+                                  "type": "string",
+                                  "maxLength": 10000
+                                },
+                                "hair": {
+                                  "type": "string",
+                                  "maxLength": 10000
+                                },
+                                "skin": {
+                                  "type": "string",
+                                  "maxLength": 10000
+                                },
+                                "fur": {
+                                  "type": "string",
+                                  "maxLength": 10000
+                                },
+                                "scales": {
+                                  "type": "string",
+                                  "maxLength": 10000
+                                },
+                                "markings": {
+                                  "type": "string",
+                                  "maxLength": 10000
+                                },
+                                "wardrobe": {
+                                  "type": "string",
+                                  "maxLength": 10000
+                                },
+                                "armor": {
+                                  "type": "string",
+                                  "maxLength": 10000
+                                },
+                                "accessories": {
+                                  "type": "string",
+                                  "maxLength": 10000
+                                },
+                                "equipment": {
+                                  "type": "string",
+                                  "maxLength": 10000
+                                },
+                                "personality": {
+                                  "type": "string",
+                                  "maxLength": 10000
+                                },
+                                "motivations": {
+                                  "type": "string",
+                                  "maxLength": 10000
+                                },
+                                "abilities": {
+                                  "type": "string",
+                                  "maxLength": 10000
+                                },
+                                "background": {
+                                  "type": "string",
+                                  "maxLength": 10000
+                                },
+                                "display_name": {
+                                  "type": "string",
+                                  "maxLength": 200
+                                },
+                                "quick_details": {
+                                  "type": "string",
+                                  "maxLength": 4000
+                                },
+                                "cast_role": {
+                                  "type": "string"
+                                },
+                                "base_character_id": {
+                                  "type": "string"
+                                },
+                                "analysis_status": {
+                                  "type": "string",
+                                  "enum": [
+                                    "unverified",
+                                    "user_confirmed",
+                                    "reference_verified"
+                                  ]
+                                },
+                                "provenance": {
+                                  "type": "object"
+                                },
+                                "append_relationships": {
+                                  "type": "array",
+                                  "maxItems": 50
+                                }
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "patch": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "full_name": {
+                        "type": "string",
+                        "maxLength": 10000
+                      },
+                      "description": {
+                        "type": "string",
+                        "maxLength": 10000
+                      },
+                      "biography": {
+                        "type": "string",
+                        "maxLength": 10000
+                      },
+                      "species": {
+                        "type": "string",
+                        "maxLength": 10000
+                      },
+                      "distinguishing_characteristics": {
+                        "type": "string",
+                        "maxLength": 10000
+                      },
+                      "appearance": {
+                        "type": "string",
+                        "maxLength": 10000
+                      },
+                      "anatomy": {
+                        "type": "string",
+                        "maxLength": 10000
+                      },
+                      "facial_features": {
+                        "type": "string",
+                        "maxLength": 10000
+                      },
+                      "hair": {
+                        "type": "string",
+                        "maxLength": 10000
+                      },
+                      "skin": {
+                        "type": "string",
+                        "maxLength": 10000
+                      },
+                      "fur": {
+                        "type": "string",
+                        "maxLength": 10000
+                      },
+                      "scales": {
+                        "type": "string",
+                        "maxLength": 10000
+                      },
+                      "markings": {
+                        "type": "string",
+                        "maxLength": 10000
+                      },
+                      "wardrobe": {
+                        "type": "string",
+                        "maxLength": 10000
+                      },
+                      "armor": {
+                        "type": "string",
+                        "maxLength": 10000
+                      },
+                      "accessories": {
+                        "type": "string",
+                        "maxLength": 10000
+                      },
+                      "equipment": {
+                        "type": "string",
+                        "maxLength": 10000
+                      },
+                      "personality": {
+                        "type": "string",
+                        "maxLength": 10000
+                      },
+                      "motivations": {
+                        "type": "string",
+                        "maxLength": 10000
+                      },
+                      "abilities": {
+                        "type": "string",
+                        "maxLength": 10000
+                      },
+                      "background": {
+                        "type": "string",
+                        "maxLength": 10000
+                      },
+                      "display_name": {
+                        "type": "string",
+                        "maxLength": 200
+                      },
+                      "quick_details": {
+                        "type": "string",
+                        "maxLength": 4000
+                      },
+                      "cast_role": {
+                        "type": "string"
+                      },
+                      "base_character_id": {
+                        "type": "string"
+                      },
+                      "analysis_status": {
+                        "type": "string",
+                        "enum": [
+                          "unverified",
+                          "user_confirmed",
+                          "reference_verified"
+                        ]
+                      },
+                      "provenance": {
+                        "type": "object"
+                      },
+                      "append_relationships": {
+                        "type": "array",
+                        "maxItems": 50
+                      }
+                    }
+                  },
+                  "text": {
+                    "type": "string",
+                    "maxLength": 30000
+                  },
+                  "provenance": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "source",
+                      "notes",
+                      "reference_ids"
+                    ],
+                    "properties": {
+                      "source": {
+                        "type": "string",
+                        "enum": [
+                          "USER_AUTHORED",
+                          "USER_CONFIRMED",
+                          "REFERENCE_VERIFIED"
+                        ]
+                      },
+                      "notes": {
+                        "type": "string",
+                        "maxLength": 4000
+                      },
+                      "reference_ids": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "maxItems": 30
+                      }
+                    }
+                  },
+                  "entity": {
+                    "type": "string",
+                    "enum": [
+                      "scene",
+                      "keyframe"
+                    ]
+                  },
+                  "data": {
+                    "type": "object",
+                    "description": "Existing scene/keyframe editor fields; omitted reference_sequence preserves the saved stack",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "maxLength": 200
+                      },
+                      "character_ids": {
+                        "type": "array",
+                        "maxItems": 50,
+                        "items": {
+                          "type": "string",
+                          "maxLength": 128
+                        }
+                      },
+                      "character_counts": {
+                        "type": "object",
+                        "additionalProperties": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 100
+                        }
+                      },
+                      "prop_ids": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "location_ids": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "blocking": {
+                        "type": "string",
+                        "maxLength": 10000
+                      },
+                      "lighting_palette": {
+                        "type": "string",
+                        "maxLength": 10000
+                      },
+                      "camera_spec": {
+                        "type": "object"
+                      },
+                      "action_continuity": {
+                        "type": "object"
+                      },
+                      "reference_sequence": {
+                        "type": "array",
+                        "maxItems": 100,
+                        "items": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "id",
+                            "reference_id",
+                            "description",
+                            "camera",
+                            "advance_seconds",
+                            "continuity"
+                          ],
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "pattern": "^[a-zA-Z0-9_-]{1,128}$"
+                            },
+                            "reference_id": {
+                              "type": "string",
+                              "description": "Existing image ID in this project"
+                            },
+                            "description": {
+                              "type": "string",
+                              "maxLength": 2000
+                            },
+                            "camera": {
+                              "type": "string",
+                              "maxLength": 2000
+                            },
+                            "advance_seconds": {
+                              "type": "number",
+                              "minimum": 0,
+                              "maximum": 600
+                            },
+                            "continuity": {
+                              "type": "string",
+                              "maxLength": 2000
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "category": {
+                    "type": "string",
+                    "description": "Use cref for locked character image retrieval; scene_batch for a scene handoff"
+                  },
+                  "asset_code": {
+                    "type": "string",
+                    "maxLength": 128,
+                    "description": "Exact saved asset code; supported for CREF resolve and execution"
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Authenticated result or verified image package"
+          },
+          "400": {
+            "description": "Invalid scene or missing references"
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Permission denied"
+          },
+          "409": {
+            "description": "Stale project/composition version"
+          },
+          "423": {
+            "description": "Folder locked"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "StudioConnector": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Existing scoped, revocable XSTUDIO xst_ token. Never put the token in scene text or asset metadata."
+      }
+    },
+    "schemas": {
+      "CharacterState": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[a-zA-Z0-9_-]+$"
+          },
+          "character_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[a-zA-Z0-9_-]+$"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "DRAFT",
+              "LOCKED"
+            ]
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "reference_ids": {
+            "type": "array",
+            "maxItems": 6,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[a-zA-Z0-9_-]+$"
+            }
+          },
+          "visual_description": {
+            "type": "string",
+            "maxLength": 2000
+          }
+        },
+        "required": [
+          "id",
+          "character_id",
+          "name",
+          "status",
+          "version",
+          "reference_ids",
+          "visual_description"
+        ],
+        "additionalProperties": false
+      },
+      "CompositeMountBinding": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[a-zA-Z0-9_-]+$"
+          },
+          "character_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[a-zA-Z0-9_-]+$"
+          },
+          "mount_asset_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[a-zA-Z0-9_-]+$"
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "riding",
+              "piloting",
+              "driving"
+            ]
+          },
+          "seat": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "posture": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "equipment": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "movement": {
+            "type": "string",
+            "maxLength": 2000
+          }
+        },
+        "required": [
+          "id",
+          "character_id",
+          "mount_asset_id",
+          "mode",
+          "seat",
+          "posture",
+          "equipment",
+          "movement"
+        ],
+        "additionalProperties": false
+      },
+      "FormationScaleConfig": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[a-zA-Z0-9_-]+$"
+          },
+          "target_type": {
+            "type": "string",
+            "enum": [
+              "asset",
+              "composite"
+            ]
+          },
+          "target_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[a-zA-Z0-9_-]+$"
+          },
+          "preset": {
+            "type": "string",
+            "enum": [
+              "pair",
+              "patrol",
+              "squad",
+              "company",
+              "battalion",
+              "army",
+              "custom"
+            ]
+          },
+          "count": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100000
+          },
+          "arrangement": {
+            "type": "string",
+            "maxLength": 2000
+          }
+        },
+        "required": [
+          "id",
+          "target_type",
+          "target_id",
+          "preset",
+          "count",
+          "arrangement"
+        ],
+        "additionalProperties": false
+      },
+      "EquipmentBinding": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[a-zA-Z0-9_-]+$"
+          },
+          "character_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[a-zA-Z0-9_-]+$"
+          },
+          "prop_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[a-zA-Z0-9_-]+$"
+          },
+          "usage": {
+            "type": "string",
+            "enum": [
+              "wielding",
+              "holding",
+              "wearing",
+              "using"
+            ]
+          },
+          "attachment": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "instruction": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "body_region": {
+            "type": "string",
+            "enum": [
+              "hands",
+              "arms",
+              "head",
+              "back",
+              "torso",
+              "waist",
+              "feet",
+              "custom"
+            ]
+          },
+          "side": {
+            "type": "string",
+            "enum": [
+              "unspecified",
+              "left",
+              "right",
+              "both",
+              "center"
+            ]
+          },
+          "orientation": {
+            "type": "string",
+            "maxLength": 2000
+          }
+        },
+        "required": [
+          "id",
+          "character_id",
+          "prop_id",
+          "usage",
+          "attachment",
+          "instruction"
+        ],
+        "additionalProperties": false
+      },
+      "SceneSetting": {
+        "type": "object",
+        "properties": {
+          "mode": {
+            "type": "string",
+            "enum": [
+              "build",
+              "reference",
+              "atmosphere"
+            ]
+          },
+          "location_id": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "relation": {
+            "type": "string",
+            "enum": [
+              "at",
+              "inside"
+            ]
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "theme": {
+            "type": "string",
+            "enum": [
+              "none",
+              "fantasy",
+              "sci_fi",
+              "steampunk",
+              "cyberpunk",
+              "futuristic",
+              "retro_futuristic"
+            ]
+          },
+          "theme_details": {
+            "type": "string",
+            "maxLength": 2000
+          }
+        },
+        "required": [
+          "mode",
+          "location_id",
+          "relation",
+          "description",
+          "theme",
+          "theme_details"
+        ],
+        "additionalProperties": false
+      },
+      "CharacterDirection": {
+        "type": "object",
+        "properties": {
+          "character_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[a-zA-Z0-9_-]+$"
+          },
+          "handedness": {
+            "type": "string",
+            "enum": [
+              "unspecified",
+              "left",
+              "right",
+              "ambidextrous"
+            ]
+          },
+          "stance": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "facing": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "body_relations": {
+            "type": "array",
+            "maxItems": 20,
+            "items": {
+              "type": "object",
+              "properties": {
+                "body_part": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 100
+                },
+                "relation": {
+                  "type": "string",
+                  "enum": [
+                    "toward",
+                    "away from",
+                    "closer to",
+                    "facing",
+                    "pointing toward"
+                  ]
+                },
+                "target_id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128,
+                  "pattern": "^[a-zA-Z0-9_-]+$"
+                }
+              },
+              "required": [
+                "body_part",
+                "relation",
+                "target_id"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "character_id",
+          "handedness",
+          "stance",
+          "facing",
+          "body_relations"
+        ],
+        "additionalProperties": false
+      },
+      "AssetClassifications": {
+        "type": "object",
+        "description": "{\"version\":\"1.0.0\",\"classifications\":{\"main_cast\":\"Main Cast\",\"supporting_cast\":\"Supporting Cast\",\"villain\":\"Villain\",\"background_character\":\"Background Character\",\"magical_being\":\"Magical Being / Esper\",\"creature_beast\":\"Creature / Beast\",\"weapon\":\"Weapon\",\"equipment\":\"Equipment\",\"general_prop\":\"General Prop\",\"vehicle\":\"Vehicle\",\"location\":\"Location\"},\"applicable_primary_categories\":{\"main_cast\":[\"character\"],\"supporting_cast\":[\"character\"],\"villain\":[\"character\",\"creature\"],\"background_character\":[\"character\",\"creature\"],\"magical_being\":[\"character\",\"creature\"],\"creature_beast\":[\"character\",\"creature\"],\"weapon\":[\"prop\"],\"equipment\":[\"prop\"],\"general_prop\":[\"prop\"],\"vehicle\":[\"vehicle\"],\"location\":[\"location\",\"room\"]},\"metadata_only\":true,\"max_batch_size\":50,\"version_meaning\":\"classification metadata version; asset_version is unchanged\",\"operations\":{\"read\":{\"action\":\"classifications\",\"project_id\":\"required\"},\"update\":{\"action\":\"classify\",\"project_id\":\"required\",\"asset_id\":\"required\",\"classification\":\"enum or empty to clear\",\"expected_version\":\"required integer\",\"expected_revision\":\"required integer\",\"confirm\":true},\"bulk_update\":{\"action\":\"classify_bulk\",\"project_id\":\"required\",\"updates\":\"1–50 {asset_id, classification, expected_version}\",\"expected_revision\":\"required integer\",\"confirm\":true}},\"empty_classification\":\"Clear classification without changing the primary category\",\"partial_errors\":\"Valid items saved together; invalid items returned individually. Project revision conflict aborts all writes.\"}"
+      },
+      "AssetMetadata": {
+        "type": "object",
+        "description": "{\"version\":\"1.0.0\",\"text_fields\":[\"full_name\",\"description\",\"biography\",\"species\",\"distinguishing_characteristics\",\"appearance\",\"anatomy\",\"facial_features\",\"hair\",\"skin\",\"fur\",\"scales\",\"markings\",\"wardrobe\",\"armor\",\"accessories\",\"equipment\",\"personality\",\"motivations\",\"abilities\",\"background\"],\"text_limit\":10000,\"other_fields\":[\"display_name\",\"quick_details\",\"cast_role\",\"base_character_id\",\"analysis_status\",\"provenance\",\"append_relationships\"],\"read_only\":[\"primary_category\",\"asset_id\",\"asset_code\",\"reference_ids\",\"approval_status\",\"immutable_traits\"],\"analysis_status\":[\"unverified\",\"user_confirmed\",\"reference_verified\"],\"write_scope\":\"asset:metadata\",\"versions\":\"expected_version is metadata version, independent of classification and prompt versions\",\"relationships\":\"Append explicitly supplied clauses only. Omitted fields and existing clauses are preserved. Use existing relationship editor for explicit removal.\",\"prompts\":{\"scope\":\"asset:metadata\",\"expected_version\":\"prompt version\",\"provenance_required\":true,\"reference_ids\":\"Must match saved LOCKED source images\",\"original_versions_retained\":true},\"unknown_information\":\"Leave absent; do not infer from names or franchise familiarity\"}"
+      },
+      "SceneReferenceSequence": {
+        "type": "array",
+        "maxItems": 100,
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "id",
+            "reference_id",
+            "description",
+            "camera",
+            "advance_seconds",
+            "continuity"
+          ],
+          "properties": {
+            "id": {
+              "type": "string",
+              "pattern": "^[a-zA-Z0-9_-]{1,128}$"
+            },
+            "reference_id": {
+              "type": "string",
+              "description": "Existing image ID in this project"
+            },
+            "description": {
+              "type": "string",
+              "maxLength": 2000
+            },
+            "camera": {
+              "type": "string",
+              "maxLength": 2000
+            },
+            "advance_seconds": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 600
+            },
+            "continuity": {
+              "type": "string",
+              "maxLength": 2000
+            }
+          }
+        }
+      }
+    }
+  }
+}

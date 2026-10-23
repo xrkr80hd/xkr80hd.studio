@@ -1,0 +1,38 @@
+{
+  "commercial_meta": {
+    "project_title": "STRING",
+    "spot_length": "30s",
+    "aspect_ratio": "16:9",
+    "target_engines": ["Google Flow", "OpenArt AI", "Artistly", "Video Express AI", "Kling AI"]
+  },
+  "locked_anchors": {
+    "talent": [
+      {"id": "TALENT_01", "description": "DETAILED PHYSICAL ANCHOR: age, build, face shape, hair, locked wardrobe items, textures"}
+    ],
+    "environment": [
+      {"id": "ENV_01", "description": "LOCKED SET/LOCATION: architectural cues, spatial boundaries, fixed background props"}
+    ],
+    "cinematography_profile": {
+      "camera_lens": "Camera, lens, focal length, depth of field",
+      "lighting_setup": "Key direction, contrast ratio, practical lights and color temperature",
+      "color_grade": "Naturalistic commercial grade, warm skin tones, clean neutral whites"
+    }
+  },
+  "storyboard_shots": [
+    {
+      "shot_number": 1,
+      "duration": "5s",
+      "beat_type": "Hook",
+      "continuity_in": "Starting state / camera entry",
+      "visual_action": "Specific subject motion and interaction with the locked environment",
+      "camera_motion": "One specified camera movement preserving camera logic",
+      "sound_design_sfx": "Action-timed practical foley, environmental ambience, impacts; no music, no dialogue, no voiceover",
+      "generation_prompts": {
+        "image_anchor_prompt": "Self-contained initial frame prompt with explicit IDs and full relevant approved anchor descriptions",
+        "video_motion_prompt": "Motion-only prompt from supplied start frame to end frame, camera move, timing, speed and identity preservation"
+      },
+      "continuity_out": "Precise ending state to be inherited by the next shot"
+    }
+  ]
+}
+

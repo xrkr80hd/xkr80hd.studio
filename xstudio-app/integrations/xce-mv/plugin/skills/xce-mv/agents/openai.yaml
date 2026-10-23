@@ -1,0 +1,4 @@
+interface:
+  display_name: "XCE_MV"
+  short_description: "Approve seven shots; Y or GEN renders images"
+  default_prompt: "SL: Ask SS or AS, confirm each shot and FF, repeat the complete list, then ask Y / GEN / N / MOD."

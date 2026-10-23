@@ -1,0 +1,27 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "xce-unify",
+  "version": "2.0.0",
+  "description": "XSTUDIO-first orchestration of XCE assets, script, composition, multiview, grading and commercial workflows with a recorded continuity ledger.",
+  "author": {
+    "name": "XRKR"
+  },
+  "extensions": {
+    "com.openai": {
+      "apps": "./.app.json",
+      "interface": {
+        "displayName": "XCE_UNIFY",
+        "shortDescription": "One scene. One XCE pipeline.",
+        "longDescription": "XSTUDIO-first scene orchestration with a live status HUD, conflict/missing-link audits, script/anchor/grade continuity, mandatory four-angle MV preflight and explicit continuation selection. Includes all current XCE roles and the existing XCE app. No website server is deployed.",
+        "developerName": "XRKR",
+        "category": "Productivity",
+        "capabilities": [],
+        "defaultPrompt": [
+          "Boot XCE_UNIFY and load my XSTUDIO scene.",
+          "Ingest this XSTUDIO prompt and coordinate the script, shots and grade.",
+          "LTSTLK: plan this scene with the XCE team before generation."
+        ]
+      }
+    }
+  }
+}

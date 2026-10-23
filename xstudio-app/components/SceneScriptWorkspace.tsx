@@ -1,0 +1,5 @@
+'use client';
+import {useState,type ReactNode} from 'react';
+import SceneScriptTab from './SceneScriptTab';
+import SceneExportHub from './SceneExportHub';
+export default function SceneScriptWorkspace({project,sceneId,onSaved,children,revision}:{project:string,sceneId:string,onSaved:()=>Promise<any>,children:ReactNode,revision?:number}){const [tab,setTab]=useState('scene'),[opened,setOpened]=useState(false),[draft,setDraft]=useState<any>(null);return <><div className="scene-workspace-actions" role="group" aria-label="Scene workspace"><button type="button" className="button secondary" aria-pressed={tab==='scene'} onClick={()=>setTab('scene')}>Scene & shots</button><button type="button" className="button secondary" aria-pressed={tab==='script'} onClick={()=>{setOpened(true);setTab('script')}}>Scripts</button><SceneExportHub project={project} sceneId={sceneId} document={draft} revision={revision}/></div><div hidden={tab!=='scene'}>{children}</div>{opened&&<div hidden={tab!=='script'}><SceneScriptTab project={project} sceneId={sceneId} onSaved={onSaved} onDraftChange={setDraft}/></div>}</>}

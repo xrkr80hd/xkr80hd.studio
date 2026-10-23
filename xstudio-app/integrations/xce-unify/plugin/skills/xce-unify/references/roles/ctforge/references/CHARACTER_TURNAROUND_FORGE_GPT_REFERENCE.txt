@@ -1,0 +1,3 @@
+RETIRED REFERENCE — xstudio 1.0.0
+The prior contents have been removed. Read ../SKILL.md and character-sheet.md. This file defines no commands, views, layout defaults or override priority. Do not retrieve an older version to execute current work.
+

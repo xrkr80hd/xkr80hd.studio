@@ -1,0 +1,1322 @@
+{
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": "2.0.0",
+      "type": "string"
+    },
+    "handoff_protocol_id": {
+      "const": "xce_live_handoff_v2",
+      "type": "string"
+    },
+    "orchestrator": {
+      "const": "@XCE_UNIFY",
+      "type": "string"
+    },
+    "workspace_origin": {
+      "const": "https://xstudio.xrkr80hd.studio",
+      "type": "string"
+    },
+    "project_id": {
+      "type": "string",
+      "maxLength": 128
+    },
+    "scene_id": {
+      "type": "string",
+      "maxLength": 128
+    },
+    "project_revision": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "plan_revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "stage": {
+      "type": "string",
+      "enum": [
+        "BLOCKED",
+        "HANDSHAKE",
+        "PLANNING",
+        "SCRIPT_REVIEW",
+        "VISUAL_REVIEW",
+        "GRADE_REVIEW",
+        "READY_TO_RENDER",
+        "RENDERING",
+        "REVIEW",
+        "COMPLETE"
+      ]
+    },
+    "continuity_status": {
+      "type": "string",
+      "enum": [
+        "UNVERIFIED",
+        "PLAN_CONTINUOUS",
+        "LOCKED_CONTINUOUS"
+      ]
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "SS",
+        "AS"
+      ]
+    },
+    "handshake": {
+      "type": "object",
+      "properties": {
+        "source_verified": {
+          "type": "boolean"
+        },
+        "source_url": {
+          "type": "string",
+          "maxLength": 500
+        },
+        "checked_at": {
+          "type": "string",
+          "maxLength": 100
+        },
+        "evidence": {
+          "type": "string",
+          "maxLength": 10000
+        }
+      },
+      "required": [
+        "source_verified",
+        "source_url",
+        "checked_at",
+        "evidence"
+      ],
+      "additionalProperties": false
+    },
+    "scene_intent": {
+      "type": "string",
+      "maxLength": 20000
+    },
+    "active_team_sheets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "asset_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[a-zA-Z0-9_-]+$"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "reference_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[a-zA-Z0-9_-]+$"
+            },
+            "maxItems": 30
+          },
+          "reference_status": {
+            "type": "string",
+            "enum": [
+              "UNRESOLVED",
+              "BYTES_RETRIEVED",
+              "REVIEWED"
+            ]
+          },
+          "sha256": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 64
+            },
+            "maxItems": 30
+          },
+          "anchor_status": {
+            "type": "string",
+            "enum": [
+              "MISSING",
+              "DRAFT",
+              "LOCKED"
+            ]
+          },
+          "mcs_reference_id": {
+            "type": "string",
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "asset_id",
+          "name",
+          "reference_ids",
+          "reference_status",
+          "sha256",
+          "anchor_status",
+          "mcs_reference_id"
+        ],
+        "additionalProperties": false
+      },
+      "maxItems": 50
+    },
+    "global_constraints": {
+      "type": "object",
+      "properties": {
+        "aspect_ratio": {
+          "const": "16:9",
+          "type": "string"
+        },
+        "min_shot_seconds": {
+          "type": "integer",
+          "const": 3
+        },
+        "max_shot_seconds": {
+          "type": "integer",
+          "const": 6
+        },
+        "default_lens_profile": {
+          "const": "35mm anamorphic",
+          "type": "string"
+        },
+        "negative_prompt_lock": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "grade_id": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "grade_version": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "grade_prompt": {
+          "type": "string",
+          "maxLength": 10000
+        },
+        "world_lighting_anchor": {
+          "type": "string",
+          "maxLength": 10000
+        }
+      },
+      "required": [
+        "aspect_ratio",
+        "min_shot_seconds",
+        "max_shot_seconds",
+        "default_lens_profile",
+        "negative_prompt_lock",
+        "grade_id",
+        "grade_version",
+        "grade_prompt",
+        "world_lighting_anchor"
+      ],
+      "additionalProperties": false
+    },
+    "approvals": {
+      "type": "object",
+      "properties": {
+        "script_revision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "shots_revision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "ff_revision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "render_revision": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "script_revision",
+        "shots_revision",
+        "ff_revision",
+        "render_revision"
+      ],
+      "additionalProperties": false
+    },
+    "plugin_release_chain": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "role": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "invocation_type": {
+            "type": "string",
+            "enum": [
+              "LIVE_TOOL",
+              "HOST_WORKFLOW",
+              "UNAVAILABLE",
+              "NOT_REQUIRED"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "PENDING",
+              "COMPLETE",
+              "BLOCKED",
+              "NOT_REQUIRED"
+            ]
+          },
+          "operation": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "evidence": {
+            "type": "string",
+            "maxLength": 10000
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "role",
+          "invocation_type",
+          "status",
+          "operation",
+          "evidence",
+          "revision"
+        ],
+        "additionalProperties": false
+      },
+      "maxItems": 50
+    },
+    "recorded_handoff_ledger": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "shot_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[a-zA-Z0-9_-]+$"
+          },
+          "sequence_order": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "duration_seconds": {
+            "type": "number",
+            "minimum": 3,
+            "maximum": 6
+          },
+          "aspect_ratio": {
+            "const": "16:9",
+            "type": "string"
+          },
+          "planned_image_file": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "start_world_state": {
+            "type": "object",
+            "properties": {
+              "actors": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "asset_id": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 128,
+                      "pattern": "^[a-zA-Z0-9_-]+$"
+                    },
+                    "position": {
+                      "type": "string",
+                      "maxLength": 2000
+                    },
+                    "orientation": {
+                      "type": "string",
+                      "maxLength": 1000
+                    },
+                    "eyeline": {
+                      "type": "string",
+                      "maxLength": 1000
+                    },
+                    "posture": {
+                      "type": "string",
+                      "maxLength": 2000
+                    },
+                    "wardrobe_state": {
+                      "type": "string",
+                      "maxLength": 2000
+                    },
+                    "active_state_id": {
+                      "type": "string",
+                      "maxLength": 128
+                    },
+                    "prop_contact": {
+                      "type": "string",
+                      "maxLength": 2000
+                    }
+                  },
+                  "required": [
+                    "asset_id",
+                    "position",
+                    "orientation",
+                    "eyeline",
+                    "posture",
+                    "wardrobe_state",
+                    "active_state_id",
+                    "prop_contact"
+                  ],
+                  "additionalProperties": false
+                },
+                "maxItems": 50
+              },
+              "props": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "asset_id": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 128,
+                      "pattern": "^[a-zA-Z0-9_-]+$"
+                    },
+                    "owner_id": {
+                      "type": "string",
+                      "maxLength": 128
+                    },
+                    "position": {
+                      "type": "string",
+                      "maxLength": 2000
+                    },
+                    "physical_state": {
+                      "type": "string",
+                      "maxLength": 2000
+                    }
+                  },
+                  "required": [
+                    "asset_id",
+                    "owner_id",
+                    "position",
+                    "physical_state"
+                  ],
+                  "additionalProperties": false
+                },
+                "maxItems": 100
+              },
+              "environment": {
+                "type": "string",
+                "maxLength": 10000
+              },
+              "world_lighting": {
+                "type": "string",
+                "maxLength": 10000
+              }
+            },
+            "required": [
+              "actors",
+              "props",
+              "environment",
+              "world_lighting"
+            ],
+            "additionalProperties": false
+          },
+          "end_world_state": {
+            "type": "object",
+            "properties": {
+              "actors": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "asset_id": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 128,
+                      "pattern": "^[a-zA-Z0-9_-]+$"
+                    },
+                    "position": {
+                      "type": "string",
+                      "maxLength": 2000
+                    },
+                    "orientation": {
+                      "type": "string",
+                      "maxLength": 1000
+                    },
+                    "eyeline": {
+                      "type": "string",
+                      "maxLength": 1000
+                    },
+                    "posture": {
+                      "type": "string",
+                      "maxLength": 2000
+                    },
+                    "wardrobe_state": {
+                      "type": "string",
+                      "maxLength": 2000
+                    },
+                    "active_state_id": {
+                      "type": "string",
+                      "maxLength": 128
+                    },
+                    "prop_contact": {
+                      "type": "string",
+                      "maxLength": 2000
+                    }
+                  },
+                  "required": [
+                    "asset_id",
+                    "position",
+                    "orientation",
+                    "eyeline",
+                    "posture",
+                    "wardrobe_state",
+                    "active_state_id",
+                    "prop_contact"
+                  ],
+                  "additionalProperties": false
+                },
+                "maxItems": 50
+              },
+              "props": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "asset_id": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 128,
+                      "pattern": "^[a-zA-Z0-9_-]+$"
+                    },
+                    "owner_id": {
+                      "type": "string",
+                      "maxLength": 128
+                    },
+                    "position": {
+                      "type": "string",
+                      "maxLength": 2000
+                    },
+                    "physical_state": {
+                      "type": "string",
+                      "maxLength": 2000
+                    }
+                  },
+                  "required": [
+                    "asset_id",
+                    "owner_id",
+                    "position",
+                    "physical_state"
+                  ],
+                  "additionalProperties": false
+                },
+                "maxItems": 100
+              },
+              "environment": {
+                "type": "string",
+                "maxLength": 10000
+              },
+              "world_lighting": {
+                "type": "string",
+                "maxLength": 10000
+              }
+            },
+            "required": [
+              "actors",
+              "props",
+              "environment",
+              "world_lighting"
+            ],
+            "additionalProperties": false
+          },
+          "camera_start": {
+            "type": "object",
+            "properties": {
+              "focal_length_mm": {
+                "type": "number",
+                "minimum": 1,
+                "maximum": 2000
+              },
+              "lens_profile": {
+                "type": "string",
+                "maxLength": 300
+              },
+              "position": {
+                "type": "string",
+                "maxLength": 2000
+              },
+              "axis": {
+                "type": "string",
+                "maxLength": 1000
+              },
+              "framing": {
+                "type": "string",
+                "maxLength": 1000
+              }
+            },
+            "required": [
+              "focal_length_mm",
+              "lens_profile",
+              "position",
+              "axis",
+              "framing"
+            ],
+            "additionalProperties": false
+          },
+          "camera_end": {
+            "type": "object",
+            "properties": {
+              "focal_length_mm": {
+                "type": "number",
+                "minimum": 1,
+                "maximum": 2000
+              },
+              "lens_profile": {
+                "type": "string",
+                "maxLength": 300
+              },
+              "position": {
+                "type": "string",
+                "maxLength": 2000
+              },
+              "axis": {
+                "type": "string",
+                "maxLength": 1000
+              },
+              "framing": {
+                "type": "string",
+                "maxLength": 1000
+              }
+            },
+            "required": [
+              "focal_length_mm",
+              "lens_profile",
+              "position",
+              "axis",
+              "framing"
+            ],
+            "additionalProperties": false
+          },
+          "camera_transition": {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "none",
+                  "cut",
+                  "move"
+                ]
+              },
+              "approved": {
+                "type": "boolean"
+              },
+              "description": {
+                "type": "string",
+                "maxLength": 2000
+              }
+            },
+            "required": [
+              "kind",
+              "approved",
+              "description"
+            ],
+            "additionalProperties": false
+          },
+          "active_beat_execution": {
+            "type": "object",
+            "properties": {
+              "beat_id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128,
+                "pattern": "^[a-zA-Z0-9_-]+$"
+              },
+              "character_id": {
+                "type": "string",
+                "maxLength": 128
+              },
+              "mood": {
+                "type": "string",
+                "maxLength": 100
+              },
+              "dialogue": {
+                "type": "string",
+                "maxLength": 3000
+              },
+              "direction_box_1": {
+                "type": "string",
+                "maxLength": 3000
+              },
+              "direction_box_2": {
+                "type": "string",
+                "maxLength": 3000
+              }
+            },
+            "required": [
+              "beat_id",
+              "character_id",
+              "mood",
+              "dialogue",
+              "direction_box_1",
+              "direction_box_2"
+            ],
+            "additionalProperties": false
+          },
+          "grade_id": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "grade_version": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "grade_prompt": {
+            "type": "string",
+            "maxLength": 10000
+          },
+          "image_prompt": {
+            "type": "string",
+            "maxLength": 30000
+          },
+          "motion_prompt": {
+            "type": "string",
+            "maxLength": 30000
+          },
+          "output": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "string",
+                "enum": [
+                  "NOT_GENERATED",
+                  "GENERATED",
+                  "REVIEWED"
+                ]
+              },
+              "file_path": {
+                "type": "string",
+                "maxLength": 2000
+              },
+              "width": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "height": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "sha256": {
+                "type": "string",
+                "maxLength": 64
+              },
+              "visual_review": {
+                "type": "string",
+                "maxLength": 10000
+              },
+              "user_approved": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "status",
+              "file_path",
+              "width",
+              "height",
+              "sha256",
+              "visual_review",
+              "user_approved"
+            ],
+            "additionalProperties": false
+          },
+          "coverage": {
+            "type": "object",
+            "properties": {
+              "mode": {
+                "type": "string",
+                "const": "UNIFY_FOUR_ANGLE"
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "SETUP_PENDING",
+                  "READY",
+                  "GENERATED",
+                  "CONTINUATION_SELECTED"
+                ]
+              },
+              "master_reference_id": {
+                "type": "string",
+                "maxLength": 128
+              },
+              "master_reference_confirmed": {
+                "type": "boolean"
+              },
+              "angles_confirmed": {
+                "type": "boolean"
+              },
+              "action_focus": {
+                "type": "string",
+                "enum": [
+                  "UNCONFIRMED",
+                  "DIRECTION_1",
+                  "DIRECTION_2",
+                  "CUSTOM"
+                ]
+              },
+              "focus_details": {
+                "type": "string",
+                "maxLength": 3000
+              },
+              "focus_confirmed": {
+                "type": "boolean"
+              },
+              "render_approved_revision": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 999999
+              },
+              "selected_continuation_angle": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 4
+              },
+              "continuation_confirmed": {
+                "type": "boolean"
+              },
+              "angles": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "angle_number": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 4
+                    },
+                    "label": {
+                      "type": "string",
+                      "maxLength": 200
+                    },
+                    "camera_start": {
+                      "type": "object",
+                      "properties": {
+                        "focal_length_mm": {
+                          "type": "number",
+                          "minimum": 1,
+                          "maximum": 2000
+                        },
+                        "lens_profile": {
+                          "type": "string",
+                          "maxLength": 300
+                        },
+                        "position": {
+                          "type": "string",
+                          "maxLength": 2000
+                        },
+                        "axis": {
+                          "type": "string",
+                          "maxLength": 1000
+                        },
+                        "framing": {
+                          "type": "string",
+                          "maxLength": 1000
+                        }
+                      },
+                      "required": [
+                        "focal_length_mm",
+                        "lens_profile",
+                        "position",
+                        "axis",
+                        "framing"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "camera_end": {
+                      "type": "object",
+                      "properties": {
+                        "focal_length_mm": {
+                          "type": "number",
+                          "minimum": 1,
+                          "maximum": 2000
+                        },
+                        "lens_profile": {
+                          "type": "string",
+                          "maxLength": 300
+                        },
+                        "position": {
+                          "type": "string",
+                          "maxLength": 2000
+                        },
+                        "axis": {
+                          "type": "string",
+                          "maxLength": 1000
+                        },
+                        "framing": {
+                          "type": "string",
+                          "maxLength": 1000
+                        }
+                      },
+                      "required": [
+                        "focal_length_mm",
+                        "lens_profile",
+                        "position",
+                        "axis",
+                        "framing"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "world_state": {
+                      "type": "object",
+                      "properties": {
+                        "actors": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "asset_id": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 128,
+                                "pattern": "^[a-zA-Z0-9_-]+$"
+                              },
+                              "position": {
+                                "type": "string",
+                                "maxLength": 2000
+                              },
+                              "orientation": {
+                                "type": "string",
+                                "maxLength": 1000
+                              },
+                              "eyeline": {
+                                "type": "string",
+                                "maxLength": 1000
+                              },
+                              "posture": {
+                                "type": "string",
+                                "maxLength": 2000
+                              },
+                              "wardrobe_state": {
+                                "type": "string",
+                                "maxLength": 2000
+                              },
+                              "active_state_id": {
+                                "type": "string",
+                                "maxLength": 128
+                              },
+                              "prop_contact": {
+                                "type": "string",
+                                "maxLength": 2000
+                              }
+                            },
+                            "required": [
+                              "asset_id",
+                              "position",
+                              "orientation",
+                              "eyeline",
+                              "posture",
+                              "wardrobe_state",
+                              "active_state_id",
+                              "prop_contact"
+                            ],
+                            "additionalProperties": false
+                          },
+                          "maxItems": 50
+                        },
+                        "props": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "asset_id": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 128,
+                                "pattern": "^[a-zA-Z0-9_-]+$"
+                              },
+                              "owner_id": {
+                                "type": "string",
+                                "maxLength": 128
+                              },
+                              "position": {
+                                "type": "string",
+                                "maxLength": 2000
+                              },
+                              "physical_state": {
+                                "type": "string",
+                                "maxLength": 2000
+                              }
+                            },
+                            "required": [
+                              "asset_id",
+                              "owner_id",
+                              "position",
+                              "physical_state"
+                            ],
+                            "additionalProperties": false
+                          },
+                          "maxItems": 100
+                        },
+                        "environment": {
+                          "type": "string",
+                          "maxLength": 10000
+                        },
+                        "world_lighting": {
+                          "type": "string",
+                          "maxLength": 10000
+                        }
+                      },
+                      "required": [
+                        "actors",
+                        "props",
+                        "environment",
+                        "world_lighting"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "state_evidence": {
+                      "type": "string",
+                      "enum": [
+                        "PLANNED",
+                        "OBSERVED_REVIEWED"
+                      ]
+                    },
+                    "image_prompt": {
+                      "type": "string",
+                      "maxLength": 30000
+                    },
+                    "motion_prompt": {
+                      "type": "string",
+                      "maxLength": 30000
+                    },
+                    "output": {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "type": "string",
+                          "enum": [
+                            "NOT_GENERATED",
+                            "GENERATED",
+                            "REVIEWED"
+                          ]
+                        },
+                        "file_path": {
+                          "type": "string",
+                          "maxLength": 2000
+                        },
+                        "width": {
+                          "type": "integer",
+                          "minimum": 0
+                        },
+                        "height": {
+                          "type": "integer",
+                          "minimum": 0
+                        },
+                        "sha256": {
+                          "type": "string",
+                          "maxLength": 64
+                        },
+                        "visual_review": {
+                          "type": "string",
+                          "maxLength": 10000
+                        },
+                        "user_approved": {
+                          "type": "boolean"
+                        }
+                      },
+                      "required": [
+                        "status",
+                        "file_path",
+                        "width",
+                        "height",
+                        "sha256",
+                        "visual_review",
+                        "user_approved"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "angle_number",
+                    "label",
+                    "camera_start",
+                    "camera_end",
+                    "world_state",
+                    "state_evidence",
+                    "image_prompt",
+                    "motion_prompt",
+                    "output"
+                  ],
+                  "additionalProperties": false
+                },
+                "maxItems": 4
+              }
+            },
+            "required": [
+              "mode",
+              "status",
+              "master_reference_id",
+              "master_reference_confirmed",
+              "angles_confirmed",
+              "action_focus",
+              "focus_details",
+              "focus_confirmed",
+              "render_approved_revision",
+              "selected_continuation_angle",
+              "continuation_confirmed",
+              "angles"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "shot_id",
+          "sequence_order",
+          "duration_seconds",
+          "aspect_ratio",
+          "planned_image_file",
+          "start_world_state",
+          "end_world_state",
+          "camera_start",
+          "camera_end",
+          "camera_transition",
+          "active_beat_execution",
+          "grade_id",
+          "grade_version",
+          "grade_prompt",
+          "image_prompt",
+          "motion_prompt",
+          "output",
+          "coverage"
+        ],
+        "additionalProperties": false
+      },
+      "maxItems": 200
+    },
+    "pipeline_telemetry_hud": {
+      "type": "object",
+      "properties": {
+        "always_display_to_user": {
+          "type": "boolean",
+          "const": true
+        },
+        "current_step_index": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 6
+        },
+        "total_steps": {
+          "type": "integer",
+          "const": 6
+        },
+        "completed_plugins": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "maxItems": 20
+        },
+        "active_plugin": {
+          "type": "string",
+          "maxLength": 100
+        },
+        "next_handoff_plugin": {
+          "type": "string",
+          "maxLength": 100
+        },
+        "current_action_summary": {
+          "type": "string",
+          "maxLength": 3000
+        }
+      },
+      "required": [
+        "always_display_to_user",
+        "current_step_index",
+        "total_steps",
+        "completed_plugins",
+        "active_plugin",
+        "next_handoff_plugin",
+        "current_action_summary"
+      ],
+      "additionalProperties": false
+    },
+    "harmonization_audit_engine": {
+      "type": "object",
+      "properties": {
+        "audit_status": {
+          "type": "string",
+          "enum": [
+            "PASS",
+            "PENDING",
+            "ALERT"
+          ]
+        },
+        "checks_performed": {
+          "type": "object",
+          "properties": {
+            "source_connection": {
+              "type": "string",
+              "enum": [
+                "NOT_CHECKED",
+                "PASS",
+                "FAIL"
+              ]
+            },
+            "xstudio_mcs_sheets_attached": {
+              "type": "string",
+              "enum": [
+                "NOT_CHECKED",
+                "PASS",
+                "FAIL"
+              ]
+            },
+            "script_beats_and_moods_locked": {
+              "type": "string",
+              "enum": [
+                "NOT_CHECKED",
+                "PASS",
+                "FAIL"
+              ]
+            },
+            "composer_state_and_mounts_verified": {
+              "type": "string",
+              "enum": [
+                "NOT_CHECKED",
+                "PASS",
+                "FAIL"
+              ]
+            },
+            "mv_reference_confirmed": {
+              "type": "string",
+              "enum": [
+                "NOT_CHECKED",
+                "PASS",
+                "FAIL"
+              ]
+            },
+            "mv_four_angles_confirmed": {
+              "type": "string",
+              "enum": [
+                "NOT_CHECKED",
+                "PASS",
+                "FAIL"
+              ]
+            },
+            "mv_action_focus_confirmed": {
+              "type": "string",
+              "enum": [
+                "NOT_CHECKED",
+                "PASS",
+                "FAIL"
+              ]
+            },
+            "aspect_ratio_16x9_enforced": {
+              "type": "string",
+              "enum": [
+                "NOT_CHECKED",
+                "PASS",
+                "FAIL"
+              ]
+            },
+            "watermark_suppression_locked": {
+              "type": "string",
+              "enum": [
+                "NOT_CHECKED",
+                "PASS",
+                "FAIL"
+              ]
+            },
+            "grade_and_lighting_locked": {
+              "type": "string",
+              "enum": [
+                "NOT_CHECKED",
+                "PASS",
+                "FAIL"
+              ]
+            },
+            "continuation_selected": {
+              "type": "string",
+              "enum": [
+                "NOT_CHECKED",
+                "PASS",
+                "FAIL"
+              ]
+            }
+          },
+          "required": [
+            "source_connection",
+            "xstudio_mcs_sheets_attached",
+            "script_beats_and_moods_locked",
+            "composer_state_and_mounts_verified",
+            "mv_reference_confirmed",
+            "mv_four_angles_confirmed",
+            "mv_action_focus_confirmed",
+            "aspect_ratio_16x9_enforced",
+            "watermark_suppression_locked",
+            "grade_and_lighting_locked",
+            "continuation_selected"
+          ],
+          "additionalProperties": false
+        },
+        "detected_contradictions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "maxItems": 50
+        },
+        "missing_links": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "maxItems": 50
+        }
+      },
+      "required": [
+        "audit_status",
+        "checks_performed",
+        "detected_contradictions",
+        "missing_links"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "schema_version",
+    "handoff_protocol_id",
+    "orchestrator",
+    "workspace_origin",
+    "project_id",
+    "scene_id",
+    "project_revision",
+    "plan_revision",
+    "stage",
+    "continuity_status",
+    "mode",
+    "handshake",
+    "scene_intent",
+    "active_team_sheets",
+    "global_constraints",
+    "approvals",
+    "plugin_release_chain",
+    "recorded_handoff_ledger",
+    "pipeline_telemetry_hud",
+    "harmonization_audit_engine"
+  ],
+  "additionalProperties": false,
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://xstudio.xrkr80hd.studio/schemas/xce-unify-continuity-2.0.0.json"
+}

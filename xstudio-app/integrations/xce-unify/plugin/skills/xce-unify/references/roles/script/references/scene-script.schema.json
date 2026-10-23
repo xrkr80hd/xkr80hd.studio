@@ -1,0 +1,314 @@
+{
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": "1.1.0",
+      "type": "string"
+    },
+    "module": {
+      "const": "XCE_SCRIPT",
+      "type": "string"
+    },
+    "source_url": {
+      "const": "https://xstudio.xrkr80hd.studio",
+      "type": "string"
+    },
+    "project_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[a-zA-Z0-9_-]+$"
+    },
+    "scene_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[a-zA-Z0-9_-]+$"
+    },
+    "authoring_mode": {
+      "type": "string",
+      "enum": [
+        "AI",
+        "LTSTLK",
+        "MANUAL"
+      ]
+    },
+    "engine_mode": {
+      "type": "string",
+      "enum": [
+        "INTENT_INTERPRETATION",
+        "LTSTLK_PLANNING",
+        "SCRIPT_EXECUTION"
+      ]
+    },
+    "scene_intent": {
+      "type": "string",
+      "maxLength": 20000
+    },
+    "minor_details": {
+      "type": "string",
+      "maxLength": 20000
+    },
+    "intent_interpretation": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "NOT_ANALYZED",
+            "PROPOSED",
+            "REVIEWED"
+          ]
+        },
+        "decoded_subtext": {
+          "type": "string",
+          "maxLength": 10000
+        },
+        "dramatic_conflict": {
+          "type": "string",
+          "maxLength": 10000
+        },
+        "spatial_blocking_logic": {
+          "type": "string",
+          "maxLength": 10000
+        },
+        "character_motivations": {
+          "type": "string",
+          "maxLength": 10000
+        },
+        "unsaid": {
+          "type": "string",
+          "maxLength": 10000
+        },
+        "beats": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "maxItems": 100
+        }
+      },
+      "required": [
+        "status",
+        "decoded_subtext",
+        "dramatic_conflict",
+        "spatial_blocking_logic",
+        "character_motivations",
+        "unsaid",
+        "beats"
+      ],
+      "additionalProperties": false
+    },
+    "planning": {
+      "type": "object",
+      "properties": {
+        "notes": {
+          "type": "string",
+          "maxLength": 20000
+        },
+        "open_questions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "maxItems": 50
+        },
+        "decisions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "maxItems": 100
+        }
+      },
+      "required": [
+        "notes",
+        "open_questions",
+        "decisions"
+      ],
+      "additionalProperties": false
+    },
+    "roster": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "character_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[a-zA-Z0-9_-]+$"
+          },
+          "display_name": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "anchor_locked": {
+            "type": "boolean"
+          },
+          "reference_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[a-zA-Z0-9_-]+$"
+            },
+            "maxItems": 30
+          }
+        },
+        "required": [
+          "character_id",
+          "display_name",
+          "anchor_locked",
+          "reference_ids"
+        ],
+        "additionalProperties": false
+      },
+      "maxItems": 50
+    },
+    "continuity": {
+      "type": "object",
+      "properties": {
+        "location_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[a-zA-Z0-9_-]+$"
+          },
+          "maxItems": 30
+        },
+        "reference_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[a-zA-Z0-9_-]+$"
+          },
+          "maxItems": 100
+        },
+        "composition_id": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "current_story_state": {
+          "type": "string",
+          "maxLength": 20000
+        },
+        "start_state": {
+          "type": "string",
+          "maxLength": 10000
+        },
+        "end_state": {
+          "type": "string",
+          "maxLength": 10000
+        },
+        "progression": {
+          "type": "string",
+          "enum": [
+            "SS",
+            "AS"
+          ]
+        }
+      },
+      "required": [
+        "location_ids",
+        "reference_ids",
+        "composition_id",
+        "current_story_state",
+        "start_state",
+        "end_state",
+        "progression"
+      ],
+      "additionalProperties": false
+    },
+    "script_timeline": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "block_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[a-zA-Z0-9_-]+$"
+          },
+          "sequence_order": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "character_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[a-zA-Z0-9_-]+$"
+          },
+          "character_name": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "mood": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "dialogue": {
+            "type": "string",
+            "maxLength": 3000
+          },
+          "direction_box_1": {
+            "type": "string",
+            "maxLength": 3000
+          },
+          "direction_box_2": {
+            "type": "string",
+            "maxLength": 3000
+          },
+          "duration_seconds": {
+            "type": "number",
+            "minimum": 3,
+            "maximum": 6
+          }
+        },
+        "required": [
+          "block_id",
+          "sequence_order",
+          "character_id",
+          "character_name",
+          "mood",
+          "dialogue",
+          "direction_box_1",
+          "direction_box_2",
+          "duration_seconds"
+        ],
+        "additionalProperties": false
+      },
+      "maxItems": 200
+    }
+  },
+  "required": [
+    "schema_version",
+    "module",
+    "source_url",
+    "project_id",
+    "scene_id",
+    "authoring_mode",
+    "engine_mode",
+    "scene_intent",
+    "minor_details",
+    "intent_interpretation",
+    "planning",
+    "roster",
+    "continuity",
+    "script_timeline"
+  ],
+  "additionalProperties": false,
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://xstudio.xrkr80hd.studio/schemas/scene-script-1.1.0.json"
+}
+

@@ -1,0 +1,104 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "XCE_COLOR_GRADE",
+  "type": "object",
+  "required": [
+    "grade_id",
+    "name",
+    "status",
+    "prompt_token_string",
+    "parameters"
+  ],
+  "properties": {
+    "grade_id": {
+      "type": "string",
+      "pattern": "^XCE-CG-[A-Z0-9]+(?:-[A-Z0-9]+)*$",
+      "maxLength": 80
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "STAGED",
+        "LOCKED",
+        "PUSHED"
+      ],
+      "default": "STAGED",
+      "description": "CGE parsing/confirmation remains STAGED; PUSHED requires verified saving. LOCKED is compatibility-only and does not authorize writes."
+    },
+    "prompt_token_string": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_prompt": {
+      "type": "string"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "lift_shadows": {
+          "type": "string",
+          "description": "Shadow tint, crush and black point."
+        },
+        "gamma_midtones": {
+          "type": "string",
+          "description": "Midtone response and skin-tone preservation."
+        },
+        "gain_highlights": {
+          "type": "string",
+          "description": "Highlight roll-off, specular tint and bloom."
+        },
+        "color_temp_kelvin": {
+          "type": "string",
+          "description": "Estimated Kelvin bias, or not determined; not a recovered camera measurement."
+        },
+        "contrast_saturation": {
+          "type": "string",
+          "description": "Contrast curve, dynamic range and saturation balance."
+        },
+        "film_stock_grain": {
+          "type": "string",
+          "description": "Stock-inspired response and grain; not an identified source stock."
+        },
+        "tint_split_toning": {
+          "type": "string",
+          "description": "Tint and split-toning."
+        },
+        "contrast_ratio": {
+          "type": "string",
+          "description": "Estimated ratio or not determined."
+        },
+        "saturation": {
+          "type": "string",
+          "description": "Saturation and hue selectivity."
+        },
+        "halation": {
+          "type": "string",
+          "description": "Highlight halation behavior."
+        },
+        "grain_structure": {
+          "type": "string",
+          "description": "Grain size, density and texture."
+        }
+      },
+      "required": [
+        "lift_shadows",
+        "gamma_midtones",
+        "gain_highlights",
+        "color_temp_kelvin",
+        "contrast_saturation",
+        "film_stock_grain"
+      ],
+      "additionalProperties": {
+        "type": "string"
+      }
+    }
+  },
+  "additionalProperties": true
+}
+
+

@@ -1,0 +1,5 @@
+import test from 'node:test';import assert from 'node:assert/strict';
+import {unassignedReferences,attachmentInfo} from '../lib/xce/attachments.mjs';
+import {characterGroup} from '../lib/xce/cast-groups.mjs';
+test('saved character images are attached regardless of cast group or anchor status',()=>{for(const status of ['DRAFT','LOCKED']){const m={references:{sheet:{id:'sheet'},free:{id:'free'}},world_library:{characters:{rosa:{id:'rosa',name:'Rosa',status,reference_ids:['sheet']}}}};assert.equal(characterGroup(m,'rosa'),'general');assert.deepEqual(unassignedReferences(m).map(r=>r.id),['free']);assert.deepEqual(attachmentInfo(m,{id:'sheet',category:'references'}).names,['Rosa']);}});
+test('all world asset categories remove their attached images from pool without deleting bytes',()=>{for(const category of ['characters','props','vehicles','locations','rooms','wardrobe','scenes_and_shots']){const m={references:{image:{id:'image'}},world_library:{[category]:{asset:{id:'asset',name:'Saved',reference_ids:['image']}}}};assert.equal(unassignedReferences(m).length,0);assert.ok(m.references.image);}});

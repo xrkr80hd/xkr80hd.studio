@@ -1,0 +1,4 @@
+Source: https://github.com/kazim-45/openframe
+Commit: f7805c4713953cbea448480afc625d066f4fdee9
+MIT license retained in LICENSE.
+PanelEditor and ShotTemplates reused. PanelEditor adapted for XSTUDIO: saved-image previews, project character picker integration, native modal focus management, and no external generation calls.

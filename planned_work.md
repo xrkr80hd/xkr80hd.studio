@@ -1,5 +1,20 @@
 # Planned Work
 
+## Composer speed presets and action description · 2026-10-17
+
+- Add optional Inspired by world context (FF6, StarTropics or custom), scoped to mood rather than replacement asset designs.
+- Add broad grouped terrain/architecture families, stackable terrain/architecture/weather/effect details, creative architectural choices and a Write here fallback.
+- Replace camera/environment/lighting text-only controls with preloaded, mobile-friendly dropdowns and a Custom option that preserves existing values.
+- Add an optional scene-action description to the shared prompt/JSON compiler and saved configurations, retaining compatibility with earlier compositions.
+- Keep anchor enforcement, grades and other pages unchanged; verify presets, legacy saves, action persistence, exports and production build before release.
+
+## XCE_COMPOSER additive local implementation (2026-10-17)
+
+- Inspect and reuse owner authentication, project manifests, immutable references, grade library, local image components and shot list structures.
+- Add a visual composer, strict approved-reference compiler, verified media packaging, versioned project compositions/intelligence notes, authenticated API and preparatory plugin interface.
+- Test directive injection, relationships, missing/foreign anchors, media byte validation, revision conflicts and existing-module regression.
+- User authorized testing and production push on 2026-10-17 after the local implementation. Release only to the verified XSTUDIO production branch codex/xstudio-private.
+
 ## Blog channel avatar right-side overlay
 
 - [x] Use the agent system to audit the shared public blog channel hero overlay.
@@ -217,3 +232,149 @@ Implement authenticated, origin-checked AI draft endpoint with server-only provi
 User confirmed xrkr80hdadmin (existing site admin, display name Travis). Map Game Night owner to this exact existing account; validate its existing password; site login grants signed Game Night access, with password-change/disabled-account revocation. Do not create a duplicate account or alter its password.
 
 - Add contextual Game Master next-action prompts and an eight-step walkthrough; preserve online room during popout despite cloud save conflicts; verify and publish.
+# XSTUDIO private app and Fuschia integration (2026-10-16)
+
+## XSTUDIO migrated library access (2026-10-17)
+
+- Make every migrated asset reachable in the owner library instead of silently stopping at 100 records. Preserve owner authorization and use bounded, stable pages; verify the build and owner interface.
+
+
+- [x] Build a separate private XSTUDIO app from the installed XSTUDIO plugin's rules, scripts, templates, and assets; leave the live studio app and WAMarket unchanged.
+- [x] Add Fuschia Light House XSTUDIO-only data and private storage with verified owner identity and row-level access.
+- [x] Add authenticated asset upload/download and scoped external-tool ingress, plus provider integrations only where official APIs and credentials are verified.
+- [x] Verify local build and security checks, production deployment, authoritative and public DNS, HTTPS, and anonymous access boundaries at `xstudio.xrkr80hd.studio`.
+- [x] Record actual results, missing credentials or account access, and any remaining steps in `completed_work.md`.
+- [ ] Verify owner sign-in, an authorized asset upload/download, and owner token management with a live owner session.
+
+## XSTUDIO owner password recovery (2026-10-16)
+
+- [x] Add a same-browser Supabase password recovery request for the existing owner account.
+- [x] Exchange only a recovery code server-side, verify owner identity, and require a signed grant tied to that session for the password form and update endpoint.
+- [x] Run focused tests and a production build; document the required redirect allow-list entry.
+
+## 2026-10-17 XCE interface restoration
+- Restore the original project/workspace/asset/shot interface on xstudio.xrkr80hd.studio, private inline previews, strict project anchor binding, cached offline browsing, global list/grid controls, separate Rules, and touch controls. Preserve Supabase owner authentication and the existing connector.
+
+## Thumbnail and navigation repair (2026-10-17)
+- Fix previews resolving asset IDs ahead of attached reference images; add regression checks.
+- Add persistent Back and Overview / Project / Current page breadcrumbs above studio headings, including the asset library.
+
+## Character cast organization (2026-10-17)
+- Add Main, Supporting, Background and Unsorted cast accordions only within Characters.
+- Persist organizational grouping independently of locked visual records, with owner/folder checks and revision conflicts.
+- Verify group changes preserve codes, images and approvals; publish the update.
+
+## CGE profile storage and editing (2026-10-17)
+- Add canonical profile import/staging, explicit custom saving, editable parameters, export and versioned owner-session API routes.
+- Preserve seven factory definitions, existing custom grades, assignment snapshots, reference links and original CGE tokens.
+- Verify round-trip, edit conflicts and preservation, then publish the complete update.
+
+## Asset sorting and character details (2026-10-18)
+- Presort live, unlinked references using original names and inspected sheets; preserve existing links, codes, locked records and deletions. Unresolved references go to Lost Assets.
+- Move cast assignment off library tiles into an explicit choice dialog inside asset details; simplify the mobile details view and hide generic character prompts and background color samples.
+- Verify core data invariants, cast API behavior, responsive styles and build before publishing.
+
+## Delete confirmation checkbox layout (2026-10-18)
+- Put the linked-record checkbox after its sentence on the same row, with wrapping text and a fixed-size checkbox on mobile. Preserve deletion behavior. Check and publish.
+
+- Investigate Rosa cast save failure: resolve project-local character/reference aliases to the canonical saved character ID; reject ambiguous, missing, foreign and creature records. Preserve character/image data.
+- Reuse NEXTDOCS cropper image/export approach for face/body anchors; add movable edge/corner selection, square start and optional square lock, saved-image/device sources and separate non-destructive crop files. Verify geometry, attachment pool, cast behavior and production build; hold commit/push pending review.
+
+
+## 2026-10-18 — Unsaved carousel character save
+Trace the reported Kutan save error; preserve reference identity in the inspector and route unsaved image organization through asset intake, with destination selection. Verify locally; no commit, push or deployment.
+
+
+## 2026-10-18 — Alternate form reference pool
+Replace the empty project-image dropdown with a searchable thumbnail picker across available asset pools. Do not require private storage keys in public manifests; import a selected cross-project reference before assigning it. Preserve existing local carousel fixes.
+
+
+## 2026-10-18 — Stable asset rename and consumed upload cards
+Reproduced Name & Save leaving a presorted source upload visible after reference normalization, because the browser manifest omits storage keys. Use reference lineage/attachment IDs to hide consumed upload cards. Route a reference already owned by a single saved legacy asset to that existing editor, and retain stable IDs and lock on name-only updates. Verify without deleting historical data or pushing.
+
+
+## 2026-10-18 — Prop descriptions, character clauses, project builder page
+Add user-authored prop descriptions and repeatable character-linked clauses, applied only when both assets are selected in scene prompts. Preserve lock/image identity and validate project scope. Move the embedded Assets project-prompt builder to the dedicated project Composer page. Keep rename fixes local; no push.
+
+
+## 2026-10-18 — Simple scene inventory and descriptions
+Use closed category/cast accordions, name sorting and explicit gender labels. Remove drag/drop and research-profile UI. Show image and human name only; retain approved-only scene eligibility. Add a simple description to saved items and scene prompts, with optional prop-character clauses. Verify all changes locally.
+
+
+## 2026-10-18 — Missing non-character approval action
+Expose the existing owner image-lock workflow for props, creatures/beasts, vehicles and locations. Verify exact saved bytes and project revision, preserve asset identity, and retain explicit approval.
+
+
+## 2026-10-18 — Unified asset editor and compact menus
+Combine saved asset name, category, classification, short description and character sorting in one closed Edit / Rename section. Use dropdown choices, remove picker-only description/research editing, and show descriptions on library cards. Preserve descriptions during asset transfer. User authorized all current fixes and push after verification.
+
+## 2026-10-18 — Categorize the scene-reference character list
+Recording identifies SceneCastPicker's uncategorized native select, separate from Composer. Add one role/category dropdown, alphabetical filtered character choices and search; isolate beasts/creatures from cast roles. Retain selected IDs across category changes and remove draft/lock suffixes. Verify and publish this correction within the already authorized simplification work.
+Reuse the categorized character picker for prop-character clauses and character relationship clauses, removing the same long mixed dropdown from those editors too. Keep scene choices and existing clause targets intact when browsing another category.
+
+## 2026-10-18 — Restore visible compact inspector buttons
+User clarified category dropdowns were not authorization to hide action/copy buttons. Restore visible Edit / Rename, Duplicate, Move, Delete, Copy code and Copy for ChatGPT buttons. Replace oversized Share accordion and saved-asset Edit accordion with compact controls; retain the unified editor behind Edit / Rename. Scope styling to the inspector and keep consistent 44px button height.
+
+## 2026-10-18 — Remove redundant human edit fields
+Keep character role and gender in Edit / Rename. Hide its duplicate description for characters and show classification only for props. Retain existing saved text without deleting it; keep the original character details area. Verify rendered character and prop editors. Hold publishing for the user's push instruction.
+
+## 2026-10-18 — Universal viewer arrows and always-on advance
+Every asset viewer, regardless of category or native/legacy record type, must show previous/next arrows on the image's left/right edges. Remove both Auto-Next checkboxes and always advance after saves. Keep the last saved asset open until the user closes it. Preserve existing character rule data; the user's “rule” refers to universal viewer navigation.
+
+
+## 2026-10-18 — Switches for on/off settings
+Record the user's build preference and apply switch styling/semantics to clause enable controls, crop square lock and linked-delete option. Preserve item-selection and explicit-approval checkboxes. Retain always-on viewer advance without a toggle. User authorized push after fixes.
+
+
+## 2026-10-18 — Refresh restores the current project/page
+Fix restoreNavigation's unconditional project-picker reset. Restore validated saved page, project, search, scene and scroll; explicit URL targets take priority. Keep the last asset category per project. A locked restored project prompts for its PIN without erasing the desired page/project and returns there after unlocking. Verify and publish with the authorized fixes.
+
+
+## 2026-10-19 — Compact project identity and working ID edits
+Show project title and Project ID as plain text with a compact Edit button underneath. Open an ID field only during editing with Save and Cancel and inline errors. Add an owner-scoped atomic project-key rename preserving assets, codes, active context/order and metadata. Reject conflicts, invalid IDs, stale revisions and system pools; retain the folder PIN gate. Verify locally and hold publication for the user's push instruction.
+
+
+## 2026-10-19 — Short trash action labels
+Label the selection action Delete permanently; preserve disabled-until-selected behavior. Keep Empty trash applying to all trashed items independently of selection and retain the existing confirmation.
+
+
+## 2026-10-19 — Upload directly into a chosen category
+Replace broad upload image types with the actual cast groups and distinct prop/vehicle/creature/location categories. Classify each batch image as selected and create its saved asset and cast assignment in the same manifest write. Preserve existing attach-image editing and Lost Assets intake behavior. Verify category assignments persist through the normal saved-asset library and picker.
+
+
+## 2026-10-19 — Create Scene Reference starts with category selection
+Trace the exact Create Scene Reference cast picker. Load all saved project cast roles and creatures; show all category choices before any character list instead of silently defaulting to Main Characters. Hydration/category changes must not reset already-added cast. Verify villains and background cast can be selected and saved together.
+
+The picker also needs an explicit Back to categories button; returning to categories must preserve all added cast IDs.
+
+### Mobile character picker Back correction
+Replace the native character select that obscures category navigation with an inline, bounded list. Keep Categories at the top beside the current category; preserve parent selections. Verify interaction and lint before release.
+
+### Shared viewer centering
+Restore explicit auto margins and fixed viewport positioning for native dialogs after Tailwind reset. Preserve desktop drag overrides and full-screen shot modal. Existing Tailwind 4 and lucide dependencies already provide styling/icons; avoid duplicate framework.
+
+## 2026-10-21 Exact character image handoff
+Trace exact-code authorization and locked source retrieval; reuse CREF for anchor media; improve discovery guidance and bounded image responses; add regression tests and report client/deployment limits. No production changes or push.
+## Asset Library viewer and batch inspection (2026-10-21)
+Implement read-only asset inspection before explicit editing for every library category; preserve category navigation; reuse long-press selection and existing batch controller for selected comparison and explicit batch edits. Verify types, regression tests and interaction rendering. No commit, push or deployment.
+
+## Complete preview attributes (2026-10-21)
+Show saved relationships and synergies (including disabled rules), equipment and reverse prop links, and gender/core details in the large read-only preview. Publish to the already-authorized branch.
+
+## Compact character preview accordions (2026-10-21)
+Keep the large image and viewer controls; collapse attributes, biography, relationships, synergies, equipment, variations and continuity into categorized accordions. Isolate anchor prompts from attributes and group GPT prompt handoff and codes in a separate accordion.
+
+## Mobile asset preview swipe (2026-10-21)
+Add horizontal touch swiping across the large asset image, reusing the existing swipe threshold and respecting carousel boundaries, scrolling and pinch gestures. Keep desktop arrows.
+
+## Silhouette choices and clean preview (2026-10-21)
+Add silhouette dropdown to character appearance metadata; preserve custom saved values and locked image identity. Remove Material Spec and empty JSON placeholders from preview attributes.
+
+## No preselected project assets (2026-10-21)
+Explicit project selection clears active asset, selected items and scene/filter state. Asset library starts with no category selected; user chooses what to browse.
+
+## Cover photo picker (2026-10-21)
+Request image/* for project cover selection so mobile browsers can offer their native photo picker. Keep camera capture optional and server image validation intact.
+
+## Cover source selection (2026-10-21)
+Offer phone/device or current project assets for a folder cover. Load the selected folder’s manifest, browse categories with nothing preselected and use exact saved image bytes via the existing validated cover upload endpoint.
