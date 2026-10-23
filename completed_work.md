@@ -378,3 +378,6 @@ Cloned current main (5a0fd68). Confirmed the obsolete root vercel.json was alrea
 
 ## Pin production pnpm (2026-10-23)
 Changed app Vercel commands to npx --yes pnpm@11.25.0 for both frozen install and build, and documented the missing-root-package/Corepack detection issue. Both exact commands passed locally, including TypeScript and production page generation.
+
+## Broaden release verification (2026-10-23)
+Restored verified Supabase owner authentication, removed automatic SQL/development owner sessions and homepage bypass, and restricted browser mutations to the exact request origin/host. Clean pnpm 11.25.0 install and production build passed, all 417 tests passed, and changed-file lint passed. Running standalone-server smoke checks passed for login rendering, denied forged-cookie access, missing-auth configuration, and foreign/missing Origin denial. Authenticated live project/data behavior still requires production verification.

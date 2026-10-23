@@ -18,21 +18,17 @@ export async function POST(request) {
     const signedIn = await client.auth.signInWithPassword({ email, password, rememberMe });
     if (signedIn.error || !signedIn.data?.user) return json({ error: signedIn.error?.message || 'Invalid credentials.' }, 401);
     
-    if (!client.isCloudSqlFallback) {
-      const verified = await client.auth.getUser();
-      if (verified.error || verified.data?.user?.id !== process.env.XSTUDIO_OWNER_USER_ID) {
-        await client.auth.signOut();
-        return json({ error: 'Owner access required.' }, 403);
-      }
-      const owner = await client.from('xstudio_owners').select('user_id').eq('user_id', verified.data.user.id).maybeSingle();
-      if (owner.error || owner.data?.user_id !== verified.data.user.id) {
-        await client.auth.signOut();
-        return json({ error: 'Owner access is not provisioned.' }, 403);
-      }
-      return json({ user: { id: verified.data.user.id, email: verified.data.user.email } });
+    const verified = await client.auth.getUser();
+    if (verified.error || verified.data?.user?.id !== process.env.XSTUDIO_OWNER_USER_ID) {
+      await client.auth.signOut();
+      return json({ error: 'Owner access required.' }, 403);
     }
-    
-    return json({ user: signedIn.data.user });
+    const owner = await client.from('xstudio_owners').select('user_id').eq('user_id', verified.data.user.id).maybeSingle();
+    if (owner.error || owner.data?.user_id !== verified.data.user.id) {
+      await client.auth.signOut();
+      return json({ error: 'Owner access is not provisioned.' }, 403);
+    }
+    return json({ user: { id: verified.data.user.id, email: verified.data.user.email } });
   } catch (err) {
     console.error('Login error:', err);
     return json({ error: err.message || 'Internal login error' }, 500);

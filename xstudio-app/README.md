@@ -35,3 +35,5 @@ Use `xstudio-app` as the Root Directory and the Next.js framework preset. This d
 Deploy a commit containing this configuration. Commit `20b636c` contains the obsolete root-level npm workspace commands; redeploying that commit can keep using those commands instead of the corrected configuration.
 
 Vercel commands explicitly select pnpm 11.25.0 because Corepack detection can fail when the repository root has no package.json. Do not replace these with an unversioned pnpm command: an older global pnpm cannot read this app’s lockfile.
+
+Cloud SQL availability does not authenticate an owner. Production login and owner-only APIs require the configured Supabase user and matching xstudio_owners record; unsigned fallback cookies never grant access.

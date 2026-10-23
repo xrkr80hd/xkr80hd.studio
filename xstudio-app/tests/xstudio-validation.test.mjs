@@ -19,6 +19,15 @@ test('browser mutation rejects absent and foreign origins', () => {
   assert.equal(isTrustedOrigin(new Request(url, { headers: { origin: 'https://xstudio.xrkr80hd.studio' } })), true);
 });
 
+test('preview mutations require their own exact origin, not another deployment or lookalike', () => {
+  const url = 'https://xstudio-private-preview.vercel.app/api/assets';
+  const trusted = origin => isTrustedOrigin(new Request(url, { headers: { origin } }));
+  assert.equal(trusted('https://xstudio-private-preview.vercel.app'), true);
+  assert.equal(trusted('https://another.vercel.app'), false);
+  assert.equal(trusted('https://googleusercontent.com.attacker.example'), false);
+  assert.equal(trusted('null'), false);
+});
+
 test('asset validation rejects oversized, active-content, and forged project metadata', () => {
   assert.match(metadata({ name: 'clip.mp4', type: 'video/mp4', size: MAX_ASSET_BYTES + 1 }).error, /file/);
   assert.equal(metadata({ name: 'page.html', type: 'text/html', size: 10 }).error, 'Unsupported file type.');

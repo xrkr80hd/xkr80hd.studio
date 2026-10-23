@@ -384,3 +384,6 @@ Verify the latest main branch after the failed 20b636c deployment, use the check
 
 ## Pin production pnpm (2026-10-23)
 Select pnpm 11.25.0 explicitly in Vercel install/build commands after production used an incompatible global pnpm when Corepack detection failed.
+
+## Broaden release verification (2026-10-23)
+Check clean install/build and login/API behavior; remove the unverified SQL owner-session fallback and enforce same-origin mutations before production publication.
