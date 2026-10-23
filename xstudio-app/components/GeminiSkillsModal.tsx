@@ -142,18 +142,18 @@ response = client.models.generate_content(
 print(response.text)`;
 
   return (
-    <div className="gemini-skills-content p-5 space-y-6 max-h-[82vh] overflow-y-auto text-slate-100 font-sans">
-      {/* Beast-mode Cyberpunk Header */}
-      <div className="flex items-center justify-between pb-4 border-b border-indigo-500/30">
-        <div className="flex items-center gap-3">
+    <div className="gemini-skills-content space-y-5 text-slate-100 font-sans">
+      {/* Shared studio header */}
+      <div className="gemini-heading">
+        <div className="gemini-heading-main">
           <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-indigo-500 to-cyan-500 p-[1px] shadow-[0_0_20px_rgba(99,102,241,0.5)]">
             <div className="w-full h-full bg-[#090a0f] rounded-xl flex items-center justify-center text-indigo-400">
               <Cpu size={22} className="animate-pulse" />
             </div>
           </div>
           <div>
-            <h2 className="text-xl font-black text-white tracking-wider flex items-center gap-2">
-              <span>XCE GEMINI SKILLS CONNECTOR</span>
+            <h2 className="gemini-title">
+              <span>Gemini Skills Connector</span>
               <span className="text-[10px] font-mono py-0.5 px-2 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/40">
                 v2.0.0
               </span>
@@ -172,17 +172,18 @@ print(response.text)`;
       </div>
 
       {/* Navigation Tabs */}
-      <div className="flex gap-2 border-b border-white/10 pb-3">
+      <div className="gemini-tabs" role="group" aria-label="Connector sections">
         {[
-          { id: 'console', label: '⚡ Interactive Command Console', icon: Terminal },
-          { id: 'gemini_wiring', label: '🔌 Wire Into YOUR Gemini', icon: Code },
-          { id: 'modules', label: `📦 Ecosystem Modules (${plugins.length})`, icon: Layers }
+          { id: 'console', label: 'Console', icon: Terminal },
+          { id: 'gemini_wiring', label: 'Connect Gemini', icon: Code },
+          { id: 'modules', label: `Modules (${plugins.length})`, icon: Layers }
         ].map(t => (
           <button
             key={t.id}
+            aria-pressed={activeTab === t.id}
             type="button"
             onClick={() => setActiveTab(t.id as any)}
-            className={`px-3.5 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${
+            className={`gemini-tab px-3.5 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${
               activeTab === t.id
                 ? 'bg-gradient-to-r from-indigo-600 to-indigo-700 text-white shadow-[0_0_15px_rgba(99,102,241,0.4)] border border-indigo-400/50'
                 : 'bg-[#13151f] text-slate-400 hover:text-white border border-white/5'
@@ -200,8 +201,8 @@ print(response.text)`;
           {/* Quick Dispatch Chips */}
           <div className="p-3 bg-[#13151f] border border-white/10 rounded-xl space-y-2">
             <div className="flex items-center justify-between text-xs text-slate-400">
-              <span className="font-semibold text-white">⚡ High-Velocity Shorthand Triggers:</span>
-              <span>Click to auto-dispatch</span>
+              <span className="font-semibold text-white">Quick commands</span>
+              <span>Tap to run</span>
             </div>
             <div className="flex flex-wrap gap-2">
               {quickCommands.map(cmd => (
@@ -227,12 +228,13 @@ print(response.text)`;
                 e.preventDefault();
                 if (commandInput.trim()) void testCommand(commandInput.trim());
               }}
-              className="flex gap-2"
+              className="gemini-command-form"
             >
-              <div className="relative flex-1">
-                <span className="absolute left-3 top-2.5 text-indigo-400 font-mono text-sm">$</span>
+              <div className="gemini-command-field relative flex-1">
+                <span className="gemini-command-prefix" aria-hidden="true">$</span>
                 <input
                   type="text"
+                  aria-label="Shorthand command"
                   value={commandInput}
                   onChange={(e) => setCommandInput(e.target.value)}
                   placeholder="Enter shorthand command (e.g. 123GO, SS, STF, SL, CGE)..."
@@ -242,7 +244,7 @@ print(response.text)`;
               <button
                 type="submit"
                 disabled={executing}
-                className="px-5 py-2 rounded-lg bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-400 hover:to-indigo-500 text-white text-xs font-bold flex items-center gap-2 shadow-[0_0_15px_rgba(99,102,241,0.4)] disabled:opacity-50"
+                className="button primary"
               >
                 <Play size={14} />
                 <span>{executing ? 'Routing…' : 'Execute Command'}</span>
@@ -251,7 +253,7 @@ print(response.text)`;
 
             {commandResult && (
               <div className="mt-3 p-3.5 bg-[#090a0f] border border-indigo-500/40 rounded-lg font-mono text-xs space-y-2">
-                <div className="flex items-center justify-between text-indigo-300 font-bold border-b border-white/10 pb-2">
+                <div className="gemini-result-summary text-indigo-300 font-bold border-b border-white/10 pb-2">
                   <span>Target Plugin: {commandResult.parsed?.targetRole || 'ROUTER'}</span>
                   <span className="text-emerald-400">Approval Gate: {commandResult.parsed?.isApprovalGate ? 'ACTIVE' : 'BYPASS'}</span>
                 </div>
