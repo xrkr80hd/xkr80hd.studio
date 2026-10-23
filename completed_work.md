@@ -375,3 +375,6 @@ Add/Change Cover now offers phone/device or assets in that exact project. The as
 
 ## XSTUDIO deployment repair (2026-10-23)
 Cloned current main (5a0fd68). Confirmed the obsolete root vercel.json was already removed after failed commit 20b636c. Added the missing pg runtime dependency and updated the pnpm lockfile after a clean build exposed the unresolved import in lib/xstudio-sql.mjs. Set Vercel installs to pnpm install --frozen-lockfile and documented app-root build commands and the obsolete commit trap. Production build, TypeScript checks, and page generation passed. Existing test suite: 415/416 passed; the pre-existing absent-Origin rejection test fails because isTrustedOrigin currently allows missing Origin. Left that unrelated behavior unchanged.
+
+## Pin production pnpm (2026-10-23)
+Changed app Vercel commands to npx --yes pnpm@11.25.0 for both frozen install and build, and documented the missing-root-package/Corepack detection issue. Both exact commands passed locally, including TypeScript and production page generation.

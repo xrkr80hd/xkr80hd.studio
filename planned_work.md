@@ -381,3 +381,6 @@ Offer phone/device or current project assets for a folder cover. Load the select
 
 ## XSTUDIO deployment repair (2026-10-23)
 Verify the latest main branch after the failed 20b636c deployment, use the checked-in pnpm lockfile for reproducible Vercel installs, and correct local/deployment instructions. Run the production build and relevant checks before publishing.
+
+## Pin production pnpm (2026-10-23)
+Select pnpm 11.25.0 explicitly in Vercel install/build commands after production used an incompatible global pnpm when Corepack detection failed.

@@ -30,6 +30,8 @@ Run `pnpm install --frozen-lockfile`, `pnpm run build`, and `node --test tests/*
 
 ## Vercel build settings
 
-Use `xstudio-app` as the Root Directory and the Next.js framework preset. This directory’s `vercel.json` runs `pnpm install --frozen-lockfile` and `pnpm run build`; leave Output Directory at the Next.js default. There is no npm workspace at the repository root. Do not use `npm run build --workspace=xstudio-app`.
+Use `xstudio-app` as the Root Directory and the Next.js framework preset. This directory’s `vercel.json` runs `npx --yes pnpm@11.25.0 install --frozen-lockfile` and `npx --yes pnpm@11.25.0 run build`; leave Output Directory at the Next.js default. There is no npm workspace at the repository root. Do not use `npm run build --workspace=xstudio-app`.
 
 Deploy a commit containing this configuration. Commit `20b636c` contains the obsolete root-level npm workspace commands; redeploying that commit can keep using those commands instead of the corrected configuration.
+
+Vercel commands explicitly select pnpm 11.25.0 because Corepack detection can fail when the repository root has no package.json. Do not replace these with an unversioned pnpm command: an older global pnpm cannot read this app’s lockfile.
