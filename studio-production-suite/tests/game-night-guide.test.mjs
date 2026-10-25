@@ -3,7 +3,7 @@ import {readFile} from 'node:fs/promises';
 const source=await readFile(new URL('../public/game-night-assets/host-guide.js',import.meta.url),'utf8');
 const {hostNextStep}=await import('data:text/javascript;base64,'+Buffer.from(source).toString('base64'));
 const room={code:'ABCDEF'},play={started:true,phase:'clue',buzzOpen:false};
-assert.equal(hostNextStep(play,null).action,'connect');
+assert.equal(hostNextStep(play,null).action,'tv');
 assert.equal(hostNextStep({...play,started:false},room).action,'start-online-game');
 assert.equal(hostNextStep(play,room).action,'open-buzz');
 assert.equal(hostNextStep({...play,buzzOpen:true},room).title,'Buzzers are OPEN');

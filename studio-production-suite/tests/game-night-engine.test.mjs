@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {makeGame,library} from '../public/game-night-assets/catalog.js';
-import {newPlay,select,score,undo,closeClue,view,validate,clone,representative} from '../public/game-night-assets/engine.js';
+import {newPlay,select,score,undo,closeClue,view,validate,clone,representative,answerer} from '../public/game-night-assets/engine.js';
 let checks=0;function test(name,fn){fn();checks++;console.log('PASS '+name);}
 const g=makeGame(),p=newPlay(g,['One','Two']),tid=p.teams[0].id;
 test('30 complete categories and 150 nonempty clues',()=>{assert.equal(library.length,30);assert.equal(library.flatMap(c=>c.clues).length,150);assert.ok(library.every(c=>c.clues.every(q=>q.question&&q.answer)));});
@@ -9,8 +9,10 @@ test('Public view hides all unrevealed answers and Daily Double flags',()=>{cons
 test('Correct answer scores once and prevents another team scoring the same clue',()=>{score(g,p,tid,true);assert.equal(p.teams[0].score,100);assert.throws(()=>score(g,p,tid,true));assert.throws(()=>score(g,p,p.teams[1].id,true));});
 test('Undo restores scoring eligibility and score',()=>{undo(p);assert.equal(p.teams[0].score,0);assert.equal(p.resolved,false);score(g,p,tid,false);assert.equal(p.teams[0].score,-100);});
 test('Another player can answer after an incorrect response',()=>{score(g,p,p.teams[1].id,true);assert.equal(p.teams[1].score,100);});
-test('Incorrect answer passes next clue to opponent, and undo restores control',()=>{const p=newPlay(g,['Alpha','Beta']);p.active=p.teams[0].id;select(g,p,g.rounds[0][1].clues[0].id);score(g,p,p.teams[0].id,false);assert.equal(p.active,p.teams[1].id);undo(p);assert.equal(p.active,p.teams[0].id);score(g,p,p.teams[0].id,false);closeClue(p);assert.equal(p.active,p.teams[1].id);});
-test('Three-player wrong answers rotate to an unjudged opponent',()=>{const p=newPlay(g,['Alpha','Beta','Gamma']);p.active=p.teams[0].id;select(g,p,g.rounds[0][1].clues[1].id);score(g,p,p.teams[0].id,false);assert.equal(p.active,p.teams[1].id);score(g,p,p.teams[1].id,false);assert.equal(p.active,p.teams[2].id);score(g,p,p.teams[2].id,false);assert.equal(p.active,p.teams[0].id);});
+test('Picking team answers first without buzzing',()=>{const p=newPlay(g,['Alpha','Beta']);p.active=p.teams[0].id;select(g,p,g.rounds[0][1].clues[0].id);assert.equal(p.winner,p.teams[0].id);assert.equal(p.buzzOpen,false);});
+test('Two teams: wrong loses full, last team answers automatically and loses nothing, control returns to picker',()=>{const p=newPlay(g,['Alpha','Beta']),[a,b]=p.teams,clue=g.rounds[0][1].clues[1];p.active=a.id;select(g,p,clue.id);score(g,p,a.id,false);assert.equal(a.score,-clue.value);assert.equal(p.winner,b.id);assert.ok(p.roast!=null);assert.ok(view(g,p).roast);score(g,p,b.id,false);assert.equal(b.score,0);assert.equal(p.resolved,true);assert.equal(p.active,a.id);undo(p);assert.equal(p.winner,b.id);assert.equal(p.resolved,false);undo(p);assert.equal(a.score,0);assert.equal(p.winner,a.id);});
+test('Three teams: full, then half, then last team free; a steal takes control',()=>{const p=newPlay(g,['Alpha','Beta','Gamma']),[a,b,c]=p.teams,clue=g.rounds[0][1].clues[2];p.active=a.id;select(g,p,clue.id);score(g,p,a.id,false);assert.equal(a.score,-clue.value);assert.equal(p.winner,null);score(g,p,b.id,false);assert.equal(b.score,-Math.round(clue.value/2));assert.equal(p.winner,c.id);score(g,p,c.id,true);assert.equal(c.score,clue.value);assert.equal(p.active,c.id);assert.equal(p.resolved,true);});
+test('Nobody gets it across three teams: control returns to the picking team',()=>{const p=newPlay(g,['Alpha','Beta','Gamma']),[a,b,c]=p.teams;p.active=a.id;select(g,p,g.rounds[0][1].clues[3].id);score(g,p,a.id,false);score(g,p,b.id,false);score(g,p,c.id,false);assert.equal(c.score,0);assert.equal(p.active,a.id);closeClue(p);assert.equal(p.active,a.id);});
 test('Used clues cannot be replayed',()=>{const cid=p.selected;closeClue(p);assert.throws(()=>select(g,p,cid));});
 test('Daily Double hides clue until wager, uses wager and settles even if incorrect',()=>{select(g,p,g.rounds[0][2].clues[3].id);assert.equal(p.phase,'double');assert.equal(view(g,p).clue,null);p.wager=375;p.phase='clue';score(g,p,tid,false);assert.equal(p.teams[0].score,-475);assert.equal(p.resolved,true);});
 test('Final category hides question and answer',()=>{p.phase='final-category';p.selected=null;p.revealed=false;p.judged=[];assert.equal(view(g,p).clue,null);});
@@ -24,6 +26,13 @@ test('Team representatives rotate after a clue, never twice when closing an empt
  closeClue(p);assert.equal(representative(p,p.teams[0].id).id,'bob');
  select(g,p,g.rounds[0][0].clues[1].id);closeClue(p);assert.equal(representative(p,p.teams[0].id).id,'alice');
  assert.equal(view(g,p).representatives[p.teams[0].id].id,'alice');
+});
+test('The teammate on turn picks and answers, then the turn rotates',()=>{
+ const p=newPlay(g,['Gold','Violet']);p.teamMode=true;p.players=[{id:'alice',teamId:p.teams[0].id},{id:'bob',teamId:p.teams[0].id},{id:'solo',teamId:p.teams[1].id}];
+ assert.equal(answerer(p,p.teams[0].id).id,representative(p,p.teams[0].id).id);
+ p.active=p.teams[0].id;select(g,p,g.rounds[0][3].clues[0].id);assert.equal(p.winnerPlayer,'alice');closeClue(p);
+ p.active=p.teams[0].id;select(g,p,g.rounds[0][3].clues[1].id);assert.equal(p.winnerPlayer,'bob');
+ assert.equal(answerer(p,p.teams[1].id).id,'solo');
 });
 test('An empty team has no representative and individual play resolves the player card',()=>{
  const p=newPlay(g,['Solo']);p.teamMode=true;assert.equal(representative(p,p.teams[0].id),null);p.teamMode=false;assert.equal(representative(p,p.teams[0].id).name,'Solo');

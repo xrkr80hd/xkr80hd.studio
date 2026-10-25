@@ -170,3 +170,202 @@ input,select,textarea{background:#090f25;border-color:#5873a475}.host-panel .pri
 .host-shell .host-clue-controls>p.help{order:2}
 .host-shell .host-clue-controls>.card,.host-shell .host-clue-controls>h3[style*="margin-top:24px"]{order:3}
 .host-shell .host-clue-controls>.list-row{order:4}
+/* Phase 1 Game Master card: the clue, the private answer, then the steps in the order they are used. */
+.gm-primary{display:flex;gap:10px;margin:12px 0}.gm-primary>*{flex:1}
+.gm-card{margin:12px 0;padding:16px;border:1px solid #5173a26e;border-radius:14px;background:#0d1530aa}
+.gm-card h3{margin:6px 0;font-size:20px}
+.gm-question{font-size:18px;line-height:1.35;margin:8px 0 12px;color:#fff}
+.gm-answer{display:grid;gap:4px;padding:12px;border-radius:12px;background:#ffd46d14;border:1px solid #ffd46d55}
+.gm-answer small{letter-spacing:.12em;color:var(--gold);font-size:11px}
+.gm-answer strong{font-size:22px;color:var(--gold)}
+.gm-status{margin:14px 0 8px;padding:10px 12px;border-radius:10px;font-weight:800;letter-spacing:.02em;background:#ffffff0d;border-left:4px solid var(--accent)}
+.gm-status.gm-judge{border-left-color:var(--gold)}.gm-status.gm-close{border-left-color:#7ee2a8}
+.gm-roast{margin:4px 0 10px;font-style:italic;color:#ffb3c7}
+.gm-steps{display:grid;gap:8px;margin-top:10px}
+.gm-steps button{width:100%;min-height:46px;font-size:15px}
+.gm-steps button:disabled{opacity:.35}
+.gm-judge{display:grid;grid-template-columns:1fr 1fr;gap:8px;align-items:center}
+.gm-card .gm-judge>span{grid-column:1/-1;font-size:14px}
+.gm-next{outline:3px solid #fff6;outline-offset:2px;animation:gm-pulse 1.6s ease-in-out infinite}
+@keyframes gm-pulse{50%{outline-color:#fff0}}
+@media (prefers-reduced-motion:reduce){.gm-next{animation:none}}
+.gm-who{margin-top:14px}.gm-who small{display:block;margin-bottom:6px;color:var(--muted)}
+.gm-sub{margin-top:18px;font-size:14px}
+.gm-more{margin-top:12px}.gm-more .actions{margin:10px 0}
+/* TV: steal countdown and roast line */
+.stage-instruction .countdown,.stage-only .stage-instruction .countdown{font-size:clamp(60px,12vh,200px);line-height:1;color:var(--gold);text-shadow:0 0 40px #ffd46d88}
+.stage-instruction .countdown.go{color:#fff;animation:gm-buzz .5s ease-out}
+@keyframes gm-buzz{from{transform:scale(1.4)}to{transform:scale(1)}}
+.stage-roast{text-align:center;padding:10px 20px;font-size:clamp(20px,2.2vw,44px);font-weight:800;font-style:italic;color:#ffb3c7}
+.broadcast-member span+span{margin-left:6px}
+.gm-judge .danger.primary{background:linear-gradient(#ffa3b1,#e2556b);color:#fff;border-color:#e2556b;box-shadow:0 4px 0 #7a1f2f55}
+.tv-link{display:block;margin:14px 0;padding:16px;border-radius:14px;text-align:center;font-size:20px;text-decoration:none}
+.popup-help{margin:8px 0 0;padding-left:18px;display:grid;gap:8px;font-size:14px;line-height:1.4}
+/* Phone player screen — bold game-show look. Everything is scoped to .phone so the TV and console are untouched.
+   --team is the player's team colour; the .phone-<state> class (wait, pick, buzz, in) sets the mood of the whole screen. */
+.phone{--hot:#ff2e88;--zap:#22e3ff;--lime:#b6ff3b;--sun:#ffd23f;--grape:#8b5cff;--team:var(--grape);max-width:520px;margin:0 auto 48px;padding:12px 16px 0}
+body:has(.phone){background:radial-gradient(120% 60% at 50% -10%,color-mix(in srgb,var(--team,#8b5cff) 45%,transparent),transparent 60%),radial-gradient(80% 50% at 100% 100%,#ff2e8833,transparent 70%),#0a0620;min-height:100dvh}
+.phone .phone-hero{position:relative;overflow:hidden;margin:4px 0 16px;padding:16px;border-radius:22px;background:linear-gradient(135deg,color-mix(in srgb,var(--team) 85%,#000) 0%,var(--grape) 55%,var(--hot) 120%);box-shadow:0 14px 40px color-mix(in srgb,var(--team) 40%,transparent),inset 0 1px #ffffff40}
+.phone .phone-hero::after{content:"";position:absolute;inset:-40% -20% auto auto;width:220px;height:220px;border-radius:50%;background:radial-gradient(#ffffff38,transparent 65%);pointer-events:none}
+.phone .phone-hero-top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.phone .phone-hero-top .eyebrow{color:#fff;opacity:.9;font-size:11px}
+.phone .phone-hero-top button{background:#ffffff26;border-color:#ffffff55;color:#fff}
+.phone .phone-me{display:flex;align-items:center;gap:12px;margin-top:12px}
+.phone .phone-me .avatar{width:58px;height:58px;border-radius:16px;border:3px solid #fff;background:#ffffff33;color:#fff;font-size:24px}
+.phone .phone-me h2{margin:0;font-size:30px;color:#fff;text-shadow:0 2px 0 #0004}
+.phone .phone-team{display:inline-block;margin-top:4px;padding:3px 10px;border-radius:999px;background:#0006;color:#fff;font-weight:800;font-size:13px;letter-spacing:.04em}
+.phone .phone-score{margin-left:auto;display:grid;justify-items:end;font-size:34px;line-height:1;color:#fff;font-weight:950;text-shadow:0 3px 0 #0005}
+.phone .phone-score small{font-size:11px;letter-spacing:.2em;opacity:.85}
+.phone .card{border:0;border-radius:20px;background:#ffffff10;backdrop-filter:blur(6px);box-shadow:inset 0 0 0 1px #ffffff1f}
+.phone .phone-clue p{font-size:21px;line-height:1.35;font-weight:700;color:#fff;margin:0}
+.phone .phone-team-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-top:12px}
+.phone .phone-team-btn{min-height:58px;border-radius:16px;border:3px solid var(--c);background:color-mix(in srgb,var(--c) 18%,transparent);color:#fff;font-weight:900;font-size:17px}
+.phone .phone-team-btn.chosen{background:var(--c);color:#0a0620;box-shadow:0 6px 0 color-mix(in srgb,var(--c) 45%,#000),0 0 30px color-mix(in srgb,var(--c) 60%,transparent)}
+.phone .player-turn{border:0;border-radius:20px;padding:18px;background:#ffffff10;box-shadow:inset 0 0 0 1px #ffffff1f;animation:none}
+.phone .player-turn .eyebrow{color:#fff;opacity:.85}
+.phone .player-turn h3{font-size:32px;color:#fff}
+.phone .player-turn p{color:#ffffffd9;font-weight:600}
+.phone .player-turn.role-pick{background:linear-gradient(135deg,var(--hot),#ff8a3d);box-shadow:0 12px 36px #ff2e8866;animation:phone-pop 1.8s ease-in-out infinite}
+.phone .player-turn.role-answer{background:linear-gradient(135deg,#12c98a,var(--zap));box-shadow:0 12px 36px #22e3ff55}
+.phone .player-turn.role-answer h3,.phone .player-turn.role-answer p,.phone .player-turn.role-answer .eyebrow{color:#04211c}
+@keyframes phone-pop{50%{transform:scale(1.015);box-shadow:0 16px 46px #ff2e8899}}
+.phone .phone-picks section{background:#ffffff10;border-radius:16px}
+.phone .phone-picks h4{color:#fff}
+.phone .phone-picks button{background:linear-gradient(var(--sun),#ff9f1c);color:#2a1400;border:0;border-radius:14px;font-size:22px;font-weight:950;box-shadow:0 5px 0 #a35a00}
+.phone .phone-picks button:active{transform:translateY(4px);box-shadow:0 1px 0 #a35a00}
+/* The buzzer: dark when locked, gold while counting down, hot pink when live, green when you're in. */
+.phone .buzzer{width:min(72vw,280px);height:min(72vw,280px);margin:26px auto 14px;border:6px solid #ffffffcc;background:radial-gradient(circle at 35% 28%,#ff9cc6,var(--hot) 45%,#a3004f 85%);color:#fff;font-size:44px;letter-spacing:.04em;text-shadow:0 3px 0 #0005;box-shadow:0 12px 0 #6b0034,0 0 0 10px #ff2e8833,0 0 70px #ff2e88aa}
+.phone .buzzer:not(:disabled){animation:phone-live .9s ease-in-out infinite}
+@keyframes phone-live{50%{box-shadow:0 12px 0 #6b0034,0 0 0 18px #ff2e8822,0 0 100px #ff2e88dd}}
+.phone .buzzer:disabled{opacity:1;background:radial-gradient(circle at 35% 28%,#3b2f63,#1d1640 75%);border-color:#5b4b9a;color:#a99be0;box-shadow:0 12px 0 #0b0820,0 0 0 8px #8b5cff1a;animation:none}
+.phone .buzzer:disabled[data-eligible="true"]{background:radial-gradient(circle at 35% 28%,#fff2a8,var(--sun) 45%,#c77d00 85%);border-color:#fff;color:#3a2000;font-size:72px;box-shadow:0 12px 0 #6b4200,0 0 70px #ffd23f88}
+.phone .buzzer.is-in,.phone .buzzer.is-in:disabled{background:radial-gradient(circle at 35% 28%,#d9ffb0,var(--lime) 45%,#3f9b00 85%);border-color:#fff;color:#0f2a00;box-shadow:0 12px 0 #255c00,0 0 80px #b6ff3baa}
+.phone .phone-note{font-size:17px;font-weight:700;color:#fff}
+.phone.phone-in .phone-note{color:var(--lime)}
+.phone .timer{font-size:28px;font-weight:950;color:var(--sun)}
+.phone .primary{background:linear-gradient(var(--sun),#ff9f1c);color:#2a1400;border:0}
+@media (prefers-reduced-motion:reduce){.phone .buzzer,.phone .player-turn.role-pick{animation:none}}
+.phone.phone-board .buzzer,.phone.phone-board .phone-note:empty{display:none}
+/* Neon board: each category column gets its own colour; values glow in that colour; team cards wear their team colour. */
+.board .column:nth-child(6n+1){--col:#ff2e88}.board .column:nth-child(6n+2){--col:#22e3ff}.board .column:nth-child(6n+3){--col:#b6ff3b}
+.board .column:nth-child(6n+4){--col:#ffd23f}.board .column:nth-child(6n+5){--col:#a77bff}.board .column:nth-child(6n+6){--col:#ff7a2e}
+.board .column .category{background:linear-gradient(160deg,var(--col),color-mix(in srgb,var(--col) 55%,#2a0a4a));color:#0a0620;font-weight:950;text-shadow:0 1px 0 #ffffff55;border:0;border-radius:12px;box-shadow:0 6px 22px color-mix(in srgb,var(--col) 45%,transparent)}
+.board .column .tile{background:linear-gradient(160deg,#1a1240,#0c0a24);border:2px solid color-mix(in srgb,var(--col) 70%,transparent);border-radius:12px;color:var(--col);text-shadow:0 0 18px color-mix(in srgb,var(--col) 70%,transparent),0 2px 0 #000a;box-shadow:inset 0 0 22px color-mix(in srgb,var(--col) 18%,transparent),0 6px 16px #0006;transition:transform .15s,box-shadow .15s}
+.board .column .tile:not(:disabled):hover{transform:translateY(-3px) scale(1.03);box-shadow:inset 0 0 30px color-mix(in srgb,var(--col) 35%,transparent),0 0 28px color-mix(in srgb,var(--col) 60%,transparent)}
+.board .column .tile.used{opacity:.18;color:transparent;text-shadow:none;border-color:#ffffff14;box-shadow:none}
+.scoreboard .team{border:2px solid color-mix(in srgb,var(--c,#8b5cff) 70%,transparent);background:linear-gradient(150deg,color-mix(in srgb,var(--c,#8b5cff) 28%,#0c0a24),#0c0a24)}
+.scoreboard .team b{color:#fff;text-shadow:0 0 16px color-mix(in srgb,var(--c,#8b5cff) 80%,transparent)}
+.scoreboard .team.active{border-color:var(--c,#ffd23f);box-shadow:0 0 0 3px color-mix(in srgb,var(--c,#ffd23f) 35%,transparent),0 0 34px color-mix(in srgb,var(--c,#ffd23f) 55%,transparent)}
+.scoreboard .team .avatar{background:var(--c,#8b5cff);color:#0a0620}
+.stage-instruction{background:linear-gradient(90deg,transparent,#ff2e8830,#22e3ff30,transparent)}
+@media (prefers-reduced-motion:reduce){.board .column .tile{transition:none}}
+/* TV: hideable players panel and the "now picking" bar shown under a full-width board. */
+.broadcast-main{position:relative;min-width:0;display:flex;flex-direction:column;gap:1.2vh}
+.broadcast-layout.rail-hidden{grid-template-columns:1fr}
+.rail-toggle{position:absolute;top:50%;right:calc(-.5vw - 18px);transform:translateY(-50%);z-index:5;width:36px;height:96px;padding:0;border-radius:12px;border:2px solid #ffffff55;background:linear-gradient(#ff2e88,#8b5cff);color:#fff;font-size:28px;font-weight:900;box-shadow:0 0 24px #ff2e8866;opacity:.55;transition:opacity .2s}
+.rail-toggle:hover,.rail-toggle:focus-visible{opacity:1}
+.rail-hidden .rail-toggle{right:4px}
+.pick-bar{display:flex;align-items:center;gap:2vw;padding:1.6vh 2.2vw;border-radius:18px;border:3px solid var(--c,#ffd23f);background:linear-gradient(100deg,color-mix(in srgb,var(--c,#ffd23f) 38%,#0c0a24),#0c0a24 70%);box-shadow:0 0 40px color-mix(in srgb,var(--c,#ffd23f) 45%,transparent)}
+.pick-bar span{font-size:clamp(14px,2vh,26px);font-weight:900;letter-spacing:.2em;color:var(--c,#ffd23f)}
+.pick-bar strong{font-size:clamp(28px,5vh,72px);font-weight:950;color:#fff;line-height:1.05;text-shadow:0 0 22px color-mix(in srgb,var(--c,#ffd23f) 70%,transparent)}
+.pick-bar em{margin-left:auto;font-style:normal;font-weight:900;font-size:clamp(14px,2.2vh,30px);letter-spacing:.12em;color:#fff;opacity:.8;white-space:nowrap}
+.pick-bar.is-picking{animation:pick-pulse 1.6s ease-in-out infinite}
+@keyframes pick-pulse{50%{box-shadow:0 0 70px color-mix(in srgb,var(--c,#ffd23f) 75%,transparent)}}
+@media (prefers-reduced-motion:reduce){.pick-bar.is-picking{animation:none}}
+/* Phone buzzer as a game-show push button, matching the landing art: a low glowing dome on a dark pedestal ringed in neon.
+   Pseudo-elements draw the dome and pedestal so the button's text (BUZZ, countdown, LOCKED) can change freely. */
+.phone .buzzer,.phone .buzzer:disabled,.phone .buzzer.is-in,.phone .buzzer.is-in:disabled{--cap:#ff2e88;--cap-hi:#ffb3d6;--ring:#ff2e88;position:relative;isolation:isolate;display:flex;align-items:flex-end;justify-content:center;width:min(78vw,300px);height:min(56vw,210px);margin:22px auto 10px;padding:0 0 clamp(16px,5vw,26px);border:0;border-radius:0;background:none;box-shadow:none;opacity:1;animation:none;color:#fff;font-size:clamp(26px,8vw,36px);font-weight:950;letter-spacing:.06em;text-shadow:0 0 12px var(--ring),0 2px 0 #000a}
+.phone .buzzer::after{content:"";position:absolute;z-index:-1;left:0;right:0;bottom:0;height:52%;border-radius:50%/34%;background:linear-gradient(#241a52,#0b0820 60%,#05040f);border:3px solid var(--ring);box-shadow:0 0 22px var(--ring),inset 0 -10px 0 -4px color-mix(in srgb,var(--ring) 60%,transparent),inset 0 8px 18px #ffffff14}
+.phone .buzzer::before{content:"";position:absolute;z-index:-1;left:16%;right:16%;bottom:40%;height:42%;border-radius:50% 50% 14% 14%/100% 100% 22% 22%;background:radial-gradient(ellipse at 38% 30%,var(--cap-hi),var(--cap) 48%,color-mix(in srgb,var(--cap) 55%,#000) 100%);box-shadow:0 0 34px var(--cap),inset 0 -6px 12px #0006;transition:transform .08s}
+.phone .buzzer:active::before{transform:translateY(7px)}
+.phone .buzzer:not(:disabled)::before{animation:dome-live .9s ease-in-out infinite}
+@keyframes dome-live{50%{box-shadow:0 0 70px var(--cap),0 0 0 6px color-mix(in srgb,var(--cap) 30%,transparent),inset 0 -6px 12px #0006}}
+.phone .buzzer:disabled{--cap:#3b2f63;--cap-hi:#6a5aa8;--ring:#5b4b9a;color:#b9aee6;text-shadow:none}
+.phone .buzzer:disabled[data-eligible="true"]{--cap:#ffd23f;--cap-hi:#fff4b8;--ring:#ffd23f;color:#fff;font-size:clamp(40px,13vw,58px);text-shadow:0 0 16px #ffd23f,0 2px 0 #000a}
+.phone .buzzer.is-in,.phone .buzzer.is-in:disabled{--cap:#b6ff3b;--cap-hi:#eaffc4;--ring:#b6ff3b;color:#fff;font-size:clamp(22px,7vw,30px);text-shadow:0 0 14px #b6ff3b,0 2px 0 #000a}
+@media (prefers-reduced-motion:reduce){.phone .buzzer::before{animation:none!important;transition:none}}
+.phone .buzzer:hover,.phone .buzzer:focus,.phone .buzzer:active{background:none;box-shadow:none;border:0;transform:none}.phone .buzzer:focus{outline:none}.phone .buzzer:focus-visible::after{outline:3px solid #fff;outline-offset:4px}
+/* Top-down buzzer: looking straight down on the push button — a glowing round cap inside a dark rim with a thin neon ring. */
+.phone .buzzer,.phone .buzzer:disabled,.phone .buzzer:disabled[data-eligible="true"],.phone .buzzer.is-in,.phone .buzzer.is-in:disabled{align-items:center;width:min(70vw,260px);height:min(70vw,260px);padding:0;border:0;border-radius:50%;background:none;box-shadow:none}
+.phone .buzzer::after{inset:0;height:auto;border-radius:50%;background:radial-gradient(circle,#05040f 58%,#1a1440 72%,#0b0820 100%);border:4px solid var(--ring);box-shadow:0 0 26px var(--ring),0 0 0 8px color-mix(in srgb,var(--ring) 14%,transparent),inset 0 0 0 10px #0b0820,inset 0 0 0 13px color-mix(in srgb,var(--ring) 55%,transparent)}
+.phone .buzzer::before{inset:17%;height:auto;border-radius:50%;background:radial-gradient(circle at 36% 30%,#fff 0 4%,var(--cap-hi) 14%,var(--cap) 52%,color-mix(in srgb,var(--cap) 50%,#000) 100%);box-shadow:0 0 38px var(--cap),inset 0 -8px 16px #0005,inset 0 6px 10px #ffffff40}
+.phone .buzzer:active::before{transform:scale(.94)}
+.phone .buzzer::after{z-index:-2}.phone .buzzer::before{z-index:-1}
+/* Phone top card: centered and symmetric — room code and a small Edit button on one line, a big shiny name, then team and score. */
+.phone .phone-hero{position:relative;overflow:hidden;padding:14px 16px 18px;text-align:center;border-radius:22px;border:2px solid #ffffff59;background:linear-gradient(135deg,color-mix(in srgb,var(--team) 70%,#1a0b3d) 0%,#3a1a8a 45%,#a3125e 100%);box-shadow:0 14px 40px color-mix(in srgb,var(--team) 35%,transparent),inset 0 1px #ffffff66,inset 0 -18px 30px #00000033}
+.phone .phone-hero::after{content:"";position:absolute;top:-60%;left:-60%;width:40%;height:220%;inset:auto;transform:rotate(25deg);background:linear-gradient(90deg,transparent,#ffffff40,transparent);animation:phone-sheen 4.5s ease-in-out infinite;pointer-events:none;border-radius:0}
+@keyframes phone-sheen{0%,55%{left:-60%}100%{left:130%}}
+.phone .phone-hero-top{display:flex;justify-content:space-between;align-items:center;min-height:28px}
+.phone .phone-room{font-size:11px;font-weight:900;letter-spacing:.2em;color:#ffffffd9}
+.phone .phone-hero-top .phone-edit{min-height:0;height:28px;padding:0 12px;border-radius:999px;font-size:12px;font-weight:800;background:#ffffff26;border:1px solid #ffffff66;color:#fff}
+.phone .phone-name{margin:10px 0 12px;font-size:clamp(38px,12vw,56px);font-weight:950;line-height:1;letter-spacing:-.01em;overflow-wrap:anywhere;background:linear-gradient(180deg,#fff 20%,#ffe9a8 55%,#ffb3d6 100%);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 3px 0 #00000059) drop-shadow(0 0 18px #ffffff40)}
+.phone .phone-meta{display:flex;justify-content:center;align-items:center;gap:10px;flex-wrap:wrap}
+.phone .phone-team,.phone .phone-score{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 14px;margin:0;border-radius:999px;background:#00000059;border:1px solid #ffffff40;color:#fff;font-size:14px;font-weight:800;letter-spacing:.04em}
+.phone .phone-team::before{content:"";width:10px;height:10px;border-radius:50%;background:var(--team);box-shadow:0 0 10px var(--team)}
+.phone .phone-score b{font-size:18px;font-weight:950}
+@media (prefers-reduced-motion:reduce){.phone .phone-hero::after{animation:none;display:none}}
+.phone .player-turn,.phone .phone-clue{text-align:center}
+/* Phone picks: one row per category in its board colour; five fixed value slots so nothing shifts when a value is used. */
+.phone .phone-picks{text-align:center}
+.phone .phone-picks h3{margin:22px 0 12px;font-size:20px;color:#fff;letter-spacing:.02em}
+.phone .phone-picks .pick-row{margin:0 0 10px;padding:12px;border-radius:16px;background:linear-gradient(160deg,color-mix(in srgb,var(--col) 16%,#120c30),#0c0a24);border:2px solid color-mix(in srgb,var(--col) 55%,transparent);box-shadow:0 0 18px color-mix(in srgb,var(--col) 18%,transparent)}
+.phone .phone-picks h4{margin:0 0 10px;font-size:16px;font-weight:900;letter-spacing:.06em;text-transform:uppercase;color:var(--col);text-shadow:0 0 12px color-mix(in srgb,var(--col) 60%,transparent)}
+.phone .pick-values{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.phone .phone-picks .pick-value{min-width:0;min-height:48px;padding:0;border:0;border-radius:12px;background:linear-gradient(180deg,color-mix(in srgb,var(--col) 80%,#fff),var(--col));color:#0a0620;font-size:clamp(15px,4.4vw,19px);font-weight:950;box-shadow:0 4px 0 color-mix(in srgb,var(--col) 45%,#000)}
+.phone .phone-picks .pick-value:active{transform:translateY(3px);box-shadow:0 1px 0 color-mix(in srgb,var(--col) 45%,#000)}
+.phone .pick-used{min-height:48px;border-radius:12px;border:2px dashed #ffffff1f}
+/* Two-step phone picking. */
+.phone .phone-picks h3 span{display:block;margin-bottom:4px;font-size:11px;letter-spacing:.25em;color:#ffffffa6}
+.phone .pick-cats{display:grid;gap:10px}
+.phone .phone-picks .pick-cat{display:flex;justify-content:center;align-items:center;gap:8px;min-height:58px;border-radius:16px;border:0;background:linear-gradient(160deg,color-mix(in srgb,var(--col) 85%,#fff),var(--col));color:#0a0620;font-size:18px;font-weight:950;letter-spacing:.03em;text-transform:uppercase;box-shadow:0 5px 0 color-mix(in srgb,var(--col) 45%,#000),0 0 22px color-mix(in srgb,var(--col) 35%,transparent)}
+.phone .phone-picks .pick-cat:active{transform:translateY(3px);box-shadow:0 2px 0 color-mix(in srgb,var(--col) 45%,#000)}
+.phone .phone-picks .pick-cat:disabled{opacity:.3;box-shadow:none}
+.phone .pick-cat small{font-size:11px;letter-spacing:.15em;opacity:.8}
+.phone .pick-chosen{margin:0 auto 14px;padding:12px;border-radius:16px;background:linear-gradient(160deg,color-mix(in srgb,var(--col) 85%,#fff),var(--col));color:#0a0620;font-size:20px;font-weight:950;text-transform:uppercase;letter-spacing:.03em;box-shadow:0 0 26px color-mix(in srgb,var(--col) 45%,transparent)}
+.phone .phone-picks .pick-values .pick-value{min-height:58px;font-size:clamp(16px,4.8vw,21px)}
+.phone .phone-picks .pick-values .pick-used{min-height:58px}
+.phone .phone-picks .pick-back{margin-top:14px;min-height:42px;padding:0 18px;border-radius:999px;background:#ffffff1a;border:1px solid #ffffff40;color:#fff;font-weight:800}
+.phone.phone-board .buzzer,.phone.phone-board .buzzer:disabled,.phone.phone-board .buzzer:disabled[data-eligible="true"]{display:none}.phone .phone-picks .pick-back{box-shadow:none}
+.phone.phone-pick .phone-note{display:none}
+/* New neon landing art is 16:9 only; on phones show the whole image at the top instead of cropping the title. */
+@media (max-width:700px){.ugn-home .menu-art img{object-fit:contain;object-position:center top}.ugn-home .menu-art{background:#0a0620}}
+/* Landing buttons in the neon look of the new art: glossy colour pills instead of navy boxes. */
+.ugn-home .ugn-action,.ugn-home .ugn-quick{--n:#22e3ff;border:2px solid var(--n);background:linear-gradient(180deg,color-mix(in srgb,var(--n) 26%,#0a0620),#0a0620e6);color:#fff;font-weight:900;letter-spacing:.03em;text-shadow:0 0 10px color-mix(in srgb,var(--n) 70%,transparent);box-shadow:0 0 18px color-mix(in srgb,var(--n) 40%,transparent),inset 0 1px #ffffff33;backdrop-filter:blur(8px)}
+.ugn-home .ugn-action:hover,.ugn-home .ugn-quick:hover{box-shadow:0 0 30px color-mix(in srgb,var(--n) 70%,transparent),inset 0 1px #ffffff33}
+.ugn-home .ugn-action.new-action{--n:#ffd23f;background:linear-gradient(180deg,#fff2a8,#ffd23f 55%,#ff9f1c);color:#2a1400;text-shadow:none;border-color:#fff2a8}
+.ugn-home .ugn-action.resume-action{--n:#b6ff3b}
+.ugn-home .ugn-action.import-action{--n:#22e3ff}
+.ugn-home .ugn-quick:nth-child(1){--n:#ff2e88}.ugn-home .ugn-quick:nth-child(2){--n:#22e3ff}.ugn-home .ugn-quick:nth-child(3){--n:#a77bff}.ugn-home .ugn-quick:nth-child(4){--n:#ff7a2e}
+.ugn-home .ugn-quick.primary-quick{background:linear-gradient(180deg,#ff6fb0,#ff2e88);border-color:#ffb3d6;text-shadow:0 1px 0 #0005}
+.ugn-home .ugn-home-utilities .menu-small{border:1px solid #ffffff40;background:#0a0620b3;color:#fff}
+.ugn-home .ugn-leave-room{border:2px solid #ff2e88;background:#2a0718cc;color:#ff9cc6}
+/* Landing layout: two big main actions, a row of small pills, utilities at the bottom — all centered on the stage floor. */
+.ugn-home .ugn-hero-copy{width:min(720px,100%);margin:auto auto 0;gap:14px}
+.ugn-main-actions{display:grid;grid-template-columns:1fr 1fr;gap:14px;width:100%}
+.ugn-big{--n:#ff2e88;min-height:clamp(60px,8vh,78px);border-radius:20px;border:2px solid #ffffff99;font-size:clamp(18px,2vw,24px);font-weight:950;letter-spacing:.06em;text-transform:uppercase;color:#fff;text-shadow:0 2px 0 #0006;background:linear-gradient(180deg,color-mix(in srgb,var(--n) 70%,#fff),var(--n) 55%,color-mix(in srgb,var(--n) 60%,#000));box-shadow:0 6px 0 color-mix(in srgb,var(--n) 45%,#000),0 0 34px color-mix(in srgb,var(--n) 55%,transparent)}
+.ugn-big:active{transform:translateY(4px);box-shadow:0 2px 0 color-mix(in srgb,var(--n) 45%,#000)}
+.ugn-big.ugn-join{--n:#16c8ee}
+.ugn-big.ugn-live{--n:#7ad11f;grid-column:1/-1;min-height:54px;font-size:18px}
+.ugn-more-actions{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;width:100%}
+.ugn-chip{min-height:44px;padding:0 10px;border-radius:999px;border:1.5px solid #ffffff55;background:#0a0620bf;backdrop-filter:blur(8px);color:#fff;font-size:14px;font-weight:800;white-space:nowrap}
+.ugn-chip:hover{border-color:#fff;box-shadow:0 0 18px #ffffff33}
+.ugn-home .ugn-leave-room{width:100%;margin-top:0;min-height:44px}
+@media (max-width:700px){.ugn-main-actions{gap:10px}.ugn-big{min-height:60px;font-size:16px;border-radius:16px}.ugn-more-actions{grid-template-columns:1fr 1fr;gap:8px}.ugn-chip{font-size:13px}}
+/* Landing tour: dim everything except the highlighted button; a neon card explains it. */
+.tour{position:fixed;inset:0;z-index:1000}
+.tour-dim{position:absolute;inset:0;background:#05031399}
+.tour-spot{position:absolute;border-radius:22px;border:3px solid #ffd23f;box-shadow:0 0 0 9999px #050313b8,0 0 30px #ffd23f99;transition:all .25s ease;pointer-events:none}
+.tour-card{position:absolute;width:min(360px,calc(100vw - 24px));padding:18px 18px 16px;border-radius:20px;border:2px solid #ffffff59;background:linear-gradient(150deg,#3a1a8a,#1a0b3d 60%,#4a0c33);box-shadow:0 18px 50px #000a,0 0 30px #ff2e8844;color:#fff;text-align:center}
+.tour-card h3{margin:6px 0 8px;font-size:22px;font-weight:950}
+.tour-card p{margin:0 0 14px;font-size:15px;line-height:1.45;color:#ffffffe0}
+.tour-dots{display:flex;justify-content:center;gap:5px}
+.tour-dots span{width:7px;height:7px;border-radius:50%;background:#ffffff40}.tour-dots span.on{background:#ffd23f;box-shadow:0 0 8px #ffd23f}
+.tour-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tour-actions button{min-height:44px;border-radius:999px;font-weight:900}
+.tour-chip{border-color:#ffd23f!important;color:#ffd23f!important}
+@media (prefers-reduced-motion:reduce){.tour-spot{transition:none}}
+@media (max-width:700px){.ugn-big{font-size:15px;letter-spacing:.02em;white-space:nowrap;padding:0 8px}}
+/* Tall phone art fills the screen; the buttons sit on its reflective floor. */
+@media (max-width:700px){.ugn-home .menu-art img{object-fit:cover;object-position:center top}.ugn-home .ugn-hero-copy{margin-top:auto}}
+@media (max-width:700px){.game-menu.ugn-home{width:100%;aspect-ratio:auto}.ugn-home .menu-art{background:#07041a}.ugn-home .menu-art img{object-fit:contain;object-position:center top}}
+@media (max-width:700px){.ugn-main-actions{grid-template-columns:1fr;gap:10px}.ugn-big{min-height:58px;font-size:18px;letter-spacing:.05em}}

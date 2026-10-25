@@ -381,3 +381,39 @@ Offer phone/device or current project assets for a folder cover. Load the select
 
 ## XSTUDIO deployment repair (2026-10-23)
 Verify the latest main branch after the failed 20b636c deployment, use the checked-in pnpm lockfile for reproducible Vercel installs, and correct local/deployment instructions. Run the production build and relevant checks before publishing.
+
+## 2026-10-24 — Ultimate Game Night Phase 1: solid base
+
+Setup: Game Master console on the laptop, TV board on an extended display, phones in a network room.
+
+Flow
+- [ ] Log in; the Game Master console stays on the laptop.
+- [x] One **Open TV board** button: opens the board window immediately, creates the room if needed (keeping teams and scores), points the TV at the room. Remove the backwards popout.
+- [ ] TV shows QR, room code and lobby; players appear as they join.
+- [ ] Phones: scan → name → team.
+- [ ] Start; pick, buzz, judge and score sync to TV and phones.
+- [x] Host rejoin: log back in and return to the same running game; never start a new game unless **New game** is pressed.
+- [x] Clean Game Master clue card: question, private answer, then the steps in order (Open buzzers → Correct / Wrong → Back to board); only the next step lit; extras under **More**.
+- [ ] Verify at phone, 1080p and 4K. (1080p and 4K TV board checked locally; phone screen and live rooms not yet.)
+- [ ] Apply `supabase/game-night-phase1.sql` in Supabase (3-2-1 countdown, fastest-reaction buzz) — only after `push`.
+
+Locked turn rules
+- Team A's player on turn picks the clue and answers it first, without buzzing.
+- Correct: +full value; Team A keeps control; Team A's next player picks.
+- Wrong (first answer): −full value; that team's buzzer locks for the clue; TV shows a clean roast line.
+- Steal: Game Master opens buzzers; 3-2-1-BUZZ countdown (text for now); only teams that have not answered can buzz; first valid buzz answers.
+- Stealer wrong while other teams remain: −half value.
+- Last team remaining answers automatically (no buzz); wrong loses nothing; control returns to Team A's next player.
+- Steal correct: +full value; stealing team's next player picks.
+- The same player picks and answers; the turn rotates to the next teammate after every clue.
+
+Buzz timing
+- Each phone measures its own reaction time from when it showed BUZZ to the tap; the server picks the fastest reaction, not the first arrival.
+- Guard: reject reactions under 0.1s and buzzes after the window closes.
+
+## Staged — Ultimate Game Night Phase 2 (steroids)
+- Tie-breaker for buzzes within 0.3s; Game Master picks the mode each time: Rock Paper Scissors on phones (repeat on tie) or closest to the Game Master's secret number 1–10.
+- Animated BUZZ graphic for the countdown.
+- Copy-prompt button on the Game Master screen for any LLM to generate categories, clues and answers; paste back to parse into the board.
+- Steal power-ups, hot streak, lightning round, crowd reactions, show effects.
+- Editor simplification and PWA install/offline fixes.
