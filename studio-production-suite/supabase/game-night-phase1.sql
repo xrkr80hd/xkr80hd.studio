@@ -1,5 +1,6 @@
 -- Ultimate Game Night Phase 1: buzzers open after a 3-2-1 countdown,
 -- and the fastest phone-measured reaction (not the first network arrival) wins the buzz.
+-- A player who lost their session can rejoin under the same name, and the Daily Double team can lock its wager from a phone.
 ALTER TABLE public.family_game_rooms ADD COLUMN IF NOT EXISTS revision bigint NOT NULL DEFAULT 0;
 CREATE OR REPLACE FUNCTION public.family_game_command(p_code text,p_action text,p_token text,p_data jsonb DEFAULT '{}')
 RETURNS jsonb LANGUAGE plpgsql SECURITY INVOKER SET search_path='' AS $function$
@@ -24,6 +25,14 @@ begin
  host:=h=r.host_hash;
  select value into p from jsonb_array_elements(r.players) where value->>'hash'=h;
  if p_action='join' then
+  if p is null then
+   -- Rejoin: a new session using an existing player's name takes over that player (same team, same turn order).
+   select value into p from jsonb_array_elements(r.players) where lower(trim(value->>'name'))=lower(trim(coalesce(p_data->>'name','')));
+   if p is not null then
+    select jsonb_agg(case when value->>'id'=p->>'id' then value||jsonb_build_object('hash',h) else value end) into r.players from jsonb_array_elements(r.players);
+    p:=p||jsonb_build_object('hash',h);
+   end if;
+  end if;
   if p is null then
    if jsonb_array_length(r.players)>=10 then raise exception 'This room is full';end if;
    if length(trim(coalesce(p_data->>'name',''))) not between 1 and 28 then raise exception 'Enter a name (1–28 characters)';end if;
@@ -90,10 +99,13 @@ begin
   if p_action='answer' then
    if not coalesce((r.public_state->>'phase'='final-clue' and (r.public_state->>'deadline')::numeric>extract(epoch from clock_timestamp())*1000) or (r.public_state->>'phase'='clue' and not coalesce((r.public_state->>'revealed')::boolean,false) and (r.buzz->>'winner'=p->>'id' or (coalesce(r.buzz->>'winner','')='' and r.state#>>'{play,winner}'=team_id)) and coalesce(r.buzz->>'deadline',r.state#>>'{play,deadline}')::numeric>extract(epoch from clock_timestamp())*1000),false) then raise exception 'Answer entry is closed';end if;
   else
-   if r.public_state->>'phase'<>'final-category' then raise exception 'Wagers are locked';end if;
+   if r.public_state->>'phase'='double' then
+    if team_id is distinct from r.public_state->>'active' then raise exception 'Only the Daily Double team can wager';end if;
+   elsif r.public_state->>'phase'<>'final-category' then raise exception 'Wagers are locked';end if;
    if coalesce(p_data->>'text','') !~ '^[0-9]{1,9}$' then raise exception 'Enter a nonnegative whole-point wager';end if;
    w:=(p_data->>'text')::numeric;
    select greatest(0,coalesce((value->>'score')::numeric,0)) into maximum from jsonb_array_elements(r.public_state->'teams') where value->>'id'=team_id;
+   if r.public_state->>'phase'='double' then maximum:=greatest(coalesce(maximum,0),500*(coalesce((r.public_state->>'round')::integer,0)+1));end if;
    if w>coalesce(maximum,0) then raise exception 'Wager exceeds your score';end if;
   end if;
   if length(coalesce(p_data->>'text',''))>2000 then raise exception 'Submission too long';end if;

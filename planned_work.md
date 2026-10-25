@@ -417,3 +417,8 @@ Buzz timing
 - Copy-prompt button on the Game Master screen for any LLM to generate categories, clues and answers; paste back to parse into the board.
 - Steal power-ups, hot streak, lightning round, crowd reactions, show effects.
 - Editor simplification and PWA install/offline fixes.
+
+## To do — Game Night: save on exit (requested 2026-10-25)
+- [ ] Stop autosaving the game during play; instead, when the Game Master leaves the game (Main menu, My games, log out or closing the tab), ask "Do you want to save your game?" Yes / No.
+- [ ] Yes saves the game to the site; No leaves the last saved version.
+- [ ] Keep the 💾 Save game button for saving anytime.
