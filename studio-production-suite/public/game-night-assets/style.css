@@ -369,3 +369,282 @@ body:has(.phone){background:radial-gradient(120% 60% at 50% -10%,color-mix(in sr
 @media (max-width:700px){.ugn-home .menu-art img{object-fit:cover;object-position:center top}.ugn-home .ugn-hero-copy{margin-top:auto}}
 @media (max-width:700px){.game-menu.ugn-home{width:100%;aspect-ratio:auto}.ugn-home .menu-art{background:#07041a}.ugn-home .menu-art img{object-fit:contain;object-position:center top}}
 @media (max-width:700px){.ugn-main-actions{grid-template-columns:1fr;gap:10px}.ugn-big{min-height:58px;font-size:18px;letter-spacing:.05em}}
+/* Game Master login: the neon landing art behind a glossy card, matching the main menu. */
+body.login-page{margin:0;min-height:100dvh;display:grid;place-items:center;padding:16px;background:#07041a;color:#fff;font-family:Inter,ui-sans-serif,system-ui,-apple-system,sans-serif}
+.login-art{position:fixed;inset:0;z-index:0}
+.login-art img{width:100%;height:100%;object-fit:cover;object-position:center top;filter:brightness(.55) saturate(1.15)}
+.login-card{position:relative;z-index:1;width:min(420px,100%);padding:22px 22px 18px;border-radius:24px;border:2px solid #ffffff59;background:linear-gradient(150deg,#3a1a8ae6,#1a0b3df2 55%,#4a0c33e6);backdrop-filter:blur(10px);box-shadow:0 20px 60px #000b,0 0 40px #ff2e8844,inset 0 1px #ffffff55;text-align:center}
+.login-back{display:block;text-align:left;font-size:13px;color:#ffffffb3;text-decoration:none}
+.login-kicker{margin-top:10px;font-size:12px;font-weight:900;letter-spacing:.25em;color:#22e3ff;text-shadow:0 0 10px #22e3ff99}
+.login-card h1{margin:6px 0 16px;font-size:clamp(36px,10vw,48px);font-weight:950;line-height:1}
+.login-card h1 span{background:linear-gradient(180deg,#fff2a8,#ffd23f 50%,#ff9f1c);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 14px #ffd23f88)}
+.login-card .field{display:grid;gap:6px;margin:0 0 12px;text-align:left;font-size:13px;font-weight:800;letter-spacing:.04em;color:#ffffffd9}
+.login-card input{min-height:50px;padding:0 14px;border-radius:14px;border:2px solid #ffffff40;background:#0a0620cc;color:#fff;font-size:17px}
+.login-card input:focus{outline:none;border-color:#22e3ff;box-shadow:0 0 0 3px #22e3ff33}
+.login-go{width:100%;min-height:56px;margin-top:4px;border:0;border-radius:16px;background:linear-gradient(180deg,#ff8cc0,#ff2e88 55%,#c4005f);color:#fff;font-size:18px;font-weight:950;letter-spacing:.06em;text-transform:uppercase;text-shadow:0 2px 0 #0006;box-shadow:0 6px 0 #7a0039,0 0 30px #ff2e8877;cursor:pointer}
+.login-go:disabled{opacity:.6}
+#status{min-height:20px;margin:10px 0 0;font-size:14px;color:#ffb3d6}
+.login-player{display:block;margin:6px 0 10px;padding:12px;border-radius:999px;border:2px solid #22e3ff;color:#fff;font-weight:900;text-decoration:none;box-shadow:0 0 18px #22e3ff55}
+.login-help{margin:0;font-size:13px;color:#ffffffa6}
+/* Player join screen shares the login look; both carry a short 1-2-3 guide. */
+.join-screen{min-height:100dvh;display:grid;place-items:center;padding:16px}
+.join-screen .login-card{width:min(420px,100%)}
+.how-steps{list-style:none;margin:0 0 16px;padding:0;display:grid;gap:8px;text-align:left}
+.how-steps li{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:14px;background:#0a062099;border:1px solid #ffffff26;font-size:14px;font-weight:700;line-height:1.3}
+.how-steps b{flex:0 0 26px;height:26px;display:grid;place-items:center;border-radius:50%;background:linear-gradient(180deg,#fff2a8,#ffd23f);color:#2a1400;font-size:14px;font-weight:950}
+.how-steps i{font-style:normal;color:#22e3ff}
+.join-screen .field{display:grid;gap:6px;margin:0 0 12px;text-align:left;font-size:13px;font-weight:800;letter-spacing:.04em;color:#ffffffd9}
+.join-screen input{width:100%;min-height:50px;padding:0 14px;border-radius:14px;border:2px solid #ffffff40;background:#0a0620cc;color:#fff;font-size:17px;box-sizing:border-box}
+.join-screen input[name=code]{text-transform:uppercase;letter-spacing:.3em;font-weight:900;text-align:center;font-size:22px}
+.join-screen input:focus{outline:none;border-color:#22e3ff;box-shadow:0 0 0 3px #22e3ff33}
+.login-back.center{text-align:center;margin-top:12px}
+/* Join: scan the TV's QR (opens with the room filled in) or type the code. */
+.join-found{margin:0 0 14px;padding:10px;border-radius:999px;background:#b6ff3b26;border:2px solid #b6ff3b;color:#eaffc4;font-weight:900;letter-spacing:.04em}
+.join-found b{letter-spacing:.25em}
+.join-ways{margin:0 0 6px}
+.join-way{display:flex;align-items:center;gap:12px;padding:12px;border-radius:16px;background:#0a062099;border:2px solid #22e3ff;box-shadow:0 0 18px #22e3ff44;text-align:left}
+.join-way span{font-size:30px}
+.join-way b{display:block;font-size:16px}
+.join-way small{display:block;margin-top:2px;font-size:13px;color:#ffffffbf;line-height:1.35}
+.join-or{display:flex;align-items:center;gap:10px;margin:14px 0 10px;font-size:12px;font-weight:900;letter-spacing:.2em;text-transform:uppercase;color:#ffffff99}
+.join-or::before,.join-or::after{content:"";flex:1;height:1px;background:#ffffff33}
+/* Game Builder: original layout, neon colours only. Each category column wears its board colour. */
+.builder .slot:nth-child(6n+1){--col:#ff2e88}.builder .slot:nth-child(6n+2){--col:#22e3ff}.builder .slot:nth-child(6n+3){--col:#b6ff3b}
+.builder .slot:nth-child(6n+4){--col:#ffd23f}.builder .slot:nth-child(6n+5){--col:#a77bff}.builder .slot:nth-child(6n+6){--col:#ff7a2e}
+.builder .slot{border-color:color-mix(in srgb,var(--col) 55%,transparent);border-top:4px solid var(--col);background:linear-gradient(170deg,color-mix(in srgb,var(--col) 12%,#120c30),#0a0620);box-shadow:0 0 18px color-mix(in srgb,var(--col) 18%,transparent)}
+.builder .slot-title h3{color:var(--col);text-shadow:0 0 12px color-mix(in srgb,var(--col) 55%,transparent)}
+.builder .clue-row b{color:var(--col);text-shadow:0 0 10px color-mix(in srgb,var(--col) 55%,transparent)}
+.builder .clue-row:hover{border-color:var(--col);background:color-mix(in srgb,var(--col) 12%,transparent)}
+.builder .library{border-color:#22e3ff66;background:linear-gradient(170deg,#141a4a,#0a0620);box-shadow:0 0 22px #22e3ff22}
+.builder .library h3{color:#22e3ff;text-shadow:0 0 10px #22e3ff88}
+.builder #library-list button:hover{border-color:#22e3ff;background:#22e3ff1a}
+.builder .tabs .active{background:linear-gradient(180deg,#ff6fb0,#ff2e88);border-color:#ffb3d6;color:#fff}
+/* Header: one tidy line on every host page — no wrapped labels, compact Join button. */
+.top nav{flex-wrap:nowrap;gap:6px}
+.top nav button{white-space:nowrap;font-size:14px;padding:9px 14px;min-height:0;border-radius:12px}
+.top .brand small{display:none}
+.top .join-top{white-space:nowrap;padding:9px 16px;min-height:0;border-radius:999px;border:2px solid #22e3ff;color:#fff;box-shadow:0 0 14px #22e3ff44}
+.top nav button.active{background:linear-gradient(180deg,#ff6fb0,#ff2e88);color:#fff;border-color:#ffb3d6}
+/* Builder title row: bigger neon buttons. */
+.toolbar .actions{gap:10px}
+.toolbar .actions button{min-height:46px;padding:0 18px;font-size:15px;font-weight:900;border-radius:14px;white-space:nowrap}
+.toolbar .actions [data-action="details"]{border:2px solid #22e3ff;background:#22e3ff1f;color:#fff;box-shadow:0 0 14px #22e3ff33}
+.toolbar .actions [data-action="undo-edit"]{border:2px solid #a77bff;background:#a77bff1f;color:#fff}
+.toolbar .actions [data-action="undo-edit"]:disabled{opacity:.4}
+.toolbar .actions [data-action="export"]{border:2px solid #b6ff3b;background:#b6ff3b1a;color:#fff;box-shadow:0 0 14px #b6ff3b33}
+.toolbar .actions [data-action="setup"]{border:0;background:linear-gradient(180deg,#fff2a8,#ffd23f 55%,#ff9f1c);color:#2a1400;box-shadow:0 5px 0 #a35a00,0 0 18px #ffd23f66}
+/* Round tabs: three equal buttons across. */
+.builder .tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.builder .tabs button{width:100%;white-space:nowrap}
+/* Library: a scroll box that stays in view while you scroll the board. */
+.builder .library{position:sticky;top:12px;align-self:start;max-height:calc(100dvh - 24px);display:flex;flex-direction:column;overflow:hidden}
+.builder #library-list{flex:1;min-height:0;overflow-y:auto;scrollbar-width:thin;scrollbar-color:#22e3ff55 transparent}
+/* Column indicator at the bottom of every category card. */
+.builder .slot-foot{margin-top:8px;padding:8px 10px;border-radius:10px;text-align:center;font-size:12px;font-weight:950;letter-spacing:.14em;text-transform:uppercase;color:#0a0620;background:linear-gradient(160deg,var(--col,#8b5cff),color-mix(in srgb,var(--col,#8b5cff) 60%,#2a0a4a))}
+.top .brand strong{white-space:nowrap;font-size:clamp(13px,1.6vw,17px)}
+/* Builder categories: a sideways carousel with arrows, plus colour chips showing which categories are in view. */
+.builder .slot-dot:nth-child(6n+1),.builder .slot:nth-child(6n+1){--col:#ff2e88}.builder .slot-dot:nth-child(6n+2),.builder .slot:nth-child(6n+2){--col:#22e3ff}.builder .slot-dot:nth-child(6n+3),.builder .slot:nth-child(6n+3){--col:#b6ff3b}
+.builder .slot-dot:nth-child(6n+4),.builder .slot:nth-child(6n+4){--col:#ffd23f}.builder .slot-dot:nth-child(6n+5),.builder .slot:nth-child(6n+5){--col:#a77bff}.builder .slot-dot:nth-child(6n+6),.builder .slot:nth-child(6n+6){--col:#ff7a2e}
+.builder .slot-carousel{position:relative;display:flex;align-items:center;gap:10px}
+.builder .slots{display:flex;grid-template-columns:none;gap:12px;flex:1;min-width:0;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;scrollbar-width:none;padding:4px 2px 8px}
+.builder .slots::-webkit-scrollbar{display:none}
+.builder .slots>.slot{flex:0 0 calc((100% - 24px)/3);scroll-snap-align:start;min-width:0}
+@media (max-width:1100px){.builder .slots>.slot{flex-basis:calc((100% - 12px)/2)}}
+@media (max-width:600px){.builder .slots>.slot{flex-basis:88%}}
+.builder .car-arrow{flex:none;width:42px;height:84px;padding:0;border-radius:14px;border:2px solid #ffffff55;background:linear-gradient(180deg,#ff6fb0,#ff2e88);color:#fff;font-size:30px;font-weight:900;box-shadow:0 0 18px #ff2e8855}
+.builder .car-arrow:disabled{opacity:.25;box-shadow:none}
+.builder .slot-dots{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;margin-top:10px}
+.builder .slot-dot{min-height:40px;padding:0 8px;border-radius:999px;border:2px solid color-mix(in srgb,var(--col) 55%,transparent);background:#0a0620;color:var(--col);font-size:12px;font-weight:900;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.builder .slot-dot.on{background:var(--col);color:#0a0620;border-color:var(--col);box-shadow:0 0 16px color-mix(in srgb,var(--col) 60%,transparent)}
+@media (max-width:900px){.builder .slot-dots{grid-template-columns:repeat(3,minmax(0,1fr))}}
+/* Category library ends where the carousel ends: it takes the board's height and never grows; its list scrolls inside. */
+.builder{align-items:stretch}
+.builder .library{position:relative;top:auto;align-self:stretch;max-height:none;height:auto;contain:size;display:flex;flex-direction:column;overflow:hidden}
+.builder .library #library-list{flex:1;min-height:0;overflow-y:auto}
+@media (max-width:600px){.builder .library{contain:none;max-height:50vh}}
+/* Visible neon scroll bars: the category list (up/down) and the category carousel (sideways). */
+.builder .library #library-list{scrollbar-width:auto;scrollbar-color:#22e3ff #ffffff14;padding-right:6px;scrollbar-gutter:stable}
+.builder .library #library-list::-webkit-scrollbar{width:10px}
+.builder .library #library-list::-webkit-scrollbar-track{background:#ffffff14;border-radius:999px}
+.builder .library #library-list::-webkit-scrollbar-thumb{background:linear-gradient(180deg,#22e3ff,#8b5cff);border-radius:999px;border:2px solid #0a0620}
+.builder .slots{scrollbar-width:thin;scrollbar-color:#ff2e88 #ffffff14;padding-bottom:12px}
+.builder .slots::-webkit-scrollbar{display:block;height:8px}
+.builder .slots::-webkit-scrollbar-track{background:#ffffff14;border-radius:999px}
+.builder .slots::-webkit-scrollbar-thumb{background:linear-gradient(90deg,#ff2e88,#ffd23f);border-radius:999px}
+/* Let the custom (always-visible) bars win over the browser overlay style. */
+.builder .library #library-list,.builder .slots{scrollbar-width:auto;scrollbar-color:auto}
+.toolbar .actions [data-action="setup"]{background:linear-gradient(180deg,#ff8cc0,#ff2e88 55%,#c4005f);color:#fff;text-shadow:0 1px 0 #0006;box-shadow:0 5px 0 #7a0039,0 0 20px #ff2e8877}
+/* My Games flows from the main menu: same neon art banner, same big buttons, neon game cards. */
+.games-hero{min-height:clamp(320px,34vw,480px)}
+.games-hero-art img{object-position:center 30%}
+.games-hero .games-actions{width:min(720px,100%);margin:0 auto}
+.games-library .game-library-grid{grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
+.games-library .game-card:nth-child(6n+1){--n:#ff2e88}.games-library .game-card:nth-child(6n+2){--n:#22e3ff}.games-library .game-card:nth-child(6n+3){--n:#b6ff3b}
+.games-library .game-card:nth-child(6n+4){--n:#ffd23f}.games-library .game-card:nth-child(6n+5){--n:#a77bff}.games-library .game-card:nth-child(6n+6){--n:#ff7a2e}
+.games-library .game-card{--n:#ff2e88;border:2px solid color-mix(in srgb,var(--n) 60%,transparent);border-top:5px solid var(--n);border-radius:20px;background:linear-gradient(165deg,color-mix(in srgb,var(--n) 16%,#120c30),#0a0620);box-shadow:0 0 24px color-mix(in srgb,var(--n) 22%,transparent)}
+.games-library .game-card .badge{border:1px solid var(--n);color:var(--n);background:#0a062099}
+.games-library .game-card h2{color:#fff;text-shadow:0 0 16px color-mix(in srgb,var(--n) 55%,transparent)}
+.games-library .game-card small{color:#ffffffb3}
+.games-library .game-card .actions{display:grid;grid-template-columns:1fr 1fr auto;gap:8px}
+.games-library .game-host{min-height:44px;border:0;border-radius:12px;background:linear-gradient(180deg,#ff8cc0,#ff2e88 55%,#c4005f);color:#fff;font-weight:900;box-shadow:0 4px 0 #7a0039}
+.games-library .game-edit{min-height:44px;border-radius:12px;border:2px solid #22e3ff;background:#22e3ff1a;color:#fff;font-weight:900}
+.games-library .game-card [data-action="game-menu"]{min-height:44px;border-radius:12px}
+.compact-new-card{background:#0a062099!important;border:2px dashed #ffd23f88!important;color:#fff!important;border-radius:20px!important}
+.compact-new-card b{color:#ffd23f;text-shadow:0 0 18px #ffd23f99}
+.compact-new-card:hover{border-color:#ffd23f!important;box-shadow:0 0 24px #ffd23f44}
+.game-library-head .eyebrow{color:#22e3ff}
+@media (max-width:700px){.games-hero{min-height:420px}.games-hero-art img{object-fit:contain;object-position:center top}.games-hero-art{background:#07041a}}
+.top .brand-home strong{display:inline-flex;align-items:center;padding:9px 16px;border-radius:999px;border:2px solid #ff2e88;color:#fff;font-size:14px;letter-spacing:.04em;box-shadow:0 0 14px #ff2e8844}.top .brand-home:hover strong{background:#ff2e8826}
+.games-hero{min-height:380px;height:380px}.games-hero-art img{object-position:center top}.games-hero-art:after{background:linear-gradient(180deg,transparent 30%,rgba(3,7,28,.85) 100%)}@media (max-width:700px){.games-hero{height:auto;min-height:380px}.games-hero-art img{object-fit:cover;object-position:center top}}
+/* Header: every nav button the same size, spread evenly across the full width. No save-status text. */
+.top{display:grid!important;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:10px;align-items:center}
+.top .status{display:none!important}
+.top nav{display:contents}
+.top>button,.top nav button{width:100%;min-height:44px;margin:0;padding:0 10px;border-radius:999px;border:2px solid #ffffff33;background:#0a062099;color:#fff;font-size:14px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;box-shadow:none}
+.top>button:hover,.top nav button:hover{border-color:#ffffff88}
+.top .brand-home{display:flex;justify-content:center;align-items:center}
+.top .brand-home strong{padding:0;border:0;box-shadow:none;font-size:14px;font-weight:800}
+.top>.brand-home{border-color:#ff2e88;box-shadow:0 0 14px #ff2e8844}
+.top>.join-top{border-color:#22e3ff;box-shadow:0 0 14px #22e3ff44}
+.top nav button.active{background:linear-gradient(180deg,#ff6fb0,#ff2e88);border-color:#ffb3d6}
+@media (max-width:700px){.top{grid-auto-flow:row;grid-template-columns:repeat(2,minmax(0,1fr))}}
+/* ===== Neon theme for every remaining screen: one set of buttons, cards, inputs and popups. ===== */
+:root{--hot:#ff2e88;--zap:#22e3ff;--lime:#b6ff3b;--sun:#ffd23f;--grape:#a77bff;--ember:#ff7a2e;--night:#0a0620}
+button{background:#120c30;border:2px solid #ffffff2e;color:#fff;border-radius:12px;font-weight:700}
+button:hover{background:#1d1450;border-color:#ffffff66;box-shadow:0 0 16px #ffffff1a}
+.primary{background:linear-gradient(180deg,#ff8cc0,var(--hot) 55%,#c4005f);border:2px solid #ffb3d6;color:#fff;font-weight:900;text-shadow:0 1px 0 #0006;box-shadow:0 4px 0 #7a0039,0 0 18px #ff2e8855}
+.primary:hover{background:linear-gradient(180deg,#ffa3cd,#ff4a98 55%,#d4006a);box-shadow:0 4px 0 #7a0039,0 0 26px #ff2e8888}
+.purple{background:linear-gradient(180deg,#c3a6ff,var(--grape) 55%,#6a3fd6);border:2px solid #d9c8ff;color:#fff;font-weight:900;box-shadow:0 0 16px #a77bff55}
+.ghost{background:transparent;border-color:#ffffff40}
+.danger{color:#fff;border-color:#ff5c7a;background:#ff5c7a1f}
+.card,.settings .card{background:linear-gradient(165deg,#1a1050,#0a0620);border:2px solid #22e3ff40;border-radius:20px;box-shadow:0 0 24px #22e3ff14}
+input,select,textarea{background:var(--night);border:2px solid #ffffff2e;color:#fff;border-radius:12px}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--zap);box-shadow:0 0 0 3px #22e3ff33}
+input[type=range],input[type=checkbox]{accent-color:var(--hot)}
+.field{color:#ffffffbf;font-weight:700}
+.eyebrow{color:var(--zap)}
+dialog{background:linear-gradient(155deg,#2a1470,#120a38 55%,#3a0a2c);border:2px solid #ffffff59;border-radius:24px;box-shadow:0 24px 80px #000c,0 0 40px #ff2e8833}
+dialog h2{color:#fff;text-shadow:0 0 16px #ff2e8855}
+dialog .help,.help{color:#ffffffa6}
+/* Team lineup and team cards. */
+.team-setup-card{background:#0a062099;border:2px solid #ffffff26;border-radius:16px}
+.team-setup-card:hover{border-color:#22e3ff66}
+.team-number{box-shadow:0 0 12px currentColor}
+/* Sound & settings. */
+.settings .toolbar h2,.toolbar h2{color:#fff}
+.settings .list-row{border-bottom:1px solid #ffffff1a}
+.settings .list-row strong{color:#fff}
+.settings h3{color:var(--zap);text-shadow:0 0 10px #22e3ff66}
+/* Game Master console. */
+.host-panel,.gm-panel{background:linear-gradient(165deg,#1a1050,#0a0620)!important;border:2px solid #22e3ff55!important;box-shadow:0 0 24px #22e3ff1f}
+.host-panel-top h2{color:#fff}
+.host-panel-top span{color:var(--zap)}
+.gm-card{background:#0a062099;border:2px solid #ffffff26}
+.gm-answer{background:#ffd23f14;border-color:#ffd23f66}
+.gm-status{border-left-color:var(--hot)}
+.gm-next{outline-color:#ffffffaa}
+.gm-who .purple{background:linear-gradient(180deg,#8cf3ff,var(--zap));color:var(--night);border-color:#c9fbff;text-shadow:none}
+/* Big stage panel behind the console board. */
+.stage{border-color:#ffffff26}
+/* Phones: nothing may push the page wider than the screen; the carousel shows one card at a time. */
+.builder>section,.builder .slot-carousel,.builder .slots,.builder .slot-dots,.builder .tabs{min-width:0}
+@media (max-width:700px){
+ .builder{grid-template-columns:minmax(0,1fr)!important}
+ .builder .library{contain:none;max-height:42vh}
+ .builder .slots>.slot{flex-basis:100%}
+ .builder .car-arrow{width:34px;height:64px;font-size:24px}
+ .builder .slot-dots{display:flex;overflow-x:auto;scrollbar-width:none;gap:6px}
+ .builder .slot-dots::-webkit-scrollbar{display:none}
+ .builder .slot-dot{flex:0 0 auto;max-width:70vw}
+ .builder .tabs{gap:6px}.builder .tabs button{font-size:13px;padding:0 6px}
+ .top>.join-top{grid-column:1/-1}
+ .toolbar .actions{display:grid;grid-template-columns:1fr 1fr;width:100%}
+ .toolbar{flex-direction:column;align-items:stretch}
+}
+.footer span:last-child{display:none}.footer{justify-content:center}@media (max-width:700px){.builder .tabs button{min-height:42px}}
+/* Drag-and-drop: draggable library rows with a grip, glowing drop target, and a tap-to-place slot picker. */
+.builder .lib-item{display:flex;align-items:center;gap:8px;min-height:40px;padding:0 12px;border-radius:12px;border:2px solid #ffffff26;background:#0a062099;color:#fff;font-size:14px;font-weight:700;cursor:grab;user-select:none}
+.builder .lib-item:hover,.builder .lib-item:focus-visible{border-color:#22e3ff;background:#22e3ff1a;outline:none}
+.builder .lib-item:active{cursor:grabbing}
+.builder .lib-grip{color:#ffffff59;letter-spacing:-2px}
+.builder .lib-plus{margin-left:auto;width:24px;height:24px;display:grid;place-items:center;border-radius:50%;background:#22e3ff;color:#0a0620;font-weight:950}
+.builder .slot.drop-target{outline:3px dashed #fff;outline-offset:3px;box-shadow:0 0 34px var(--col,#22e3ff)}
+.slot-pick{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.slot-pick-btn{display:flex;align-items:center;gap:10px;min-height:52px;text-align:left;font-weight:800}
+.slot-pick-btn b{width:28px;height:28px;flex:none;display:grid;place-items:center;border-radius:50%;background:#ff2e88;color:#fff}
+.slot-pick-btn:nth-child(6n+2) b{background:#22e3ff;color:#0a0620}.slot-pick-btn:nth-child(6n+3) b{background:#b6ff3b;color:#0a0620}.slot-pick-btn:nth-child(6n+4) b{background:#ffd23f;color:#0a0620}.slot-pick-btn:nth-child(6n+5) b{background:#a77bff}.slot-pick-btn:nth-child(6n+6) b{background:#ff7a2e}
+/* Game Master console on desktop: the board, clue and panel always fill the screen height, so nothing jumps between phases. */
+body:has(.host-layout) .footer{display:none}
+@media (min-width:1100px){
+ .host-shell .host-layout{height:calc(100dvh - 118px);min-height:600px;align-items:stretch;margin:12px 0}
+ .host-shell .host-board{display:flex;min-height:0}
+ .host-shell .host-board .stage{flex:1;display:flex;flex-direction:column;min-height:0;padding:14px}
+ .host-shell .host-board .stage>.board,.host-shell .host-board .stage>.stage-question{flex:1;min-height:0}
+ .host-shell .host-board .stage .column{display:grid;grid-template-rows:auto repeat(5,minmax(0,1fr));gap:8px}
+ .host-shell .host-board .stage .tile{min-height:0;height:auto;font-size:clamp(24px,2.4vw,44px)}
+ .host-shell .host-board .stage .category{min-height:70px;font-size:clamp(12px,1vw,18px)}
+ .host-shell .host-board .stage-question{justify-content:center}
+ .host-shell .host-board .stage-question h2{font-size:clamp(28px,3vw,54px)}
+ .host-shell .host-panel{position:static;max-height:none;height:100%;overflow-y:auto}
+}
+/* Phone category library: search, then one swipeable row of category chips. */
+@media (max-width:700px){
+ .builder .library{max-height:none!important;padding:12px;gap:8px}
+ .builder .library h3{font-size:15px}
+ .builder .library>button{min-height:36px;font-size:13px}
+ .builder .library #library-list{display:flex!important;flex-direction:row;overflow-x:auto;overflow-y:hidden;max-height:none;gap:8px;padding:2px 0 10px;scrollbar-width:thin;scrollbar-color:#22e3ff #ffffff14}
+ .builder .library #library-list::-webkit-scrollbar{height:6px;width:auto}
+ .builder .lib-item{flex:0 0 auto;min-height:40px;border-radius:999px;padding:0 6px 0 14px;font-size:13px}
+ .builder .lib-grip{display:none}
+}
+/* ===== TV board (and console board) in the neon look ===== */
+.stage-only>.toolbar .eyebrow{color:#22e3ff;text-shadow:0 0 10px #22e3ff88}
+.stage-only>.toolbar button{border-radius:999px;border:2px solid #22e3ff;background:#0a0620cc;color:#fff;box-shadow:0 0 14px #22e3ff44}
+.stage,.stage-only .stage,.host-shell .host-board .stage{background:radial-gradient(80% 60% at 15% 0%,#ff2e8822,transparent 60%),radial-gradient(70% 60% at 100% 100%,#22e3ff1f,transparent 60%),linear-gradient(165deg,#1b0f52,#0a0620 70%)!important;border:2px solid #ffffff2e;border-radius:24px;box-shadow:0 0 0 1px #ff2e8833,0 0 60px #8b5cff33,inset 0 1px #ffffff1f}
+.stage-only .stage{animation:none}
+.stage-head h3{color:#fff}
+.stage-head .eyebrow{display:inline-block;padding:4px 12px;border-radius:999px;background:#22e3ff1f;border:1px solid #22e3ff66;color:#22e3ff}
+/* Banner: a bold neon bar. */
+.stage .stage-instruction{border:0;border-radius:18px;background:linear-gradient(90deg,#ff2e88,#8b5cff 55%,#22e3ff);box-shadow:0 0 30px #ff2e8855;margin:6px 0 10px}
+.stage .stage-instruction strong{color:#fff;text-shadow:0 2px 0 #0005}
+.stage .stage-instruction p,.stage .stage-instruction>span{color:#ffffffe6!important}
+.stage .stage-roast{color:#ffd23f;text-shadow:0 0 18px #ffd23f88}
+/* Question: a centred glowing card that fills the space. */
+.stage .stage-question{flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;margin:10px 0;padding:clamp(18px,3vh,40px);border-radius:22px;background:linear-gradient(170deg,#ffffff0d,#ffffff03);border:2px solid #ffffff1f;box-shadow:inset 0 0 60px #8b5cff22}
+.stage .stage-question .eyebrow{padding:6px 16px;border-radius:999px;background:linear-gradient(180deg,#fff2a8,#ffd23f);color:#2a1400;text-shadow:none;letter-spacing:.18em}
+.stage .stage-question h2{color:#fff;text-shadow:0 0 30px #8b5cff66,0 3px 0 #0006}
+.stage-only .stage-question h2{font-size:clamp(40px,5.4vw,104px)}
+.stage .stage-question .answer{padding:10px 24px;border-radius:16px;background:#b6ff3b1f;border:2px solid #b6ff3b;color:#eaffc4;text-shadow:0 0 16px #b6ff3b88}
+.stage-only .stage{display:flex;flex-direction:column;min-height:calc(100dvh - 120px)}
+/* Score cards: filled with the team colour, name never cut off. */
+.stage .scoreboard{display:grid;grid-template-columns:repeat(auto-fit,minmax(0,1fr));gap:12px}
+.stage .scoreboard .team{min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:12px 10px;text-align:center;border:2px solid #ffffff59;border-radius:18px;background:linear-gradient(165deg,color-mix(in srgb,var(--c,#8b5cff) 85%,#fff 0%),color-mix(in srgb,var(--c,#8b5cff) 45%,#0a0620))}
+.stage .scoreboard .team .avatar{display:none}
+.stage .scoreboard .team>div{min-width:0;width:100%}
+.stage .scoreboard .team small{max-width:none;white-space:normal;overflow:visible;color:#0a0620;font-weight:950;letter-spacing:.04em;text-transform:uppercase;line-height:1.1}
+.stage .scoreboard .team b{color:#fff;text-shadow:0 2px 0 #0007,0 0 18px #0006}
+.stage .scoreboard .team .score-answerer{display:block;color:#0a0620cc;font-weight:800}
+.stage .scoreboard .team.active{border-color:#fff;box-shadow:0 0 0 4px #ffffff55,0 0 40px var(--c,#ffd23f);transform:translateY(-3px)}
+.stage-only .scoreboard .team small{font-size:clamp(16px,1.6vw,30px)}
+.stage-only .scoreboard .team b{font-size:clamp(36px,3.6vw,72px)}
+/* Players panel on the TV. */
+.broadcast-side .broadcast-join,.broadcast-side .broadcast-roster{border-radius:20px;border:2px solid #22e3ff55;background:linear-gradient(165deg,#1b0f52,#0a0620);box-shadow:0 0 24px #22e3ff22}
+.broadcast-roster h2{color:#22e3ff;text-shadow:0 0 12px #22e3ff88}
+.broadcast-team{border:2px solid var(--team-color,#8b5cff)!important;border-radius:14px;background:color-mix(in srgb,var(--team-color,#8b5cff) 16%,#0a0620)!important}
+.broadcast-team h3{color:var(--team-color,#fff)}
+/* TV: the board stretches to fill the screen. */
+.stage-only .broadcast-main{min-height:calc(100dvh - 90px)}
+.stage-only .broadcast-main>.stage{flex:1;min-height:0}
+.stage-only .stage>.board{flex:1;min-height:0}
+.stage-only .stage .board .column{display:grid;grid-template-rows:auto repeat(5,minmax(0,1fr));gap:10px}
+.stage-only .stage .board .tile{height:auto;min-height:0}
+/* Centred, shrink-to-fit team names: the NOW PICKING bar, the UP NEXT banner and the score cards. */
+.pick-bar{position:relative;display:grid;grid-template-columns:minmax(0,1fr);justify-items:center;text-align:center;gap:4px;padding:1.4vh 9vw}
+.pick-bar span{grid-row:1}
+.pick-bar strong{grid-row:2;width:100%;max-height:2.3em;overflow:hidden;line-height:1.08;overflow-wrap:anywhere;display:block}
+.pick-bar em{position:absolute;right:2vw;top:50%;transform:translateY(-50%);margin:0}
+.stage .stage-instruction strong[data-fit]{display:block;max-height:2.3em;overflow:hidden;overflow-wrap:anywhere;line-height:1.08;margin:0 auto;width:100%}
+.stage .scoreboard .team small[data-fit]{display:block;width:100%;max-height:2.4em;overflow:hidden;overflow-wrap:anywhere;text-align:center}
+/* Players-panel arrow: one fixed spot on the right edge; clicking only flips the arrow. */
+.rail-toggle,.rail-hidden .rail-toggle{position:fixed!important;right:6px!important;top:50%!important;left:auto!important;transform:translateY(-50%)!important;transition:opacity .2s,box-shadow .2s}
+.rail-toggle:hover,.rail-toggle:active,.rail-toggle:focus-visible{transform:translateY(-50%)!important;opacity:1}
