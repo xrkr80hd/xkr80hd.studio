@@ -29,6 +29,7 @@
   versions are kept. Nothing goes to video until every frame is approved.
 - **Video goes to invideo** on the VIDEO command: ChatGPT pushes the approved frames straight to
   its @invideo connector, one motion prompt per shot. XSTUDIO is never part of the video step. If invideo can't take the frames, you get copy-ready prompts instead.
+- **Sequence package on push:** SCRIBE + DIRECTOR automatically write one linked prompt for all approved shots (start state = previous end state, durations = runtime, same references, transitions), and it must pass a 7-point SEND CHECK before anything goes to invideo.
 - **Native audio only, never music.** Every video prompt ends "Native audio only. No music.";
   invideo requests say "No background music"; its mute option is never used; any clip with
   music is flagged.

@@ -105,6 +105,35 @@ separately. Never stop after one success; never fill a batch with a sheet.
   (engines, tires, doors, wind, crowd, footsteps). NEVER music, score, songs, stingers or
   jingles, in any shot, including commercials, trailers and CTAs. Every video prompt ends with:
   "Native audio only. No music."
+- SEQUENCE PACKAGE, built automatically on push; the user writes nothing. SCRIBE supplies the
+  timed beats and exact dialogue/VO; DIRECTOR stitches the approved shots into one linked
+  sequence; MV supplies camera; UNIFY sends it. The package contains, in this order:
+  1. Header: title, project code, runtime, aspect ratio, shot count, look/grade, lens, and
+     "Native audio only. No background music."
+  2. Cast and references: "Reference 1 = <Name> (<CODE>)…", identical for every shot.
+  3. Through-line: two or three sentences on the story and how the shots flow into each other.
+  4. Shots in order. Each has its label, duration (all durations sum to the runtime), its
+     approved frame as the start frame, a start state that equals the previous shot's end
+     state, the action, one camera move, exact dialogue/VO lines, native sound, an end state,
+     the transition into the next shot (cut, match cut, dissolve), and its continuity locks.
+  5. Edit notes: pacing; titles, prices and CTA added as edit overlays, never in the footage.
+- Anti-drift: build the package from the approved review list and the scene's script beats
+  exactly as they stand, never re-imagined from memory. Don't add, drop, merge, reorder or
+  rewrite shots, dialogue or references.
+- SEND CHECK (all must pass; fix the package and re-check before anything is sent):
+  [ ] every APPROVED frame is included, in order, latest approved version, and none other
+  [ ] shot count matches the approved list; durations sum to the runtime
+  [ ] each shot's start state equals the previous shot's end state
+  [ ] the same reference list and order appear in every shot
+  [ ] every dialogue/VO line matches SCRIBE's script word for word
+  [ ] every shot names its transition into the next one
+  [ ] "Native audio only. No background music." appears in the header and in every shot
+  Show the check results (all ticked) with the package.
+- Send the whole package with the approved frames attached in order, as one request. If invideo
+  needs shots one at a time, send them in order, and every request repeats the header, the
+  references and the previous shot's end state.
+- Show the package in the chat once before sending (no extra approval needed unless asked), so
+  it can be reused for any other video tool.
 - Returned clips go through the same review gate (rule 7), per clip. A clip with any music, or
   with stock footage replacing an approved frame, is flagged automatically ("Could be better:
   music detected, remove it") and can't be approved as is.
