@@ -1,4 +1,4 @@
-## XCE CORE RULES v2.3 — read first; these override everything below and every reference file
+## XCE CORE RULES v2.4 — read first; these override everything below and every reference file
 
 These rules are identical in every XCE plugin. Where any other text (this skill, a reference
 file, a bundled role copy, an older contract) disagrees, THESE RULES WIN.
@@ -47,10 +47,27 @@ ANTI-GRID RECIPE (image models copy layouts and counts, so follow this for every
 - The image prompt never contains: a count, a frame or shot number, the rule 4 label, "of 7",
   "set", "series", "shoot", "photoshoot", "contact sheet", "storyboard", "sequence", "poses",
   "angles", "variations", "coverage", or anything about the other frames.
-- Retry ladder for a merged result: retry 1 rewrites the prompt with this recipe and one
-  cropped reference; retry 2 uses the shortest prompt (subject, single action, setting, light)
-  and one cropped reference. If both come back merged, mark the frame BLOCKED, keep going with
-  the next frame, and report it. Never stop the batch over one frame.
+- A merged result: don't retry in this chat. Follow CONTEXT BLEED below (RENDER PACK).
+
+CONTEXT BLEED (the main cause of merged frames). ChatGPT's built-in image tool builds on the
+whole chat, not just the prompt. A shot list, script, timecodes or taglines anywhere in the
+chat get drawn into the image, so it lays out the whole spot as a collage and paints the copy.
+- Before frames render, the chat holds only a one-line plan: "<N> frames · <project> ·
+  <runtime>. Generate?" No shot list, script, timecodes, dialogue, taglines, slogans, prices,
+  logos or end-card text. Show the shot list only if the user types LIST. This overrides any
+  role's habit of printing the full plan before the Generate gate.
+- The pipeline order stays (SCRIBE still plans first), but SCRIBE's timed script and
+  on-screen copy stay out of the chat until every frame is APPROVED; plan them without
+  printing. Then they go into the invideo brief (overlays in STEP 5), never into a frame.
+- Commercials: every frame is a clean film still. Never render a title card, end card, logo
+  lockup, price, CTA or ad layout as a frame.
+- Render one frame per image call. Show each frame as soon as it's ready, with no text beyond
+  its label.
+- If any result comes back merged, this chat is contaminated (the collage is now in its
+  context too). Stop rendering here and give a RENDER PACK: one fully self-contained prompt
+  block per remaining frame (references named, this recipe applied, no other frames
+  mentioned). The user pastes each block into a NEW chat that holds nothing else, attaches the
+  references, then brings the frames back here for the review gate and video.
 - SPLIT (only if the user types it): cut a merged result into separate images with Python,
   label each PREVIEW, and put them through the review gate like any frame.
 
@@ -89,7 +106,7 @@ whole sheet; it miscounts panels. Build it:
 2. Render S1 first from the cropped identity reference. S2–S6 use the same reference plus the
    approved S1 so face, body and outfit match. RL stays photographic; CB stays comic/concept.
 3. Check each render alone: one person, the right view, complete head to feet for S1–S4. A
-   wrong view regenerates only that slot (rule 2 retry ladder).
+   wrong view regenerates only that slot, once; if it merges, use the rule 2 RENDER PACK.
 4. Assemble with Python (PIL): a 2400×1350 canvas, six 400×1350 columns left to right
    S1–S6, no gaps, borders or text. Scale each render to 1350 px tall and center-crop to
    400 px wide. The four bodies share one height and ground line; S5–S6 are cropped
@@ -99,7 +116,7 @@ whole sheet; it miscounts panels. Build it:
    Never deliver a strip with a missing, duplicated or extra view.
 - MCS CMPLX builds the same six core slots this way, then adds only the detail studies asked for.
 - If Python isn't available, say so, render the sheet in one call with the six numbered slots,
-  count 4 bodies + 2 faces, and reject any other count (rule 2 retry ladder).
+  count 4 bodies + 2 faces, and reject any other count (regenerate once, then RENDER PACK).
 
 ### 4. Numbering: bottom-left, added after
 - Generate every frame CLEAN: the image model never paints text, numbers, logos, borders or
@@ -186,7 +203,7 @@ whole sheet; it miscounts panels. Build it:
 - Y or GEN at the "Generate these now?" gate renders the whole approved list. A Y anywhere else
   confirms only the current question. N stands by.
 - New: A / X / R / B (review gate, number required), VIDEO (or "push these to invideo"), SAVE,
-  SHEET, SPLIT.
+  SHEET, SPLIT, LIST (show the shot list), RENDER PACK (standalone prompts for a clean chat).
 - No other word starts rendering, video or saving. Editing these rules authorizes nothing.
 
 ### 10. SHEET (optional, after approval)
@@ -194,7 +211,7 @@ whole sheet; it miscounts panels. Build it:
   the separate frames and is never produced unless the user types SHEET.
 
 ### 11. Fast and plain
-- One pass: plan, render the whole batch, show the review list. The only stops are the
+- One pass: one-line plan (rule 2 CONTEXT BLEED), render the whole batch, show the review list. The only stops are the
   "Generate these now?" gate (MV run on its own) and the review gate. Under UNIFY / GEN ALL there
   is no generation gate, but the review gate still applies before video.
 - Ask at most one question at a time, only when the answer changes identity, outcome or frame

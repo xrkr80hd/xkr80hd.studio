@@ -1,15 +1,28 @@
-# XCE plugins: Core Rules v2.3 (2026-10-28)
+# XCE plugins: Core Rules v2.4 (2026-10-29)
 
 | Plugin | Old | New |
 | --- | --- | --- |
-| XCE_DIRECTOR | 1.0.1 | 1.1.3 |
-| XCE_FIRESTARTER | 1.0.5 | 1.1.3 |
-| XCE_IGNITION | 1.0.5 | 1.1.3 |
-| XCE_MV | 2.0.6 | 2.1.3 |
-| XCE_SCRIBE (script) | 1.0.7 | 1.1.3 |
-| XCE_UNIFY | 1.0.11 | 1.1.3 |
+| XCE_DIRECTOR | 1.0.1 | 1.1.4 |
+| XCE_FIRESTARTER | 1.0.5 | 1.1.4 |
+| XCE_IGNITION | 1.0.5 | 1.1.4 |
+| XCE_MV | 2.0.6 | 2.1.4 |
+| XCE_SCRIBE (script) | 1.0.7 | 1.1.4 |
+| XCE_UNIFY | 1.0.11 | 1.1.4 |
 
-## New in v2.3: wardrobe wording (core rule 2)
+## New in v2.4: context bleed fix (core rule 2), the real cause of merged frames
+ChatGPT's built-in image tool builds on the whole chat, not just the prompt. The shot list,
+timecodes and taglines in the chat were being drawn into every render as one ad collage.
+- Before rendering, the chat holds only a one-line plan. The shot list shows only on LIST.
+- The timed script and on-screen copy are written after every frame is approved and go into
+  the invideo brief as overlays, never into a frame.
+- Commercial frames are clean film stills: no title cards, end cards, logos, prices or CTAs.
+- One frame per image call, shown as soon as it's ready.
+- After any merge the chat is contaminated, so there are no more retries there. ChatGPT gives
+  a RENDER PACK: one self-contained prompt per remaining frame to run in a fresh chat, then
+  the frames come back for review and video.
+- New commands: LIST, RENDER PACK.
+
+## From v2.3: wardrobe wording (core rule 2)
 - Swimwear, athletic wear and costumes are written as ordinary wardrobe in plain garment terms
   (type, cut, color, fabric, fit), with a setting that fits, neutral or everyday poses and
   eye-level framing. No body-focused wording.
@@ -40,8 +53,6 @@ prompt, so v2.1 removes those triggers:
 - **Clean prompts.** Each prompt describes only its own frame, starts "One single photograph:"
   and ends with a single-image line. No counts, frame numbers, labels, "shoot", "set",
   "series", "poses" or "angles".
-- **Retry ladder.** Two rewritten retries, then the frame is marked BLOCKED and the batch keeps
-  going. One bad frame no longer stalls the run.
 - **SPLIT** (new, optional): cuts a merged result into separate PREVIEW images that go through
   the review gate.
 
