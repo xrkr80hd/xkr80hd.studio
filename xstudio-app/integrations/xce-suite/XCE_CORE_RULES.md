@@ -1,4 +1,4 @@
-## XCE CORE RULES v2.1 — read first; these override everything below and every reference file
+## XCE CORE RULES v2.2 — read first; these override everything below and every reference file
 
 These rules are identical in every XCE plugin. Where any other text (this skill, a reference
 file, a bundled role copy, an older contract) disagrees, THESE RULES WIN.
@@ -25,7 +25,8 @@ file, a bundled role copy, an older contract) disagrees, THESE RULES WIN.
 - Every frame is its own generation call. One call = one frame.
 - Never put two or more frames on one canvas: no grid, contact sheet, collage, split screen,
   panels or "all frames on one sheet".
-- The only multi-panel images allowed: an IGNITION character anchor (MCS, one 6-slot strip),
+- The only multi-panel images allowed: an IGNITION character anchor (MCS, one 6-slot strip
+  assembled with Python from six single renders, rule 3),
   other IGNITION reference sheets as their contracts define, and a SHEET (rule 10) built from
   frames the user already approved.
 - Look at every result before moving on. If it holds more than one frame, panels, borders or
@@ -60,9 +61,32 @@ ANTI-GRID RECIPE (image models copy layouts and counts, so follow this for every
 | Commercial (30s or 60s) | 7 (6 or 12 only if asked) | separate 16:9 or 9:16 |
 | Quick scene (one moment) | 1 | 16:9, full bleed |
 | CGE grade preview | 1 | 16:9, full bleed |
-| MCS character anchor | 1 | one 6-slot strip |
+| MCS character anchor | 6 renders → 1 strip | six single views, assembled with Python |
 A user's explicit count overrides the default. A batch is done only when every frame exists
 separately. Never stop after one success; never fill a batch with a sheet.
+
+MCS BUILD (MCSRLSMPL, MCSCBSMPL and every simple MCS alias). Never ask the image model for the
+whole sheet; it miscounts panels. Build it:
+1. Render six separate single images (rule 2 recipe), each a tall 2:3 portrait, subject centered,
+   neutral gray seamless studio, even light, same outfit, nothing else in frame:
+   S1 front full body · S2 exact 90° side full body facing left · S3 three-quarter (45°) full
+   body · S4 rear full body (no look over the shoulder) · S5 front face close-up (head and
+   shoulders) · S6 exact 90° face profile facing left (head and shoulders, one eye visible).
+   Full bodies: head to feet with a small margin, arms relaxed at the sides, standing.
+2. Render S1 first from the cropped identity reference. S2–S6 use the same reference plus the
+   approved S1 so face, body and outfit match. RL stays photographic; CB stays comic/concept.
+3. Check each render alone: one person, the right view, complete head to feet for S1–S4. A
+   wrong view regenerates only that slot (rule 2 retry ladder).
+4. Assemble with Python (PIL): a 2400×1350 canvas, six 400×1350 columns left to right
+   S1–S6, no gaps, borders or text. Scale each render to 1350 px tall and center-crop to
+   400 px wide. The four bodies share one height and ground line; S5–S6 are cropped
+   tighter so the face fills its column. Add the character name small, bottom-left, only if
+   the user gave one.
+5. The result has exactly 6 columns by construction. Show the strip, then the review gate.
+   Never deliver a strip with a missing, duplicated or extra view.
+- MCS CMPLX builds the same six core slots this way, then adds only the detail studies asked for.
+- If Python isn't available, say so, render the sheet in one call with the six numbered slots,
+  count 4 bodies + 2 faces, and reject any other count (rule 2 retry ladder).
 
 ### 4. Numbering: bottom-left, added after
 - Generate every frame CLEAN: the image model never paints text, numbers, logos, borders or

@@ -1,15 +1,28 @@
-# XCE plugins: Core Rules v2.1 (2026-10-28)
+# XCE plugins: Core Rules v2.2 (2026-10-28)
 
 | Plugin | Old | New |
 | --- | --- | --- |
-| XCE_DIRECTOR | 1.0.1 | 1.1.1 |
-| XCE_FIRESTARTER | 1.0.5 | 1.1.1 |
-| XCE_IGNITION | 1.0.5 | 1.1.1 |
-| XCE_MV | 2.0.6 | 2.1.1 |
-| XCE_SCRIBE (script) | 1.0.7 | 1.1.1 |
-| XCE_UNIFY | 1.0.11 | 1.1.1 |
+| XCE_DIRECTOR | 1.0.1 | 1.1.2 |
+| XCE_FIRESTARTER | 1.0.5 | 1.1.2 |
+| XCE_IGNITION | 1.0.5 | 1.1.2 |
+| XCE_MV | 2.0.6 | 2.1.2 |
+| XCE_SCRIBE (script) | 1.0.7 | 1.1.2 |
+| XCE_UNIFY | 1.0.11 | 1.1.2 |
 
-## New in v2.1: anti-grid recipe (core rule 2)
+## New in v2.2: MCS sheets are built, not drawn in one shot (core rule 3)
+MCSRLSMPL kept coming back with 8–10 panels even though the contract said 6, because image
+models can't reliably count panels inside one picture. Now:
+- ChatGPT renders the six views as six separate single images: S1 front body, S2 90° left side
+  body, S3 three-quarter body, S4 rear body, S5 front face close-up, S6 90° left face profile.
+- S1 goes first; S2–S6 use the same reference plus the approved S1 so the person and outfit
+  match.
+- Each view is checked on its own. A wrong one regenerates only that slot.
+- Python assembles them into one 2400×1350 (16:9) strip of six 400 px columns. It always has
+  exactly 6 panels.
+- CMPLX builds the same six core slots, then adds only the requested detail studies.
+- Every Ignition rolebook copy and the HERO casting line now point to this build method.
+
+## From v2.1: anti-grid recipe (core rule 2)
 v2.0 told ChatGPT not to merge frames, but its image tool still returned contact sheets and
 retries didn't help. Image models copy the layout of their references and any counts in the
 prompt, so v2.1 removes those triggers:

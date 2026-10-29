@@ -1,0 +1,22 @@
+{
+  "interface": {
+    "capabilities": [],
+    "category": "Productivity",
+    "defaultPrompt": "@XCE_DIRECTOR: Break down my screenplay and cast anchors. List all character/group/prop/location assets to reuse or generate with IGNITION and verify shot readiness for MV.",
+    "developerName": "Travis Wilkinson",
+    "displayName": "XCE_DIRECTOR v1.0.0",
+    "longDescription": "Preproduction director and continuity supervisor for the XCE film production pipeline. Accepts existing character anchors, generates a cast/ensemble list and precise IGNITION build queue, validates shot needs and reviews MV dailies. Works in the current ChatGPT conversation with UNIFY, SCRIBE, IGNITION and MV as coordinated workflows. No external website or automatic connection. Runs in this chat; fetches anchors read-only from XSTUDIO through the XCE app when connected. Core rules v2.2: one frame per image (anti-grid recipe), MCS strips built from six single renders, numbered frames, per-frame review gate (A/X/R/B), invideo video from approved frames, native audio only, never music.",
+    "shortDescription": "Casting and shot continuity",
+    "logo": "./assets/director.svg",
+    "composerIcon": "./assets/director.svg"
+  },
+  "name": "xce-director-standalone",
+  "version": "1.1.2",
+  "description": "XCE_DIRECTOR production breakdown, group casting, asset requirements, IGNITION handoff and shot continuity.",
+  "author": {
+    "name": "Travis Wilkinson",
+    "email": "xrkr80hd@gmail.com"
+  },
+  "keywords": [],
+  "skills": "./skills"
+}
