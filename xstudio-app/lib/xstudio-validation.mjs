@@ -2,6 +2,15 @@ export const MAX_ASSET_BYTES = 4 * 1024 * 1024;
 export const MAX_DIRECT_ASSET_BYTES = 100 * 1024 * 1024;
 export const ASSET_BUCKET = 'xstudio-assets';
 export const SIGNED_URL_SECONDS = 60;
+// Read-only links handed to remote AI tools. Long enough to paste into a chat, short enough to limit leakage.
+export const AI_REFERENCE_LINK_SECONDS = 60 * 60;
+
+export function isAiReferenceEligible(asset) {
+  return Boolean(asset)
+    && asset.status === 'ready'
+    && typeof asset.storage_path === 'string' && asset.storage_path.length > 0
+    && /^image\/(?:png|jpeg|webp|gif)$/.test(String(asset.mime_type || '').toLowerCase());
+}
 
 export function isUuid(value) {
   return typeof value === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
