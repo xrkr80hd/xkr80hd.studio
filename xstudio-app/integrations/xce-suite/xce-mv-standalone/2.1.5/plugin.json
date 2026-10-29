@@ -1,0 +1,25 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "author": {
+    "name": "Travis Wilkinson",
+    "email": "xrkr80hd@gmail.com"
+  },
+  "description": "Renders shot-ready cinematic images from verified Director casting and IGNITION anchors.",
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "capabilities": [],
+        "category": "Productivity",
+        "composerIcon": "./assets/mv.png",
+        "defaultPrompt": "@XCE_MV: Produce the approved shot list using the existing Director cast and IGNITION reference assets in this chat.",
+        "developerName": "Travis Wilkinson",
+        "displayName": "XCE_MV v2.0 — Director Signature Engine",
+        "logo": "./assets/mv.png",
+        "longDescription": "XCE_MV v2.0 — Director Signature Engine works in the same chat under the XCE production system. Studio production follows UNIFY → SCRIBE → DIRECTOR (preproduction casting & asset inventory) → IGNITION (reuse or create only missing references) → DIRECTOR (shot readiness) → MV (cinematic shots) → DIRECTOR (dailies) → UNIFY. Supplied anchors may be cast by role; new/mixed anchors supported; no website or automatic external save. Runs in this chat; fetches anchors read-only from XSTUDIO through the XCE app when connected. Core rules v2.5: one frame per image (anti-grid recipe), MCS strips built from six single renders, numbered frames, per-frame review gate (A/X/R/B), invideo video from approved frames, native audio only, never music.",
+        "shortDescription": "In-chat cinematic shots"
+      }
+    }
+  },
+  "name": "xce-mv-standalone",
+  "version": "2.1.5"
+}

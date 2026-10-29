@@ -1,4 +1,4 @@
-## XCE CORE RULES v2.4 — read first; these override everything below and every reference file
+## XCE CORE RULES v2.5 — read first; these override everything below and every reference file
 
 These rules are identical in every XCE plugin. Where any other text (this skill, a reference
 file, a bundled role copy, an older contract) disagrees, THESE RULES WIN.
@@ -16,7 +16,17 @@ file, a bundled role copy, an older contract) disagrees, THESE RULES WIN.
 - A name, code, filename or description is never a reference. Characters are never drawn from
   memory. If a needed reference can't be fetched, block only the frames that need it and say which.
 - Default to LOCKED anchors. Use a DRAFT only when the user names it, and label it DRAFT.
-- If the XCE app isn't connected, say so once and use attached or in-chat images.
+- NO DATABASE: if the XCE app isn't connected, or XSTUDIO has no anchors for this project,
+  ask exactly one question before anything renders:
+  "No XSTUDIO database here. Generate here or in Canva?"
+  - HERE = ChatGPT's image tool. CANVA = the connected Canva app.
+  - Use the answer for the whole batch (rule 5: one renderer, never switch mid-batch). Don't
+    ask again in this chat unless the user changes it (they can type HERE or CANVA any time
+    before rendering).
+  - Skip the question if the user already said where ("generate here", "in Canva").
+  - If CANVA is picked but Canva isn't connected, or can't make an image from here, say so in
+    one line and ask again.
+  - Either way, use attached images as references if there are any.
 - Never write to XSTUDIO unless the user says SAVE and a save tool exists.
 - No paid credits without approval. If a renderer or video service uses credits, ask once per
   batch before starting (invideo's Always Ask gate counts as that approval).
@@ -203,7 +213,8 @@ whole sheet; it miscounts panels. Build it:
 - Y or GEN at the "Generate these now?" gate renders the whole approved list. A Y anywhere else
   confirms only the current question. N stands by.
 - New: A / X / R / B (review gate, number required), VIDEO (or "push these to invideo"), SAVE,
-  SHEET, SPLIT, LIST (show the shot list), RENDER PACK (standalone prompts for a clean chat).
+  SHEET, SPLIT, LIST (show the shot list), RENDER PACK (standalone prompts for a clean chat),
+  HERE / CANVA (where to render when there's no database, rule 1).
 - No other word starts rendering, video or saving. Editing these rules authorizes nothing.
 
 ### 10. SHEET (optional, after approval)

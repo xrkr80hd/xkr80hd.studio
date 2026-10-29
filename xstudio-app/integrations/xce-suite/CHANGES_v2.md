@@ -1,15 +1,23 @@
-# XCE plugins: Core Rules v2.4 (2026-10-29)
+# XCE plugins: Core Rules v2.5 (2026-10-29)
 
 | Plugin | Old | New |
 | --- | --- | --- |
-| XCE_DIRECTOR | 1.0.1 | 1.1.4 |
-| XCE_FIRESTARTER | 1.0.5 | 1.1.4 |
-| XCE_IGNITION | 1.0.5 | 1.1.4 |
-| XCE_MV | 2.0.6 | 2.1.4 |
-| XCE_SCRIBE (script) | 1.0.7 | 1.1.4 |
-| XCE_UNIFY | 1.0.11 | 1.1.4 |
+| XCE_DIRECTOR | 1.0.1 | 1.1.5 |
+| XCE_FIRESTARTER | 1.0.5 | 1.1.5 |
+| XCE_IGNITION | 1.0.5 | 1.1.5 |
+| XCE_MV | 2.0.6 | 2.1.5 |
+| XCE_SCRIBE (script) | 1.0.7 | 1.1.5 |
+| XCE_UNIFY | 1.0.11 | 1.1.5 |
 
-## New in v2.4: context bleed fix (core rule 2), the real cause of merged frames
+## New in v2.5: "Generate here or in Canva?" (rule 1)
+- When the XCE app isn't connected, or XSTUDIO has no anchors for the project, ChatGPT asks one
+  question before rendering: "No XSTUDIO database here. Generate here or in Canva?"
+- HERE uses ChatGPT's image tool; CANVA uses the connected Canva app. The answer holds for the
+  whole batch. It's skipped if you already said where.
+- If Canva isn't connected or can't make an image from ChatGPT, it says so and asks again.
+- New commands: HERE, CANVA.
+
+## From v2.4: context bleed fix (core rule 2), the real cause of merged frames
 ChatGPT's built-in image tool builds on the whole chat, not just the prompt. The shot list,
 timecodes and taglines in the chat were being drawn into every render as one ad collage.
 - Before rendering, the chat holds only a one-line plan. The shot list shows only on LIST.
