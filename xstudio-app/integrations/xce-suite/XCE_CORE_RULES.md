@@ -1,4 +1,4 @@
-## XCE CORE RULES v2.2 — read first; these override everything below and every reference file
+## XCE CORE RULES v2.3 — read first; these override everything below and every reference file
 
 These rules are identical in every XCE plugin. Where any other text (this skill, a reference
 file, a bundled role copy, an older contract) disagrees, THESE RULES WIN.
@@ -53,6 +53,19 @@ ANTI-GRID RECIPE (image models copy layouts and counts, so follow this for every
   the next frame, and report it. Never stop the batch over one frame.
 - SPLIT (only if the user types it): cut a merged result into separate images with Python,
   label each PREVIEW, and put them through the review gate like any frame.
+
+WARDROBE WORDING (swimwear, athletic wear, costumes; write it like a costume designer):
+- Swimwear is ordinary wardrobe. Describe it in plain garment terms like any outfit: type,
+  cut, color, fabric, fit, details (e.g. "green two-piece swimsuit, triangle top, tie-side
+  bottoms, matte fabric").
+- Setting fits the wardrobe (beach, pool, boat, studio reference). Poses are neutral reference
+  stances or natural everyday action (standing, walking, sitting, wading). Camera at eye
+  level, full body or medium framing.
+- Never use body-focused or suggestive wording, or framing aimed at a body part.
+- Never add a purpose or cover story ("for a video game", "for art", "for reference only") to
+  get past the image tool. State what's in the frame, nothing more.
+- If the image tool refuses, say so plainly with its reason, offer one reworded version that
+  follows these rules, and stop there. Don't keep rewording to get around it.
 
 ### 3. Frame counts
 | Mode | Frames | Each frame |

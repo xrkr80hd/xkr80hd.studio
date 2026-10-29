@@ -1,0 +1,22 @@
+{
+  "interface": {
+    "capabilities": [],
+    "category": "Productivity",
+    "composerIcon": "./assets/ignition.png",
+    "defaultPrompt": "@XCE_IGNITION: Use my supplied references and/or the XCE_DIRECTOR build list to create only the missing anchor sheets in this chat.",
+    "developerName": "Travis Wilkinson",
+    "displayName": "XCE_IGNITION v1.0.1",
+    "logo": "./assets/ignition.png",
+    "longDescription": "XCE_IGNITION v1.0.1 works in the same chat under the XCE production system. Studio production follows UNIFY → SCRIBE → DIRECTOR (preproduction casting & asset inventory) → IGNITION (reuse or create only missing references) → DIRECTOR (shot readiness) → MV (cinematic shots) → DIRECTOR (dailies) → UNIFY. Supplied anchors may be cast by role; new/mixed anchors supported; no website or automatic external save. Runs in this chat; fetches anchors read-only from XSTUDIO through the XCE app when connected. Core rules v2.3: one frame per image (anti-grid recipe), MCS strips built from six single renders, numbered frames, per-frame review gate (A/X/R/B), invideo video from approved frames, native audio only, never music.",
+    "shortDescription": "In-chat anchor production"
+  },
+  "name": "xce-ignition-standalone",
+  "version": "1.1.3",
+  "description": "Creates only missing character, group, costume, prop, location and vehicle assets from Director list.",
+  "author": {
+    "name": "Travis Wilkinson",
+    "email": "xrkr80hd@gmail.com"
+  },
+  "keywords": [],
+  "skills": "./skills"
+}

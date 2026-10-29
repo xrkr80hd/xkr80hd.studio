@@ -1,15 +1,22 @@
-# XCE plugins: Core Rules v2.2 (2026-10-28)
+# XCE plugins: Core Rules v2.3 (2026-10-28)
 
 | Plugin | Old | New |
 | --- | --- | --- |
-| XCE_DIRECTOR | 1.0.1 | 1.1.2 |
-| XCE_FIRESTARTER | 1.0.5 | 1.1.2 |
-| XCE_IGNITION | 1.0.5 | 1.1.2 |
-| XCE_MV | 2.0.6 | 2.1.2 |
-| XCE_SCRIBE (script) | 1.0.7 | 1.1.2 |
-| XCE_UNIFY | 1.0.11 | 1.1.2 |
+| XCE_DIRECTOR | 1.0.1 | 1.1.3 |
+| XCE_FIRESTARTER | 1.0.5 | 1.1.3 |
+| XCE_IGNITION | 1.0.5 | 1.1.3 |
+| XCE_MV | 2.0.6 | 2.1.3 |
+| XCE_SCRIBE (script) | 1.0.7 | 1.1.3 |
+| XCE_UNIFY | 1.0.11 | 1.1.3 |
 
-## New in v2.2: MCS sheets are built, not drawn in one shot (core rule 3)
+## New in v2.3: wardrobe wording (core rule 2)
+- Swimwear, athletic wear and costumes are written as ordinary wardrobe in plain garment terms
+  (type, cut, color, fabric, fit), with a setting that fits, neutral or everyday poses and
+  eye-level framing. No body-focused wording.
+- No cover stories added to prompts. If the image tool refuses, ChatGPT says so, offers one
+  reworded version under these rules, and stops.
+
+## From v2.2: MCS sheets are built, not drawn in one shot (core rule 3)
 MCSRLSMPL kept coming back with 8–10 panels even though the contract said 6, because image
 models can't reliably count panels inside one picture. Now:
 - ChatGPT renders the six views as six separate single images: S1 front body, S2 90° left side
