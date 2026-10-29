@@ -1,0 +1,22 @@
+{
+  "interface": {
+    "capabilities": [],
+    "category": "Productivity",
+    "composerIcon": "./assets/script.png",
+    "defaultPrompt": "@XCE_SCRIBE: Write the screenplay from my idea and prepared cast, then hand the scene and role breakdown to XCE_DIRECTOR.",
+    "developerName": "Travis Wilkinson",
+    "displayName": "XCE_SCRIBE v1.0.2",
+    "logo": "./assets/script.png",
+    "longDescription": "XCE_SCRIBE v1.0.2 works in the same chat under the XCE production system. Studio production follows UNIFY → SCRIBE → DIRECTOR (preproduction casting & asset inventory) → IGNITION (reuse or create only missing references) → DIRECTOR (shot readiness) → MV (cinematic shots) → DIRECTOR (dailies) → UNIFY. Supplied anchors may be cast by role; new/mixed anchors supported; no website or automatic external save. Runs in this chat; fetches anchors read-only from XSTUDIO through the XCE app when connected. Core rules v2.1: one frame per image (anti-grid recipe), numbered frames, per-frame review gate (A/X/R/B), invideo video from approved frames, native audio only, never music.",
+    "shortDescription": "In-chat screenwriting"
+  },
+  "name": "xce-script-standalone",
+  "version": "1.1.1",
+  "description": "Screenplay and scene breakdown handed to XCE_DIRECTOR before asset and shot generation.",
+  "author": {
+    "name": "Travis Wilkinson",
+    "email": "xrkr80hd@gmail.com"
+  },
+  "keywords": [],
+  "skills": "./skills"
+}

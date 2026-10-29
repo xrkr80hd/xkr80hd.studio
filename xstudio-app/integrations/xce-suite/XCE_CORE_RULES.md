@@ -1,4 +1,4 @@
-## XCE CORE RULES v2.0 — read first; these override everything below and every reference file
+## XCE CORE RULES v2.1 — read first; these override everything below and every reference file
 
 These rules are identical in every XCE plugin. Where any other text (this skill, a reference
 file, a bundled role copy, an older contract) disagrees, THESE RULES WIN.
@@ -11,7 +11,8 @@ file, a bundled role copy, an older contract) disagrees, THESE RULES WIN.
      (get_character_cref for LOCKED characters; get_asset with include_media for vehicles,
      locations, props or a draft the user names). Read-only.
   2. Images attached in this chat.
-  3. Actual images generated earlier in this chat.
+  3. Actual images generated earlier in this chat, only if APPROVED (never a merged or
+     rejected one).
 - A name, code, filename or description is never a reference. Characters are never drawn from
   memory. If a needed reference can't be fetched, block only the frames that need it and say which.
 - Default to LOCKED anchors. Use a DRAFT only when the user names it, and label it DRAFT.
@@ -31,6 +32,26 @@ file, a bundled role copy, an older contract) disagrees, THESE RULES WIN.
   text, discard it, say "Frame N came back merged, regenerating", and regenerate that frame
   alone. Never deliver it.
 - The words "storyboard", "deck" or "board" never change this. Storyboards are separate frames.
+
+ANTI-GRID RECIPE (image models copy layouts and counts, so follow this for every frame call):
+- References must be single-panel. If an anchor is a strip, turnaround, sheet or any image with
+  more than one panel (including the MCS strip), first crop ONE panel with Python (the clearest
+  full-body or face view) and attach only that crop. Never attach a multi-panel image to a
+  frame call.
+- Never use a merged, rejected or failed result as a reference for anything. It teaches the
+  model the grid. Only APPROVED frames, crops of anchors, or attachments can be references.
+- The image prompt describes THIS frame only. It starts "One single photograph:" and ends
+  "Single full-bleed image, one camera, one moment. No grid, collage, panels, borders, split
+  screen or text."
+- The image prompt never contains: a count, a frame or shot number, the rule 4 label, "of 7",
+  "set", "series", "shoot", "photoshoot", "contact sheet", "storyboard", "sequence", "poses",
+  "angles", "variations", "coverage", or anything about the other frames.
+- Retry ladder for a merged result: retry 1 rewrites the prompt with this recipe and one
+  cropped reference; retry 2 uses the shortest prompt (subject, single action, setting, light)
+  and one cropped reference. If both come back merged, mark the frame BLOCKED, keep going with
+  the next frame, and report it. Never stop the batch over one frame.
+- SPLIT (only if the user types it): cut a merged result into separate images with Python,
+  label each PREVIEW, and put them through the review gate like any frame.
 
 ### 3. Frame counts
 | Mode | Frames | Each frame |
@@ -128,7 +149,7 @@ separately. Never stop after one success; never fill a batch with a sheet.
 - Y or GEN at the "Generate these now?" gate renders the whole approved list. A Y anywhere else
   confirms only the current question. N stands by.
 - New: A / X / R / B (review gate, number required), VIDEO (or "push these to invideo"), SAVE,
-  SHEET.
+  SHEET, SPLIT.
 - No other word starts rendering, video or saving. Editing these rules authorizes nothing.
 
 ### 10. SHEET (optional, after approval)

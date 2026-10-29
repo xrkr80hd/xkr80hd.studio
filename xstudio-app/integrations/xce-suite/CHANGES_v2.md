@@ -1,13 +1,31 @@
-# XCE plugins: Core Rules v2.0 (2026-10-28)
+# XCE plugins: Core Rules v2.1 (2026-10-28)
 
 | Plugin | Old | New |
 | --- | --- | --- |
-| XCE_DIRECTOR | 1.0.1 | 1.1.0 |
-| XCE_FIRESTARTER | 1.0.5 | 1.1.0 |
-| XCE_IGNITION | 1.0.5 | 1.1.0 |
-| XCE_MV | 2.0.6 | 2.1.0 |
-| XCE_SCRIBE (script) | 1.0.7 | 1.1.0 |
-| XCE_UNIFY | 1.0.11 | 1.1.0 |
+| XCE_DIRECTOR | 1.0.1 | 1.1.1 |
+| XCE_FIRESTARTER | 1.0.5 | 1.1.1 |
+| XCE_IGNITION | 1.0.5 | 1.1.1 |
+| XCE_MV | 2.0.6 | 2.1.1 |
+| XCE_SCRIBE (script) | 1.0.7 | 1.1.1 |
+| XCE_UNIFY | 1.0.11 | 1.1.1 |
+
+## New in v2.1: anti-grid recipe (core rule 2)
+v2.0 told ChatGPT not to merge frames, but its image tool still returned contact sheets and
+retries didn't help. Image models copy the layout of their references and any counts in the
+prompt, so v2.1 removes those triggers:
+- **Single-panel references only.** A strip, turnaround or sheet (including the MCS strip) is
+  cropped to one panel with Python before it's attached.
+- **Merged or rejected results are never used as references.** Before, a failed sheet could
+  become the reference for the retry, which taught the model the grid.
+- **Clean prompts.** Each prompt describes only its own frame, starts "One single photograph:"
+  and ends with a single-image line. No counts, frame numbers, labels, "shoot", "set",
+  "series", "poses" or "angles".
+- **Retry ladder.** Two rewritten retries, then the frame is marked BLOCKED and the batch keeps
+  going. One bad frame no longer stalls the run.
+- **SPLIT** (new, optional): cuts a merged result into separate PREVIEW images that go through
+  the review gate.
+
+## From v2.0
 
 ## In every plugin
 - **XCE CORE RULES v2.0 now sit at the top of every SKILL.md**, word for word the same, and
