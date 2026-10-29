@@ -441,3 +441,14 @@
 .character-classification-fields{display:grid;grid-template-columns:minmax(0,1fr);gap:14px}
 @media(min-width:760px){.character-classification-fields{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:360px){.character-creator .master-character-sheet{padding:10px}.character-creator .character-anchor-grid{grid-template-columns:minmax(0,1fr)}}
+/* Showcase folder: temporary read-only share links. */
+.showcase-badge{display:inline-flex;align-items:center;gap:7px;margin:10px 0 0;padding:5px 10px;border:1px solid #2f6b55;border-radius:999px;background:#10261f;color:#8ff0c4;font-size:12px;font-weight:600;white-space:nowrap;width:max-content}
+.showcase-badge>span{width:7px;height:7px;border-radius:50%;background:#4ade80;box-shadow:0 0 8px #4ade80aa;animation:showcase-pulse 1.6s ease-in-out infinite}
+.workflow-step>summary .showcase-badge{margin:0}
+@keyframes showcase-pulse{50%{opacity:.35}}
+.showcase-live{margin-top:18px;display:grid;gap:12px}
+.showcase-link{display:flex;gap:10px;align-items:stretch}
+.showcase-link input{flex:1;min-width:0;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px}
+.showcase-controls{gap:10px}
+.showcase-timer{font-variant-numeric:tabular-nums;color:#b1d9e8;font-size:13px;margin-right:auto}
+@media(max-width:560px){.showcase-link{flex-direction:column}.showcase-link .button{width:100%}.showcase-timer{width:100%}}

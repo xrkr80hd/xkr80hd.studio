@@ -1,4 +1,5 @@
 import { engine } from './engine.ts';
+import { showcaseManage, showcaseView } from './showcase.ts';
 import { createClient } from 'npm:@supabase/supabase-js@2.118.0';
 
 const BUCKET = 'xstudio-assets';
@@ -276,6 +277,14 @@ Deno.serve(async (request) => {
     const url = new URL(request.url);
     if (url.pathname.endsWith('/xstudio-assets-api/tokens') || url.searchParams.get('resource') === 'tokens') {
       return await tokenManagement(request, admin);
+    }
+    if (url.searchParams.get('resource') === 'showcase') {
+      const ownerId = await authenticateOwner(request, admin);
+      if (!ownerId) return json({ error: 'Unauthorized.' }, 401);
+      return await showcaseManage(request, admin, ownerId);
+    }
+    if (url.searchParams.get('resource') === 'showcase_view') {
+      return await showcaseView(request, admin);
     }
     if (url.searchParams.get('resource') === 'engine') {
       if (request.method !== 'POST') return json({error:'POST required.'},405);
