@@ -37,7 +37,7 @@ export function publicData(value){
  if(typeof value==='string'&&/^https?:\/\//i.test(value))return null;
  return value;
 }
-function manifest(row){let m;try{m=JSON.parse(row.manifest);}catch{throw new GatewayError('Saved manifest unavailable',502);}if(!m||typeof m!=='object'||m.deleted_at||m.folder_lock)return null;return m;}
+function manifest(row,includeDeleted=false){let m;try{m=JSON.parse(row.manifest);}catch{throw new GatewayError('Saved manifest unavailable',502);}if(!m||typeof m!=='object'||(!includeDeleted&&m.deleted_at)||m.folder_lock)return null;return m;}
 const summary=(row,m)=>({project_id:row.project,name:m.campaign_name??null,project_code:m.active_project_code??null,revision:row.revision,system_pool:m.system_pool??false});
 const allRecords=m=>codedRecords(m).filter(({record:r})=>!r.deleted_at&&!r.discarded_for_production);
 const packed=(p,entry)=>({project_id:p,asset_id:recordId(entry.record),category:entry.type,metadata:publicData(entry.record)});
@@ -81,7 +81,7 @@ export function dataSource(auth,request=backend(auth.backendToken,fetch,{allowCl
   if(name==='list_projects'){
    // Edge API revalidates expiry, revocation, owner membership and asset:read.
    const rows=(await request({op:'projects'})).data;if(!Array.isArray(rows))throw new GatewayError('Backend unavailable',502);
-   const projects=rows.filter(r=>auth.projects.has(r.project)).flatMap(r=>{const m=manifest(r);return m?[summary(r,m)]:[];});
+   const projects=rows.filter(r=>auth.projects.has(r.project)).flatMap(r=>{const m=manifest(r,a.include_deleted);return m?[{...summary(r,m),...(a.include_deleted?{deleted_at:m.deleted_at||null}:{})}]:[];});
    return {projects:projects.slice(a.offset,a.offset+a.limit),next_offset:projects.length>a.offset+a.limit?a.offset+a.limit:null};
   }
   if(name==='bulk_update_asset_details'&&a.projects){

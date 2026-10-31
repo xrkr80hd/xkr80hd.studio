@@ -50,7 +50,7 @@ export const toolSpecs=[
  ['update_asset_classification','Update classification metadata only; requires explicit asset:classify permission. Preserves locked images and primary category.',{project_id,...update.shape,expected_revision:z.number().int().min(1),confirm:z.literal(true)}],
  ['bulk_update_asset_classifications','Classify existing IDs with per-item errors and project revision protection. No duplicates or category moves.',{project_id,updates:z.array(update).min(1).max(50),expected_revision:z.number().int().min(1),confirm:z.literal(true)}],
  ['get_character_cref','Use for exact saved character reference requests such as reference FF6-CH-GAU. Retrieve verified original LOCKED anchor image blocks by exact ID/code, not a description or URL. First list authorized projects and resolve the exact owning project; ask if ambiguous, never assume the active project. Images default on; include_media=false is metadata only. Never substitute drafts. Image delivery to the client does not prove delivery to its generation tool.',{project_id,asset_id:id,include_media:z.boolean().default(true)}],
- ['list_projects','List explicitly authorized, available XSTUDIO projects.',{...page}],
+ ['list_projects','List explicitly authorized XSTUDIO project folders. include_deleted also lists recoverable deleted folders for restoration.',{...page,include_deleted:z.boolean().default(false)}],
  ['get_project','Get saved project metadata and canonical scene IDs.',{project_id}],
  ['list_project_assets','List saved asset IDs, names and metadata in one project.',{project_id,category:category.optional(),...page}],
  ['get_asset','Retrieve one saved asset and its exact reference associations. Signed media is opt-in.',{project_id,asset_id:id,...media}],
