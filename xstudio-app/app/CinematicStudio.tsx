@@ -71,6 +71,7 @@ export default function Home({ownerId,initialComposerProject}:{ownerId:string,in
   const desktop=window.matchMedia('(min-width: 801px)');
   const resize=()=>{if(desktop.matches)setMobileMenuOpen(false)};
   document.addEventListener('pointerdown',outside);document.addEventListener('focusin',outside);document.addEventListener('keydown',escape);desktop.addEventListener('change',resize);
+  sidebar.current?.querySelector<HTMLButtonElement>('.nav-item')?.focus();
   return()=>{document.removeEventListener('pointerdown',outside);document.removeEventListener('focusin',outside);document.removeEventListener('keydown',escape);desktop.removeEventListener('change',resize)};
  },[mobileMenuOpen]);
 
