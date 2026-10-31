@@ -452,3 +452,30 @@
 .showcase-controls{gap:10px}
 .showcase-timer{font-variant-numeric:tabular-nums;color:#b1d9e8;font-size:13px;margin-right:auto}
 @media(max-width:560px){.showcase-link{flex-direction:column}.showcase-link .button{width:100%}.showcase-timer{width:100%}}
+
+/* Small screens use a disclosure menu; desktop keeps the persistent sidebar. */
+.studio-menu-toggle,.studio-menu-heading,.studio-menu-backdrop{display:none}
+@media(max-width:800px){
+ .studio-header{position:sticky;top:0;z-index:33;grid-template-columns:44px minmax(0,1fr) auto}
+ .studio-header .studio-menu-toggle{display:inline-flex;grid-column:1;grid-row:1;width:44px;height:44px;align-self:center;border:1px solid var(--line);background:var(--surface)}
+ .studio-header .header-brand{grid-column:2;grid-row:1;width:auto;min-width:0}
+ .studio-header .header-brand span{display:block;min-width:0}
+ .studio-header .header-brand small{display:block;font-size:9px;overflow-wrap:anywhere}
+ .studio-header .connection-status{grid-column:3;grid-row:1}
+ .studio-header .top-actions{grid-column:1/-1;grid-row:2;min-width:0}
+ .studio-header .project-switch{min-width:0;flex:1 1 0;justify-content:flex-start}
+ .studio-header .refresh-button{flex:0 0 auto}
+ .studio-menu-backdrop{display:block;position:fixed;inset:var(--studio-header-height,140px) 0 0;background:#03070c99;z-index:31}
+ .sidebar{display:none;position:fixed;inset:var(--studio-header-height,140px) auto 0 0;width:min(320px,calc(100vw - 32px));padding:12px;z-index:32;border-right:1px solid var(--line);border-bottom:0;overflow-y:auto;overscroll-behavior:contain;box-shadow:12px 0 32px #0008}
+ .sidebar.is-open{display:block}
+ .sidebar .studio-menu-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:0 4px 10px}
+ .sidebar nav{display:grid;gap:4px;overflow:visible}
+ .sidebar .nav-item{display:flex;flex-direction:row;flex:none;justify-content:flex-start;width:100%;min-height:44px;height:auto;gap:12px;padding:12px;border-radius:8px;font-size:14px;white-space:normal}
+ .sidebar .nav-item.active{box-shadow:inset 3px 0 #65dcff}
+ .sidebar .nav-item svg{width:18px;height:18px}
+ .sidebar details{min-width:0;margin-top:12px;border-top:1px solid var(--line);padding-top:8px}
+ .sidebar .nav-label{display:block;margin:0;padding:14px 12px}
+ .sidebar> .nav-label{display:none}
+ .sidebar details>summary{display:list-item;list-style-position:inside;cursor:pointer;min-height:44px}
+ .main-shell{margin-left:0}
+}

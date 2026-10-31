@@ -399,3 +399,11 @@ Added get_world_builder, update_world_builder, create_world_asset, update_charac
 
 ## 2026-10-31 — Color Grades Grid/List implementation
 Added List/Grid controls, default compact List view, device-local layout persistence and native per-grade accordions. The exact existing grade editor is reused inside the expanded row; Grid retains the card presentation and shared editor. New/staged custom grades still show their editor, and selection-only shot planning retains its existing controls. Collapsed List rows do not render preview canvases. Source comparison confirms grade edit/save/assignment handlers were not changed. Hosted build/CGE regression checks and production release are tracked separately; signed-in visual/keyboard checks remain unverified.
+
+
+
+## 2026-10-31 — Responsive hamburger navigation
+- Replaced the stretched horizontal sidebar at widths up to 800px with a hamburger and a scrollable vertical navigation panel beneath the measured header.
+- Added expanded-state labeling, dismissal on selection, outside pointer/focus, Escape, and desktop resize; kept all destinations and the desktop sidebar.
+- Advanced remains available and no longer opens automatically for the primary Color Grades page. Existing grade grid/list/editor behavior is unchanged.
+- Verification: local navigation test command and diff checks passed. Hosted navigation/CGE tests plus Next production build gate release. Local Chromium could not start because the environment denied its socket setup, so signed-in visual interaction remains unverified.

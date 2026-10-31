@@ -403,3 +403,10 @@ User requests one @XCE_WORLDBUILDER plugin, starting with new_world. Guide real 
 
 ## 2026-10-31 — Compact Color Grades browsing
 User requests Grid/List views; List uses expandable accordion rows populated with the full grade contents. Preserve existing presets, preview/edit/import/export and assignment operations. Add a device-local remembered layout preference and validate the production build plus existing CGE tests.
+
+
+
+## 2026-10-31 — Responsive hamburger navigation
+- Replace the stretched navigation at widths up to 800px with a hamburger and vertical menu.
+- Preserve desktop navigation, every destination, and Color Grades grid/list controls.
+- Check navigation tests and production build, then deploy the tested revision.
