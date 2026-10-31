@@ -1,3 +1,10 @@
+import {saveCharacterDetails} from '../xce/character-network.mjs';
+import {worldRecords} from '../xce/world-library.mjs';
+import {WORLD_BUILDER_FIELDS,updateWorldBuilder} from '../xce/world-builder-fields.mjs';
+import {compileWorld} from '../xce/world-builder.mjs';
+import {WORLD_TYPES,WORLD_FIELDS,emptyWorld,validateWorld} from '../xce/world-library.mjs';
+import {METADATA_SCHEMA} from '../xce/asset-metadata.mjs';
+import {ASSET_FORM_SECTIONS} from '../xce/asset-form-layout.mjs';
 import {createHash,randomUUID} from 'node:crypto';
 import {fresh} from '../xce/core.mjs';
 import {deriveCode,lockNamespace,allocate,annotate} from '../xce/namespace.mjs';
@@ -8,8 +15,8 @@ import {usesReference} from '../xce/attachments.mjs';
 import {purgeTrash} from '../xce/library.mjs';
 import {imageBytes} from '../xce/xstudio-bridge.mjs';
 
-export const workspaceScopes={create_folder:'asset:write',update_folder:'asset:write',import_asset:'asset:write',import_project:'asset:write',delete_folder:'asset:delete',restore_folder:'asset:write',delete_assets:'asset:delete',restore_assets:'asset:write',purge_trash:'asset:delete'};
-export const workspaceTools=new Set([...Object.keys(workspaceScopes),'list_trash']);
+export const workspaceScopes={update_character_profile:'asset:metadata',update_world_builder:'asset:write',create_world_asset:'asset:write',create_folder:'asset:write',update_folder:'asset:write',import_asset:'asset:write',import_project:'asset:write',delete_folder:'asset:delete',restore_folder:'asset:write',delete_assets:'asset:delete',restore_assets:'asset:write',purge_trash:'asset:delete'};
+export const workspaceTools=new Set([...Object.keys(workspaceScopes),'list_trash','get_world_builder','export_world']);
 const check=(ok,message)=>{if(!ok)throw Error(message);};
 const marker=auth=>createHash('sha256').update('xstudio-created-project-v1:'+auth.principal).digest('hex');
 export async function includeCreatedProjects(auth,request){
@@ -73,9 +80,21 @@ export async function workspaceOperation(name,a,{auth,request,getImage}){
  if(name==='create_folder')return create(fresh());
  if(name==='import_project'){const source=await load(a.source_project_id);check(!source.m.system_pool,'Choose a creative project');check(source.revision===a.expected_revision,'Source project changed; reload');return {...await create(structuredClone(source.m)),source_project_id:a.source_project_id,reference_images_reused:true,image_bytes_copied:false};}
  const {m:original,revision}=await load(a.project_id,{deleted:name==='restore_folder'||name==='list_trash'});const m=structuredClone(original);
+ if(name==='export_world')return {project_id:a.project_id,revision,file_name:a.project_id+'-r'+revision+'.world.zip',format:'xce-portable-world',download_path:'/api/world-export?project_id='+encodeURIComponent(a.project_id),json_path:'/api/world-export?project_id='+encodeURIComponent(a.project_id)+'&format=json',includes:['world.json','DIRECTOR_BRIEF.md','original reference images','media-index.json'],note:'Open the download link while signed into XSTUDIO. The JSON-only file references images; the ZIP contains their original bytes. Destination import support must be checked.'};
+ if(name==='get_world_builder')return {project_id:a.project_id,revision,world_builder:m.world_builder||{},character_network:m.character_network||{},context:compileWorld(m,a.project_id),schemas:{world_builder_fields:WORLD_BUILDER_FIELDS,asset_categories:WORLD_TYPES,asset_metadata:METADATA_SCHEMA,asset_form_sections:ASSET_FORM_SECTIONS}};
  if(name==='list_trash')return {project_id:a.project_id,revision,folder_deleted:Boolean(m.deleted_at),items:Object.entries(m.trash||{}).slice(a.offset,a.offset+a.limit).map(([key,t])=>({key,entity:t.entity||null,id:t.id||recordId(t.record),name:t.record?.name||null,deleted_at:t.deleted_at||null})),next_offset:Object.keys(m.trash||{}).length>a.offset+a.limit?a.offset+a.limit:null};
  check(revision===a.expected_revision,'Project changed; reload before writing');check(!m.system_pool,'System pools cannot be changed by workspace tools');let result={};
- if(name==='update_folder'){check(a.name!==undefined||a.description!==undefined,'Supply a folder name or description');if(a.name!==undefined)m.campaign_name=a.name.trim();if(a.description!==undefined)m.project_description=a.description.trim();stampProjectIdentity(m,a.project_id);result={name:m.campaign_name,description:m.project_description||''};}
+ if(name==='update_character_profile'){const details={...(a.gender!==undefined?{gender:a.gender}:{}),...(a.quick_details!==undefined?{quick_details:a.quick_details}:{}),...(a.links!==undefined?{links:a.links}:{})};check(Object.keys(details).length,'Provide profile details');Object.assign(m,saveCharacterDetails(m,a.asset_id,details,worldRecords(m)));result={asset_id:a.asset_id,character_network:m.character_network};}
+ else if(name==='update_world_builder'){
+  check(!a.patch.firestarter_state||a.patch.firestarter_state.project_id===a.project_id,'Narrative state belongs to a different project');updateWorldBuilder(m,a.patch);result={world_builder:m.world_builder};
+ }else if(name==='create_world_asset'){
+  check(Object.hasOwn(WORLD_TYPES,a.category)||a.category==='creatures','Choose a valid world asset category');
+  check(!codedRecords(m).some(({record:r,type})=>r.name?.trim().toLowerCase()===a.name.trim().toLowerCase()&&type===({characters:'character',creatures:'creature',props:'prop',vehicles:'vehicle',locations:'location',wardrobe:'wardrobe',rooms:'room',scenes_and_shots:'keyframe'})[a.category]),'An asset with this name already exists in this category; open it instead');
+  const id=randomUUID();
+  if(a.category==='creatures'){m.manifest_store.creatures||={};m.manifest_store.creatures[id]={asset_id:id,asset_type:'creature',name:a.name.trim(),status:'DRAFT',reference_ids:[],immutable_traits:{},mode:'simple',medium:'RL',target_deliverable:'creature_sheet',analysis_pending:true};}
+  else {const record={id,type:a.category,name:a.name.trim(),status:'DRAFT',reference_ids:[],thumbnail_reference_id:'',metadata:Object.fromEntries(WORLD_FIELDS[a.category].map(k=>[k,'']))};const world={...emptyWorld(),...m.world_library};world[a.category]={...world[a.category],[id]:record};m.world_library=validateWorld(world,m);}
+  assignAssetCodes(m);result={asset_id:id,asset_code:codedRecords(m).find(e=>recordId(e.record)===id).record.asset_code,name:a.name.trim(),category:a.category,status:'DRAFT',approved:false};
+ }else if(name==='update_folder'){check(a.name!==undefined||a.description!==undefined,'Supply a folder name or description');if(a.name!==undefined)m.campaign_name=a.name.trim();if(a.description!==undefined)m.project_description=a.description.trim();stampProjectIdentity(m,a.project_id);result={name:m.campaign_name,description:m.project_description||''};}
  else if(name==='delete_folder'){m.deleted_at=new Date().toISOString();m.permits={};result={deleted:true,recoverable:true};}
  else if(name==='restore_folder'){check(m.deleted_at,'Folder is not deleted');delete m.deleted_at;result={restored:true};}
  else if(name==='delete_assets')result=trashAssets(m,a.asset_ids);

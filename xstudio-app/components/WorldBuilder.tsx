@@ -110,8 +110,8 @@ function StoryImport({manifest,project,onSaved}:{manifest:any,project:string,onS
  }
 
  return <section className="world-builder">
-  <p className="world-import-hint">Brainstorm with XCE_FIRESTARTER, run US, then paste its complete output here and press Enter. It parses automatically into editable sections below.</p>
-  <label className="story-field">Import story · {manifest.campaign_name||project}
+  <p className="world-import-hint">Start with your world. Add what you know; you can return to any section later.</p>
+  <details className="workflow-step help-section"><summary>Import existing world text</summary><label className="story-field">Import story · {manifest.campaign_name||project}
    <textarea
     aria-label="Paste Firestarter story"
     rows={4}
@@ -134,6 +134,7 @@ function StoryImport({manifest,project,onSaved}:{manifest:any,project:string,onS
    {busy?'Saving story…':message}
   </p>
 
+  </details>
   <div className="world-section-tabs" role="tablist" aria-label="Story sections" style={{marginTop:'24px'}}>
    {[{label:'World Builder',Icon:Box},{label:'Production & Continuity',Icon:ClipboardList}].map(({label,Icon},i)=>(
     <button
@@ -168,13 +169,13 @@ function StoryImport({manifest,project,onSaved}:{manifest:any,project:string,onS
      const hasContent=Boolean((fields[key]||'').trim());
 
      return (
-      <details key={key} className="world-saved-field" open={isEditing||hasContent}>
+      <details key={key} className="world-saved-field" open={isEditing}>
        <summary style={{display:'flex',alignItems:'center',justifyContent:'space-between',cursor:'pointer',userSelect:'none',padding:'12px 14px'}}>
         <div style={{display:'flex',alignItems:'center',gap:'8px'}}>
          <span style={{fontWeight:600,color:'#f1f5f9'}}>{field.label}</span>
          {hasContent&&!isEditing&&(
           <span style={{fontSize:'10px',background:'rgba(99,102,241,0.18)',color:'#818cf8',padding:'2px 6px',borderRadius:'4px',border:'1px solid rgba(99,102,241,0.3)'}}>
-           {fields[key].length} chars
+           Saved
           </span>
          )}
         </div>
@@ -294,3 +295,4 @@ function StoryImport({manifest,project,onSaved}:{manifest:any,project:string,onS
   </div>
  </section>;
 }
+

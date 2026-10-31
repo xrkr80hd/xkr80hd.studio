@@ -1,3 +1,5 @@
+import {CHARACTER_GENDERS} from '../xce/character-labels.mjs';
+import {WORLD_BUILDER_FIELDS} from '../xce/world-builder-fields.mjs';
 import {readToolRequest} from './request-body.mjs';
 import {workspaceScopes,includeCreatedProjects} from './workspace.mjs';
 import {toolResult} from './tool-result.mjs';
@@ -26,6 +28,11 @@ const metadataBatch={project_id,expected_revision:z.number().int().min(1),update
 const writeScope=name=>workspaceScopes[name]||(['update_asset_details','bulk_update_asset_details','update_asset_generation_prompt','manage_asset_identity'].includes(name)?'asset:metadata':name.includes('update_asset_classification')?'asset:classify':null);
 const continuityShape=z.fromJSONSchema(CONTINUITY_SCHEMA).shape;
 export const toolSpecs=[
+ ['update_character_profile','Save a character gender, quick details and explicitly supplied complete linked relationship/synergy list using the native character editor validation. Omitted fields are preserved; links replaces only this character linked rules, so read current rules first.',{project_id,asset_id:id,expected_revision:z.number().int().min(1),gender:z.enum(Object.keys(CHARACTER_GENDERS)).optional(),quick_details:z.string().max(4000).optional(),links:z.array(link).max(50).optional(),confirm:z.literal(true)}],
+ ['export_world','Export a portable world ZIP containing world/character metadata, relationships, synergies, original image references and a readable director brief. Returns an owner-authenticated download link; destination import support varies.',{project_id}],
+ ['get_world_builder','Read saved World Builder, character/asset directory, linked rules and form schemas. Start project setup here before character details or scene generation.',{project_id}],
+ ['update_world_builder','Save confirmed World Builder fields without erasing omitted fields. Shared website validation, project identity and revision checks apply.',{project_id,expected_revision:z.number().int().min(1),patch:z.strictObject({...Object.fromEntries(Object.entries(WORLD_BUILDER_FIELDS).map(([key,value])=>[key,z.string().max(value.limit).optional()])),firestarter_state:z.record(z.string(),z.unknown()).optional()}),confirm:z.literal(true)}],
+ ['create_world_asset','Create a named DRAFT character, creature or other world-library record before filling its details. Does not fabricate images, approve an anchor or overwrite an existing record.',{project_id,expected_revision:z.number().int().min(1),name:z.string().trim().min(1).max(200),category:z.enum(['characters','creatures','wardrobe','props','vehicles','locations','rooms','scenes_and_shots']),confirm:z.literal(true)}],
  ['create_folder','Create a new XSTUDIO project folder. New folders created by this connection remain in its grant. Requires explicit write consent.',{project_id,name:z.string().trim().min(1).max(200),confirm:z.literal(true)}],
  ['update_folder','Edit an existing project folder name or description without changing its ID.',{project_id,name:z.string().trim().min(1).max(200).optional(),description:z.string().max(400).optional(),expected_revision:z.number().int().min(1),confirm:z.literal(true)}],
  ['import_project','Copy an authorized saved project into a new folder. Reuses its owner-owned image references; does not upload a backup file or overwrite another project.',{project_id,source_project_id:project_id,name:z.string().trim().min(1).max(200),expected_revision:z.number().int().min(1),confirm:z.literal(true)}],

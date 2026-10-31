@@ -1,5 +1,5 @@
 export const navigationKey='xce:last-workspace:v1';
-const views=new Set(['Studio','Projects','WorldBuilder','Workspace','Assets','Story','Storyboard','LostAssets','ColorGrades','Composer']);
+const views=new Set(['Studio','Projects','WorldBuilder','Workspace','Assets','Story','Storyboard','LostAssets','ColorGrades','Composer','Export']);
 const defaults=()=>({project:'',view:'Projects',filter:'All',query:'',scene:'all',scroll:0});
 const projectId=value=>typeof value==='string'&&(value===''||/^[a-zA-Z0-9_-]{1,80}$/.test(value));
 export function restoreNavigation(options={}){
@@ -27,3 +27,4 @@ export function restoreNavigation(options={}){
  }catch{}
  return saved;
 }
+
