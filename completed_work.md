@@ -407,3 +407,8 @@ Added List/Grid controls, default compact List view, device-local layout persist
 - Added expanded-state labeling, dismissal on selection, outside pointer/focus, Escape, and desktop resize; kept all destinations and the desktop sidebar.
 - Advanced remains available and no longer opens automatically for the primary Color Grades page. Existing grade grid/list/editor behavior is unchanged.
 - Verification: local navigation test command and diff checks passed. Hosted navigation/CGE tests plus Next production build gate release. Local Chromium could not start because the environment denied its socket setup, so signed-in visual interaction remains unverified.
+
+## 2026-10-31 — Visible XSTUDIO sign out
+- Added a visible Sign out action below studio navigation on desktop and inside the hamburger drawer. Uses the existing origin-checked authenticated logout route.
+- Redirects to manual sign-in only after confirmed server logout; removes automatic offline-owner selection while keeping unsynced device drafts. Rejected, malformed and failed requests surface an error and do not claim success.
+- Verified success, failure, network failure and blocked-storage handling with focused tests; navigation/CGE tests and Next production build gate release. Signed-in browser interaction is unverified in this environment.

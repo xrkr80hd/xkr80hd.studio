@@ -410,3 +410,10 @@ User requests Grid/List views; List uses expandable accordion rows populated wit
 - Replace the stretched navigation at widths up to 800px with a hamburger and vertical menu.
 - Preserve desktop navigation, every destination, and Color Grades grid/list controls.
 - Check navigation tests and production build, then deploy the tested revision.
+
+
+
+## 2026-10-31 — Visible XSTUDIO sign out
+- Add Sign out in desktop and hamburger navigation through the existing authenticated logout route.
+- Preserve local drafts, clear automatic offline-owner selection only after server confirmation, and surface failures.
+- Verify confirmed/failed logout behavior, run navigation checks and production build, then publish the tested revision.

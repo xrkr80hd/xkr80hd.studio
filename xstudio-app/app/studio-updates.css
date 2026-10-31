@@ -479,3 +479,9 @@
  .sidebar details>summary{display:list-item;list-style-position:inside;cursor:pointer;min-height:44px}
  .main-shell{margin-left:0}
 }
+
+
+
+/* Keep the session action reachable in both desktop and hamburger navigation. */
+.sidebar .studio-sign-out{flex-shrink:0;margin-top:12px;border-top-color:var(--line);border-radius:8px}
+.sidebar .studio-sign-out:disabled{cursor:wait}
