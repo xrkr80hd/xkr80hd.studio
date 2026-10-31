@@ -395,3 +395,7 @@ Add get_character_reference to /mcp: exact ID/code lookup across granted unlocke
 
 ## 2026-10-31 — Expose workspace MCP tools
 User authorizes reconfiguring the MCP to expose folder create/update/delete/restore, original image import, authorized project copying, asset trash/restore/purge, and write/delete permissions. Preserve owner isolation, locks and revision checks. Verify before preview and production release.
+
+
+## 2026-10-31 — XCE_WORLDBUILDER hub
+User requests one @XCE_WORLDBUILDER plugin, starting with new_world. Guide real saved World Builder sections, per-character/category fields, relationships and synergies. Add portable JSON/ZIP world exports for other director studios, with actual original media and honest destination compatibility. Simplify site primary navigation while keeping Color Grades visible and retaining all data/presets and advanced tools. Implemented in codex/worldbuilder-hub; verify plugin connection and signed-in export separately from build success.
