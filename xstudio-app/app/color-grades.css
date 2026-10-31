@@ -1,3 +1,25 @@
 .cg-library{color:#e4e7ea;max-width:1400px}.cg-heading{display:flex;gap:16px;justify-content:space-between;align-items:start;margin:14px 0}.cg-heading h2{font-size:clamp(20px,3vw,28px)}.cg-heading p{color:#afb8c4}.cg-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(245px,1fr));gap:16px;margin:24px 0}.cg-card{border:1px solid #46505d;background:#171c23;border-radius:14px;overflow:hidden;padding:10px}.cg-card.selected{border:2px solid #8aaceb}.cg-open{border:0;background:none;text-align:left;width:100%;color:inherit;cursor:pointer}.cg-open h3{font-size:19px;margin:12px 0 6px}.cg-open small,.cg-moods{color:#b5c1d0;font-size:12px}.cg-open p{margin:7px 0}.cg-image{position:relative;background:#12161c;border-radius:8px;overflow:hidden}.cg-image canvas{display:block;width:100%;height:auto}.cg-divider{position:absolute;top:0;bottom:0;width:2px;background:white;pointer-events:none}.cg-swatches{display:flex;gap:5px;margin:12px 0}.cg-swatches span{width:30px;height:18px;border:1px solid #87929b;border-radius:3px}.cg-detail{background:#171b21;padding:clamp(12px,3vw,28px);margin:20px 0}.cg-detail select,.cg-detail input:not([type=range]),.cg-detail textarea{max-width:100%}.cg-slider{display:flex;flex-direction:column;gap:6px;margin:12px 0;color:#d8e0ea;font-size:14px}.cg-slider input{width:100%;min-height:44px;accent-color:#97b9ed;touch-action:pan-y}.cg-controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 22px}.cg-detail .button-row{flex-wrap:wrap;margin:12px 0}.cg-import{display:inline-flex;position:relative;overflow:hidden;cursor:pointer;margin:8px 0}.cg-import input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%}.cg-assignment{border-top:1px solid #4b5563;padding-top:20px;margin-top:20px}.cg-assignment label{display:block;margin:14px 0}.cg-assignment select{display:block;min-height:44px;margin-top:7px;max-width:100%}.cg-impact{background:#252c35;padding:16px;border:1px solid #64748b;border-radius:10px;margin-top:20px}.cg-lessons details{border-bottom:1px solid #46505d;padding:16px 0}.cg-lessons summary{cursor:pointer;line-height:1.5;min-height:44px}.cg-example{display:grid;grid-template-columns:1fr 1fr;gap:12px}.cg-custom{margin:20px 0;padding:16px 0;border-top:1px solid #46505d}.cg-library button{min-height:44px}.cg-mode{padding:24px;margin:20px 0}.cg-mode h3{margin:12px 0}.cg-mode p{max-width:65ch}@media(max-width:650px){.cg-cards{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:12px}.cg-card{flex:0 0 85%;scroll-snap-align:start}.cg-heading{flex-direction:column}.cg-controls{grid-template-columns:1fr}.cg-detail .button{white-space:normal}.cg-example{gap:6px}}
 
 .cg-image-comparison{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:ew-resize;touch-action:pan-y}.cg-image:focus-within{outline:2px solid #b5c8ef;outline-offset:3px}
+
+
+/* Compact list rows disclose the complete editor; grid keeps visual preset cards. */
+.cg-view-toggle{display:flex;gap:8px;justify-content:flex-end;margin:16px 0}
+.cg-view-toggle button[aria-pressed=true]{background:#33445e;border-color:#a9c5f5;color:#fff}
+.cg-cards.cg-cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(245px,100%),1fr));overflow:visible;scroll-snap-type:none}
+.cg-cards.cg-cards-list{display:flex;flex-direction:column;gap:8px;overflow:visible;scroll-snap-type:none;margin:16px 0}
+.cg-grade-row{min-width:0;border:1px solid #46505d;background:#171c23;border-radius:10px;overflow:hidden}
+.cg-grade-row[open]{border-color:#8aaceb}
+.cg-grade-row>summary{display:flex;align-items:center;gap:16px;min-height:64px;padding:12px 16px;cursor:pointer;list-style:none}
+.cg-grade-row>summary::-webkit-details-marker{display:none}
+.cg-grade-row>summary:focus-visible{outline:2px solid #b5c8ef;outline-offset:-3px}
+.cg-row-identity{display:flex;flex:1;min-width:0;flex-direction:column;gap:4px;overflow-wrap:anywhere}
+.cg-row-identity strong{font-size:16px}
+.cg-row-identity small{font-size:12px;color:#afb8c4}
+.cg-row-swatches{margin:0;flex-shrink:0}
+.cg-row-swatches span{width:22px;height:15px}
+.cg-row-chevron{flex-shrink:0;transition:transform .15s}
+.cg-grade-row[open]>summary .cg-row-chevron{transform:rotate(180deg)}
+.cg-row-content{border-top:1px solid #46505d;padding:16px;min-width:0}
+.cg-row-content>.cg-detail{margin:12px 0 0;border:0;padding:0;background:transparent}
+@media(max-width:480px){.cg-grade-row>summary{gap:10px;padding:12px}.cg-row-swatches{gap:3px}.cg-row-swatches span{width:14px;height:14px}.cg-row-content{padding:12px}.cg-view-toggle{justify-content:flex-start}}
