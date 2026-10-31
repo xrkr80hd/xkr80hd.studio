@@ -483,5 +483,6 @@
 
 
 /* Keep the session action reachable in both desktop and hamburger navigation. */
+.sidebar{overflow-y:auto}
 .sidebar .studio-sign-out{flex-shrink:0;margin-top:12px;border-top-color:var(--line);border-radius:8px}
 .sidebar .studio-sign-out:disabled{cursor:wait}
