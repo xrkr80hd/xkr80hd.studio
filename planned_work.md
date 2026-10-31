@@ -387,3 +387,7 @@ Select pnpm 11.25.0 explicitly in Vercel install/build commands after production
 
 ## Broaden release verification (2026-10-23)
 Check clean install/build and login/API behavior; remove the unverified SQL owner-session fallback and enforce same-origin mutations before production publication.
+
+
+## 2026-10-31 — Original character images in chat
+Add get_character_reference to /mcp: exact ID/code lookup across granted unlocked projects, canonical identity, verified original image blocks and short-lived CREF URLs. Preserve owner/lock checks and existing tools. User requests making retrieval available for scene building without manual uploads. Verify implementation and release separately.

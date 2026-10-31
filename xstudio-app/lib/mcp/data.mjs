@@ -1,3 +1,4 @@
+import {retrieveCharacterReference} from './character-reference.mjs';
 import {continuityOperation} from '../xce/continuity-service.mjs';
 import {generationReferenceIds} from '../xce/visual-identity.mjs';
 import {characterCref,prepareCharacterCref} from '../xce/character-cref.mjs';
@@ -47,10 +48,11 @@ export function referenceIds(r,type){
  return [...new Set([...(r.reference_ids||r.assigned_reference_ids||[]),r.source_image_id,r.output_reference_id,r.blueprint_id,r.thumbnail_reference_id,...['face_anchor_url','body_anchor_url','costume_anchors','exterior_anchor','interior_anchor','exterior_environment_anchor'].map(k=>r.metadata?.[k])].filter(v=>typeof v==='string'&&v))];
 }
 export function dataSource(auth,request=backend(auth.backendToken,fetch,{allowClassificationSave:auth.scopes?.has('asset:classify')||auth.scopes?.has('asset:metadata')}),{getImage=referenceReader(request)}={}){
- async function project(p){
+ async function availableProject(p){
   if(!auth.projects.has(p))notFound();
-  const row=(await request({op:'load',project:p})).data;if(!row)notFound();const m=manifest(row);if(!m)notFound();return {m,revision:row.revision};
+  const row=(await request({op:'load',project:p})).data;if(!row)return null;const m=manifest(row);return m?{m,revision:row.revision}:null;
  }
+ async function project(p){const saved=await availableProject(p);if(!saved)notFound();return saved;}
  async function references(m,p,ids,includeMedia){
   if(ids.length>60)throw new GatewayError('Too many references; narrow the request',400);
   return Promise.all(ids.map(async id=>{
@@ -68,6 +70,12 @@ export function dataSource(auth,request=backend(auth.backendToken,fetch,{allowCl
   }));
  }
  return async(name,a)=>{
+  if(name==='get_character_reference'){
+   try{return await retrieveCharacterReference(a,{projectIds:auth.projects,loadProject:availableProject,
+    matches:(m,id)=>allRecords(m).filter(({record:r})=>recordId(r)===id||r.asset_code===id),
+    readCref:(p,id)=>dataSource(auth,request,{getImage})('get_character_cref',{project_id:p,asset_id:id,include_media:true}),signReferences:references});
+   }catch(e){if(e instanceof GatewayError)throw e;throw new GatewayError(e.message,400);}
+  }
   if(name==='list_projects'){
    // Edge API revalidates expiry, revocation, owner membership and asset:read.
    const rows=(await request({op:'projects'})).data;if(!Array.isArray(rows))throw new GatewayError('Backend unavailable',502);
@@ -139,3 +147,4 @@ export function dataSource(auth,request=backend(auth.backendToken,fetch,{allowCl
   return {...packed(p,entry),...classification,references:await references(m,p,ids,a.include_media)};
  };
 }
+

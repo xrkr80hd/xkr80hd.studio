@@ -381,3 +381,7 @@ Changed app Vercel commands to npx --yes pnpm@11.25.0 for both frozen install an
 
 ## Broaden release verification (2026-10-23)
 Restored verified Supabase owner authentication, removed automatic SQL/development owner sessions and homepage bypass, and restricted browser mutations to the exact request origin/host. Clean pnpm 11.25.0 install and production build passed, all 417 tests passed, and changed-file lint passed. Running standalone-server smoke checks passed for login rendering, denied forged-cookie access, missing-auth configuration, and foreign/missing Origin denial. Authenticated live project/data behavior still requires production verification.
+
+
+## 2026-10-31 — Character-reference MCP implementation
+Implemented get_character_reference, exact cross-project resolution, mandatory original locked-image delivery and canonical/short-lived CREF metadata. Reuses CREF integrity checks. 18 resolver/envelope tests pass locally; changed MJS files pass Node syntax checks. Four adapter/protocol tests added; running that suite and the full build requires unavailable dependencies (shell proxy unreachable). Deployment, OAuth retrieval, ChatGPT rendering and generation-reference forwarding remain unverified; release status must be reported separately.
