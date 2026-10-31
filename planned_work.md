@@ -391,3 +391,7 @@ Check clean install/build and login/API behavior; remove the unverified SQL owne
 
 ## 2026-10-31 — Original character images in chat
 Add get_character_reference to /mcp: exact ID/code lookup across granted unlocked projects, canonical identity, verified original image blocks and short-lived CREF URLs. Preserve owner/lock checks and existing tools. User requests making retrieval available for scene building without manual uploads. Verify implementation and release separately.
+
+
+## 2026-10-31 — Expose workspace MCP tools
+User authorizes reconfiguring the MCP to expose folder create/update/delete/restore, original image import, authorized project copying, asset trash/restore/purge, and write/delete permissions. Preserve owner isolation, locks and revision checks. Verify before preview and production release.

@@ -1,4 +1,4 @@
-import {CLASSIFY_SCOPE,METADATA_SCOPE} from '../mcp/security.mjs';
+import {CLASSIFY_SCOPE,METADATA_SCOPE,WRITE_SCOPE,DELETE_SCOPE} from '../mcp/security.mjs';
 import {randomBytes,timingSafeEqual,createCipheriv,createDecipheriv,createHash} from 'node:crypto';
 import {digest,GatewayError,RESOURCE,SCOPE} from '../mcp/security.mjs';
 import {databaseStore} from './state.mjs';
@@ -8,7 +8,7 @@ export const random=()=>randomBytes(32).toString('hex');
 const fail=(error,status=400)=>{const e=new GatewayError(error,status);e.oauth=true;throw e;};
 const equal=(a,b)=>typeof a==='string'&&typeof b==='string'&&Buffer.byteLength(a)===Buffer.byteLength(b)&&timingSafeEqual(Buffer.from(a),Buffer.from(b));
 export const cookieName=id=>'__Host-xstudio_oauth_'+id;
-export function discovery(){return {issuer:ISSUER,authorization_endpoint:ISSUER+'/oauth/authorize',token_endpoint:ISSUER+'/oauth/token',registration_endpoint:ISSUER+'/oauth/register',revocation_endpoint:ISSUER+'/oauth/revoke',response_types_supported:['code'],grant_types_supported:['authorization_code','refresh_token'],token_endpoint_auth_methods_supported:['none'],revocation_endpoint_auth_methods_supported:['none'],code_challenge_methods_supported:['S256'],scopes_supported:[SCOPE,CLASSIFY_SCOPE,METADATA_SCOPE],authorization_response_iss_parameter_supported:true};}
+export function discovery(){return {issuer:ISSUER,authorization_endpoint:ISSUER+'/oauth/authorize',token_endpoint:ISSUER+'/oauth/token',registration_endpoint:ISSUER+'/oauth/register',revocation_endpoint:ISSUER+'/oauth/revoke',response_types_supported:['code'],grant_types_supported:['authorization_code','refresh_token'],token_endpoint_auth_methods_supported:['none'],revocation_endpoint_auth_methods_supported:['none'],code_challenge_methods_supported:['S256'],scopes_supported:[SCOPE,CLASSIFY_SCOPE,METADATA_SCOPE,WRITE_SCOPE,DELETE_SCOPE],authorization_response_iss_parameter_supported:true};}
 export function redirectURI(value){
  if(typeof value!=='string'||value.length>2048||/[\s]/.test(value))fail('invalid_redirect_uri');
  let u;try{u=new URL(value);}catch{fail('invalid_redirect_uri');}
@@ -35,7 +35,7 @@ export function redisStore(env=process.env,fetcher=fetch){
   async used(k){return Boolean(await command(['EXISTS',key(k)]));}
  };
 }
-function checkScope(scope){if(scope!==undefined&&(typeof scope!=='string'||!scope.split(' ').includes(SCOPE)||scope.split(' ').some(s=>![SCOPE,CLASSIFY_SCOPE,METADATA_SCOPE].includes(s))))fail('invalid_scope');}
+function checkScope(scope){if(scope!==undefined&&(typeof scope!=='string'||!scope.split(' ').includes(SCOPE)||scope.split(' ').some(s=>![SCOPE,CLASSIFY_SCOPE,METADATA_SCOPE,WRITE_SCOPE,DELETE_SCOPE].includes(s))))fail('invalid_scope');}
 export function credentialCipher(secret){
  if(typeof secret!=='string'||secret.length<32)fail('temporarily_unavailable',503);
  const key=createHash('sha256').update('xstudio-oauth-delegation-v1:'+secret).digest();
@@ -60,7 +60,7 @@ export function oauthService({store,owner,upstreamToken,delegate,unseal,now=()=>
    if(a.token_endpoint_auth_method&&a.token_endpoint_auth_method!=='none')fail('invalid_client_metadata');
    if(a.grant_types&&(!Array.isArray(a.grant_types)||a.grant_types.some(g=>!['authorization_code','refresh_token'].includes(g))))fail('invalid_client_metadata');
    if(a.response_types&&(!Array.isArray(a.response_types)||a.response_types.length!==1||a.response_types[0]!=='code'))fail('invalid_client_metadata');
-   checkScope(a.scope);const c={client_id:'xoc_'+random(),client_name:a.client_name.trim(),redirect_uris:[...new Set(a.redirect_uris.map(redirectURI))],token_endpoint_auth_method:'none',grant_types:['authorization_code','refresh_token'],response_types:['code'],scope:a.scope||SCOPE,client_id_issued_at:Math.floor(now()/1000)};
+   checkScope(a.scope);const c={client_id:'xoc_'+random(),client_name:a.client_name.trim(),redirect_uris:[...new Set(a.redirect_uris.map(redirectURI))],token_endpoint_auth_method:'none',grant_types:['authorization_code','refresh_token'],response_types:['code'],scope:a.scope||[SCOPE,CLASSIFY_SCOPE,METADATA_SCOPE,WRITE_SCOPE,DELETE_SCOPE].join(' '),client_id_issued_at:Math.floor(now()/1000)};
    await store.put('client:'+c.client_id,c,365*86400);return c;
   },
   async begin(a,projects){
@@ -70,7 +70,7 @@ export function oauthService({store,owner,upstreamToken,delegate,unseal,now=()=>
    if(a.code_challenge_method!=='S256'||typeof a.code_challenge!=='string'||! /^[A-Za-z0-9_-]{43}$/.test(a.code_challenge))fail('invalid_request');
    if(a.state!==undefined&&(typeof a.state!=='string'||a.state.length>2048))fail('invalid_request');
    const flow=random(),csrf=random();
-   const record={client_id:c.client_id,client_name:c.client_name,redirect_uri:a.redirect_uri,challenge:a.code_challenge,state:a.state||'',resource:RESOURCE,scope:a.scope||SCOPE,owner,csrf_hash:digest(csrf),projects:projects.map(p=>({id:p.id,name:p.name})),expires_at:expiry(600)};
+   const record={client_id:c.client_id,client_name:c.client_name,redirect_uri:a.redirect_uri,challenge:a.code_challenge,state:a.state||'',resource:RESOURCE,scope:a.scope||c.scope||SCOPE,owner,csrf_hash:digest(csrf),projects:projects.map(p=>({id:p.id,name:p.name})),expires_at:expiry(600)};
    await store.put('flow:'+flow,record,600);return {flow,csrf,record};
   },
   async approve({flow,csrf,cookie,projects,approve}){
@@ -120,3 +120,4 @@ export function oauthService({store,owner,upstreamToken,delegate,unseal,now=()=>
   }
  };
 }
+

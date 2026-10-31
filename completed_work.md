@@ -385,3 +385,7 @@ Restored verified Supabase owner authentication, removed automatic SQL/developme
 
 ## 2026-10-31 — Character-reference MCP implementation
 Implemented get_character_reference, exact cross-project resolution, mandatory original locked-image delivery and canonical/short-lived CREF metadata. Reuses CREF integrity checks. 18 resolver/envelope tests pass locally; changed MJS files pass Node syntax checks. Four adapter/protocol tests added; running that suite and the full build requires unavailable dependencies (shell proxy unreachable). Deployment, OAuth retrieval, ChatGPT rendering and generation-reference forwarding remain unverified; release status must be reported separately.
+
+
+## 2026-10-31 — Workspace MCP implementation
+Implemented ten workspace tools with write/delete scopes, explicit OAuth consent, delegation-bound new-folder access, original-image import verification, revision checks, recoverable deletions and selected permanent trash purge. 14 isolated tests pass locally; modified MJS syntax checks pass. Protocol and OAuth tests added for hosted execution. No live assets were imported/deleted during implementation. Hosted build/release and real OAuth permission checks must be verified separately.

@@ -5,6 +5,8 @@ export const RESOURCE='https://xstudio.xrkr80hd.studio/mcp';
 export const SCOPE='asset:read';
 export const CLASSIFY_SCOPE='asset:classify';
 export const METADATA_SCOPE='asset:metadata';
+export const WRITE_SCOPE='asset:write';
+export const DELETE_SCOPE='asset:delete';
 export const digest=value=>createHash('sha256').update(value).digest('hex');
 export class GatewayError extends Error {
  constructor(message,status=400){super(message);this.status=status;}
@@ -57,7 +59,7 @@ export async function authenticate(request,config,{verify=jwtVerify,keySet}={}){
   }catch(error){if(error instanceof GatewayError)throw error;fail('Invalid credential',401);}
  }
  if(!grant||Date.parse(grant.expires_at)<=Date.now())fail('Invalid credential',401);
- return {projects:new Set(grant.projects),backendToken,principal,owner:config.owner,scopes:new Set([SCOPE,...[CLASSIFY_SCOPE,METADATA_SCOPE].filter(s=>grant.scopes?.includes(s)&&(grant.type==='api'||tokenScopes.includes(s)))])};
+ return {projects:new Set(grant.projects),backendToken,principal,owner:config.owner,scopes:new Set([SCOPE,...[CLASSIFY_SCOPE,METADATA_SCOPE,WRITE_SCOPE,DELETE_SCOPE].filter(s=>grant.scopes?.includes(s)&&(grant.type==='api'||tokenScopes.includes(s)))])};
 }
 
 // Atomic shared fixed windows. No in-memory fallback on serverless instances.
@@ -74,5 +76,6 @@ export function redisLimiter(env=process.env,fetcher=fetch){
  };
 }
 export function resourceMetadata(config){
- return {resource:RESOURCE,...(config.issuer?{authorization_servers:[config.issuer]}:{}),scopes_supported:[SCOPE,CLASSIFY_SCOPE,METADATA_SCOPE],bearer_methods_supported:['header'],resource_name:'XSTUDIO reference and classification gateway'};
+ return {resource:RESOURCE,...(config.issuer?{authorization_servers:[config.issuer]}:{}),scopes_supported:[SCOPE,CLASSIFY_SCOPE,METADATA_SCOPE,WRITE_SCOPE,DELETE_SCOPE],bearer_methods_supported:['header'],resource_name:'XSTUDIO reference and classification gateway'};
 }
+

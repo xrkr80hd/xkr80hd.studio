@@ -1,3 +1,4 @@
+import {workspaceOperation,workspaceTools} from './workspace.mjs';
 import {retrieveCharacterReference} from './character-reference.mjs';
 import {continuityOperation} from '../xce/continuity-service.mjs';
 import {generationReferenceIds} from '../xce/visual-identity.mjs';
@@ -20,16 +21,16 @@ export async function readJSON(response,max=4*1024*1024){
  while(true){const {done,value}=await reader.read();if(done)break;size+=value.byteLength;if(size>max){await reader.cancel();throw new GatewayError('Response too large; narrow the request',502);}chunks.push(Buffer.from(value));}
  try{return JSON.parse(Buffer.concat(chunks).toString('utf8'));}catch{throw new GatewayError('Backend unavailable',502);}
 }
-export function backend(token,fetcher=fetch,{allowClassificationSave=false}={}){
+export function backend(token,fetcher=fetch,{allowClassificationSave=false,allowWorkspaceWrite=false}={}){
  return async args=>{
-  if(!['projects','load','file_get'].includes(args.op)&&!(allowClassificationSave&&args.op==='save'))throw new GatewayError('Read-only operation required',403);
+  if(!['projects','load','file_get','code'].includes(args.op)&&!(allowClassificationSave&&args.op==='save')&&!(allowWorkspaceWrite&&['save','reserve_code','file_put'].includes(args.op)))throw new GatewayError('Read-only operation required',403);
   let r;try{r=await fetcher(XSTUDIO_ENDPOINT+'?resource=engine',{method:'POST',headers:{authorization:'Bearer '+token,'content-type':'application/json'},body:JSON.stringify(args),cache:'no-store',redirect:'error',signal:AbortSignal.timeout(25000)});}catch{throw new GatewayError('Backend unavailable',502);}
   if(!r.ok)throw new GatewayError(r.status===401?'Invalid credential':'Backend unavailable',r.status===401?401:502);
   return readJSON(r,args.op==='projects'?32*1024*1024:4*1024*1024);
  };
 }
 // Do not export storage paths, folder PIN hashes, session grants, or arbitrary URLs.
-const PRIVATE=new Set(['key','storage_path','storage_bucket','folder_lock','session_hash','pin_hash','token_hash','salt']);
+const PRIVATE=new Set(['key','storage_path','storage_bucket','folder_lock','session_hash','pin_hash','token_hash','salt','_mcp_created_for','mcp_locations']);
 export function publicData(value){
  if(Array.isArray(value))return value.map(publicData);
  if(value&&typeof value==='object')return Object.fromEntries(Object.entries(value).filter(([k])=>!PRIVATE.has(k)).map(([k,v])=>[k,publicData(v)]));
@@ -47,7 +48,7 @@ export function referenceIds(r,type){
  if(r.status==='LOCKED'&&r.source_image_id)return [r.source_image_id];
  return [...new Set([...(r.reference_ids||r.assigned_reference_ids||[]),r.source_image_id,r.output_reference_id,r.blueprint_id,r.thumbnail_reference_id,...['face_anchor_url','body_anchor_url','costume_anchors','exterior_anchor','interior_anchor','exterior_environment_anchor'].map(k=>r.metadata?.[k])].filter(v=>typeof v==='string'&&v))];
 }
-export function dataSource(auth,request=backend(auth.backendToken,fetch,{allowClassificationSave:auth.scopes?.has('asset:classify')||auth.scopes?.has('asset:metadata')}),{getImage=referenceReader(request)}={}){
+export function dataSource(auth,request=backend(auth.backendToken,fetch,{allowClassificationSave:auth.scopes?.has('asset:classify')||auth.scopes?.has('asset:metadata')||auth.scopes?.has('asset:delete'),allowWorkspaceWrite:auth.scopes?.has('asset:write')}),{getImage=referenceReader(request)}={}){
  async function availableProject(p){
   if(!auth.projects.has(p))notFound();
   const row=(await request({op:'load',project:p})).data;if(!row)return null;const m=manifest(row);return m?{m,revision:row.revision}:null;
@@ -70,6 +71,7 @@ export function dataSource(auth,request=backend(auth.backendToken,fetch,{allowCl
   }));
  }
  return async(name,a)=>{
+  if(workspaceTools.has(name)){try{return publicData(await workspaceOperation(name,a,{auth,request,getImage}));}catch(e){if(e instanceof GatewayError)throw e;throw new GatewayError(e.message,e.message.startsWith('Permission required')?403:400);}}
   if(name==='get_character_reference'){
    try{return await retrieveCharacterReference(a,{projectIds:auth.projects,loadProject:availableProject,
     matches:(m,id)=>allRecords(m).filter(({record:r})=>recordId(r)===id||r.asset_code===id),
@@ -147,4 +149,5 @@ export function dataSource(auth,request=backend(auth.backendToken,fetch,{allowCl
   return {...packed(p,entry),...classification,references:await references(m,p,ids,a.include_media)};
  };
 }
+
 

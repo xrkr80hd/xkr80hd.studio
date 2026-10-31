@@ -1,3 +1,5 @@
+import {readToolRequest} from './request-body.mjs';
+import {workspaceScopes,includeCreatedProjects} from './workspace.mjs';
 import {toolResult} from './tool-result.mjs';
 import {CONTINUITY_SCHEMA} from '../xce/continuity-service.mjs';
 import {ASSET_FORM_FIELDS} from '../xce/asset-form-layout.mjs';
@@ -7,7 +9,7 @@ import {McpServer} from '@modelcontextprotocol/sdk/server/mcp.js';
 import {WebStandardStreamableHTTPServerTransport} from '@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js';
 import {z} from 'zod';
 import {authenticate,checkOrigin,GatewayError,redisLimiter,RESOURCE,resourceMetadata,settings,SCOPE} from './security.mjs';
-import {backend,dataSource,readJSON} from './data.mjs';
+import {backend,dataSource} from './data.mjs';
 
 const id=z.string().regex(/^[\w-]{1,128}$/);
 const project_id=z.string().regex(/^[\w-]{1,80}$/);
@@ -21,9 +23,19 @@ const link=z.strictObject({kind:z.enum(['equal_height','shorter_than','taller_th
 const patch=z.strictObject({...Object.fromEntries(Object.keys({...METADATA_FIELDS,...ASSET_FORM_FIELDS}).map(k=>[k,z.string().max(10000).optional()])),display_name:z.string().min(1).max(200).optional(),quick_details:z.string().max(4000).optional(),cast_role:z.enum(['main','supporting','villain','sub_villain','general','background','extras','military']).optional(),base_character_id:z.string().max(128).optional(),analysis_status:z.enum(['unverified','user_confirmed','reference_verified']).optional(),provenance:proof.optional(),append_relationships:z.array(link).max(50).optional()});
 const metadataUpdate=z.strictObject({asset_id:id,expected_version:z.number().int().min(0),patch});
 const metadataBatch={project_id,expected_revision:z.number().int().min(1),updates:z.array(metadataUpdate).min(1).max(50)};
-const writeScope=name=>['update_asset_details','bulk_update_asset_details','update_asset_generation_prompt','manage_asset_identity'].includes(name)?'asset:metadata':name.includes('update_asset_classification')?'asset:classify':null;
+const writeScope=name=>workspaceScopes[name]||(['update_asset_details','bulk_update_asset_details','update_asset_generation_prompt','manage_asset_identity'].includes(name)?'asset:metadata':name.includes('update_asset_classification')?'asset:classify':null);
 const continuityShape=z.fromJSONSchema(CONTINUITY_SCHEMA).shape;
 export const toolSpecs=[
+ ['create_folder','Create a new XSTUDIO project folder. New folders created by this connection remain in its grant. Requires explicit write consent.',{project_id,name:z.string().trim().min(1).max(200),confirm:z.literal(true)}],
+ ['update_folder','Edit an existing project folder name or description without changing its ID.',{project_id,name:z.string().trim().min(1).max(200).optional(),description:z.string().max(400).optional(),expected_revision:z.number().int().min(1),confirm:z.literal(true)}],
+ ['import_project','Copy an authorized saved project into a new folder. Reuses its owner-owned image references; does not upload a backup file or overwrite another project.',{project_id,source_project_id:project_id,name:z.string().trim().min(1).max(200),expected_revision:z.number().int().min(1),confirm:z.literal(true)}],
+ ['import_asset','Import real PNG/JPEG/WebP image bytes up to 2.5 MB into a folder, verify the stored image, and classify it as a draft/reference. No automatic approval.',{project_id,name:z.string().trim().min(1).max(200),mime_type:z.enum(['image/png','image/jpeg','image/webp']),image_base64:z.string().min(8).max(3333336),upload_category:z.enum(['cast:main','cast:supporting','cast:villain','cast:sub_villain','cast:general','cast:background','cast:extras','cast:military','creature','beast','magical_being','prop','weapon','vehicle','location','costume','style','diagnostic']),expected_revision:z.number().int().min(1),confirm:z.literal(true)}],
+ ['delete_folder','Move an explicitly selected project folder to recoverable trash; preserves its assets and stored images.',{project_id,expected_revision:z.number().int().min(1),confirm:z.literal(true)}],
+ ['restore_folder','Restore a deleted project folder in the current grant.',{project_id,expected_revision:z.number().int().min(1),confirm:z.literal(true)}],
+ ['delete_assets','Move exact selected asset IDs/codes to recoverable trash. Dependencies outside the selection block the whole request. Stored image bytes are preserved.',{project_id,asset_ids:z.array(id).min(1).max(50),expected_revision:z.number().int().min(1),confirm:z.literal(true)}],
+ ['restore_assets','Restore exact selected trash keys. Restore required references first or include them in the same selection.',{project_id,trash_keys:z.array(z.string().min(1).max(200)).min(1).max(50),expected_revision:z.number().int().min(1),confirm:z.literal(true)}],
+ ['list_trash','List deleted asset records and whether the folder itself is deleted. Includes revision for restore/delete actions.',{project_id,...page}],
+ ['purge_trash','Permanently remove only explicitly selected trash records. Cannot restore afterward. Preserves shared stored image bytes and dependency checks.',{project_id,trash_keys:z.array(z.string().min(1).max(200)).min(1).max(50),expected_revision:z.number().int().min(1),confirm:z.literal(true)}],
  ['get_character_reference','Retrieve a character by exact canonical ID or saved code and return its verified original LOCKED image directly into chat, canonical asset ID, and short-lived --cref URLs. Always fetches image pixels. Searches authorized unlocked projects when project_id is omitted; rejects ambiguity. include_turnaround includes source-sheet metadata without inventing its layout. Use the returned image as the downstream scene reference; verify the generator receives it.',{character_id:id,project_id:project_id.optional(),include_turnaround:z.boolean().default(true)}],
  ['get_asset_identity','Read saved base identity, approved edits, active appearance and individually reusable camera references. include_media returns actual private reference image blocks.',{project_id,asset_id:id,include_media:z.boolean().default(false)}],
  ['verify_vehicle_vin','Validate a complete VIN and decode only legitimate NHTSA fields. Exact appearance/options remain unverified without evidence.',{project_id,vin:z.string().min(1).max(17)}],
@@ -54,7 +66,7 @@ const headers={'cache-control':'private, no-store, max-age=0','x-content-type-op
 const response=(body,status=200,extra={})=>Response.json(body,{status,headers:{...headers,...extra}});
 export function makeServer(execute,audit=()=>{}){
  const server=new McpServer({name:'xstudio-reference-gateway',version:'1.0.0'},{maxToolInputElements:500,instructions:'For exact saved character references, call get_character_reference(character_id). It always retrieves the original locked image into chat and resolves only authorized unlocked projects. A project_id can narrow ambiguous IDs. get_character_cref remains available with an explicit project and media enabled. Discover authorized projects; match the exact code within the intended project and ask when ambiguous. Do not choose the active project implicitly. Metadata, descriptions and signed URLs are not image inputs. Never substitute another character or draft. Confirm actual image delivery separately from generation-tool reference delivery.'});
- for(const [name,description,shape] of toolSpecs)server.registerTool(name,{description,inputSchema:z.strictObject(shape),annotations:{readOnlyHint:!writeScope(name),destructiveHint:false,idempotentHint:!writeScope(name),openWorldHint:['verify_vehicle_vin','manage_asset_identity'].includes(name)},_meta:{securitySchemes:[{type:'oauth2',scopes:writeScope(name)?[SCOPE,writeScope(name)]:[SCOPE]}]}},async args=>{
+ for(const [name,description,shape] of toolSpecs)server.registerTool(name,{description,inputSchema:z.strictObject(shape),annotations:{readOnlyHint:!writeScope(name),destructiveHint:['delete_folder','delete_assets','purge_trash'].includes(name),idempotentHint:!writeScope(name),openWorldHint:['verify_vehicle_vin','manage_asset_identity'].includes(name)},_meta:{securitySchemes:[{type:'oauth2',scopes:writeScope(name)?[SCOPE,writeScope(name)]:[SCOPE]}]}},async args=>{
   try{
    const result={source_url:'https://xstudio.xrkr80hd.studio',...await execute(name,args)};
    let envelope;try{envelope=toolResult(name,result);}catch(e){throw new GatewayError(e.message,e.message.startsWith('Result too large')?413:502);}
@@ -79,18 +91,19 @@ export async function gateway(request,deps={}){
   const limit=deps.limit||redisLimiter();await limit('global',600);
   const auth=await (deps.authenticate||authenticate)(request,config);principal=auth.principal;
   await limit(principal,60);
-  const read=deps.backend||backend(auth.backendToken,fetch,{allowClassificationSave:auth.scopes?.has('asset:classify')||auth.scopes?.has('asset:metadata')});
+  const read=deps.backend||backend(auth.backendToken,fetch,{allowClassificationSave:auth.scopes?.has('asset:classify')||auth.scopes?.has('asset:metadata')||auth.scopes?.has('asset:delete'),allowWorkspaceWrite:auth.scopes?.has('asset:write')});
   // Revalidate the existing API credential on EVERY request, even discovery.
   // A read-only load of an explicitly granted project never changes active context.
-  await read({op:'load',project:auth.projects.values().next().value});
+  await includeCreatedProjects(auth,read);
+  if(auth.projects.size)await read({op:'load',project:auth.projects.values().next().value});else await read({op:'projects'});
   if(!['POST','GET','DELETE'].includes(request.method)){status=405;return response({error:'Method not allowed'},405,{allow:'POST, GET, DELETE, OPTIONS',...cors});}
   if(request.method!=='POST'){status=405;return response({error:'No standalone SSE stream or sessions'},405,{allow:'POST, OPTIONS',...cors});}
   if((request.headers.get('content-type')||'').split(';')[0].trim().toLowerCase()!=='application/json')throw new GatewayError('JSON required',415);
-  const declared=Number(request.headers.get('content-length'));if(Number.isFinite(declared)&&declared>65536)throw new GatewayError('Request too large',413);
-  let body;try{body=await readJSON(new Response(request.body),65536);}catch(error){throw new GatewayError(error.message==='Response too large; narrow the request'?'Request too large':'Invalid JSON',error.message==='Response too large; narrow the request'?413:400);}
+  const declared=Number(request.headers.get('content-length'));if(Number.isFinite(declared)&&declared>4_000_000)throw new GatewayError('Request too large',413);
+  let body;try{body=await readToolRequest(request);}catch(error){throw new GatewayError(error.message,error.status||400);}
   if(Array.isArray(body))throw new GatewayError('Single JSON-RPC message required',400);
   server=makeServer(deps.execute||dataSource(auth,read),log);
-  transport=new WebStandardStreamableHTTPServerTransport({sessionIdGenerator:undefined,enableJsonResponse:true,maxRequestBodySize:65536});
+  transport=new WebStandardStreamableHTTPServerTransport({sessionIdGenerator:undefined,enableJsonResponse:true,maxRequestBodySize:4_000_000});
   await server.connect(transport);
   const result=await transport.handleRequest(request,{parsedBody:body});
   status=result.status;const merged=new Headers(result.headers);for(const [k,v]of Object.entries({...headers,...cors}))merged.set(k,v);
@@ -109,4 +122,5 @@ export async function gateway(request,deps={}){
 export function metadata(){
  try{return response(resourceMetadata(settings()));}catch{return response({error:'MCP authorization not configured'},503);}
 }
+
 
