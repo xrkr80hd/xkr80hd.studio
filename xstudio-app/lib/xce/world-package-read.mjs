@@ -76,6 +76,7 @@ function cleanAsset(a,i,warnings){
 // single bad image; throws only when nothing usable can be read.
 // imageInfo (server only): {path:{mime_type,byte_size}} reported by the browser, used when
 // image bytes are not sent with the plan. Each image's real bytes are re-checked on upload.
+/** @param {Record<string,Uint8Array>} files @param {string} [zipName] @param {{imageInfo?:Record<string,{mime_type:string,byte_size:number}>|null}} [options] @returns {any} */
 export function readPackage(files,zipName='world.zip',{imageInfo=null}={}){
  const warnings=[],paths=Object.keys(files).map(strip).filter(p=>!p.endsWith('/')&&!/(^|\/)(__MACOSX|\.DS_Store)/.test(p));
  const byPath=new Map(Object.entries(files).map(([k,v])=>[strip(k),v]));

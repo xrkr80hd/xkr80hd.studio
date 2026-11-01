@@ -12,7 +12,8 @@ const headers={'Cache-Control':'private, no-store'};
 const need=(ok:any,message:string)=>{if(!ok)throw Error(message);};
 const validId=(v:any)=>typeof v==='string'&&/^[-\w]{1,80}$/.test(v);
 
-async function projectList(u:string){
+type World={id:string,title:string,revision:number,system_pool:boolean,folder_locked:boolean};
+async function projectList(u:string):Promise<World[]>{
  const rows=await backend().DB.prepare('SELECT project, revision, manifest FROM xce_projects WHERE owner=? ORDER BY project').bind(u).all();
  return rows.results.flatMap((r:any)=>{const m=JSON.parse(r.manifest);return m.deleted_at?[]:[{id:r.project,title:m.campaign_name||r.project,revision:r.revision,system_pool:Boolean(m.system_pool),folder_locked:Boolean(m.folder_lock)}]});
 }
