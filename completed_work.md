@@ -1,3 +1,15 @@
+## World ZIP upload and auto-sort (local, not pushed) · 2026-11-01
+
+- Added `lib/xce/world-package-read.mjs` (browser-safe reader for `fin` packages, XSTUDIO world exports and plain category folders) and `lib/xce/world-package.mjs` (world matching, review plan, merge-only record apply, image attach).
+- Added `POST /api/world-import` with plan → apply → image steps: owner session, trusted origin, folder lock, revision checks, PNG/JPEG/WebP magic-byte checks, 2.5 MB per image, SHA-256 read-back, duplicate-image reuse.
+- Added `components/WorldImport.tsx` on the Worlds page and World Builder tab: shows where the ZIP goes, counts, conflicts (saved text kept by default; checkbox per item to use the ZIP version), notes, then imports and reports results. Oversized images are shrunk to JPEG, never cropped.
+- Production files up to 250 KB are kept in `xce_world_packages`; larger ones stay in the ZIP and are reported.
+- Create a world from a ZIP: **Create from ZIP** in the New world window, and a **Make a new world from this ZIP** checkbox (editable name) in every import preview. A taken name gets " (2)", " (3)"…; the new world opens in World Builder.
+- A `fin` ZIP's `world.mode` (`new` from `nw`, `existing` from `ew`) sets the default: `new` pre-ticks Make a new world; the owner can untick it in the preview.
+- Folder ZIPs: file names carrying an MCS command (`_mcscbsmpl`, `_mcsrlcmplx-s4`), `frame-NN` or an `SC-NN` prefix still sort under the right asset name.
+- `tests/world-package.test.mjs`: 10 tests pass (adds create-new naming and world mode, MCS-tagged file names) — fin package, bad/missing images, folder sorting, name helpers, world matching, new-world apply, re-import keeping saved text and avoiding duplicate relationships, image attach.
+- Not verified here: `pnpm install`/`pnpm run build`/lint and the existing test suite (npm registry unreachable in this session); the two new files pass a TypeScript check apart from missing installed packages. Needs a signed-in browser check after deploy.
+
 ## Composer layered worldbuilding presets · 2026-10-17
 
 - Expanded grouped base selections to 415 choices, including 125 terrains and 106 architectural styles (historic, regional, civic, industrial, futuristic and imaginative).

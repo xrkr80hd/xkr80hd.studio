@@ -1,5 +1,15 @@
 # Planned Work
 
+## World ZIP upload and auto-sort · 2026-11-01
+
+- Add one **Upload world ZIP** action to the Worlds page and each World Builder tab.
+- Read three ZIP shapes: xce_world_builder `fin` packages (`xce-world-package.json`), XSTUDIO world exports (`world.json`), and plain folders (characters/, props/, vehicles/, locations/…).
+- Find the world from the ZIP: matching world ID, then exact name, else create it. Ask when two worlds share a name or the ZIP names a different world than the open one.
+- Also offer **Create from ZIP** (New world window) and a **Make a new world from this ZIP** checkbox in the preview.
+- Merge only: fill empty fields, keep saved text unless the owner ticks "Use the ZIP version", never delete, never lock, import images as draft references attached to their asset; unplaced images go to Unassigned uploads.
+- The browser opens the ZIP (Vercel request limit); records save in one step and images upload one per request with read-back hash checks.
+- Unfinished feature stays local on branch claude/xstudio-zip-import until the owner says push.
+
 ## Composer speed presets and action description · 2026-10-17
 
 - Add optional Inspired by world context (FF6, StarTropics or custom), scoped to mood rather than replacement asset designs.

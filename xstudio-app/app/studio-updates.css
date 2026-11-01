@@ -486,3 +486,6 @@
 .sidebar{overflow-y:auto}
 .sidebar .studio-sign-out{flex-shrink:0;margin-top:12px;border-top-color:var(--line);border-radius:8px}
 .sidebar .studio-sign-out:disabled{cursor:wait}
+
+/* World ZIP import */
+.world-import{margin:0 0 20px}.world-import h3{font-size:18px;margin-bottom:6px}.world-import-review{display:grid;gap:12px}.world-import-review .count{margin-left:8px}.world-import-counts{margin:0;padding-left:18px;color:#b6c2cf;font-size:14px;line-height:1.8}

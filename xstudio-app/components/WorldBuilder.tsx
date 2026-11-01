@@ -4,6 +4,7 @@ import {Box,ClipboardList,ChevronDown,Edit3,Check,X,Copy,Save} from 'lucide-reac
 import {WORLD_BUILDER_FIELDS,worldBuilderText} from '../lib/xce/world-builder-fields.mjs';
 import {parseStoryImport} from '../lib/xce/story-import.mjs';
 import {studioFetch} from '../lib/xce/studio-network.mjs';
+import WorldImport from './WorldImport';
 
 export default function WorldBuilder(props:{manifest:any,project:string,onSaved:()=>Promise<any>}){
  return <StoryImport key={props.project} {...props}/>;
@@ -111,6 +112,7 @@ function StoryImport({manifest,project,onSaved}:{manifest:any,project:string,onS
 
  return <section className="world-builder">
   <p className="world-import-hint">Start with your world. Add what you know; you can return to any section later.</p>
+  <WorldImport project={project} onDone={async()=>{await onSaved()}}/>
   <details className="workflow-step help-section"><summary>Import existing world text</summary><label className="story-field">Import story · {manifest.campaign_name||project}
    <textarea
     aria-label="Paste Firestarter story"
