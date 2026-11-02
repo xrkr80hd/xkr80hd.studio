@@ -41,45 +41,29 @@ export default function CharacterForm({project,manifest,assetId,initial,onSaved,
  return <CharacterFormContext.Provider value={context}>
   <AssetAccordionLayout label={created?'Edit character':'Create character'} footer={<>
         {error&&<p role="alert" className="error-text">{error}</p>}{message&&<p role="status">{message}</p>}
-    <div className="character-creator-actions"><button type="button" className="button primary" disabled={busy} onClick={()=>void save()}>{busy?'Saving…':created?'Save character':'Create character'}</button><button type="button" className={"button " + (locked ? "secondary" : "primary")} style={locked ? { border: '1px solid #10b981', color: '#6ee7b7' } : {}} disabled={busy||!sheet} onClick={()=>void toggleLock()}>{locked?'Unlock sheet':'Lock sheet'}</button>{onCancel&&<button type="button" className="button secondary character-creator-close" disabled={busy} onClick={onCancel}>Close</button>}</div>
+    <div className="character-creator-actions"><button type="button" className="button primary" disabled={busy} onClick={()=>void save()}>{busy?'Saving…':created?'Save':'Create character'}</button>{onCancel&&<button type="button" className="button secondary character-creator-close" disabled={busy} onClick={onCancel}>Close</button>}</div>
    </>}>
     <fieldset disabled={busy} className="character-creator-fieldset">
      <AssetDetails project={project} manifest={draft} assetId={id} onSaved={async()=>{}} renderCharacter={({identity,gear,style})=>
-      <CharacterStory project={project} manifest={draft} characterId={id} onSaved={async()=>{}} renderSections={({details,advanced})=><>
-       <CharacterAccordion number={1} title="Name & Core Identity" defaultOpen>{identity}</CharacterAccordion>
-       <CharacterAccordion number={2} title="Visual Assets & References">
-        <section className="master-character-sheet" aria-label="Master Character Sheet">
-         <header style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-           <strong>Master Character Sheet</strong>
-           <span style={{
-             display: 'inline-flex',
-             alignItems: 'center',
-             gap: '4px',
-             fontSize: '11px',
-             fontWeight: 700,
-             letterSpacing: '0.04em',
-             padding: '3px 8px',
-             borderRadius: '4px',
-             background: locked ? 'rgba(16, 185, 129, 0.2)' : 'rgba(245, 158, 11, 0.2)',
-             color: locked ? '#6ee7b7' : '#fcd34d',
-             border: locked ? '1px solid rgba(16, 185, 129, 0.4)' : '1px solid rgba(245, 158, 11, 0.4)'
-           }}>
-             {locked ? 'Locked' : 'Draft'}
-           </span>
-         </header>
-         <p className="step-hint">16:9 sheet · six columns: front, side, 3/4, rear, face, profile.</p>
-        {sheet?<div className="asset-sheet-previews"><div><ReferenceThumbnail src={image(String(sheet))} label="Character sheet"/><span className="reference-image-label">Character sheet</span></div></div>:<div className="master-sheet-empty">No master sheet uploaded</div>}
-        <label>Character sheet images<input type="file" accept="image/png,image/jpeg,image/webp" disabled={busy||locked} onChange={e=>{const file=e.target.files?.[0];e.target.value='';if(file)void upload(file).catch(()=>{})}}/></label>
-        <button type="button" className="button secondary" disabled={busy||locked} onClick={()=>setPool(true)}>Add from assets</button>
-        </section>
+      <CharacterStory project={project} manifest={draft} characterId={id} onSaved={async()=>{}} renderSections={({details,advanced})=>
+       <CharacterQuickDetails project={project} manifest={draft} characterId={id} onSaved={async()=>{}} renderParts={({links,text})=><>
+       {/* 1. The sheet is the character: show it first, with the three actions you need. */}
+       <section className="character-sheet-hero" aria-label="Character sheet">
+        <div className="character-sheet-image">{sheet?<ReferenceThumbnail src={image(String(sheet))} label="Character sheet"/>:<div className="master-sheet-empty">No sheet yet</div>}<span className={'sheet-status '+(locked?'is-locked':'is-draft')}>{locked?'Locked':'Draft'}</span></div>
+        <div className="character-sheet-actions">
+         <label className="button primary file-button">Upload sheet<input type="file" accept="image/png,image/jpeg,image/webp" disabled={busy||locked} onChange={e=>{const file=e.target.files?.[0];e.target.value='';if(file)void upload(file).catch(()=>{})}}/></label>
+         <button type="button" className="button secondary" disabled={busy||locked} onClick={()=>setPool(true)}>From library</button>
+         <button type="button" className="button secondary" disabled={busy||!sheet} onClick={()=>void toggleLock()}>{locked?'Unlock':'Lock'}</button>
+        </div>
         <div className="character-anchor-grid">{['body_anchor_url','face_anchor_url'].map(key=><AnchorImageField key={key} label={key==='body_anchor_url'?'Body':'Face'} project={project} value={anchors[key]||''} references={refs} disabled={busy||locked} onSelect={ref=>setImages([...(record?.reference_ids||[]),...(ref?[ref]:[])],{...anchors,[key]:ref})} onFile={file=>upload(file,key)}/>)}</div>
-       </CharacterAccordion>
-       <CharacterAccordion number={3} title="Gear, Props & Weapons">{gear}</CharacterAccordion>
-       <CharacterAccordion number={4} title="Character Details">{style}<CharacterQuickDetails project={project} manifest={draft} characterId={id} onSaved={async()=>{}}/>{details}</CharacterAccordion>
-       <CharacterAccordion number={5} title="Advanced Prompts & Continuity">{advanced}<CharacterStates project={project} manifest={draft} characterId={id} onSaved={async()=>{}}/></CharacterAccordion>
-      </>}/>
+       </section>
+       <CharacterAccordion number={1} title="Basics" defaultOpen>{identity}</CharacterAccordion>
+       <CharacterAccordion number={2} title="Links to other characters">{links}</CharacterAccordion>
+       <CharacterAccordion number={3} title="Gear & weapons">{gear}</CharacterAccordion>
+       <CharacterAccordion number={4} title="More (World Builder fills these)">{style}{text}{details}{advanced}<CharacterStates project={project} manifest={draft} characterId={id} onSaved={async()=>{}}/><details className="form-accordion"><summary>Requested changes</summary><ContinuityFields type="character" value={continuity} onChange={setContinuity}/>{created&&<AssetContinuity project={project} manifest={{...draft,revision:baseRevision.current}} assetId={id} onSaved={async next=>{operations.current=[];baseRevision.current=next.revision;publish(next);await onSaved(next)}}/>}</details></CharacterAccordion>
+      </>}/>}/>
      }/>
-    <CharacterAccordion number={6} title="Identity & Approved Customization"><ContinuityFields type="character" value={continuity} onChange={setContinuity}/>{created&&<AssetContinuity project={project} manifest={{...draft,revision:baseRevision.current}} assetId={id} onSaved={async next=>{operations.current=[];baseRevision.current=next.revision;publish(next);await onSaved(next)}}/>}</CharacterAccordion></fieldset>
+    </fieldset>
    <ReferencePoolPicker project={project} manifest={draft} open={pool} selected={record?.reference_ids||[]} disabled={busy||locked} onChoose={async(asset:any)=>{setImages([...(record?.reference_ids||[]),asset.id]);setPool(false)}} onClose={()=>setPool(false)}/>
   </AssetAccordionLayout>
  </CharacterFormContext.Provider>;

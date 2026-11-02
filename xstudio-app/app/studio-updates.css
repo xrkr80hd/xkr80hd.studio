@@ -508,3 +508,21 @@
 .connect-key-form{display:grid;gap:10px;max-width:420px;margin-top:8px}
 .connect-new-key{display:grid;gap:8px;margin-top:12px}
 .connect-new-key input{width:100%}
+
+/* Character editor: sheet first, then four short sections. */
+.character-sheet-hero{display:grid;gap:12px;padding:14px;border:1px solid var(--line-highlight);border-radius:var(--radius);background:var(--surface-card)}
+.character-sheet-image{position:relative;border-radius:10px;overflow:hidden;background:rgba(0,0,0,.35);min-height:120px;display:grid;place-items:center}
+.character-sheet-image img{display:block;width:100%;height:auto;max-height:340px;object-fit:contain}
+.sheet-status{position:absolute;top:8px;right:8px;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:.04em}
+.sheet-status.is-locked{background:rgba(16,185,129,.2);color:#6ee7b7;border:1px solid rgba(16,185,129,.4)}
+.sheet-status.is-draft{background:rgba(245,158,11,.18);color:#fcd34d;border:1px solid rgba(245,158,11,.4)}
+.character-sheet-actions{display:flex;flex-wrap:wrap;gap:8px}
+.file-button{position:relative;overflow:hidden;cursor:pointer}
+.file-button input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer}
+.character-links{display:grid;gap:10px;border:0;padding:0;margin:0}
+.character-link-simple{display:grid;grid-template-columns:minmax(140px,1fr) minmax(140px,1fr) auto;gap:8px;align-items:end}
+.character-link-simple .link-note{grid-column:1/-1}
+.character-link-simple label{display:grid;gap:4px;font-size:13px;font-weight:600}
+.icon-text-button{background:none;border:0;color:var(--muted);font-size:13px;padding:8px;cursor:pointer;min-height:40px}
+.icon-text-button:hover{color:#f87171}
+@media (max-width:560px){.character-link-simple{grid-template-columns:1fr}}
