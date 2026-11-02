@@ -1,3 +1,4 @@
+import {setPowerTier} from './power-tier.mjs';
 import {continuityFormData} from './continuity-service.mjs';
 import {saveAssetDetails} from './asset-details.mjs';
 import {worldRecords,emptyWorld,validateWorld,WORLD_FIELDS,IMAGE_FIELDS} from './world-library.mjs';
@@ -46,6 +47,7 @@ export function saveAssetForm(m,p,args){
  if(args.classification!==undefined){const r=classifyAssets(next,p,m.revision,m.revision,[{asset_id:id,classification:args.classification,expected_version:args.expected_classification_version}]);if(!r.results[0].ok)throw Error(r.results[0].error);next=r.manifest;}
  if(args.clauses!==undefined){if(entry.type!=='prop')throw Error('Character clauses require a prop');next=saveAssetDetails(next,id,{description:next.asset_details?.[id]?.description||'',clauses:args.clauses});}
  if(args.gender!==undefined)next=saveCharacterDetails(next,id,{gender:args.gender},worldRecords(next));
+ if(args.power_tier!==undefined)next=setPowerTier(next,id,args.power_tier,entry.type);
  if(args.equipment_ids!==undefined){if(!['character','creature'].includes(entry.type))throw Error('Only characters and creatures can carry inventory');next.asset_details||={};next.asset_details[id]={...next.asset_details[id],equipment_ids:equipmentIds(next,args.equipment_ids,worldRecords(next))};}
  if(args.generation_prompt!==undefined&&args.generation_prompt!==current.generation_prompt.text)next=updateGenerationPrompt(next,p,m.revision,id,args.expected_prompt_version,args.generation_prompt,{source:'USER_AUTHORED',reference_ids:current.reference_status.approved_reference_ids,notes:'User-authored in shared asset editor'}).manifest;
  const row=worldRecords(next).find(r=>r.id===id);if(!row?.name?.trim())throw Error('Enter an asset name');

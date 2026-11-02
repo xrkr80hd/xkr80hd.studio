@@ -4,7 +4,8 @@ import AssetContinuity,{ContinuityFields} from './AssetContinuity';
 import AssetAccordion from './AssetAccordion';
 import AssetAccordionLayout from './AssetAccordionLayout';
 import OverlaySelect from './OverlaySelect';
-import VisualStyleSelect from './VisualStyleSelect';
+import PresetSelect from './PresetSelect';
+import PowerTierField from './PowerTierField';
 import ReferenceThumbnail from './ReferenceThumbnail';
 import ReferencePoolPicker from './ReferencePoolPicker';
 import PropAssetCrop from './PropAssetCrop';
@@ -37,6 +38,7 @@ export default function AssetForm({project,manifest,assetId,primaryCategory='pro
  const [prompt,setPrompt]=useState(saved.generation_prompt.text),[gender,setGender]=useState(snapshot.character_network?.details?.[id]?.gender||'unspecified');
  const [clauses,setClauses]=useState<PropClause[]>(snapshot.asset_details?.[id]?.clauses||[]);
  const [equipment,setEquipment]=useState<string[]>(snapshot.asset_details?.[id]?.equipment_ids||[]);
+ const [powerTier,setPowerTier]=useState<string>(snapshot.asset_details?.[id]?.power_tier||'');
  const [busy,setBusy]=useState(false),[error,setError]=useState(''),[message,setMessage]=useState(''),[pool,setPool]=useState(false);
  const kind=assetFormKind(primary,classification),locked=record?.status==='LOCKED',assetLabel=classification==='weapon'?'Weapon':classification==='equipment'?'Equipment':classification==='magical_being'?'Magical Being':labels[primary]||'Asset';
  const entries=Object.values(snapshot.references||{}) as any[],inventory=worldRecords(snapshot).filter((a:any)=>a.type==='props'&&!a.deleted_at);
@@ -59,6 +61,7 @@ export default function AssetForm({project,manifest,assetId,primaryCategory='pro
    ...(JSON.stringify(references)!==JSON.stringify(record?.reference_ids||[])?{reference_ids:references}:{}),...(Object.keys(anchorPatch).length?{world_metadata:anchorPatch}:{}),
    ...(classification!==classificationValue(snapshot,id)?{classification,expected_classification_version:snapshot.asset_details?.[id]?.classification_version||0}:{}),
    ...(gender!==(snapshot.character_network?.details?.[id]?.gender||'unspecified')?{gender}:{}),
+   ...(['character','creature'].includes(primary)&&powerTier!==(snapshot.asset_details?.[id]?.power_tier||'')?{power_tier:powerTier}:{}),
    ...(JSON.stringify(equipment)!==JSON.stringify(snapshot.asset_details?.[id]?.equipment_ids||[])?{equipment_ids:equipment}:{}),
    ...(JSON.stringify(clauses)!==JSON.stringify(snapshot.asset_details?.[id]?.clauses||[])?{clauses}:{}),
    ...(prompt!==saved.generation_prompt.text?{generation_prompt:prompt,expected_prompt_version:saved.generation_prompt.version}:{})};
@@ -92,8 +95,11 @@ export default function AssetForm({project,manifest,assetId,primaryCategory='pro
   if(key==='role')return <CharacterRoleField value={values.cast_role||'general'} onChange={v=>update('cast_role',v)}/>;
   if(key==='gender')return <label>Gender<OverlaySelect value={gender} onChange={e=>setGender(e.target.value)}>{Object.entries(CHARACTER_GENDERS).map(([value,label])=><option key={value} value={value}>{label}</option>)}</OverlaySelect></label>;
   if(key==='inventory')return <><div className="character-category-list">{inventory.map((a:any)=><label className="checkbox-choice" key={a.id}><input type="checkbox" checked={equipment.includes(a.id)} onChange={e=>setEquipment(ids=>e.target.checked?[...new Set([...ids,a.id])]:ids.filter(id=>id!==a.id))}/>{a.name}</label>)}</div><small aria-live="polite">{equipment.length} selected</small></>;
-  if(key==='visual_style')return <label>Visual Style<VisualStyleSelect value={metadata.style_anchor||''} disabled={locked} onChange={v=>setMetadata(m=>({...m,style_anchor:v}))}/></label>;
-  if(key==='lighting_preset')return worldField(key);
+  if(key==='visual_style')return null;
+  if(key==='power_tier')return <PowerTierField value={powerTier} onChange={setPowerTier}/>;
+  if(key==='biome'||key==='atmosphere')return <PresetSelect field={key} label={key==='biome'?'Biome':'Atmosphere'} value={values[key]||''} onChange={v=>update(key,v)}/>;
+  if(key==='lighting_preset'||key==='world_geography')return <PresetSelect field={key} label={key==='lighting_preset'?'Lighting':'World Geography'} value={metadata[key]||''} disabled={locked} onChange={v=>setMetadata(m=>({...m,[key]:v}))}/>;
+  if(key==='used_in'){const scenes=Object.values(snapshot.scenes||{}).filter((sc:any)=>!sc.deleted_at&&JSON.stringify(sc).includes('"'+id+'"')).map((sc:any)=>sc.name||sc.scene_id);return <p className="step-hint">{scenes.length?'Used in: '+scenes.join(', '):'Not used in a scene yet.'}</p>;}
   if(key==='world_metadata')return <>{nativeKeys.filter((k:string)=>!['style_anchor','lighting_preset','face_anchor_url','body_anchor_url'].includes(k)).map(worldField)}</>;
   if(key==='generation_prompt')return <label>Generation Prompt<textarea rows={4} maxLength={30000} value={prompt} onChange={e=>setPrompt(e.target.value)}/><small>Version {saved.generation_prompt.version}. Original prompts stay in version history.</small></label>;
   if(key==='status')return <div className="step-hint">Reference / Approval Status: {record?.status||'DRAFT'} · {saved.reference_status.approved_reference_ids.length} approved reference(s)</div>;

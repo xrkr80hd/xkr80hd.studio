@@ -8,8 +8,7 @@ const freshChecks=()=>Object.fromEntries(checkNames.map(k=>[k,false]));
 export function ContinuityFields({type,value,onChange}:{type:string,value:any,onChange:(next:any)=>void}){
  return <div>
   {type==='vehicle'&&<label>VIN (optional for custom vehicles)<input maxLength={17} value={value.vin||''} onChange={e=>onChange({...value,vin:e.target.value.toUpperCase()})}/></label>}
-  <label>edit: requested customization<textarea rows={3} value={value.edit_instruction||''} onChange={e=>onChange({...value,edit_instruction:e.target.value})}/></label>
-  <label>Instruction purpose<select value={value.intent||'modify'} onChange={e=>onChange({...value,intent:e.target.value})}><option value="modify">Apply only requested changes</option><option value="verify">Verify the existing details</option></select></label>
+  <label>Requested changes (optional)<textarea rows={3} value={value.edit_instruction||''} onChange={e=>onChange({...value,edit_instruction:e.target.value})}/></label>
   <small>Save with this form. Base identity stays separate from requested changes; resolve the requested attributes before generation.</small>
  </div>;
 }

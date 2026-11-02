@@ -489,3 +489,22 @@
 
 /* World ZIP import */
 .world-import{margin:0 0 20px}.world-import h3{font-size:18px;margin-bottom:6px}.world-import-review{display:grid;gap:12px}.world-import-review .count{margin-left:8px}.world-import-counts{margin:0;padding-left:18px;color:#b6c2cf;font-size:14px;line-height:1.8}
+
+/* Project setup: the two project-wide picks, first thing in World Builder. */
+.project-setup{display:grid;gap:10px;padding:16px;border:1px solid var(--line-highlight);border-radius:var(--radius);background:var(--surface-card)}
+.project-setup h2{margin:0;font-size:17px}
+.project-setup .step-hint{margin:0}
+.project-setup-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.project-setup-grid label{display:grid;gap:6px;font-weight:600;font-size:14px}
+.lookalike-badge{display:inline-block;margin-top:4px;padding:2px 8px;border-radius:999px;font-size:11px;font-weight:600;color:#fcd34d;background:rgba(245,158,11,.14);border:1px solid rgba(245,158,11,.35)}
+
+/* Connect your AI */
+.connect-ai{display:grid;gap:16px;max-width:820px}
+.connect-ai h1{margin:0}
+.connect-copy{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.connect-copy code{flex:1 1 280px;min-width:0;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:rgba(0,0,0,.3);overflow-wrap:anywhere;font-size:14px}
+.connect-tabs{display:flex;flex-wrap:wrap;gap:6px}
+.connect-guide ol{margin:0 0 12px;padding-left:20px;display:grid;gap:8px;line-height:1.55}
+.connect-key-form{display:grid;gap:10px;max-width:420px;margin-top:8px}
+.connect-new-key{display:grid;gap:8px;margin-top:12px}
+.connect-new-key input{width:100%}

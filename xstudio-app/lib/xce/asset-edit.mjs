@@ -1,3 +1,4 @@
+import {setPowerTier} from './power-tier.mjs';
 import {equipmentIds,assetCategory} from './equipment.mjs';
 import {saveAssetDetails} from './asset-details.mjs';
 import {reclassify} from './reclassify.mjs';
@@ -35,6 +36,7 @@ export function editAsset(m,id,details){
    if(asset.legacy)next.manifest_store.characters[id].medium=details.medium;
    else {next.world_library.characters[id].metadata.style_anchor=details.medium;}
   }
+  if(details.power_tier!==undefined)next=setPowerTier(next,id,details.power_tier,'character');
   if(details.cast_group!==undefined)next=assignCastGroup(next,id,details.cast_group,worldRecords(next));
   if(details.gender!==undefined){if(!Object.hasOwn(CHARACTER_GENDERS,details.gender))throw Error('Choose a gender label');next.character_network||={};next.character_network.details||={};next.character_network.details[id]={...next.character_network.details[id],gender:details.gender};}
  }

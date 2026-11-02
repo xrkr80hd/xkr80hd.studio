@@ -1,6 +1,7 @@
 import {CAST_GROUPS} from './cast-groups.mjs';
 import {allocate,annotate} from './namespace.mjs';
 import {categories} from './core.mjs';
+import {projectMedium} from './world-presets.mjs';
 export const UPLOAD_CATEGORIES={...Object.fromEntries(Object.entries(CAST_GROUPS).map(([id,label])=>['cast:'+id,label])),creature:'Creatures',beast:'Beasts',magical_being:'Magical Beings',prop:'Props',weapon:'Weapons',vehicle:'Vehicles',location:'Locations',costume:'Costumes & Styling',scene:'Scenes / Establishing Shots',style:'Visual Style',diagnostic:'Failed Output'};
 export function uploadDestination(category){
  if(!Object.hasOwn(UPLOAD_CATEGORIES,category))throw Error('Choose an upload category.');
@@ -13,7 +14,7 @@ export function classifyUpload(m,reference,category){
  if(category==='costume')reference.presort={type:'wardrobe',display_name:reference.asset_name||reference.name};
  if(!target.asset_type||['costume','scene'].includes(category))return null;
  const type=target.asset_type,name=(reference.asset_name||reference.name).trim().slice(0,200),id=allocate(m,type,name);
- const asset=annotate({asset_id:id,asset_type:type,name,target_deliverable:type==='character'?'character_turnaround':type==='creature'?'creature_sheet':type==='location'?'location_map':'prop_sheet',mode:'simple',medium:'RL',reference_ids:[reference.id],intake_source_reference_ids:[reference.id],reference_preservation:true,analysis_pending:true,immutable_traits:{silhouette:'',material_spec:''},status:'DRAFT',generation_review:null},m,type);
+ const asset=annotate({asset_id:id,asset_type:type,name,target_deliverable:type==='character'?'character_turnaround':type==='creature'?'creature_sheet':type==='location'?'location_map':'prop_sheet',mode:'simple',medium:projectMedium(m)||'RL',reference_ids:[reference.id],intake_source_reference_ids:[reference.id],reference_preservation:true,analysis_pending:true,immutable_traits:{silhouette:'',material_spec:''},status:'DRAFT',generation_review:null},m,type);
  m.manifest_store[categories[type]]||={};m.manifest_store[categories[type]][id]=asset;
  if(target.cast_group){m.character_cast_groups||={};m.character_cast_groups[id]=target.cast_group}
  const display=({weapon:'weapons',beast:'beasts',magical_being:'magical_beings'})[category];if(display){m.asset_details||={};m.asset_details[id]={description:'',clauses:[],library_category:display};}

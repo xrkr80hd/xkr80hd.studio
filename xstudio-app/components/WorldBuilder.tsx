@@ -5,6 +5,8 @@ import {WORLD_BUILDER_FIELDS,worldBuilderText} from '../lib/xce/world-builder-fi
 import {parseStoryImport} from '../lib/xce/story-import.mjs';
 import {studioFetch} from '../lib/xce/studio-network.mjs';
 import WorldImport from './WorldImport';
+import OverlaySelect from './OverlaySelect';
+import {VISUAL_STYLES,PROJECT_TYPES} from '../lib/xce/world-presets.mjs';
 
 export default function WorldBuilder(props:{manifest:any,project:string,onSaved:()=>Promise<any>}){
  return <StoryImport key={props.project} {...props}/>;
@@ -86,6 +88,21 @@ function StoryImport({manifest,project,onSaved}:{manifest:any,project:string,onS
   }
  }
 
+ const [settings,setSettings]=useState<{visual_style:string,project_type:string}>(()=>({visual_style:manifest.world_builder?.visual_style||'',project_type:manifest.world_builder?.project_type||''}));
+ useEffect(()=>{if(!inFlight.current)setSettings({visual_style:manifest.world_builder?.visual_style||'',project_type:manifest.world_builder?.project_type||''})},[manifest]);
+ async function saveSetting(key:'visual_style'|'project_type',value:string){
+  if(inFlight.current)return;
+  const previous=settings;inFlight.current=true;setBusy(true);setError(false);setMessage('');setSettings(v=>({...v,[key]:value}));
+  try{
+   const response=await studioFetch('/api/world-builder',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({project_id:project,expected_revision:revision.current,world_builder:{[key]:value}})});
+   const data=await response.json();if(!response.ok)throw Error(data.error||'Save failed');
+   if(!mounted.current)return;revision.current=data.revision;
+   setMessage(key==='visual_style'?'Visual style saved for the whole project.':'Project type saved. Every new prompt follows it.');
+   try{await onSaved()}catch{}
+  }catch(e){if(mounted.current){setSettings(previous);setError(true);setMessage((e as Error).message)}}
+  finally{inFlight.current=false;if(mounted.current)setBusy(false)}
+ }
+
  function startEditing(key:string){
   setDraftValues(prev=>({...prev,[key]:fields[key]||''}));
   setEditingKey(key);
@@ -111,6 +128,16 @@ function StoryImport({manifest,project,onSaved}:{manifest:any,project:string,onS
  }
 
  return <section className="world-builder">
+  <section className="project-setup" aria-label="Project setup">
+   <h2>Project setup</h2>
+   <p className="step-hint">Pick once. Every character, location and scene prompt in this project follows these.</p>
+   <div className="project-setup-grid">
+    <label>Visual style<OverlaySelect aria-label="Visual style" value={settings.visual_style} disabled={busy} onChange={e=>void saveSetting('visual_style',e.target.value)}><option value="">Not set</option>{Object.entries(VISUAL_STYLES as Record<string,{label:string}>).map(([key,v])=><option key={key} value={key}>{v.label}</option>)}</OverlaySelect></label>
+    <label>Project type<OverlaySelect aria-label="Project type" value={settings.project_type} disabled={busy} onChange={e=>void saveSetting('project_type',e.target.value)}><option value="">Not set</option>{Object.entries(PROJECT_TYPES as Record<string,{label:string}>).map(([key,v])=><option key={key} value={key}>{v.label}</option>)}</OverlaySelect></label>
+   </div>
+   {settings.project_type==='commercial'&&<p className="step-hint">Commercial: vehicles, products and props stay exactly as photographed. Nothing gets restyled.</p>}
+   {message&&<p className="world-import-status" role={error?'alert':'status'} style={{color:error?'#f87171':'#818cf8'}}>{message}</p>}
+  </section>
   <p className="world-import-hint">Start with your world. Add what you know; you can return to any section later.</p>
   <WorldImport project={project} onDone={async()=>{await onSaved()}}/>
   <details className="workflow-step help-section"><summary>Import existing world text</summary><label className="story-field">Import story · {manifest.campaign_name||project}

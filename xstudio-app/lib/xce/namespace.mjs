@@ -1,4 +1,5 @@
 import {need,categories,findAsset} from './core.mjs';
+import {cleanUploadName,genericUploadName} from './clean-name.mjs';
 export const autoIdRules={module:'auto_id_parser',version:'1.0.0',rules:{auto_prefix_derivation:true,require_manual_id:false,type_prefixes:{character:'CH',creature:'CR',prop:'PR',location:'LOC',vehicle:'VH',scene:'SB',keyframe:'SB'},id_format:'{PROJECT_CODE}-{TYPE}-{ASSET_NAME}-v{VERSION}'}};
 export function slug(name){const s=String(name||'').normalize('NFKD').replace(/[\u0300-\u036f]/g,'').toUpperCase().replace(/[^A-Z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,54).replace(/-+$/,'');need(s,'Give this item a name');return s;}
 export function deriveCode(name){
@@ -44,9 +45,14 @@ export function prepareAutoArgs(m,tool,input){
   if(a.data){arrays(a.data);if(a.data.blueprint_id)a.data.blueprint_id=get('reference',a.data.blueprint_id);if(a.data.reference_ids)a.data.reference_ids=a.data.reference_ids.map(x=>get('reference',x));}delete a.target_name;
  }
  if(tool==='register_reference'){
-  const activeAsset=a.asset_name?null:findAsset(m,m.active_asset_id)||m.scenes[m.active_scene];const entity=a.asset_type||activeAsset?.asset_type||(activeAsset?.scene_id?'scene':null)||({IDENTITY:'character',COSTUME:'character',PROP:'prop',LOCATION:'location',BLUEPRINT:'scene',STYLE:'character',DIAGNOSTIC:'character'})[a.role];
+  // Borrow the selected asset's name only for an unnamed image of the same kind (e.g. another sheet for that
+  // character). Anything else is named from its own filename, so scenes and locations never pick up a cast name.
+  const selected=a.asset_name?null:findAsset(m,m.active_asset_id)||m.scenes[m.active_scene];
+  const selectedType=selected?.asset_type||(selected?.scene_id?'scene':null);
+  const roleType=({IDENTITY:'character',COSTUME:'character',PROP:'prop',LOCATION:'location',BLUEPRINT:'scene'})[a.role];
+  const activeAsset=selected&&genericUploadName(a.name)&&(!a.asset_type||a.asset_type===selectedType)&&(!roleType||roleType===selectedType||(roleType==='character'&&selectedType==='creature')||(roleType==='prop'&&selectedType==='vehicle'))?selected:null;const entity=a.asset_type||activeAsset?.asset_type||(activeAsset?.scene_id?'scene':null)||({IDENTITY:'character',COSTUME:'character',PROP:'prop',LOCATION:'location',BLUEPRINT:'scene',STYLE:'character',DIAGNOSTIC:'character'})[a.role];
   need(entity,'Choose what this image is for: character, prop, location, vehicle, or scene');a.role ||= ({character:'IDENTITY',creature:'IDENTITY',prop:'PROP',vehicle:'PROP',location:'LOCATION',scene:'BLUEPRINT',keyframe:'BLUEPRINT'})[entity];
-  const name=a.asset_name||activeAsset?.name||String(a.name||'Image').replace(/\.[^.]+$/,'');a.name ||= name;a.reference_id ||= allocate(m,entity==='keyframe'?'scene':entity,name,activeAsset?.namespace_root);a.asset_type=entity;a.asset_name=name;
+  const name=a.asset_name||activeAsset?.name||cleanUploadName(a.name);a.name ||= name;a.reference_id ||= allocate(m,entity==='keyframe'?'scene':entity,name,activeAsset?.namespace_root);a.asset_type=entity;a.asset_name=name;
  }
  if(tool==='save_draft_asset'){a.asset_id ||= allocate(m,a.asset_type,a.name);a.reference_ids ||= inheritedReferences(m,a.asset_type,a.name);if(!a.reference_ids.length)a.reference_ids=inheritedReferences(m,a.asset_type,a.name);a.reference_ids=a.reference_ids.map(x=>get('reference',x));if(a.supersedes)a.supersedes=get(a.asset_type,a.supersedes,{locked:true});}
  if(tool==='prepare_wardrobe_edit'){const parsedName=a.command_text&&a.command_text.match(/\s+(.+?)\s+(?:[-–—]\s*)?edit\s*:?/i)?.[1];const target=a.base_asset_id||a.asset_name||parsedName;let base;if(a.base_asset_id)base=resolve(m,'character',target);else{try{base=resolve(m,'character',target,{locked:true})}catch(e){if(!e.message.startsWith('No saved'))throw e;base=resolve(m,'character',target)}}a.base_asset_id=base.asset_id;a.asset_id ||= allocate(m,'character',base.name,base.namespace_root);delete a.asset_name;}

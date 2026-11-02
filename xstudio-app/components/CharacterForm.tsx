@@ -40,9 +40,8 @@ export default function CharacterForm({project,manifest,assetId,initial,onSaved,
  async function toggleLock(){const saved=await save(false);if(!saved)return;setBusy(true);try{const r=await studioFetch('/api/anchor-lock',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({project_id:project,asset_id:id,source_image_id:sheet,expected_revision:saved.revision,action:locked?'unlock':'lock',confirm:true})});const result=await r.json();if(!r.ok)throw Error(result.error||'Lock change failed');const reload=await studioFetch('/api/manifest?project='+encodeURIComponent(project));if(!reload.ok)throw Error('Saved. Reopen to refresh.');const next=await reload.json();baseRevision.current=next.revision;publish(next);await onSaved(next)}catch(e){setError((e as Error).message)}finally{setBusy(false)}}
  return <CharacterFormContext.Provider value={context}>
   <AssetAccordionLayout label={created?'Edit character':'Create character'} footer={<>
-    <p className="step-hint">Save character applies all fields and reference selections together.</p>
-    {error&&<p role="alert" className="error-text">{error}</p>}{message&&<p role="status">{message}</p>}
-    <div className="character-creator-actions"><button type="button" className="button primary" disabled={busy} onClick={()=>void save()}>{busy?'Saving…':created?'Save character':'Create character'}</button><button type="button" className={"button " + (locked ? "secondary" : "primary")} style={locked ? { border: '1px solid #10b981', color: '#6ee7b7' } : {}} disabled={busy||!sheet} onClick={()=>void toggleLock()}>{locked?'🔒 Hard Locked (Click to Unlock)':'🔒 Hard Lock Character Sheet'}</button>{onCancel&&<button type="button" className="button secondary character-creator-close" disabled={busy} onClick={onCancel}>Close</button>}</div>
+        {error&&<p role="alert" className="error-text">{error}</p>}{message&&<p role="status">{message}</p>}
+    <div className="character-creator-actions"><button type="button" className="button primary" disabled={busy} onClick={()=>void save()}>{busy?'Saving…':created?'Save character':'Create character'}</button><button type="button" className={"button " + (locked ? "secondary" : "primary")} style={locked ? { border: '1px solid #10b981', color: '#6ee7b7' } : {}} disabled={busy||!sheet} onClick={()=>void toggleLock()}>{locked?'Unlock sheet':'Lock sheet'}</button>{onCancel&&<button type="button" className="button secondary character-creator-close" disabled={busy} onClick={onCancel}>Close</button>}</div>
    </>}>
     <fieldset disabled={busy} className="character-creator-fieldset">
      <AssetDetails project={project} manifest={draft} assetId={id} onSaved={async()=>{}} renderCharacter={({identity,gear,style})=>
@@ -65,12 +64,10 @@ export default function CharacterForm({project,manifest,assetId,initial,onSaved,
              color: locked ? '#6ee7b7' : '#fcd34d',
              border: locked ? '1px solid rgba(16, 185, 129, 0.4)' : '1px solid rgba(245, 158, 11, 0.4)'
            }}>
-             {locked ? '🔒 HARD LOCK: ACTIVE' : '⚠️ UNLOCKED DRAFT'}
+             {locked ? 'Locked' : 'Draft'}
            </span>
          </header>
-         <div style={{ fontSize: '11px', color: '#94a3b8', background: 'rgba(0,0,0,0.3)', padding: '6px 10px', borderRadius: '6px', marginBottom: '10px', borderLeft: '3px solid #6366f1' }}>
-           <strong>STRICT CONTRACT:</strong> 16:9 widescreen · 6 full-height columns (Front Body, Exact Side, 3/4 Angle, Rear Body, Front Face CU, Profile Face CU). 0% drift tolerance.
-         </div>
+         <p className="step-hint">16:9 sheet · six columns: front, side, 3/4, rear, face, profile.</p>
         {sheet?<div className="asset-sheet-previews"><div><ReferenceThumbnail src={image(String(sheet))} label="Character sheet"/><span className="reference-image-label">Character sheet</span></div></div>:<div className="master-sheet-empty">No master sheet uploaded</div>}
         <label>Character sheet images<input type="file" accept="image/png,image/jpeg,image/webp" disabled={busy||locked} onChange={e=>{const file=e.target.files?.[0];e.target.value='';if(file)void upload(file).catch(()=>{})}}/></label>
         <button type="button" className="button secondary" disabled={busy||locked} onClick={()=>setPool(true)}>Add from assets</button>
@@ -78,7 +75,7 @@ export default function CharacterForm({project,manifest,assetId,initial,onSaved,
         <div className="character-anchor-grid">{['body_anchor_url','face_anchor_url'].map(key=><AnchorImageField key={key} label={key==='body_anchor_url'?'Body':'Face'} project={project} value={anchors[key]||''} references={refs} disabled={busy||locked} onSelect={ref=>setImages([...(record?.reference_ids||[]),...(ref?[ref]:[])],{...anchors,[key]:ref})} onFile={file=>upload(file,key)}/>)}</div>
        </CharacterAccordion>
        <CharacterAccordion number={3} title="Gear, Props & Weapons">{gear}</CharacterAccordion>
-       <CharacterAccordion number={4} title="Style & Technical Details">{style}<CharacterQuickDetails project={project} manifest={draft} characterId={id} onSaved={async()=>{}}/>{details}</CharacterAccordion>
+       <CharacterAccordion number={4} title="Character Details">{style}<CharacterQuickDetails project={project} manifest={draft} characterId={id} onSaved={async()=>{}}/>{details}</CharacterAccordion>
        <CharacterAccordion number={5} title="Advanced Prompts & Continuity">{advanced}<CharacterStates project={project} manifest={draft} characterId={id} onSaved={async()=>{}}/></CharacterAccordion>
       </>}/>
      }/>
