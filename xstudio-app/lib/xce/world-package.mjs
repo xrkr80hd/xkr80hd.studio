@@ -1,3 +1,4 @@
+import {assignCastGroup} from './cast-groups.mjs';
 import {setPowerTier} from './power-tier.mjs';
 // XCE world package: plans and applies a `fin` ZIP (read by world-package-read.mjs)
 // into a saved world. Server-side; never deletes, never locks, never overwrites by default.
@@ -68,6 +69,8 @@ export function applyRecords(original,pkg,{project_id,revision,choices={},now=ne
   const fields={};for(const d of a.details){if(use('asset:'+a.key+':'+d.field,d.action))fields[d.field]=d.incoming;else if(d.action==='conflict')report.kept.push(src.name+' — '+d.field.replaceAll('_',' '));}
   if(Object.keys(fields).length){const version=assetMetadata(m,project_id,revision,id).version;m=updateAssetMetadata(m,project_id,revision,id,version,fields).manifest;}
   if(src.power_tier&&!m.asset_details?.[id]?.power_tier)m=setPowerTier(m,id,src.power_tier,a.category);
+ if(src.narrative_role&&(!m.character_cast_groups?.[id]||m.character_cast_groups[id]==='general'))m=assignCastGroup(m,id,src.narrative_role,worldRecords(m));
+ if(src.entity_type&&!m.asset_details?.[id]?.entity_type){m.asset_details||={};m.asset_details[id]={...m.asset_details[id],entity_type:src.entity_type};}
  if(Object.keys(src.presets||{}).length&&m.world_library?.[a.category]?.[id]){const rec=m.world_library[a.category][id];if(rec.status!=='LOCKED'){rec.metadata={...rec.metadata};for(const [k,v] of Object.entries(src.presets))if(!rec.metadata[k])rec.metadata[k]=v;}}
  if(a.category==='characters'&&(src.quick_details||src.gender)){const saved=m.character_network?.details?.[id]?.text||'';const details={};if(src.quick_details&&!saved.trim())details.quick_details=src.quick_details;if(src.gender)details.gender=src.gender;if(Object.keys(details).length)Object.assign(m,saveCharacterDetails(m,id,details,worldRecords(m)));}
  }

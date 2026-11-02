@@ -1,3 +1,4 @@
+import {NARRATIVE_ROLES,ENTITY_TYPES} from './character-labels.mjs';
 import {POWER_TIERS,LIGHTING_PRESETS,GEOGRAPHY,VISUAL_STYLES,PROJECT_TYPES} from './world-presets.mjs';
 // XCE world package reader: the ZIP that xce_world_builder writes on `fin`.
 // Browser-safe: no Node APIs. The server re-reads and re-validates every package.
@@ -73,7 +74,9 @@ function cleanAsset(a,i,warnings){
  const power_tier=['characters','creatures'].includes(category)&&Object.hasOwn(POWER_TIERS,a.power_tier||'')&&a.power_tier?a.power_tier:undefined;
  if(a.power_tier&&!power_tier)warnings.push(name+': skipped unknown on-screen power "'+a.power_tier+'"');
  const presets={};for(const [k,list] of [['lighting_preset',LIGHTING_PRESETS],['world_geography',GEOGRAPHY]]){const v=text(a.presets?.[k],200);if(v){if(['locations','rooms'].includes(category))presets[k]=v;if(!list.includes(v))warnings.push(name+': '+k.replace('_',' ')+' "'+v+'" is not in the preset list; kept as typed');}}
- return {key,category,name,power_tier,presets,existing_asset_id:typeof a.existing_asset_id==='string'&&/^[\w-]{1,128}$/.test(a.existing_asset_id)?a.existing_asset_id:null,details,quick_details:text(a.quick_details,4000),gender,status_in_chat:a.status_in_chat==='APPROVED'?'APPROVED':'DRAFT',images:[]};
+ const narrative_role=category==='characters'&&Object.hasOwn(NARRATIVE_ROLES,a.narrative_role||'')?a.narrative_role:undefined;if(a.narrative_role&&!narrative_role)warnings.push(name+': skipped unknown narrative role "'+a.narrative_role+'"');
+ const entity_type=category==='characters'&&Object.hasOwn(ENTITY_TYPES,a.entity_type||'')?a.entity_type:undefined;if(a.entity_type&&!entity_type)warnings.push(name+': skipped unknown entity type "'+a.entity_type+'"');
+ return {key,category,name,power_tier,presets,narrative_role,entity_type,existing_asset_id:typeof a.existing_asset_id==='string'&&/^[\w-]{1,128}$/.test(a.existing_asset_id)?a.existing_asset_id:null,details,quick_details:text(a.quick_details,4000),gender,status_in_chat:a.status_in_chat==='APPROVED'?'APPROVED':'DRAFT',images:[]};
 }
 
 // files: {path: Uint8Array}. Returns a normalized package plus warnings. Never throws on a

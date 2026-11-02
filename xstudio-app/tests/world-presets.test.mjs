@@ -42,3 +42,12 @@ test('a fin ZIP carries project setup, on-screen power and location presets into
  assert.equal(manifest.asset_details[id_map['CR-01']].power_tier,'enhanced_enemy');
  const castle=worldRecords(manifest).find(r=>r.id===id_map['LOC-01']);assert.equal(castle.metadata.lighting_preset,'Golden hour');assert.equal(castle.metadata.world_geography,'Desert dunes');
 });
+test('a fin ZIP sets narrative role and entity type on new characters only when unset',()=>{
+ const enc=v=>new TextEncoder().encode(JSON.stringify(v));
+ const pkg=readPackage({[PACKAGE_MANIFEST]:enc({format:'xce-world-package',schema_version:'1.0.0',package_id:'fin-3',world:{name:'RAC'},world_builder:{},
+  assets:[{package_id:'CH-01',category:'characters',name:'Rook',narrative_role:'main',entity_type:'anthropomorphic',power_tier:'elite_boss',images:[]},{package_id:'CH-02',category:'characters',name:'Grunt',narrative_role:'sidekick',images:[]}]})});
+ assert.ok(pkg.warnings.some(w=>/narrative role/.test(w)));
+ const m=fresh();m.campaign_name='RAC';lockNamespace(m,'RAC');
+ const {manifest,id_map}=applyRecords(m,pkg,{project_id:'RAC',revision:1});
+ assert.equal(manifest.character_cast_groups[id_map['CH-01']],'main');assert.equal(manifest.asset_details[id_map['CH-01']].entity_type,'anthropomorphic');
+});
