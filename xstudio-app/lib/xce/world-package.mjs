@@ -1,3 +1,4 @@
+import {setPowerTier} from './power-tier.mjs';
 // XCE world package: plans and applies a `fin` ZIP (read by world-package-read.mjs)
 // into a saved world. Server-side; never deletes, never locks, never overwrites by default.
 import {WORLD_BUILDER_FIELDS,updateWorldBuilder} from './world-builder-fields.mjs';
@@ -52,6 +53,8 @@ export function applyRecords(original,pkg,{project_id,revision,choices={},now=ne
  const use=(key,action)=>action==='fill'||(action==='conflict'&&choices[key]==='zip');
  const plan=planImport(m,pkg);
  const patch={};for(const w of plan.world){if(use('world:'+w.field,w.action)){patch[w.field]=w.incoming;report.world_fields.push(w.label);}else if(w.action==='conflict')report.kept.push(w.label);}
+ // Project style and type fill in only when the project has none yet; a set choice is never overwritten.
+ for(const [k,v] of Object.entries(pkg.project_settings||{}))if(!m.world_builder?.[k]){patch[k]=v;report.world_fields.push(k==='visual_style'?'Visual style':'Project type');}
  if(Object.keys(patch).length)updateWorldBuilder(m,patch);
  for(const a of plan.assets){
   const src=pkg.assets.find(x=>x.key===a.key);let id=a.asset_id;
@@ -64,7 +67,9 @@ export function applyRecords(original,pkg,{project_id,revision,choices={},now=ne
   id_map[a.key]=id;
   const fields={};for(const d of a.details){if(use('asset:'+a.key+':'+d.field,d.action))fields[d.field]=d.incoming;else if(d.action==='conflict')report.kept.push(src.name+' — '+d.field.replaceAll('_',' '));}
   if(Object.keys(fields).length){const version=assetMetadata(m,project_id,revision,id).version;m=updateAssetMetadata(m,project_id,revision,id,version,fields).manifest;}
-  if(a.category==='characters'&&(src.quick_details||src.gender)){const saved=m.character_network?.details?.[id]?.text||'';const details={};if(src.quick_details&&!saved.trim())details.quick_details=src.quick_details;if(src.gender)details.gender=src.gender;if(Object.keys(details).length)Object.assign(m,saveCharacterDetails(m,id,details,worldRecords(m)));}
+  if(src.power_tier&&!m.asset_details?.[id]?.power_tier)m=setPowerTier(m,id,src.power_tier,a.category);
+ if(Object.keys(src.presets||{}).length&&m.world_library?.[a.category]?.[id]){const rec=m.world_library[a.category][id];if(rec.status!=='LOCKED'){rec.metadata={...rec.metadata};for(const [k,v] of Object.entries(src.presets))if(!rec.metadata[k])rec.metadata[k]=v;}}
+ if(a.category==='characters'&&(src.quick_details||src.gender)){const saved=m.character_network?.details?.[id]?.text||'';const details={};if(src.quick_details&&!saved.trim())details.quick_details=src.quick_details;if(src.gender)details.gender=src.gender;if(Object.keys(details).length)Object.assign(m,saveCharacterDetails(m,id,details,worldRecords(m)));}
  }
  for(const r of pkg.relationships){const from=id_map[r.from],to=id_map[r.to];if(!from||!to)continue;const fromAsset=pkg.assets.find(x=>x.key===r.from);if(fromAsset?.category!=='characters')continue;
   const links=characterLinks(m,from);// The site keeps text and clause type only for custom rules; built-in kinds are unique per pair.

@@ -26,3 +26,19 @@ test('location form has no free-text landmark, architecture, scene-marker or sty
  assert.ok(BIOMES.Realistic.includes('Car dealership lot')&&BIOMES.Fantasy.length>5);
  assert.equal(Object.keys(VISUAL_STYLES).length,3);assert.deepEqual(Object.keys(PROJECT_TYPES),['cinematic','commercial','comedy']);
 });
+import {fresh} from '../lib/xce/core.mjs';
+import {lockNamespace} from '../lib/xce/namespace.mjs';
+import {readPackage,applyRecords,PACKAGE_MANIFEST} from '../lib/xce/world-package.mjs';
+import {worldRecords} from '../lib/xce/world-library.mjs';
+test('a fin ZIP carries project setup, on-screen power and location presets into XSTUDIO',()=>{
+ const enc=v=>new TextEncoder().encode(JSON.stringify(v));
+ const pkg=readPackage({[PACKAGE_MANIFEST]:enc({format:'xce-world-package',schema_version:'1.0.0',package_id:'fin-2',generator:'xce_world_builder 2.8.0',world:{name:'Final Fantasy VI'},
+  world_builder:{world_type:'Live-action fantasy.',visual_style:'CIN',project_type:'cinematic'},
+  assets:[{package_id:'CR-01',category:'creatures',name:'Intangir',power_tier:'enhanced_enemy',details:{biome:'Grassland / prairie'},images:[]},
+   {package_id:'LOC-01',category:'locations',name:'Figaro Castle',details:{biome:'Desert',atmosphere:'Dry heat shimmer'},presets:{lighting_preset:'Golden hour',world_geography:'Desert dunes'},images:[]}]})});
+ const m=fresh();m.campaign_name='Final Fantasy VI';lockNamespace(m,'FF6');
+ const {manifest,id_map}=applyRecords(m,pkg,{project_id:'final-fantasy-vi',revision:1});
+ assert.equal(manifest.world_builder.visual_style,'CIN');assert.equal(manifest.world_builder.project_type,'cinematic');
+ assert.equal(manifest.asset_details[id_map['CR-01']].power_tier,'enhanced_enemy');
+ const castle=worldRecords(manifest).find(r=>r.id===id_map['LOC-01']);assert.equal(castle.metadata.lighting_preset,'Golden hour');assert.equal(castle.metadata.world_geography,'Desert dunes');
+});

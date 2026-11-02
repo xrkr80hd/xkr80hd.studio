@@ -1,3 +1,4 @@
+import {POWER_TIERS,LIGHTING_PRESETS,GEOGRAPHY,VISUAL_STYLES,PROJECT_TYPES} from './world-presets.mjs';
 // XCE world package reader: the ZIP that xce_world_builder writes on `fin`.
 // Browser-safe: no Node APIs. The server re-reads and re-validates every package.
 import {WORLD_BUILDER_FIELDS} from './world-builder-fields.mjs';
@@ -24,7 +25,7 @@ const FOLDER_ALIASES={
  scenes_and_shots:['scenes_and_shots','scenes','scene','shots','shot','frames','frame','storyboard','storyboards','keyframes','sb','sh']
 };
 // Mirrors METADATA_FIELDS in asset-metadata.mjs (kept here so this file stays browser-safe).
-export const DETAIL_FIELDS=['silhouette','full_name','description','biography','species','distinguishing_characteristics','appearance','anatomy','facial_features','hair','skin','fur','scales','markings','wardrobe','armor','accessories','equipment','personality','motivations','abilities','background'];
+export const DETAIL_FIELDS=['silhouette','full_name','description','biography','species','distinguishing_characteristics','appearance','anatomy','facial_features','hair','skin','fur','scales','markings','wardrobe','armor','accessories','equipment','personality','motivations','abilities','background','biome','atmosphere'];
 
 export const need=(ok,message)=>{if(!ok)throw Error(message);};
 export const text=(value,limit)=>typeof value==='string'?value.trim().slice(0,limit):'';
@@ -69,7 +70,10 @@ function cleanAsset(a,i,warnings){
  const details={};for(const k of DETAIL_FIELDS){const v=text(a.details?.[k],10000);if(v)details[k]=v;}
  if(a.details)for(const k of Object.keys(a.details))if(!DETAIL_FIELDS.includes(k))warnings.push(name+': skipped unsupported detail "'+k+'"');
  const gender=['unspecified','male','female','other'].includes(a.gender)?a.gender:undefined;
- return {key,category,name,existing_asset_id:typeof a.existing_asset_id==='string'&&/^[\w-]{1,128}$/.test(a.existing_asset_id)?a.existing_asset_id:null,details,quick_details:text(a.quick_details,4000),gender,status_in_chat:a.status_in_chat==='APPROVED'?'APPROVED':'DRAFT',images:[]};
+ const power_tier=['characters','creatures'].includes(category)&&Object.hasOwn(POWER_TIERS,a.power_tier||'')&&a.power_tier?a.power_tier:undefined;
+ if(a.power_tier&&!power_tier)warnings.push(name+': skipped unknown on-screen power "'+a.power_tier+'"');
+ const presets={};for(const [k,list] of [['lighting_preset',LIGHTING_PRESETS],['world_geography',GEOGRAPHY]]){const v=text(a.presets?.[k],200);if(v){if(['locations','rooms'].includes(category))presets[k]=v;if(!list.includes(v))warnings.push(name+': '+k.replace('_',' ')+' "'+v+'" is not in the preset list; kept as typed');}}
+ return {key,category,name,power_tier,presets,existing_asset_id:typeof a.existing_asset_id==='string'&&/^[\w-]{1,128}$/.test(a.existing_asset_id)?a.existing_asset_id:null,details,quick_details:text(a.quick_details,4000),gender,status_in_chat:a.status_in_chat==='APPROVED'?'APPROVED':'DRAFT',images:[]};
 }
 
 // files: {path: Uint8Array}. Returns a normalized package plus warnings. Never throws on a
@@ -113,9 +117,10 @@ function fromFinManifest(doc,warnings){
  const image_list=[];
  assets.forEach((a,i)=>{for(const img of doc.assets[i].images||[])if(typeof img?.file==='string')image_list.push({file:strip(img.file),asset_key:a.key,category:a.category,approved:img.approved===true,role:typeof img.role==='string'?img.role.slice(0,40):''});});
  for(const img of doc.unsorted_images||[])if(typeof img?.file==='string')image_list.push({file:strip(img.file),asset_key:null,category:null,approved:img.approved===true,role:''});
+ const project_settings={};for(const k of ['visual_style','project_type']){const v=doc.world_builder?.[k];if(typeof v==='string'&&v){if(Object.hasOwn(k==='visual_style'?VISUAL_STYLES:PROJECT_TYPES,v))project_settings[k]=v;else warnings.push('Skipped unknown '+k.replace('_',' ')+' "'+v+'"');}}
  const world_builder={};for(const k of Object.keys(WORLD_BUILDER_FIELDS)){const v=doc.world_builder?.[k];if(typeof v==='string'&&v.trim()){if(v.length>WORLD_BUILDER_FIELDS[k].limit)warnings.push(WORLD_BUILDER_FIELDS[k].label+' is longer than the site limit and was cut to '+WORLD_BUILDER_FIELDS[k].limit+' characters');world_builder[k]=v.trim().slice(0,WORLD_BUILDER_FIELDS[k].limit);}}
  const relationships=(Array.isArray(doc.relationships)?doc.relationships:[]).flatMap(r=>keys.has(r?.from)&&keys.has(r?.to)&&r.from!==r.to?[{from:r.from,to:r.to,clause_type:r.clause_type==='synergy'?'synergy':'relationship',kind:['equal_height','shorter_than','taller_than','opposes','custom'].includes(r.kind)?r.kind:'custom',text:text(r.text,2000),enabled:r.enabled!==false}]:(warnings.push('Skipped a relationship that does not link two package assets'),[]));
- return {package_id:text(doc.package_id,80)||null,generator:text(doc.generator,120),world_mode:doc.world?.mode==='new'?'new':doc.world?.mode==='existing'?'existing':null,world_name:text(doc.world?.name,200),project_id:typeof doc.world?.project_id==='string'&&/^[-\w]{1,80}$/.test(doc.world.project_id)?doc.world.project_id:null,world_builder,assets,relationships,image_list,production_file_path:typeof doc.production_file==='string'?strip(doc.production_file):null};
+ return {project_settings,package_id:text(doc.package_id,80)||null,generator:text(doc.generator,120),world_mode:doc.world?.mode==='new'?'new':doc.world?.mode==='existing'?'existing':null,world_name:text(doc.world?.name,200),project_id:typeof doc.world?.project_id==='string'&&/^[-\w]{1,80}$/.test(doc.world.project_id)?doc.world.project_id:null,world_builder,assets,relationships,image_list,production_file_path:typeof doc.production_file==='string'?strip(doc.production_file):null};
 }
 function fromWorldExport(doc,warnings){
  const m=doc.manifest||{},files=Object.fromEntries((doc.media||[]).map(x=>[x.reference_id,x.file]));
