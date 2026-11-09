@@ -32,4 +32,7 @@ test('private media refresh signs only own paths and updates every shared refere
  await assert.rejects(context.refresh({media:{storagePath:'bob/private.jpg'}},'alice',db),/Invalid media owner/);
  await assert.rejects(context.refresh({media:{storagePath:'alice/../bob/private.jpg'}},'alice',db),/Invalid media owner/);
  assert.equal(calls.length,1);
+ await context.refresh({media:{storagePath:'bob/shared.jpg'}},'alice',db,new Set(['bob/shared.jpg']));
+ assert.equal(calls.length,2);
+ await assert.rejects(context.refresh({media:{storagePath:'bob/other.jpg'}},'alice',db,new Set(['bob/shared.jpg'])),/Invalid media owner/);
 });

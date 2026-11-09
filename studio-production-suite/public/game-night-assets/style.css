@@ -678,3 +678,11 @@ body.hide-top .top{display:none!important}
 .toolbar .actions .save-now{border:2px solid #b6ff3b;background:#b6ff3b1f;color:#fff;box-shadow:0 0 14px #b6ff3b44}
 .save-state{display:block;margin-top:6px;text-align:right;font-size:12px;font-weight:800;color:#b6ff3b}
 .save-state.bad{color:#ffd23f}
+/* Shared category library: an obvious save button on every category slot. */
+.slot .slot-save{display:block;width:100%;margin:6px 0 8px;min-height:40px;border-radius:12px;border:2px solid #b6ff3b;background:#b6ff3b26;color:#fff;font-weight:900;font-size:14px;cursor:pointer;box-shadow:0 0 12px #b6ff3b44}
+.slot .slot-save:hover{background:#b6ff3b40}
+.slot .slot-save.slot-dirty{border-color:#ffd23f;background:#ffd23f26;box-shadow:0 0 12px #ffd23f55}
+.slot .slot-save:disabled{opacity:.6;cursor:progress}
+.slot .slot-saved{margin:6px 0 8px;text-align:center;font-size:12px;font-weight:800;color:#b6ff3b}
+.lib-shared{color:#ffd23f;font-size:12px}
+.library .lib-help{margin:0 0 8px;font-size:12px}
