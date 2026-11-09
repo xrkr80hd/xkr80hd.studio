@@ -1,5 +1,15 @@
 ## World ZIP upload and auto-sort (local, not pushed) · 2026-11-01
 
+## XCE Studios v3.0 delivery ZIP import (local, not pushed) · 2026-11-09
+
+- Added `lib/xce/delivery-package.mjs` (browser-safe): reads the per-shot ZIP built by the XCE Studios v3.0 plugins (`delivery_manifest.json`, `SCxx/SCxx-SHxx/` first/last frames, frame prompts, animation prompt, continuity), verifies every SHA-256 checksum, fingerprints the delivery to block double imports, and builds a shot list.
+- Added `POST /api/delivery-import` (plan → image → apply): owner session, trusted origin, folder lock, revision checks, server-side checksum re-check of all text files, PNG/JPEG/WebP magic bytes, 2.5 MB per frame, untouched frames must match their delivery checksum, read-back hash check, duplicate frames reused.
+- Added `components/DeliveryImport.tsx` in the Shot lists panel: choose ZIP → checksum check → preview (shots, frames, missing, notes, name) → import. Frames over 2.5 MB are re-encoded at full resolution (WebP, then JPEG; scaled only as a last resort), with the original checksum kept on the reference. Imported lists show a read-only first/last-frame view with Copy animation prompt; the list button shows "· FF/LF".
+- `validateShotList` now keeps optional `xce_v3` shot data and list `source` (validated: saved image IDs only, bounded prompts/continuity, hex checksums); the editor's save sends `source`, so editing an imported list keeps its v3 data. Existing lists are unchanged. Imported shots start unapproved; the last frame is also in `reference_ids`, so delete-dependency checks protect it.
+- `tests/delivery-package.test.mjs`: 11 tests pass against `tests/fixtures/xce-v3-delivery.zip`, which was built by the plugin's own `xce_package.py`.
+- Verified: `pnpm install --frozen-lockfile`, `pnpm run build` (includes the new route), eslint on all changed files. Full suite: 500/504 pass; the same 4 localhost-HTTP MCP/OAuth tests and 2 lint errors in `world-package.mjs` also fail on the untouched branch (sandbox networking / pre-existing).
+- Not verified: signed-in browser check of the panel (needs the owner's login), real large-frame upload against production storage.
+
 - Added `lib/xce/world-package-read.mjs` (browser-safe reader for `fin` packages, XSTUDIO world exports and plain category folders) and `lib/xce/world-package.mjs` (world matching, review plan, merge-only record apply, image attach).
 - Added `POST /api/world-import` with plan → apply → image steps: owner session, trusted origin, folder lock, revision checks, PNG/JPEG/WebP magic-byte checks, 2.5 MB per image, SHA-256 read-back, duplicate-image reuse.
 - Added `components/WorldImport.tsx` on the Worlds page and World Builder tab: shows where the ZIP goes, counts, conflicts (saved text kept by default; checkbox per item to use the ZIP version), notes, then imports and reports results. Oversized images are shrunk to JPEG, never cropped.

@@ -539,3 +539,12 @@
 .sidebar .nav-more-panel[hidden]{display:none}
 @media(prefers-reduced-motion:reduce){.sidebar .nav-more-toggle .nav-more-chevron{transition:none}}
 @media(max-width:800px){.sidebar .nav-more-toggle{width:100%;min-height:44px}}
+/* XCE Studios v3 delivery: first/last frame pairs (mobile-first, fixed 16:9 thumbnails) */
+.delivery-shots{display:grid;gap:12px;margin:0 0 16px}.delivery-shots h4{margin:0;font-size:15px}
+.delivery-shot{display:grid;gap:8px;padding:10px;border:1px solid rgba(148,163,184,.25);border-radius:10px}
+.delivery-shot small{color:#94a3b8}
+.delivery-pair{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.delivery-pair figure{margin:0;min-width:0}
+.delivery-pair img,.delivery-pair .flow-placeholder{display:block;width:100%;height:auto;aspect-ratio:16/9;min-height:0;max-height:120px;object-fit:cover;border-radius:6px}
+.delivery-pair figcaption{font-size:12px;color:#94a3b8;margin-top:4px}
+@media (min-width:768px){.delivery-shots{grid-template-columns:repeat(2,minmax(0,1fr))}.delivery-shots h4{grid-column:1/-1}.delivery-pair img,.delivery-pair .flow-placeholder{max-height:160px}}

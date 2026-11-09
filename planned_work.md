@@ -1,5 +1,14 @@
 # Planned Work
 
+## XCE Studios v3.0 delivery ZIP import · 2026-11-09
+
+- Add **Import v3 delivery ZIP** to the Shot Lists area: reads the per-shot ZIP that the XCE Studios v3.0 plugins build (`delivery_manifest.json` + `SCxx/SCxx-SHxx/` folders with first_frame/last_frame images, frame prompts, animation_prompt.txt, continuity.json, shot_manifest.json).
+- The browser opens the ZIP (Vercel request limit) and checks every file against the manifest's SHA-256 checksums before anything is sent; a ZIP that fails any checksum is refused.
+- Preview first: target world, shot list name, shot count, missing pairs, warnings. Then upload each frame (one per request, read-back hash check, duplicates reused), then save one shot list.
+- Each imported shot keeps its first frame as the shot image and stores the last frame, both frame prompts, the animation prompt, duration, scene/shot IDs and the continuity record (blocking maps, look, anchors) as additive `xce_v3` data. Existing shot lists, approvals and grades are untouched; imported shots start unapproved.
+- Frames over 2.5 MB are re-encoded in the browser at full resolution (WebP, then JPEG) — never cropped or scaled unless still too large; the original checksum is kept on the reference.
+- Unfinished feature stays local on branch `claude/xstudio-v3-delivery-import` until the owner says push; release target is `codex/xstudio-private`.
+
 ## World ZIP upload and auto-sort · 2026-11-01
 
 - Add one **Upload world ZIP** action to the Worlds page and each World Builder tab.

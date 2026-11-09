@@ -1,5 +1,6 @@
 import {bindProjectPrompt,worldRecords} from './world-library.mjs';
 import {effectiveGrade,validateGrade,injectGrade,manageColorGrade} from './color-grades.mjs';
+import {validateDeliveryShot,validateDeliverySource} from './delivery-package.mjs';
 export function validateShotList(data,m){
  if(!data||typeof data.name!=='string'||!data.name.trim()||data.name.length>200)throw Error('Shot list name required');
  if(!['Scenes','Shots'].includes(data.folder))throw Error('Choose Scenes or Shots');
@@ -16,9 +17,10 @@ export function validateShotList(data,m){
   const duration=s.panel?.duration??3;if(typeof duration!=='number'||duration<1||duration>600)throw Error('Invalid duration');next.panel.duration=duration;
   if(s.style){if(!['RL','CB','photorealistic','comic_book'].includes(s.style))throw Error('Invalid shot style');next.style=s.style}
   for(const k of ['scene_id','sequence_id'])if(s[k]){if(typeof s[k]!=='string'||! /^[\w-]{1,80}$/.test(s[k]))throw Error('Invalid '+k);next[k]=s[k]}
+  if(s.xce_v3!==undefined)next.xce_v3=validateDeliveryShot(s.xce_v3,m.references||{});
   if(s.effective_grade){validateGrade(s.effective_grade.definition,{factoryAllowed:true});if(s.effective_grade.grade_id!==s.effective_grade.definition.id||s.effective_grade.grade_version!==s.effective_grade.definition.version||s.effective_grade.intensity!==s.effective_grade.definition.intensity)throw Error('Grade snapshot mismatch');next.effective_grade=structuredClone(s.effective_grade)}
   return next;
- });const context={};for(const k of ['sequence_id','scene_id'])if(data[k]){if(typeof data[k]!=='string'||! /^[\w-]{1,80}$/.test(data[k]))throw Error('Invalid '+k);context[k]=data[k]}if(data.sequence_grade){const g=data.sequence_grade;validateGrade(g.definition,{factoryAllowed:true});if(g.grade_id!==g.definition.id||g.grade_version!==g.definition.version||g.intensity!==g.definition.intensity)throw Error('Grade snapshot mismatch');context.sequence_grade=structuredClone(g)}if(data.mode){if(!['SS','AS'].includes(data.mode))throw Error('Invalid shot mode');context.mode=data.mode}return {name:data.name.trim(),folder:data.folder,generator:data.generator,...context,shots};
+ });const context={};for(const k of ['sequence_id','scene_id'])if(data[k]){if(typeof data[k]!=='string'||! /^[\w-]{1,80}$/.test(data[k]))throw Error('Invalid '+k);context[k]=data[k]}if(data.sequence_grade){const g=data.sequence_grade;validateGrade(g.definition,{factoryAllowed:true});if(g.grade_id!==g.definition.id||g.grade_version!==g.definition.version||g.intensity!==g.definition.intensity)throw Error('Grade snapshot mismatch');context.sequence_grade=structuredClone(g)}if(data.mode){if(!['SS','AS'].includes(data.mode))throw Error('Invalid shot mode');context.mode=data.mode}if(data.source!==undefined)context.source=validateDeliverySource(data.source);return {name:data.name.trim(),folder:data.folder,generator:data.generator,...context,shots};
 }
 export function shotListPackage(list,m,project){
  const anchorIds=new Set(),referenceIds=new Set(),missing=[];
