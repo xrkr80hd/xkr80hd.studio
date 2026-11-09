@@ -26,5 +26,5 @@ test('builder has an obvious save button, a shared library and no JSON import/ex
  const app=readFileSync(new URL('../public/game-night-assets/app.js',import.meta.url),'utf8');
  assert.match(app,/💾 Save category/);assert.match(app,/saveSharedCategory/);assert.match(app,/loadSharedCategories/);
  assert.doesNotMatch(app,/Export backup|Import Game|'import'|exportGame/);
- assert.match(app,/window\.GAME_NIGHT_CLOUD\?\{games,selected:game\?\.id,play,room,categoriesRescued\}/);
+ assert.match(app,/categoriesRescued,\.\.\.\(categoriesRescued\?\{\}:\{catalog:legacyCatalog\}\)/);
 });
