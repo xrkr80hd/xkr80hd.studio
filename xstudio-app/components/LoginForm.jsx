@@ -2,12 +2,10 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { safeReturn } from '../lib/oauth/return-path.mjs';
-import { Eye, EyeOff, ShieldCheck, ArrowRight, Sparkles, Terminal, KeyRound } from 'lucide-react';
-
-const OWNER_EMAIL = 'xrkr80hd@gmail.com';
+import { Eye, EyeOff, Terminal } from 'lucide-react';
 
 export default function LoginForm({ recovery, next }) {
-  const [email, setEmail] = useState(OWNER_EMAIL);
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -22,27 +20,6 @@ export default function LoginForm({ recovery, next }) {
       e.stopPropagation();
     }
     setShowPassword(prev => !prev);
-  }
-
-  async function launchOwnerSession() {
-    setBusy(true);
-    setError('');
-    try {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ email: OWNER_EMAIL, password: password || 'verified_owner' }),
-      });
-      try {
-        localStorage.setItem('xstudio:owner', OWNER_EMAIL);
-      } catch {}
-      window.location.assign(safeReturn(next));
-    } catch {
-      window.location.assign('/');
-    } finally {
-      setBusy(false);
-    }
   }
 
   async function signIn(event) {
@@ -60,7 +37,7 @@ export default function LoginForm({ recovery, next }) {
       const payload = await response.json();
       if (!response.ok || !payload.user) throw new Error(payload.error || 'Sign in failed.');
       try {
-        localStorage.setItem('xstudio:owner', payload.user.email || OWNER_EMAIL);
+        localStorage.setItem('xstudio:owner', payload.user.email || '');
       } catch {}
       window.location.assign(safeReturn(next));
     } catch (cause) {
@@ -139,23 +116,6 @@ export default function LoginForm({ recovery, next }) {
               </span>
             </div>
           </div>
-          <span
-            style={{
-              fontSize: '10px',
-              fontFamily: 'monospace',
-              padding: '4px 8px',
-              borderRadius: '6px',
-              background: 'rgba(16, 185, 129, 0.15)',
-              border: '1px solid rgba(16, 185, 129, 0.4)',
-              color: '#34d399',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px'
-            }}
-          >
-            <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#34d399', boxShadow: '0 0 8px #34d399' }} />
-            VERIFIED OWNER NODE
-          </span>
         </div>
 
         {/* Headline */}
@@ -168,42 +128,6 @@ export default function LoginForm({ recovery, next }) {
           </p>
         </div>
 
-        {/* 1-Tap Enter Studio as Verified Owner */}
-        <div style={{ marginBottom: '24px' }}>
-          <button
-            type="button"
-            disabled={busy}
-            onClick={launchOwnerSession}
-            style={{
-              width: '100%',
-              padding: '14px 18px',
-              borderRadius: '10px',
-              background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
-              border: '1px solid #a5b4fc',
-              color: '#ffffff',
-              fontSize: '13px',
-              fontWeight: 700,
-              letterSpacing: '0.02em',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '10px',
-              cursor: 'pointer',
-              boxShadow: '0 0 25px rgba(99, 102, 241, 0.45)',
-              transition: 'all 0.18s ease'
-            }}
-          >
-            <Sparkles size={16} color="#ffffff" />
-            <span>Launch Studio as Verified Owner ({OWNER_EMAIL})</span>
-            <ArrowRight size={16} color="#ffffff" />
-          </button>
-        </div>
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', margin: '20px 0', color: '#64748b', fontSize: '10px', letterSpacing: '0.1em' }}>
-          <div style={{ flex: 1, height: '1px', background: 'rgba(255, 255, 255, 0.1)' }} />
-          <span>MANUAL SIGN-IN CREDENTIALS</span>
-          <div style={{ flex: 1, height: '1px', background: 'rgba(255, 255, 255, 0.1)' }} />
-        </div>
 
         {/* Credentials Form */}
         <form onSubmit={signIn} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -212,7 +136,7 @@ export default function LoginForm({ recovery, next }) {
               htmlFor="email-input"
               style={{ display: 'block', fontSize: '11px', fontWeight: 600, color: '#cbd5e1', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.05em' }}
             >
-              Account Email
+              Email
             </label>
             <input
               id="email-input"
@@ -313,12 +237,6 @@ export default function LoginForm({ recovery, next }) {
               </button>
             </div>
 
-            {/* Clear feedback if password is visible */}
-            {showPassword && password && (
-              <div style={{ marginTop: '6px', fontSize: '11px', color: '#818cf8', fontFamily: 'monospace', background: 'rgba(99, 102, 241, 0.1)', padding: '4px 8px', borderRadius: '4px' }}>
-                Preview: {password}
-              </div>
-            )}
           </div>
 
           {error && (
@@ -353,13 +271,6 @@ export default function LoginForm({ recovery, next }) {
           </button>
         </form>
 
-        <div style={{ marginTop: '24px', paddingTop: '18px', borderTop: '1px solid rgba(255, 255, 255, 0.08)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '11px', color: '#64748b' }}>
-          <span style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-            <ShieldCheck size={14} color="#10b981" />
-            Cloud SQL Encrypted
-          </span>
-          <span>Port 3000 iFrame Ready</span>
-        </div>
       </div>
     </main>
   );

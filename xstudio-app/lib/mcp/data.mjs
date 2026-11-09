@@ -67,7 +67,7 @@ export function dataSource(auth,request=backend(auth.backendToken,fetch,{allowCl
    const {file}=await request({op:'file_get',key:r.key});if(!file)return {...base,status:'missing'};
    let url;try{url=new URL(file.url);}catch{throw new GatewayError('Invalid media destination',502);}
    if(url.origin!==new URL(XSTUDIO_ENDPOINT).origin||!['/storage/v1/object/sign/xstudio-assets/','/storage/v1/object/sign/xstudio-engine-files/'].some(prefix=>url.pathname.startsWith(prefix))||!url.searchParams.has('token'))throw new GatewayError('Invalid media destination',502);
-   return {...base,media:{url:file.url,mime_type:file.mime_type,byte_size:file.size,expires_in:60},generation_input_allowed:r.role!=='DIAGNOSTIC'};
+   return {...base,media:{url:file.url,mime_type:file.mime_type,byte_size:file.size,expires_in:300},generation_input_allowed:r.role!=='DIAGNOSTIC'};
   }));
  }
  return async(name,a)=>{

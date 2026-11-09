@@ -62,7 +62,7 @@ export const toolSpecs=[
  ['list_project_assets','List saved asset IDs, names and metadata in one project.',{project_id,category:category.optional(),...page}],
  ['get_asset','Retrieve one saved asset and its exact reference associations. Signed media is opt-in.',{project_id,asset_id:id,...media}],
  ['get_character_anchor','Retrieve the exact saved LOCKED character anchor. Prefer get_character_cref for visual reference requests. include_media=true returns verified original image blocks using CREF; false (default) returns metadata only. Never substitutes missing references.',{project_id,asset_id:id,...media}],
- ['get_character_references','Retrieve saved character reference associations and optional 60-second media URLs.',{project_id,asset_id:id,...media}],
+ ['get_character_references','Retrieve saved character reference associations and optional 5-minute media URLs.',{project_id,asset_id:id,...media}],
  ['list_establishing_shots','List records explicitly marked as establishing shots; do not infer a shot type.',{project_id,...page}],
  ['get_scene_references','Retrieve saved scene or shot references and saved cast metadata.',{project_id,scene_id:id,...media}],
  ['get_color_grades','Get the existing factory and saved custom grades and assignments.',{project_id}],

@@ -34,7 +34,7 @@ export async function retrieveCharacterReference(args,{projectIds,loadProject,ma
  if(!current||current.revision!==hit.saved.revision)throw Error('Project changed while loading character reference. Retry retrieval.');
  return {...result,character_id:result.cref.asset_id,canonical_asset_id:result.cref.asset_id,
   asset_code:result.cref.asset_code,project_id:hit.project,reference_urls:urls,
-  cref_parameters:{flag:'--cref',value:urls.map(r=>r.url).join(' '),expires_in:60},
+  cref_parameters:{flag:'--cref',value:urls.map(r=>r.url).join(' '),expires_in:300},
   ...(include_turnaround?{turnaround_sheet:{reference_ids:result.cref.reference_ids,urls:urls.map(r=>r.url),layout_verified:false,note:'Exact locked source sheet. No six-column or 16:9 layout is inferred.'}}:{}),
-  instruction:'Display the returned locked image in chat. Use these exact original pixels as the character reference for downstream scene generation through the client\'s supported image-input mechanism. URLs expire after 60 seconds; retrieve this character again to renew them. Do not substitute a description or similar image. Tool image delivery alone does not prove a separate generator received the reference.'};
+  instruction:'Display the returned locked image in chat. Use these exact original pixels as the character reference for downstream scene generation through the client\'s supported image-input mechanism. URLs expire after 5 minutes; retrieve this character again to renew them. Do not substitute a description or similar image. Tool image delivery alone does not prove a separate generator received the reference.'};
 }

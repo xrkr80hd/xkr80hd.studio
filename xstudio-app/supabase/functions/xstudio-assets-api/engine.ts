@@ -67,7 +67,7 @@ export async function engine(request,admin,token){
   result=await files().select('storage_bucket,storage_path,mime_type,byte_size').eq('owner_id',owner).eq('object_key',a.key).maybeSingle();
   check(!result.error,'Engine file lookup failed');if(!result.data)return reply({file:null});
   const file=result.data;
-  const signed=await admin.storage.from(file.storage_bucket).createSignedUrl(file.storage_path,60);check(!signed.error,'Engine file download failed');
+  const signed=await admin.storage.from(file.storage_bucket).createSignedUrl(file.storage_path,300);check(!signed.error,'Engine file download failed');
   return reply({file:{mime_type:file.mime_type,size:file.byte_size,...(a.op==='file_get'?{url:signed.data.signedUrl}:{})}});
  }
  else throw Error('Unknown engine operation');
