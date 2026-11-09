@@ -697,3 +697,22 @@ body.hide-top .top{display:none!important}
 .save-icon.ok{background:#b6ff3b;color:#0a0620;box-shadow:0 0 24px #b6ff3b88}
 .save-icon.bad{background:#ffd23f;color:#0a0620;box-shadow:0 0 24px #ffd23f88}
 @media (prefers-reduced-motion:reduce){.save-spinner{animation-duration:2.5s}}
+/* Guided Game Master console: progress steps, "Do this next" box, visible game tools. */
+.gm-panel .host-panel-top h2 small{display:block;font-size:11px;font-weight:700;letter-spacing:.04em;opacity:.65;text-transform:none}
+.gm-progress{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin:10px 0 8px}
+.gm-progress span{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10.5px;font-weight:800;text-align:center;opacity:.5;line-height:1.15}
+.gm-progress b{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;border:2px solid #ffffff55;font-size:12px}
+.gm-progress .done{opacity:.85}.gm-progress .done b{background:#b6ff3b;border-color:#b6ff3b;color:#0a0620}
+.gm-progress .now{opacity:1}.gm-progress .now b{background:#ff2e88;border-color:#fff;color:#fff;box-shadow:0 0 12px #ff2e88aa}
+.gm-now{margin:6px 0 12px;padding:14px 16px;border-radius:16px;border:3px solid #ffd23f;background:linear-gradient(160deg,#ffd23f22,#0a062099 60%);box-shadow:0 0 22px #ffd23f33}
+.gm-now-label{font-size:11px;font-weight:950;letter-spacing:.14em;color:#ffd23f}
+.gm-now h3{margin:4px 0 6px;font-size:21px;line-height:1.2}
+.gm-now p{margin:0;font-size:15px;line-height:1.45}
+.gm-now .gm-now-btn{width:100%;margin-top:12px;min-height:52px;font-size:17px}
+.gm-tools{margin:12px 0;padding:12px;border-radius:14px;border:1px solid #ffffff26;background:#0a062066}
+.gm-tools-label{font-size:11px;font-weight:900;letter-spacing:.12em;opacity:.7;margin-bottom:8px}
+.gm-tools-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.gm-tools-grid button{min-height:42px;font-size:13.5px}
+.gm-tools-grid .gm-help{grid-column:1/-1;border-color:#ffd23f;color:#ffd23f}
+.ugn-big small{display:block;font-size:11px;letter-spacing:.08em;opacity:.85;font-weight:800;margin-top:2px}
+.gm-progress .skip{opacity:.4}.gm-progress .skip b{border-style:dashed}
