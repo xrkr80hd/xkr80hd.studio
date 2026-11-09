@@ -15,10 +15,10 @@ export async function GET(request){const user=await gameIdentity(request);if(!us
 // Save (create or update) one category.
 export async function PUT(request){if(!sameOrigin(request))return fail('Invalid origin',403);const user=await gameIdentity(request);if(!user)return fail('Log in again to save categories',401);try{const body=await smallJson(request,1500000);const category=normalizeCategory(body.category);const db=gameDb();await checkMedia(category,user.username,db);
   const row={id:category.id,name:category.name,clues:category.clues,media_paths:categoryMediaPaths(category),signature:categorySignature(category),updated_by:user.username,updated_at:new Date().toISOString()};
-  let {data:existing,error:lookupError}=await db.from('game_night_categories').select('id').eq('id',category.id).maybeSingle();
-  // Same words already in the library (for example a category rescued from an old save): update that one instead of adding a duplicate.
-  if(!existing&&!lookupError){({data:existing,error:lookupError}=await db.from('game_night_categories').select('id').eq('signature',row.signature).limit(1).maybeSingle());if(existing)row.id=category.id=existing.id;}
-  if(lookupError)return fail('Could not save the category right now',503);
+  // One lookup finds this category by id, or the same words already in the library (e.g. rescued from an old save),
+  // so a re-save updates that row instead of adding a duplicate. id and signature are validated/hex, safe in the filter.
+  const {data:matches,error:lookupError}=await db.from('game_night_categories').select('id').or(`id.eq.${category.id},signature.eq.${row.signature}`).limit(2);if(lookupError)return fail('Could not save the category right now',503);
+  const existing=matches.find(m=>m.id===category.id)||matches[0];if(existing)row.id=category.id=existing.id;
   const {data,error}=existing?await db.from('game_night_categories').update(row).eq('id',row.id).select(fields).single():await db.from('game_night_categories').insert({...row,created_by:user.username}).select(fields).single();
   if(error)return fail('Could not save the category right now',503);const [signed]=await signRows([data],user.username,db).catch(()=>[data]);return NextResponse.json({category:out(signed)},{headers:privateHeaders});}
  catch(error){return fail(error.message==='Request too large'?'This category is too large to save. Use smaller pictures or clips.':error.message);}}

@@ -686,3 +686,14 @@ body.hide-top .top{display:none!important}
 .slot .slot-saved{margin:6px 0 8px;text-align:center;font-size:12px;font-weight:800;color:#b6ff3b}
 .lib-shared{color:#ffd23f;font-size:12px}
 .library .lib-help{margin:0 0 8px;font-size:12px}
+/* Category save dialog: spinner while saving, big check when saved, clear warning when not. */
+.save-dialog{text-align:center;padding:8px 4px}
+.save-dialog h2{margin:12px 0 6px}
+.save-dialog p{margin:0 auto 14px;max-width:440px;line-height:1.45}
+.save-dialog .actions{justify-content:center}
+.save-spinner{width:56px;height:56px;margin:4px auto;border-radius:50%;border:6px solid #ffffff26;border-top-color:#b6ff3b;animation:save-spin .9s linear infinite}
+@keyframes save-spin{to{transform:rotate(360deg)}}
+.save-icon{width:64px;height:64px;margin:4px auto;border-radius:50%;display:grid;place-items:center;font-size:36px;font-weight:950}
+.save-icon.ok{background:#b6ff3b;color:#0a0620;box-shadow:0 0 24px #b6ff3b88}
+.save-icon.bad{background:#ffd23f;color:#0a0620;box-shadow:0 0 24px #ffd23f88}
+@media (prefers-reduced-motion:reduce){.save-spinner{animation-duration:2.5s}}
