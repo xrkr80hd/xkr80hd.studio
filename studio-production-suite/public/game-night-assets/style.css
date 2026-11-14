@@ -814,3 +814,11 @@ body.hide-top .top{display:none!important}
 .ai-check input{width:20px;height:20px}
 #ai-apply{width:100%;min-height:52px;font-size:17px;margin-top:10px}
 @media (max-width:700px){.ai-acc>summary{font-size:15px;padding:12px}.ai-acc-body{padding:0 12px 12px}.ai-btns>*{flex-basis:100%}}
+/* Buzzer: locked look until buzzing is really open (countdown and "your turn" included); bright only when it says BUZZ. */
+.phone .buzzer{flex-direction:column;justify-content:center;gap:4px}
+.phone .buzzer:disabled[data-eligible="true"],.phone .buzzer.is-turn,.phone .buzzer.is-turn:disabled{--cap:#3b2f63;--cap-hi:#6a5aa8;--ring:#ffd23f;color:#e6defc;font-size:inherit;text-shadow:none}
+.phone .buzzer.is-turn,.phone .buzzer.is-turn:disabled{--ring:#b6ff3b}
+.buzzer .buzz-lock{display:block;font-size:clamp(26px,8vw,34px);line-height:1.1}
+.buzzer .buzz-why{display:block;font-size:13px;letter-spacing:.08em;text-transform:uppercase;opacity:.9;font-weight:900}
+.lib-problem{display:grid;gap:4px;margin:6px 0 10px;padding:10px 12px;border-radius:12px;border:2px solid #ffd23f;background:#ffd23f1a;font-size:13px;line-height:1.4}
+.lib-problem b{color:#ffd23f}.lib-problem small{opacity:.7}.lib-problem code{font-size:12px;word-break:break-all}
