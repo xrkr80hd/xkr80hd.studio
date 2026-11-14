@@ -27,7 +27,7 @@ const metadataUpdate=z.strictObject({asset_id:id,expected_version:z.number().int
 const metadataBatch={project_id,expected_revision:z.number().int().min(1),updates:z.array(metadataUpdate).min(1).max(50)};
 const uploadCategory=z.enum(['cast:main','cast:supporting','cast:villain','cast:sub_villain','cast:general','cast:background','cast:extras','cast:military','creature','beast','magical_being','prop','weapon','vehicle','location','costume','style','diagnostic']);
 // ChatGPT file param (openai/fileParams): ChatGPT supplies a download link; the server fetches the bytes.
-const file=z.strictObject({download_url:z.string().url().max(4000),file_id:z.string().min(1).max(200),mime_type:z.string().max(100).optional(),file_name:z.string().max(300).optional()});
+const file=z.looseObject({download_url:z.string().url().max(4000),file_id:z.string().min(1).max(200),mime_type:z.string().max(100).optional(),file_name:z.string().max(300).optional()});
 const FILE_PARAM_TOOLS=new Set(['import_world_zip','import_image_file']);
 const writeScope=name=>workspaceScopes[name]||(['update_asset_details','bulk_update_asset_details','update_asset_generation_prompt','manage_asset_identity'].includes(name)?'asset:metadata':name.includes('update_asset_classification')?'asset:classify':null);
 const continuityShape=z.fromJSONSchema(CONTINUITY_SCHEMA).shape;

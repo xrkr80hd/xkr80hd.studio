@@ -119,3 +119,58 @@ test('import_world_zip needs asset:write and confirm',async()=>{
  const g=fixture(firstZip());await assert.rejects(workspaceOperation('import_world_zip',{file:fileArg},g),/confirmation/);
  assert.equal(f.calls.length+g.calls.length,0);
 });
+
+const nwZip=()=>finZip({...manifest({assets:[XRKR]}),world:{name:'Spy Cobalt',project_id:null,mode:'new'}},{'images/characters/xrkr.png':png(1)});
+
+test('a World Builder nw ZIP sent again reuses its world (no duplicate worlds or images)',async()=>{
+ const f=fixture(nwZip());const first=await run(f);assert.equal(first.mode,'created');
+ const again=await run(f);assert.equal(again.mode,'existing');assert.equal(again.project_id,first.project_id);
+ const pinned=await run(f,{project_id:first.project_id});assert.equal(pinned.project_id,first.project_id);
+ assert.equal(f.files.size,1);
+ assert.equal([...f.rows.keys()].filter(k=>k.startsWith('w-')).length,1);
+});
+
+test('images for a locked creature are skipped',async()=>{
+ const BEAST={package_id:'CR-01',category:'creatures',name:'Cobalt Hound',images:[{file:'images/creatures/hound.png'}]};
+ const f=fixture(finZip(manifest({assets:[BEAST]}),{'images/creatures/hound.png':png(5)}));const first=await run(f);
+ const m=manifestOf(f,first.project_id),row=f.rows.get(first.project_id);
+ Object.values(m.manifest_store.creatures).find(c=>c.name==='Cobalt Hound').status='LOCKED';f.rows.set(first.project_id,{...row,manifest:JSON.stringify(m)});
+ f.zip=finZip(manifest({assets:[{...BEAST,images:[{file:'images/creatures/hound2.png'}]}]}),{'images/creatures/hound2.png':png(6)});
+ const r=await run(f,{project_id:first.project_id});
+ assert.deepEqual(r.images.skipped_locked,['images/creatures/hound2.png']);assert.equal(r.images.added,0);
+});
+
+test('the time budget counts from the start, including the download',async()=>{
+ const zip=finZip(manifest({assets:[XRKR,CAR]}),{'images/characters/xrkr.png':png(1),'images/vehicles/car.png':png(3)});
+ const f=fixture(zip);let clock=0;f.now=()=>clock;const fetch=f.fetchFile;f.fetchFile=async(...x)=>{clock+=41_000;return fetch(...x);};
+ const r=await run(f);
+ assert.equal(r.images.added,0);assert.equal(r.images.remaining,2);assert.equal(r.complete,false);
+ assert.ok(characters(manifestOf(f,r.project_id)).some(c=>c.name==='XRKR'),'records still saved');
+});
+
+test('a full Story workspace does not block the rest of the import',async()=>{
+ const f=fixture(firstZip());const first=await run(f);
+ const m=manifestOf(f,first.project_id),row=f.rows.get(first.project_id);
+ m.story_workspace.document.documents=Array.from({length:200},(_,i)=>({id:'x'+i,kind:'notes',title:'t'+i,body:''}));f.rows.set(first.project_id,{...row,manifest:JSON.stringify(m)});
+ f.zip=finZip(manifest({assets:[XRKR,SOL]}),{'scripts/Ep2.md':enc('INT. CAR')});
+ const r=await run(f,{project_id:first.project_id});
+ assert.deepEqual(r.report.created,['Agent SOL']);assert.match(r.scripts.failed,/Too many drafts/);
+});
+
+test('a concurrent edit during the image loop is merged, not lost',async()=>{
+ const zip=finZip(manifest({assets:[XRKR,CAR]}),{'images/characters/xrkr.png':png(1),'images/vehicles/car.png':png(3)});
+ const f=fixture(zip);const request=f.request;let saves=0;
+ f.request=async x=>{if(x.op==='save'&&++saves===3){const row=f.rows.get(x.project);const m=JSON.parse(row.manifest);m.project_description='edited on the website';f.rows.set(x.project,{manifest:JSON.stringify(m),revision:row.revision+1});}return request(x);};
+ const r=await run(f);
+ assert.equal(r.images.added,2);assert.equal(r.complete,true);
+ const m=manifestOf(f,r.project_id);assert.equal(m.project_description,'edited on the website');
+ assert.equal(Object.values(m.references).filter(x=>x.imported_from_package).length,2);
+});
+
+test('a read-back failure stops cleanly with a partial report',async()=>{
+ const zip=finZip(manifest({assets:[XRKR,CAR]}),{'images/characters/xrkr.png':png(1),'images/vehicles/car.png':png(3)});
+ const f=fixture(zip);const getImage=f.getImage;let reads=0;f.getImage=async k=>++reads===2?null:getImage(k);
+ const r=await run(f);
+ assert.equal(r.images.added,1);assert.equal(r.complete,false);assert.match(r.error,/read-back/);
+ assert.equal(Object.values(manifestOf(f,r.project_id).references).filter(x=>x.imported_from_package).length,1);
+});

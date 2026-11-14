@@ -120,3 +120,9 @@ test('save_script requests may carry a full 150k-character script',async()=>{
  assert.equal((await readToolRequest(make('save_script'))).params.name,'save_script');
  await assert.rejects(readToolRequest(make('get_project')),e=>e.status===413);
 });
+
+test('the file param tolerates extra fields ChatGPT may add',async()=>{
+ const body=await (await gateway(rpc('tools/list'),deps)).json();
+ const file=body.result.tools.find(t=>t.name==='import_image_file').inputSchema.properties.file;
+ assert.notEqual(file.additionalProperties,false);
+});

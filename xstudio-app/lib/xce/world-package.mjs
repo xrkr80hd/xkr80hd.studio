@@ -94,7 +94,7 @@ export function attachImage(original,{reference_id,key,name,mime_type,size,sha25
  if(asset_id){
   const lib=category&&category!=='creatures'?m.world_library?.[category]?.[asset_id]:null,creature=m.manifest_store?.creatures?.[asset_id];
   const record=lib||creature;need(record,'The asset for this image no longer exists; reload and retry');
-  need(record.status!=='LOCKED'||!lib,'Locked assets are immutable; this image was not attached');
+  need(record.status!=='LOCKED','Locked assets are immutable; this image was not attached');
   need((record.reference_ids||[]).length<30,'This asset already has 30 images');
   record.reference_ids=[...(record.reference_ids||[]),reference_id];if(lib&&!lib.thumbnail_reference_id)lib.thumbnail_reference_id=reference_id;
  }

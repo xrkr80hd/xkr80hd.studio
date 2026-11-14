@@ -56,3 +56,13 @@ test('returns the bytes and sends no credentials',async()=>{
  assert.equal(headers.has('cookie'),false);
  assert.equal(ZIP_MAX_BYTES,41_943_040);
 });
+
+test('one deadline covers every redirect hop',async()=>{
+ const signals=[];let hop=0;
+ await fetchFile(file,{maxBytes:10,lookup:publicLookup,fetchImpl:async(url,init)=>{signals.push(init.signal);return ++hop<3?new Response(null,{status:302,headers:{location:'https://files.example.test/h'+hop}}):body(new Uint8Array([1]));}});
+ assert.equal(signals.length,3);assert.ok(signals.every(s=>s===signals[0]),'same signal on every hop');
+});
+
+test('the deadline also bounds DNS lookup',async()=>{
+ await assert.rejects(fetchFile(file,{maxBytes:10,timeoutMs:30,lookup:()=>new Promise(r=>setTimeout(()=>r([{address:'93.184.216.34',family:4}]),1000)),fetchImpl:async()=>body('x')}),/timed out/);
+});

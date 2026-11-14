@@ -21,7 +21,7 @@ import {upsertScript,unzipPackage,scriptDrafts,mergeScriptDrafts} from '../xce/w
 import {readPackage,resolveWorld,applyRecords,attachImage,referenceIdFor} from '../xce/world-package.mjs';
 import {fetchFile as defaultFetchFile,ZIP_MAX_BYTES} from './file-fetch.mjs';
 
-const MAX_IMAGE_BYTES=2_500_000,IMAGE_TIME_BUDGET_MS=45_000,SAVE_EVERY=10;
+const MAX_IMAGE_BYTES=2_500_000,IMPORT_TIME_BUDGET_MS=40_000,SAVE_EVERY=10;
 const normTitle=s=>String(s||'').trim().toLowerCase();
 const slugify=s=>String(s||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
 const sha256Of=bytes=>createHash('sha256').update(bytes).digest('hex');
@@ -103,38 +103,64 @@ export async function workspaceOperation(name,a,{auth,request,getImage,fetchFile
  if(name==='import_project'){const source=await load(a.source_project_id);check(!source.m.system_pool,'Choose a creative project');check(source.revision===a.expected_revision,'Source project changed; reload');return {...await create(structuredClone(source.m)),source_project_id:a.source_project_id,reference_images_reused:true,image_bytes_copied:false};}
  if(name==='import_world_zip')return importWorldZip();
  async function importWorldZip(){
-  const files=unzipPackage(new Uint8Array(await fetchFile(a.file,{maxBytes:ZIP_MAX_BYTES})));
+  const started=now(),overBudget=()=>now()-started>IMPORT_TIME_BUDGET_MS;
+  const files=unzipPackage(await fetchFile(a.file,{maxBytes:ZIP_MAX_BYTES}));
   const pkg=readPackage(files,String(a.file.file_name||'world.zip').slice(0,200));
-  const list=((await request({op:'projects'})).data||[]).filter(r=>auth.projects.has(r.project)).flatMap(r=>{let pm;try{pm=JSON.parse(r.manifest);}catch{return [];}return pm.deleted_at?[]:[{id:r.project,title:pm.campaign_name||r.project,system_pool:Boolean(pm.system_pool)}];});
-  const world=resolveWorld(list,pkg,a.project_id||null,{createNew:a.create_new===true||(a.create_new===undefined&&pkg.world_mode==='new'),name:a.new_name||''});
+  let packageWorld=null;
+  const list=((await request({op:'projects'})).data||[]).filter(r=>auth.projects.has(r.project)).flatMap(r=>{let pm;try{pm=JSON.parse(r.manifest);}catch{return [];}if(pm.deleted_at)return [];
+   if(pkg.package_id&&!pm.system_pool&&pm.xce_world_packages?.[pkg.package_id])packageWorld=r.project;
+   return [{id:r.project,title:pm.campaign_name||r.project,system_pool:Boolean(pm.system_pool)}];});
+  // A World Builder `nw` ZIP asks for a new world only the first time: once a world holds this package, resends fill that world.
+  const chosen=a.project_id||packageWorld||null;
+  const world=resolveWorld(list,pkg,chosen,{createNew:a.create_new===true||(a.create_new===undefined&&!chosen&&pkg.world_mode==='new'),name:a.new_name||''});
   if(world.mode==='ambiguous')return {mode:'ambiguous',name:world.name,candidates:list.filter(x=>!x.system_pool&&normTitle(x.title)===normTitle(world.name)).map(x=>({id:x.id,title:x.title})),complete:false,warnings:pkg.warnings};
   let p=world.project_id,mode='existing';
   if(world.mode==='create'){p='w-'+(slugify(world.name)||'world').slice(0,60)+'-'+randomUUID().slice(0,8);a={...a,project_id:p,name:world.name};await create(fresh());mode='created';}
   let {m,revision}=await load(p);check(!m.system_pool,'Choose a creative world');
   const applied=applyRecords(m,pkg,{project_id:p,revision,choices:{}});m=applied.manifest;
-  const ws=m.story_workspace||{document:emptyStory(),revision:0,updated_at:null},merged=mergeScriptDrafts(ws.document,scriptDrafts(files),m);
-  if(merged.added.length)m.story_workspace={document:merged.story,revision:(ws.revision||0)+1,updated_at:new Date().toISOString()};
+  const scripts={added:[],same:[],kept:[]};
+  try{
+   const ws=m.story_workspace||{document:emptyStory(),revision:0,updated_at:null},merged=mergeScriptDrafts(ws.document,scriptDrafts(files),m);
+   Object.assign(scripts,{added:merged.added,same:merged.same,kept:merged.kept});
+   if(merged.added.length)m.story_workspace={document:merged.story,revision:(ws.revision||0)+1,updated_at:new Date().toISOString()};
+  }catch(e){scripts.failed=e.message;}
   m.history||=[];m.history.push({kind:'mcp_import_world_zip',date:new Date().toISOString()});
   revision=await save(p,m,revision);
-  const images={added:0,skipped_duplicate:0,skipped_locked:[],too_large:[],failed:[],remaining:0},start=now();let pending=0;
+  const images={added:0,skipped_duplicate:0,skipped_locked:[],too_large:[],failed:[],remaining:0};let pending=[],error=null;
+  const hasSha=(mm,sha)=>Object.values(mm.references||{}).some(r=>r?.content_sha256===sha&&!r.deleted_at);
+  // Save attached images; if the website saved in between, reload and re-attach so neither side is lost.
+  async function persist(){
+   if(!pending.length)return;
+   try{revision=await save(p,m,revision);}
+   catch(e){
+    if(!/Concurrent|verification uncertain/.test(e.message))throw e;
+    ({m,revision}=await load(p));
+    for(const args of pending)if(!hasSha(m,args.sha256)){try{m=attachImage(m,args);}catch{/* locked or removed meanwhile: leave it */}}
+    revision=await save(p,m,revision);
+   }
+   pending=[];
+  }
   for(let i=0;i<pkg.images.length;i++){
    const img=pkg.images[i];
    if(img.too_large){images.too_large.push(img.file);continue;}
-   if(now()-start>IMAGE_TIME_BUDGET_MS){images.remaining=pkg.images.slice(i).filter(x=>!x.too_large).length;break;}
+   if(overBudget()){images.remaining=pkg.images.slice(i).filter(x=>!x.too_large).length;break;}
    const bytes=files[img.file],sha256=sha256Of(bytes);
-   if(Object.values(m.references||{}).some(r=>r?.content_sha256===sha256&&!r.deleted_at)){images.skipped_duplicate++;continue;}
+   if(hasSha(m,sha256)){images.skipped_duplicate++;continue;}
    const label=(img.asset_key&&pkg.assets.find(x=>x.key===img.asset_key)?.name)||img.file.split('/').pop().replace(/\.[^.]+$/,'');
    const reference_id=referenceIdFor(m,img.category,label),key='xce/'+auth.owner+'/'+p+'/'+reference_id+'-'+randomUUID();
+   const args={reference_id,key,name:label,mime_type:img.mime_type,size:bytes.length,sha256,category:img.category,asset_id:img.asset_key?applied.id_map[img.asset_key]||null:null};
    let next;
-   try{next=attachImage(m,{reference_id,key,name:label,mime_type:img.mime_type,size:bytes.length,sha256,category:img.category,asset_id:img.asset_key?applied.id_map[img.asset_key]||null:null});}
+   try{next=attachImage(m,args);}
    catch(e){if(/locked/i.test(e.message))images.skipped_locked.push(img.file);else images.failed.push({file:img.file,reason:e.message});continue;}
-   await request({op:'file_put',key,mime_type:img.mime_type,base64:Buffer.from(bytes).toString('base64'),name:label,library_visible:true});
-   const stored=await getImage(key);check(stored&&sha256Of(Buffer.from(await stored.arrayBuffer()))===sha256,'Import image read-back verification failed');
-   m=next;images.added++;
-   if(++pending>=SAVE_EVERY){revision=await save(p,m,revision);pending=0;}
+   try{
+    await request({op:'file_put',key,mime_type:img.mime_type,base64:Buffer.from(bytes).toString('base64'),name:label,library_visible:true});
+    const stored=await getImage(key);check(stored&&sha256Of(Buffer.from(await stored.arrayBuffer()))===sha256,'Import image read-back verification failed');
+    m=next;images.added++;pending.push(args);
+    if(pending.length>=SAVE_EVERY)await persist();
+   }catch(e){error=e.message;images.remaining=pkg.images.slice(i).filter(x=>!x.too_large).length;break;}
   }
-  if(pending)revision=await save(p,m,revision);
-  return {project_id:p,name:m.campaign_name||world.name,mode,revision,report:applied.report,images,scripts:{added:merged.added,same:merged.same,kept:merged.kept},warnings:pkg.warnings,complete:images.remaining===0};
+  try{await persist();}catch(e){error=error||e.message;images.added-=pending.length;}
+  return {project_id:p,name:m.campaign_name||world.name,mode,revision,report:applied.report,images,scripts,warnings:pkg.warnings,complete:images.remaining===0&&!error,...(error?{error}:{})};
  }
  const {m:original,revision}=await load(a.project_id,{deleted:name==='restore_folder'||name==='list_trash'});const m=structuredClone(original);
  if(name==='export_world')return {project_id:a.project_id,revision,file_name:a.project_id+'-r'+revision+'.world.zip',format:'xce-portable-world',download_path:'/api/world-export?project_id='+encodeURIComponent(a.project_id),json_path:'/api/world-export?project_id='+encodeURIComponent(a.project_id)+'&format=json',includes:['world.json','DIRECTOR_BRIEF.md','original reference images','media-index.json'],note:'Open the download link while signed into XSTUDIO. The JSON-only file references images; the ZIP contains their original bytes. Destination import support must be checked.'};

@@ -24,18 +24,21 @@ export function isPublicAddress(ip){
 
 /**
  * @param {{download_url?:string,file_id?:string}|null|undefined} file
- * @param {{maxBytes:number,fetchImpl?:typeof fetch,lookup?:(host:string,opts:any)=>Promise<{address:string}[]>}} options
+ * @param {{maxBytes:number,fetchImpl?:typeof fetch,lookup?:(host:string,opts:any)=>Promise<{address:string}[]>,timeoutMs?:number}} options
  * @returns {Promise<Buffer>}
  */
-export async function fetchFile(file,{maxBytes,fetchImpl=fetch,lookup=dns.lookup}){
+export async function fetchFile(file,{maxBytes,fetchImpl=fetch,lookup=dns.lookup,timeoutMs=TIMEOUT_MS}){
+ const signal=AbortSignal.timeout(timeoutMs);
+ const timedOut=new Promise((_,reject)=>signal.addEventListener('abort',()=>reject(Error('File download timed out')),{once:true}));timedOut.catch(()=>{});
+ const bounded=promise=>Promise.race([promise,timedOut]);
  if(!file||typeof file.download_url!=='string'||typeof file.file_id!=='string'||!file.file_id)throw Error('A file with download_url and file_id is required');
  let url;
  try{url=new URL(file.download_url);}catch{throw Error('Invalid file download_url');}
  for(let hop=0;;hop++){
   if(url.protocol!=='https:')throw Error('File download must use https');
-  const addresses=await lookup(url.hostname.replace(/^\[|\]$/g,''),{all:true,verbatim:true});
+  const addresses=await bounded(lookup(url.hostname.replace(/^\[|\]$/g,''),{all:true,verbatim:true}));
   if(!addresses?.length||addresses.some(a=>!isPublicAddress(a.address)))throw Error('File host is not allowed');
-  const response=await fetchImpl(url.href,{redirect:'manual',signal:AbortSignal.timeout(TIMEOUT_MS),headers:{accept:'*/*'}});
+  const response=await bounded(fetchImpl(url.href,{redirect:'manual',signal,headers:{accept:'*/*'}}));
   if(response.status>=300&&response.status<400){
    if(hop>=MAX_REDIRECTS)throw Error('Too many redirects while downloading the file');
    const location=response.headers.get('location');
@@ -49,7 +52,7 @@ export async function fetchFile(file,{maxBytes,fetchImpl=fetch,lookup=dns.lookup
   if(response.body){
    const reader=response.body.getReader();
    while(true){
-    const {done,value}=await reader.read();if(done)break;
+    const {done,value}=await bounded(reader.read());if(done)break;
     length+=value.byteLength;
     if(length>maxBytes){await reader.cancel();throw Error('File is too large');}
     chunks.push(value);
