@@ -755,3 +755,30 @@ body.hide-top .top{display:none!important}
 .ai-clue>b{padding-top:30px;color:#ffd23f}
 .ai-clue small{grid-column:2/-1;opacity:.75}
 @media (max-width:700px){.ai-clue{grid-template-columns:1fr}.ai-clue>b{padding-top:0}}
+/* Phone fixes for the builder library header, ChatGPT writer and category menu. */
+.lib-head .lib-refresh{flex:0 0 auto;width:36px;max-width:36px}
+.ai-wizard,.ai-wizard *{box-sizing:border-box;min-width:0}
+.ai-wizard textarea,.ai-wizard input,.ai-wizard select{max-width:100%}
+.ai-clue small{grid-column:1/-1}
+@media (max-width:700px){
+ .lib-head{flex-wrap:nowrap}
+ .lib-head h3{flex:1 1 auto}
+ .ai-wizard h2{font-size:24px;line-height:1.15}
+ .ai-step{grid-template-columns:1fr;gap:6px;padding:12px;margin:12px 0}
+ .ai-step-num{width:28px;height:28px;font-size:15px}
+ .ai-step h3{font-size:17px;margin:0 0 6px}
+ .ai-step .row{display:grid;grid-template-columns:1fr;gap:0}
+ .ai-prompt{font-size:12px;max-height:180px}
+ .ai-step button{width:100%;min-height:48px}
+ .ai-preview{padding:10px}
+ .ai-clue{grid-template-columns:1fr;gap:4px;padding:10px 0;border-top:1px solid #ffffff1f}
+ .ai-clue>b{padding-top:0}
+ .ai-clue small{grid-column:1}
+ .cat-menu h2{font-size:24px}
+ .cat-menu-move{grid-template-columns:1fr 1fr}
+ .cat-menu-move .cat-menu-text small{display:none}
+ .cat-menu-move .cat-menu-item{min-height:50px;padding:8px 10px;gap:8px}
+ .cat-menu-move .cat-menu-icon{flex-basis:28px;height:28px}
+ .cat-menu-item{padding:10px 12px}
+}
+@media (max-width:700px){.ai-step{display:block}.ai-step-num{float:left;margin:0 8px 0 0}.ai-step h3{line-height:28px}.ai-step .help{clear:both}}
