@@ -716,3 +716,28 @@ body.hide-top .top{display:none!important}
 .gm-tools-grid .gm-help{grid-column:1/-1;border-color:#ffd23f;color:#ffd23f}
 .ugn-big small{display:block;font-size:11px;letter-spacing:.08em;opacity:.85;font-weight:800;margin-top:2px}
 .gm-progress .skip{opacity:.4}.gm-progress .skip b{border-style:dashed}
+/* Category "•••" menu: status, one big save, simple rows, separate careful section. */
+.cat-menu h2{margin:4px 0 8px}
+.cat-menu-status{margin:0 0 14px;padding:10px 12px;border-radius:12px;font-size:14px;font-weight:700;line-height:1.4;background:#ffffff0f;border-left:4px solid #ffffff55}
+.cat-menu-status.ok{border-left-color:#b6ff3b;color:#d9ffa0}
+.cat-menu-status.dirty{border-left-color:#ffd23f;color:#ffe48a}
+.cat-menu-status.new{border-left-color:#22e3ff}
+.cat-menu-save{width:100%;min-height:52px;font-size:17px;margin-bottom:14px}
+.cat-menu-group,.cat-menu-danger{display:grid;gap:8px}
+.cat-menu-move{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.cat-menu-item{display:flex;align-items:center;gap:12px;width:100%;min-height:58px;padding:10px 14px;border-radius:14px;border:1px solid #ffffff2e;background:#0a062080;color:#fff;text-align:left;cursor:pointer;transition:background .15s,border-color .15s}
+.cat-menu-item:hover:not(:disabled){background:#ffffff14;border-color:#ffffff66}
+.cat-menu-item:disabled{opacity:.35;cursor:not-allowed}
+.cat-menu-icon{flex:0 0 34px;height:34px;border-radius:10px;display:grid;place-items:center;background:#ffffff14;font-size:17px}
+.cat-menu-text{display:flex;flex-direction:column;gap:2px;min-width:0}
+.cat-menu-text b{font-size:15px}
+.cat-menu-text small{font-size:12.5px;opacity:.72;font-weight:600;line-height:1.3}
+.cat-menu-danger{margin-top:16px;padding-top:12px;border-top:1px dashed #ffffff33}
+.cat-menu-label{font-size:11px;font-weight:900;letter-spacing:.14em;color:#ff8fb8}
+.cat-menu-item.danger-item{border-color:#ff2e8855}
+.cat-menu-item.danger-item:hover:not(:disabled){background:#ff2e8822;border-color:#ff2e88}
+.cat-menu-item.danger-item .cat-menu-icon{background:#ff2e8826}
+.lib-head{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.lib-head h3{margin:0}
+.lib-refresh{min-width:36px;min-height:36px;font-size:18px;padding:0}
+.lib-count{display:block;margin:2px 0 4px;font-size:12px;font-weight:800;color:#ffd23f}
