@@ -8,3 +8,12 @@ assert.equal(aiInput({action:'improve',topic:'Cars',clues:Array(8).fill({questio
 const draft={category:'Cars',clues:[{question:'Q',answer:'A',difficulty:'easy',accepted:'',note:''}],narration:'Let’s play!',warnings:[]};assert.deepEqual(parseDraft({status:'completed',output:[{content:[{type:'output_text',text:JSON.stringify(draft)}]}]}),draft);assert.throws(()=>parseDraft({status:'incomplete'}));assert.equal(draftSchema.additionalProperties,false);
 const checks=reviewContent([{name:'Test',clues:[{question:'Which is best today?',answer:'A'},{question:'WHICH is best today?',answer:''}]}]);assert(checks.some(x=>x.includes('duplicates')));assert(checks.some(x=>x.includes('objective')));assert(checks.some(x=>x.includes('correct answer')));
 console.log('AI draft validation and deterministic content checks passed. No provider calls.');
+const mod=await import('data:text/javascript;base64,'+Buffer.from(source).toString('base64'));
+const prompt=mod.buildChatPrompt({topic:'Dogs',audience:'kids',difficulty:'Easy'});
+assert.match(prompt,/Topic: Dogs/);assert.match(prompt,/CATEGORY:/);assert.match(prompt,/5\. Q: <question> \| A: <answer>/);
+const pasted=`Sure! Here you go:\n\n**CATEGORY:** Dog Breeds\n1. **Q:** Which breed is famous for spots? | **A:** Dalmatian | **ALSO:** none\n2. Q: Smallest breed? | A: Chihuahua | ALSO:\n- Q: Which dog pulls sleds in Alaska? | A: Siberian Husky | ALSO: Husky\n4. Question: What breed was Scooby-Doo? \nAnswer: Great Dane\n5) Q: Which breed has a blue-black tongue? | A: Chow Chow | ALSO: Chow`;
+const d=mod.parsePastedCategory(pasted);
+assert.equal(d.category,'Dog Breeds');assert.equal(d.clues.length,5);assert.equal(d.clues[0].answer,'Dalmatian');assert.equal(d.clues[0].accepted,'');assert.equal(d.clues[2].accepted,'Husky');assert.equal(d.clues[3].answer,'Great Dane');assert.equal(d.clues[3].question,'What breed was Scooby-Doo?');
+assert.throws(()=>mod.parsePastedCategory('CATEGORY: X\n1. Q: a | A: b'),/only 1 complete clue/);
+assert.throws(()=>mod.parsePastedCategory('hello'),/Couldn’t find any clues/);
+console.log('ChatGPT prompt and paste-back parsing passed');
