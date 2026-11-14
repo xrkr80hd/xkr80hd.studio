@@ -822,3 +822,30 @@ body.hide-top .top{display:none!important}
 .buzzer .buzz-why{display:block;font-size:13px;letter-spacing:.08em;text-transform:uppercase;opacity:.9;font-weight:900}
 .lib-problem{display:grid;gap:4px;margin:6px 0 10px;padding:10px 12px;border-radius:12px;border:2px solid #ffd23f;background:#ffd23f1a;font-size:13px;line-height:1.4}
 .lib-problem b{color:#ffd23f}.lib-problem small{opacity:.7}.lib-problem code{font-size:12px;word-break:break-all}
+/* Category writer step 1: a card per topic with its slot, and a big Add topic button. */
+.ai-row{display:grid;gap:8px;margin:0 0 10px;padding:12px;border-radius:14px;border:1px solid #ffffff33;background:#ffffff0a}
+.ai-row-head{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.ai-row-head b{font-size:14px;letter-spacing:.04em;color:#ffd23f}
+.ai-row-x{min-height:34px;padding:0 10px;border-radius:10px;border:1px solid #ff2e8866;background:none;color:#ff8fb8;font-weight:800;font-size:13px;cursor:pointer}
+.ai-row-topic{width:100%;min-height:48px;font-size:17px}
+.ai-row-slot{display:grid;gap:4px;font-size:13px;font-weight:800;opacity:.95}
+.ai-row-slot select{width:100%;min-height:44px}
+.ai-addrow{width:100%;min-height:52px;margin:2px 0 10px;border-radius:14px;border:2px dashed #22e3ff;background:#22e3ff14;color:#22e3ff;font-weight:950;font-size:17px;cursor:pointer}
+.ai-addrow:hover{background:#22e3ff26}
+.ai-rowmsg{margin:8px 0 0;font-weight:800;color:#ffd23f}
+#ai-next1{width:100%;min-height:52px;font-size:17px}
+/* Lock icon sits centered above the word LOCKED. */
+.phone .buzzer{text-align:center;align-items:center}
+.buzzer .buzz-icon{display:block;font-size:clamp(30px,9vw,40px);line-height:1;margin-bottom:2px}
+.buzzer .buzz-lock,.buzzer .buzz-why{width:100%;text-align:center}
+.ai-row{gap:6px}
+.ai-row-label{font-size:14px;font-weight:900;color:#ffd23f}
+.ai-row-line{display:flex;gap:8px;align-items:center}
+.ai-row-line .ai-row-topic{flex:1 1 auto;min-width:0}
+.ai-row-line .ai-row-x{flex:0 0 44px;width:44px;min-height:48px;padding:0;font-size:18px}
+/* Builder toolbar on phones: equal columns that can't push wider than the screen; the ChatGPT button gets its own row. */
+@media (max-width:700px){
+ .toolbar .actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;width:100%}
+ .toolbar .actions>button{min-width:0;white-space:normal;line-height:1.2}
+ .toolbar .actions>[data-action="ai-assistant"]{grid-column:1/-1}
+}
