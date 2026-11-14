@@ -15,8 +15,14 @@ import {stampProjectIdentity} from '../xce/project-identity.mjs';
 import {usesReference} from '../xce/attachments.mjs';
 import {purgeTrash} from '../xce/library.mjs';
 import {imageBytes} from '../xce/xstudio-bridge.mjs';
+import {imageMime} from '../xce/composer-service.mjs';
+import {emptyStory} from '../xce/story.mjs';
+import {upsertScript} from '../xce/world-zip-import.mjs';
+import {fetchFile as defaultFetchFile} from './file-fetch.mjs';
 
-export const workspaceScopes={update_character_profile:'asset:metadata',update_world_builder:'asset:write',create_world_asset:'asset:write',create_folder:'asset:write',update_folder:'asset:write',import_asset:'asset:write',import_project:'asset:write',delete_folder:'asset:delete',restore_folder:'asset:write',delete_assets:'asset:delete',restore_assets:'asset:write',purge_trash:'asset:delete'};
+const MAX_IMAGE_BYTES=2_500_000;
+
+export const workspaceScopes={update_character_profile:'asset:metadata',update_world_builder:'asset:write',create_world_asset:'asset:write',create_folder:'asset:write',update_folder:'asset:write',import_asset:'asset:write',import_image_file:'asset:write',save_script:'asset:write',import_project:'asset:write',delete_folder:'asset:delete',restore_folder:'asset:write',delete_assets:'asset:delete',restore_assets:'asset:write',purge_trash:'asset:delete'};
 export const workspaceTools=new Set([...Object.keys(workspaceScopes),'list_trash','get_world_builder','export_world']);
 const check=(ok,message)=>{if(!ok)throw Error(message);};
 const marker=auth=>createHash('sha256').update('xstudio-created-project-v1:'+auth.principal).digest('hex');
@@ -68,10 +74,21 @@ export function restoreAssets(m,keys){
   delete m.trash[key];
  }m.permits={};return {restored:keys.length};
 }
-export async function workspaceOperation(name,a,{auth,request,getImage}){
+export async function workspaceOperation(name,a,{auth,request,getImage,fetchFile=defaultFetchFile}){
  const scope=workspaceScopes[name];if(scope)check(auth.scopes?.has(scope),'Permission required: '+scope+'; reconnect and approve access');
  if(scope)check(a.confirm===true,'Explicit confirmation required');
  async function load(p,{deleted=false}={}){check(auth.projects.has(p),'Project not found or unavailable');const row=(await request({op:'load',project:p})).data;check(row,'Project not found or unavailable');const m=JSON.parse(row.manifest);check(!m.folder_lock,'Folder locked; unlock it in XSTUDIO');check(deleted||!m.deleted_at,'Project is in trash');return {m,revision:row.revision};}
+ async function storeImage(m,{bytes,mime_type,name,upload_category,dedupe=true}){
+  const sha256=createHash('sha256').update(bytes).digest('hex');
+  const prior=dedupe&&Object.values(m.references||{}).find(r=>r?.content_sha256===sha256&&!r.deleted_at);
+  if(prior){const asset=codedRecords(m).find(e=>(e.record.reference_ids||[]).includes(prior.id));return {reference_id:prior.id,asset_id:asset?recordId(asset.record):null,asset_code:asset?.record.asset_code||prior.asset_code||null,sha256,status:asset?'DRAFT':'REFERENCE',approved:false,verified:true,reused:true};}
+  const destination=uploadDestination(upload_category),id=allocate(m,destination.asset_type||'prop',name),key='xce/'+auth.owner+'/'+a.project_id+'/'+id+'-'+randomUUID();
+  await request({op:'file_put',key,mime_type,base64:Buffer.from(bytes).toString('base64'),name,library_visible:true});
+  const stored=await getImage(key);check(stored&&createHash('sha256').update(Buffer.from(await stored.arrayBuffer())).digest('hex')===sha256,'Import image read-back verification failed');
+  m.references||={};const ref=annotate({id,name,asset_name:name,...destination,mime_type,key,size:bytes.length,content_sha256:sha256},m,destination.asset_type);m.references[id]=ref;
+  const asset=classifyUpload(m,ref,upload_category);assignAssetCodes(m);
+  return {reference_id:id,asset_id:asset?.asset_id||null,asset_code:asset?.asset_code||ref.asset_code,sha256,status:asset?'DRAFT':'REFERENCE',approved:false,verified:true,reused:false};
+ }
  async function save(p,m,revision){const text=JSON.stringify(m);check(Buffer.byteLength(text)<1_900_000,'Project manifest too large');const r=await request({op:'save',project:p,revision,manifest:text});check(r.changes===1,'Concurrent project update; reload before retrying');const row=(await request({op:'load',project:p})).data;check(row?.revision===revision+1&&row.manifest===text,'Save verification uncertain; reload before retrying');return revision+1;}
  async function create(m){check(!a.project_id.startsWith('xce-'),'Reserved system folder ID');const prior=(await request({op:'load',project:a.project_id})).data;check(!prior,'Project ID already exists');
   delete m.active_project_code;delete m.auto_id_parser;const base=deriveCode(a.name);let code=(await request({op:'code',project:a.project_id})).data?.code;
@@ -102,12 +119,17 @@ export async function workspaceOperation(name,a,{auth,request,getImage}){
  else if(name==='restore_assets')result=restoreAssets(m,a.trash_keys);
  else if(name==='purge_trash')result={...purgeTrash(m,{keys:a.trash_keys,confirm:true}),stored_image_bytes_deleted:false};
  else if(name==='import_asset'){
-  const bytes=imageBytes(a.image_base64,a.mime_type);check(bytes.length<=2_500_000,'Import image must be at most 2.5 MB');
-  const destination=uploadDestination(a.upload_category),id=allocate(m,destination.asset_type||'prop',a.name),key='xce/'+auth.owner+'/'+a.project_id+'/'+id+'-'+randomUUID();
-  const sha256=createHash('sha256').update(bytes).digest('hex');await request({op:'file_put',key,mime_type:a.mime_type,base64:a.image_base64,name:a.name,library_visible:true});
-  const stored=await getImage(key);check(stored&&createHash('sha256').update(Buffer.from(await stored.arrayBuffer())).digest('hex')===sha256,'Import image read-back verification failed');
-  const ref=annotate({id,name:a.name,asset_name:a.name,...destination,mime_type:a.mime_type,key,size:bytes.length,content_sha256:sha256},m,destination.asset_type);m.references[id]=ref;
-  const asset=classifyUpload(m,ref,a.upload_category);assignAssetCodes(m);result={reference_id:id,asset_id:asset?.asset_id||null,asset_code:asset?.asset_code||ref.asset_code,sha256,status:asset?'DRAFT':'REFERENCE',approved:false,verified:true};
+  const bytes=imageBytes(a.image_base64,a.mime_type);check(bytes.length<=MAX_IMAGE_BYTES,'Import image must be at most 2.5 MB');
+  const stored=await storeImage(m,{bytes,mime_type:a.mime_type,name:a.name,upload_category:a.upload_category,dedupe:false});delete stored.reused;result=stored;
+ }else if(name==='import_image_file'){
+  const bytes=await fetchFile(a.file,{maxBytes:MAX_IMAGE_BYTES}),mime=imageMime(Buffer.from(bytes));
+  check(mime,'Only PNG, JPEG or WebP images can be imported');
+  result=await storeImage(m,{bytes,mime_type:mime,name:a.name,upload_category:a.upload_category});
+ }else if(name==='save_script'){
+  const ws=m.story_workspace||{document:emptyStory(),revision:0,updated_at:null};
+  const r=upsertScript(ws.document,{title:a.title,body:a.body,kind:a.kind||'script'},m);
+  m.story_workspace={document:r.story,revision:(ws.revision||0)+1,updated_at:new Date().toISOString()};
+  const draft=r.story.documents.find(d=>d.id===r.id);result={draft_id:r.id,title:draft.title,kind:draft.kind,action:r.action};
  }else throw Error('Unknown workspace tool');
  m.history||=[];m.history.push({kind:'mcp_'+name,date:new Date().toISOString()});return {...result,saved:true,project_id:a.project_id,revision:await save(a.project_id,m,revision)};
 }

@@ -13,6 +13,7 @@ import {gradeLibrary} from '../xce/color-grades.mjs';
 import {characterContext} from '../xce/character-network.mjs';
 import {worldRecords} from '../xce/world-library.mjs';
 import {GatewayError} from './security.mjs';
+import {fetchFile} from './file-fetch.mjs';
 
 const notFound=()=>{throw new GatewayError('Record not found or unavailable',404);};
 export async function readJSON(response,max=4*1024*1024){
@@ -71,7 +72,7 @@ export function dataSource(auth,request=backend(auth.backendToken,fetch,{allowCl
   }));
  }
  return async(name,a)=>{
-  if(workspaceTools.has(name)){try{return publicData(await workspaceOperation(name,a,{auth,request,getImage}));}catch(e){if(e instanceof GatewayError)throw e;throw new GatewayError(e.message,e.message.startsWith('Permission required')?403:400);}}
+  if(workspaceTools.has(name)){try{return publicData(await workspaceOperation(name,a,{auth,request,getImage,fetchFile}));}catch(e){if(e instanceof GatewayError)throw e;throw new GatewayError(e.message,e.message.startsWith('Permission required')?403:400);}}
   if(name==='get_character_reference'){
    try{return await retrieveCharacterReference(a,{projectIds:auth.projects,loadProject:availableProject,
     matches:(m,id)=>allRecords(m).filter(({record:r})=>recordId(r)===id||r.asset_code===id),

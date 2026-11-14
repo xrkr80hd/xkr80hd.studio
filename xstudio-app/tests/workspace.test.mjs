@@ -11,12 +11,13 @@ function fixture(scopes=['asset:read','asset:write','asset:delete']){
  const auth={owner:'11111111-1111-4111-8111-111111111111',principal:'oauth:one-delegation',projects:new Set(['P']),scopes:new Set(scopes)};
  const request=async a=>{calls.push(a);if(a.op==='load')return {data:rows.get(a.project)||null};if(a.op==='projects')return {data:[...rows].map(([project,r])=>({project,...r}))};if(a.op==='code')return {data:codes.has(a.project)?{code:codes.get(a.project)}:null};if(a.op==='reserve_code'){if([...codes.values()].includes(a.code))return {reserved:false};codes.set(a.project,a.code);return {data:null};}if(a.op==='save'){const prior=rows.get(a.project);if((prior?.revision||0)!==a.revision)return {changes:0};rows.set(a.project,{manifest:a.manifest,revision:a.revision+1});return {changes:1};}if(a.op==='file_put'){files.set(a.key,Buffer.from(a.base64,'base64'));return {saved:true};}throw Error('Unexpected operation '+a.op);};
  const getImage=async key=>files.has(key)?{arrayBuffer:async()=>files.get(key)}:null;
- return {auth,request,getImage,rows,files,calls,codes};
+ const fetchFile=async()=>image;
+ return {auth,request,getImage,fetchFile,rows,files,calls,codes};
 }
 const edit={project_id:'P',expected_revision:1,confirm:true};
 
 test('read-only clients cannot create, import or delete anything',async()=>{
- const f=fixture(['asset:read']);for(const name of ['create_folder','import_asset','delete_assets','delete_folder','purge_trash'])await assert.rejects(workspaceOperation(name,edit,f),/Permission required/);assert.equal(f.calls.length,0);
+ const f=fixture(['asset:read']);for(const name of ['create_folder','import_asset','import_image_file','save_script','delete_assets','delete_folder','purge_trash'])await assert.rejects(workspaceOperation(name,edit,f),/Permission required/);assert.equal(f.calls.length,0);
 });
 test('explicit confirmation and project grant run before mutation',async()=>{
  const f=fixture();await assert.rejects(workspaceOperation('delete_folder',{...edit,confirm:false},f),/confirmation/);
@@ -94,3 +95,56 @@ test('portable export advertises downloads without mutating the project',async()
 
 
 test('character profile saves gender and explicit synergies using native editor rules',async()=>{const f=fixture();const a=await workspaceOperation('create_world_asset',{...edit,name:'Alpha',category:'characters'},f);const b=await workspaceOperation('create_world_asset',{...edit,expected_revision:2,name:'Beta',category:'characters'},f);f.auth.scopes.add('asset:metadata');await workspaceOperation('update_character_profile',{...edit,expected_revision:3,asset_id:a.asset_id,gender:'female',links:[{kind:'custom',target_id:b.asset_id,text:'Protect each other',enabled:true,clause_type:'synergy'}]},f);const saved=JSON.parse(f.rows.get('P').manifest);assert.equal(saved.character_network.details[a.asset_id].gender,'female');assert.equal(saved.character_network.relationships[0].clause_type,'synergy');const world=await workspaceOperation('get_world_builder',{project_id:'P'},f);assert.equal(world.context.world_bible.saved_character_relationships[0].text,'Protect each other');});
+
+const fileArg={download_url:'https://files.example.test/a',file_id:'file_1'};
+const savedManifest=f=>JSON.parse(f.rows.get('P').manifest);
+
+test('import_image_file stores a fetched image as a draft',async()=>{
+ const f=fixture();const r=await workspaceOperation('import_image_file',{...edit,file:{...fileArg,mime_type:'image/png',file_name:'kota.png'},name:'Kota face',upload_category:'cast:main'},f);
+ assert.equal(r.status,'DRAFT');assert.equal(r.approved,false);assert.equal(r.verified,true);assert.equal(r.reused,false);
+ assert.equal(f.files.size,1);assert.equal(f.rows.get('P').revision,2);
+ assert.ok(savedManifest(f).references[r.reference_id]);
+});
+
+test('import_image_file works without mime_type or file_name',async()=>{
+ const f=fixture();const r=await workspaceOperation('import_image_file',{...edit,file:fileArg,name:'Plain',upload_category:'prop'},f);
+ assert.equal(r.verified,true);assert.equal(savedManifest(f).references[r.reference_id].mime_type,'image/png');
+});
+
+test('import_image_file passes the 2.5 MB cap to the downloader',async()=>{
+ const f=fixture();let seen;f.fetchFile=async(file,opts)=>{seen={file,opts};return image;};
+ await workspaceOperation('import_image_file',{...edit,file:fileArg,name:'Cap',upload_category:'prop'},f);
+ assert.equal(seen.opts.maxBytes,2_500_000);assert.equal(seen.file.download_url,fileArg.download_url);
+});
+
+test('import_image_file rejects non-images',async()=>{
+ const f=fixture();f.fetchFile=async()=>Buffer.from('not png');
+ await assert.rejects(workspaceOperation('import_image_file',{...edit,file:fileArg,name:'Bad',upload_category:'prop'},f),/PNG, JPEG or WebP/);
+ assert.equal(f.files.size,0);assert.equal(f.rows.get('P').revision,1);
+});
+
+test('import_image_file reuses an identical image',async()=>{
+ const f=fixture();const a=await workspaceOperation('import_image_file',{...edit,file:fileArg,name:'One',upload_category:'prop'},f);
+ const b=await workspaceOperation('import_image_file',{...edit,expected_revision:2,file:fileArg,name:'Two',upload_category:'prop'},f);
+ assert.equal(b.reused,true);assert.equal(b.reference_id,a.reference_id);assert.equal(f.files.size,1);
+});
+
+test('save_script creates then updates by title',async()=>{
+ const f=fixture();
+ const a=await workspaceOperation('save_script',{...edit,title:'Ep1 Cold Open',body:'INT. SAFEHOUSE - NIGHT'},f);
+ assert.equal(a.action,'created');assert.equal(a.kind,'script');
+ const b=await workspaceOperation('save_script',{...edit,expected_revision:2,title:'ep1 cold open',body:'INT. SAFEHOUSE - DAY'},f);
+ assert.equal(b.action,'updated');assert.equal(b.draft_id,a.draft_id);
+ const ws=savedManifest(f).story_workspace;
+ assert.equal(ws.document.documents.length,1);assert.equal(ws.document.documents[0].body,'INT. SAFEHOUSE - DAY');assert.equal(ws.revision,2);assert.ok(ws.updated_at);
+});
+
+test('save_script respects expected_revision',async()=>{
+ const f=fixture();await assert.rejects(workspaceOperation('save_script',{...edit,expected_revision:7,title:'T',body:'B'},f),/changed/);
+});
+
+test('import_asset keeps its original behavior: no duplicate reuse',async()=>{
+ const f=fixture();const args={...edit,name:'Same',mime_type:'image/png',image_base64:image.toString('base64'),upload_category:'prop'};
+ const a=await workspaceOperation('import_asset',args,f);const b=await workspaceOperation('import_asset',{...args,expected_revision:2},f);
+ assert.notEqual(a.reference_id,b.reference_id);assert.equal(f.files.size,2);assert.equal('reused' in b,false);
+});
