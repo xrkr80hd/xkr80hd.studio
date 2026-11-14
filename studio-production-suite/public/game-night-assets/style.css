@@ -741,3 +741,17 @@ body.hide-top .top{display:none!important}
 .lib-head h3{margin:0}
 .lib-refresh{min-width:36px;min-height:36px;font-size:18px;padding:0}
 .lib-count{display:block;margin:2px 0 4px;font-size:12px;font-weight:800;color:#ffd23f}
+/* ChatGPT category writer: three numbered steps. */
+.ai-wizard h2{margin:4px 0}
+.ai-step{display:grid;grid-template-columns:40px 1fr;gap:12px;margin:16px 0;padding:14px;border-radius:16px;border:1px solid #ffffff26;background:#0a062066}
+.ai-step h3{margin:4px 0 8px;font-size:18px}
+.ai-step-num{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:#ff2e88;color:#fff;font-weight:950;font-size:18px}
+.ai-step textarea{width:100%;box-sizing:border-box}
+.ai-prompt{font:13px/1.45 ui-monospace,Menlo,Consolas,monospace;background:#05031299;color:#e8e2ff;border-radius:12px;padding:10px;margin-bottom:10px;resize:vertical}
+.ai-step button{margin-top:6px}
+#ai-status{margin-top:8px;font-weight:800;color:#ffd23f}
+.ai-preview{margin-top:14px;padding:12px;border-radius:14px;border:2px solid #b6ff3b66;background:#b6ff3b0d}
+.ai-clue{display:grid;grid-template-columns:48px 1fr 1fr;gap:8px;align-items:start;margin:8px 0}
+.ai-clue>b{padding-top:30px;color:#ffd23f}
+.ai-clue small{grid-column:2/-1;opacity:.75}
+@media (max-width:700px){.ai-clue{grid-template-columns:1fr}.ai-clue>b{padding-top:0}}
