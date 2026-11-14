@@ -17,12 +17,16 @@ import {purgeTrash} from '../xce/library.mjs';
 import {imageBytes} from '../xce/xstudio-bridge.mjs';
 import {imageMime} from '../xce/composer-service.mjs';
 import {emptyStory} from '../xce/story.mjs';
-import {upsertScript} from '../xce/world-zip-import.mjs';
-import {fetchFile as defaultFetchFile} from './file-fetch.mjs';
+import {upsertScript,unzipPackage,scriptDrafts,mergeScriptDrafts} from '../xce/world-zip-import.mjs';
+import {readPackage,resolveWorld,applyRecords,attachImage,referenceIdFor} from '../xce/world-package.mjs';
+import {fetchFile as defaultFetchFile,ZIP_MAX_BYTES} from './file-fetch.mjs';
 
-const MAX_IMAGE_BYTES=2_500_000;
+const MAX_IMAGE_BYTES=2_500_000,IMAGE_TIME_BUDGET_MS=45_000,SAVE_EVERY=10;
+const normTitle=s=>String(s||'').trim().toLowerCase();
+const slugify=s=>String(s||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
+const sha256Of=bytes=>createHash('sha256').update(bytes).digest('hex');
 
-export const workspaceScopes={update_character_profile:'asset:metadata',update_world_builder:'asset:write',create_world_asset:'asset:write',create_folder:'asset:write',update_folder:'asset:write',import_asset:'asset:write',import_image_file:'asset:write',save_script:'asset:write',import_project:'asset:write',delete_folder:'asset:delete',restore_folder:'asset:write',delete_assets:'asset:delete',restore_assets:'asset:write',purge_trash:'asset:delete'};
+export const workspaceScopes={update_character_profile:'asset:metadata',update_world_builder:'asset:write',create_world_asset:'asset:write',create_folder:'asset:write',update_folder:'asset:write',import_asset:'asset:write',import_image_file:'asset:write',import_world_zip:'asset:write',save_script:'asset:write',import_project:'asset:write',delete_folder:'asset:delete',restore_folder:'asset:write',delete_assets:'asset:delete',restore_assets:'asset:write',purge_trash:'asset:delete'};
 export const workspaceTools=new Set([...Object.keys(workspaceScopes),'list_trash','get_world_builder','export_world']);
 const check=(ok,message)=>{if(!ok)throw Error(message);};
 const marker=auth=>createHash('sha256').update('xstudio-created-project-v1:'+auth.principal).digest('hex');
@@ -74,7 +78,7 @@ export function restoreAssets(m,keys){
   delete m.trash[key];
  }m.permits={};return {restored:keys.length};
 }
-export async function workspaceOperation(name,a,{auth,request,getImage,fetchFile=defaultFetchFile}){
+export async function workspaceOperation(name,a,{auth,request,getImage,fetchFile=defaultFetchFile,now=Date.now}){
  const scope=workspaceScopes[name];if(scope)check(auth.scopes?.has(scope),'Permission required: '+scope+'; reconnect and approve access');
  if(scope)check(a.confirm===true,'Explicit confirmation required');
  async function load(p,{deleted=false}={}){check(auth.projects.has(p),'Project not found or unavailable');const row=(await request({op:'load',project:p})).data;check(row,'Project not found or unavailable');const m=JSON.parse(row.manifest);check(!m.folder_lock,'Folder locked; unlock it in XSTUDIO');check(deleted||!m.deleted_at,'Project is in trash');return {m,revision:row.revision};}
@@ -97,6 +101,41 @@ export async function workspaceOperation(name,a,{auth,request,getImage,fetchFile
   const revision=await save(a.project_id,m,0);auth.projects.add(a.project_id);return {saved:true,project_id:a.project_id,name:m.campaign_name,project_code:code,revision};}
  if(name==='create_folder')return create(fresh());
  if(name==='import_project'){const source=await load(a.source_project_id);check(!source.m.system_pool,'Choose a creative project');check(source.revision===a.expected_revision,'Source project changed; reload');return {...await create(structuredClone(source.m)),source_project_id:a.source_project_id,reference_images_reused:true,image_bytes_copied:false};}
+ if(name==='import_world_zip')return importWorldZip();
+ async function importWorldZip(){
+  const files=unzipPackage(new Uint8Array(await fetchFile(a.file,{maxBytes:ZIP_MAX_BYTES})));
+  const pkg=readPackage(files,String(a.file.file_name||'world.zip').slice(0,200));
+  const list=((await request({op:'projects'})).data||[]).filter(r=>auth.projects.has(r.project)).flatMap(r=>{let pm;try{pm=JSON.parse(r.manifest);}catch{return [];}return pm.deleted_at?[]:[{id:r.project,title:pm.campaign_name||r.project,system_pool:Boolean(pm.system_pool)}];});
+  const world=resolveWorld(list,pkg,a.project_id||null,{createNew:a.create_new===true||(a.create_new===undefined&&pkg.world_mode==='new'),name:a.new_name||''});
+  if(world.mode==='ambiguous')return {mode:'ambiguous',name:world.name,candidates:list.filter(x=>!x.system_pool&&normTitle(x.title)===normTitle(world.name)).map(x=>({id:x.id,title:x.title})),complete:false,warnings:pkg.warnings};
+  let p=world.project_id,mode='existing';
+  if(world.mode==='create'){p='w-'+(slugify(world.name)||'world').slice(0,60)+'-'+randomUUID().slice(0,8);a={...a,project_id:p,name:world.name};await create(fresh());mode='created';}
+  let {m,revision}=await load(p);check(!m.system_pool,'Choose a creative world');
+  const applied=applyRecords(m,pkg,{project_id:p,revision,choices:{}});m=applied.manifest;
+  const ws=m.story_workspace||{document:emptyStory(),revision:0,updated_at:null},merged=mergeScriptDrafts(ws.document,scriptDrafts(files),m);
+  if(merged.added.length)m.story_workspace={document:merged.story,revision:(ws.revision||0)+1,updated_at:new Date().toISOString()};
+  m.history||=[];m.history.push({kind:'mcp_import_world_zip',date:new Date().toISOString()});
+  revision=await save(p,m,revision);
+  const images={added:0,skipped_duplicate:0,skipped_locked:[],too_large:[],failed:[],remaining:0},start=now();let pending=0;
+  for(let i=0;i<pkg.images.length;i++){
+   const img=pkg.images[i];
+   if(img.too_large){images.too_large.push(img.file);continue;}
+   if(now()-start>IMAGE_TIME_BUDGET_MS){images.remaining=pkg.images.slice(i).filter(x=>!x.too_large).length;break;}
+   const bytes=files[img.file],sha256=sha256Of(bytes);
+   if(Object.values(m.references||{}).some(r=>r?.content_sha256===sha256&&!r.deleted_at)){images.skipped_duplicate++;continue;}
+   const label=(img.asset_key&&pkg.assets.find(x=>x.key===img.asset_key)?.name)||img.file.split('/').pop().replace(/\.[^.]+$/,'');
+   const reference_id=referenceIdFor(m,img.category,label),key='xce/'+auth.owner+'/'+p+'/'+reference_id+'-'+randomUUID();
+   let next;
+   try{next=attachImage(m,{reference_id,key,name:label,mime_type:img.mime_type,size:bytes.length,sha256,category:img.category,asset_id:img.asset_key?applied.id_map[img.asset_key]||null:null});}
+   catch(e){if(/locked/i.test(e.message))images.skipped_locked.push(img.file);else images.failed.push({file:img.file,reason:e.message});continue;}
+   await request({op:'file_put',key,mime_type:img.mime_type,base64:Buffer.from(bytes).toString('base64'),name:label,library_visible:true});
+   const stored=await getImage(key);check(stored&&sha256Of(Buffer.from(await stored.arrayBuffer()))===sha256,'Import image read-back verification failed');
+   m=next;images.added++;
+   if(++pending>=SAVE_EVERY){revision=await save(p,m,revision);pending=0;}
+  }
+  if(pending)revision=await save(p,m,revision);
+  return {project_id:p,name:m.campaign_name||world.name,mode,revision,report:applied.report,images,scripts:{added:merged.added,same:merged.same,kept:merged.kept},warnings:pkg.warnings,complete:images.remaining===0};
+ }
  const {m:original,revision}=await load(a.project_id,{deleted:name==='restore_folder'||name==='list_trash'});const m=structuredClone(original);
  if(name==='export_world')return {project_id:a.project_id,revision,file_name:a.project_id+'-r'+revision+'.world.zip',format:'xce-portable-world',download_path:'/api/world-export?project_id='+encodeURIComponent(a.project_id),json_path:'/api/world-export?project_id='+encodeURIComponent(a.project_id)+'&format=json',includes:['world.json','DIRECTOR_BRIEF.md','original reference images','media-index.json'],note:'Open the download link while signed into XSTUDIO. The JSON-only file references images; the ZIP contains their original bytes. Destination import support must be checked.'};
  if(name==='get_world_builder')return {project_id:a.project_id,revision,world_builder:m.world_builder||{},character_network:m.character_network||{},context:compileWorld(m,a.project_id),power_tiers:Object.fromEntries(Object.entries(m.asset_details||{}).filter(([,d])=>d?.power_tier).map(([id,d])=>[id,d.power_tier])),schemas:{world_builder_fields:WORLD_BUILDER_FIELDS,asset_categories:WORLD_TYPES,asset_metadata:METADATA_SCHEMA,asset_form_sections:ASSET_FORM_SECTIONS,world_presets:WORLD_PRESETS}};
