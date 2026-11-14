@@ -782,3 +782,5 @@ body.hide-top .top{display:none!important}
  .cat-menu-item{padding:10px 12px}
 }
 @media (max-width:700px){.ai-step{display:block}.ai-step-num{float:left;margin:0 8px 0 0}.ai-step h3{line-height:28px}.ai-step .help{clear:both}}
+.update-bar{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:9999;display:flex;align-items:center;gap:12px;max-width:calc(100vw - 32px);padding:10px 12px 10px 16px;border-radius:16px;background:#1a0f3a;border:2px solid #b6ff3b;box-shadow:0 10px 40px #000a;color:#fff;font-weight:800;font-size:14px}
+.update-bar button{flex:0 0 auto;min-height:40px;padding:0 14px;border-radius:12px;border:0;background:#b6ff3b;color:#0a0620;font-weight:950;cursor:pointer}
