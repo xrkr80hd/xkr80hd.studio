@@ -678,3 +678,66 @@ body.hide-top .top{display:none!important}
 .toolbar .actions .save-now{border:2px solid #b6ff3b;background:#b6ff3b1f;color:#fff;box-shadow:0 0 14px #b6ff3b44}
 .save-state{display:block;margin-top:6px;text-align:right;font-size:12px;font-weight:800;color:#b6ff3b}
 .save-state.bad{color:#ffd23f}
+/* Shared category library: an obvious save button on every category slot. */
+.slot .slot-save{display:block;width:100%;margin:6px 0 8px;min-height:40px;border-radius:12px;border:2px solid #b6ff3b;background:#b6ff3b26;color:#fff;font-weight:900;font-size:14px;cursor:pointer;box-shadow:0 0 12px #b6ff3b44}
+.slot .slot-save:hover{background:#b6ff3b40}
+.slot .slot-save.slot-dirty{border-color:#ffd23f;background:#ffd23f26;box-shadow:0 0 12px #ffd23f55}
+.slot .slot-save:disabled{opacity:.6;cursor:progress}
+.slot .slot-saved{margin:6px 0 8px;text-align:center;font-size:12px;font-weight:800;color:#b6ff3b}
+.lib-shared{color:#ffd23f;font-size:12px}
+.library .lib-help{margin:0 0 8px;font-size:12px}
+/* Category save dialog: spinner while saving, big check when saved, clear warning when not. */
+.save-dialog{text-align:center;padding:8px 4px}
+.save-dialog h2{margin:12px 0 6px}
+.save-dialog p{margin:0 auto 14px;max-width:440px;line-height:1.45}
+.save-dialog .actions{justify-content:center}
+.save-spinner{width:56px;height:56px;margin:4px auto;border-radius:50%;border:6px solid #ffffff26;border-top-color:#b6ff3b;animation:save-spin .9s linear infinite}
+@keyframes save-spin{to{transform:rotate(360deg)}}
+.save-icon{width:64px;height:64px;margin:4px auto;border-radius:50%;display:grid;place-items:center;font-size:36px;font-weight:950}
+.save-icon.ok{background:#b6ff3b;color:#0a0620;box-shadow:0 0 24px #b6ff3b88}
+.save-icon.bad{background:#ffd23f;color:#0a0620;box-shadow:0 0 24px #ffd23f88}
+@media (prefers-reduced-motion:reduce){.save-spinner{animation-duration:2.5s}}
+/* Guided Game Master console: progress steps, "Do this next" box, visible game tools. */
+.gm-panel .host-panel-top h2 small{display:block;font-size:11px;font-weight:700;letter-spacing:.04em;opacity:.65;text-transform:none}
+.gm-progress{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin:10px 0 8px}
+.gm-progress span{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10.5px;font-weight:800;text-align:center;opacity:.5;line-height:1.15}
+.gm-progress b{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;border:2px solid #ffffff55;font-size:12px}
+.gm-progress .done{opacity:.85}.gm-progress .done b{background:#b6ff3b;border-color:#b6ff3b;color:#0a0620}
+.gm-progress .now{opacity:1}.gm-progress .now b{background:#ff2e88;border-color:#fff;color:#fff;box-shadow:0 0 12px #ff2e88aa}
+.gm-now{margin:6px 0 12px;padding:14px 16px;border-radius:16px;border:3px solid #ffd23f;background:linear-gradient(160deg,#ffd23f22,#0a062099 60%);box-shadow:0 0 22px #ffd23f33}
+.gm-now-label{font-size:11px;font-weight:950;letter-spacing:.14em;color:#ffd23f}
+.gm-now h3{margin:4px 0 6px;font-size:21px;line-height:1.2}
+.gm-now p{margin:0;font-size:15px;line-height:1.45}
+.gm-now .gm-now-btn{width:100%;margin-top:12px;min-height:52px;font-size:17px}
+.gm-tools{margin:12px 0;padding:12px;border-radius:14px;border:1px solid #ffffff26;background:#0a062066}
+.gm-tools-label{font-size:11px;font-weight:900;letter-spacing:.12em;opacity:.7;margin-bottom:8px}
+.gm-tools-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.gm-tools-grid button{min-height:42px;font-size:13.5px}
+.gm-tools-grid .gm-help{grid-column:1/-1;border-color:#ffd23f;color:#ffd23f}
+.ugn-big small{display:block;font-size:11px;letter-spacing:.08em;opacity:.85;font-weight:800;margin-top:2px}
+.gm-progress .skip{opacity:.4}.gm-progress .skip b{border-style:dashed}
+/* Category "•••" menu: status, one big save, simple rows, separate careful section. */
+.cat-menu h2{margin:4px 0 8px}
+.cat-menu-status{margin:0 0 14px;padding:10px 12px;border-radius:12px;font-size:14px;font-weight:700;line-height:1.4;background:#ffffff0f;border-left:4px solid #ffffff55}
+.cat-menu-status.ok{border-left-color:#b6ff3b;color:#d9ffa0}
+.cat-menu-status.dirty{border-left-color:#ffd23f;color:#ffe48a}
+.cat-menu-status.new{border-left-color:#22e3ff}
+.cat-menu-save{width:100%;min-height:52px;font-size:17px;margin-bottom:14px}
+.cat-menu-group,.cat-menu-danger{display:grid;gap:8px}
+.cat-menu-move{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.cat-menu-item{display:flex;align-items:center;gap:12px;width:100%;min-height:58px;padding:10px 14px;border-radius:14px;border:1px solid #ffffff2e;background:#0a062080;color:#fff;text-align:left;cursor:pointer;transition:background .15s,border-color .15s}
+.cat-menu-item:hover:not(:disabled){background:#ffffff14;border-color:#ffffff66}
+.cat-menu-item:disabled{opacity:.35;cursor:not-allowed}
+.cat-menu-icon{flex:0 0 34px;height:34px;border-radius:10px;display:grid;place-items:center;background:#ffffff14;font-size:17px}
+.cat-menu-text{display:flex;flex-direction:column;gap:2px;min-width:0}
+.cat-menu-text b{font-size:15px}
+.cat-menu-text small{font-size:12.5px;opacity:.72;font-weight:600;line-height:1.3}
+.cat-menu-danger{margin-top:16px;padding-top:12px;border-top:1px dashed #ffffff33}
+.cat-menu-label{font-size:11px;font-weight:900;letter-spacing:.14em;color:#ff8fb8}
+.cat-menu-item.danger-item{border-color:#ff2e8855}
+.cat-menu-item.danger-item:hover:not(:disabled){background:#ff2e8822;border-color:#ff2e88}
+.cat-menu-item.danger-item .cat-menu-icon{background:#ff2e8826}
+.lib-head{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.lib-head h3{margin:0}
+.lib-refresh{min-width:36px;min-height:36px;font-size:18px;padding:0}
+.lib-count{display:block;margin:2px 0 4px;font-size:12px;font-weight:800;color:#ffd23f}

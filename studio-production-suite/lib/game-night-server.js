@@ -9,10 +9,15 @@ export function sameOrigin(request){return request.headers.get('origin')===new U
 export async function smallJson(request,limit=3800000){if(Number(request.headers.get('content-length')||0)>limit)throw Error('Request too large');const text=await request.text();if(Buffer.byteLength(text)>limit)throw Error('Request too large');return JSON.parse(text);}
 export const privateHeaders={'Cache-Control':'private, no-store','X-Content-Type-Options':'nosniff'};
 
+export function mediaPaths(value,out=new Set()){if(!value||typeof value!=='object')return out;if(typeof value.storagePath==='string')out.add(value.storagePath);for(const child of Object.values(value))mediaPaths(child,out);return out;}
+// Media in a snapshot that belongs to another Game Master is allowed only when a shared category uses it.
+export async function sharedMediaFor(value,username,db=gameDb()){const foreign=[...mediaPaths(value)].filter(p=>!p.startsWith(username+'/'));if(!foreign.length)return new Set();const {data,error}=await db.from('game_night_categories').select('media_paths').overlaps('media_paths',foreign);if(error)throw Error('Could not check shared media');const shared=new Set(data.flatMap(row=>row.media_paths));return new Set(foreign.filter(p=>shared.has(p)));}
+
 // Signed URLs are bearer links for the current game, refreshed when its owner loads a workspace.
-export async function refreshGameMedia(snapshot,username,db=gameDb()){
+// sharedPaths: media referenced by a category in the shared library, which every Game Master may use.
+export async function refreshGameMedia(snapshot,username,db=gameDb(),sharedPaths=new Set()){
   const paths=new Set();
-  function collect(value){if(!value||typeof value!=="object")return;if(typeof value.storagePath==='string'){if(!value.storagePath.startsWith(username+'/')||value.storagePath.includes('..'))throw Error('Invalid media owner');paths.add(value.storagePath);}for(const child of Object.values(value))collect(child);}
+  function collect(value){if(!value||typeof value!=="object")return;if(typeof value.storagePath==='string'){if(value.storagePath.includes('..')||!(value.storagePath.startsWith(username+'/')||sharedPaths.has(value.storagePath)))throw Error('Invalid media owner');paths.add(value.storagePath);}for(const child of Object.values(value))collect(child);}
   collect(snapshot);if(!paths.size)return snapshot;
   const {data,error}=await db.storage.from('game-night-media').createSignedUrls([...paths],86400);
   if(error)throw Error('Could not refresh clue media');
@@ -20,3 +25,4 @@ export async function refreshGameMedia(snapshot,username,db=gameDb()){
   function apply(value){if(!value||typeof value!=="object")return;if(value.storagePath){if(!urls.has(value.storagePath))throw Error('Clue media unavailable');value.data=urls.get(value.storagePath);}for(const child of Object.values(value))apply(child);}
   apply(snapshot);return snapshot;
 }
+
