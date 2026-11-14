@@ -1,4 +1,5 @@
 import {workspaceScopes} from '../lib/mcp/workspace.mjs';
+import {readToolRequest} from '../lib/mcp/request-body.mjs';
 import test from 'node:test';
 import {createServer} from 'node:http';
 import assert from 'node:assert/strict';
@@ -99,3 +100,23 @@ test('read-only data adapter refuses workspace writes before backend calls',asyn
 test('workspace backend write operations require the new workspace flag',async()=>{await assert.rejects(backend(token)({op:'file_put'}),/Read-only/);let called=false;const request=backend(token,async()=>{called=true;return Response.json({saved:true});},{allowWorkspaceWrite:true});await request({op:'file_put',key:'xce/test',base64:'test'});assert.equal(called,true);await assert.rejects(request({op:'file_delete',key:'xce/test'}),/Read-only/);});
 
 test('deleted folder discovery is opt-in and still excludes ungranted projects',async()=>{const m=structuredClone(base);m.deleted_at='2026-10-31T00:00:00Z';const {run}=source(m);assert.equal((await run('list_projects',{limit:30,offset:0})).projects.length,0);const result=await run('list_projects',{limit:30,offset:0,include_deleted:true});assert.deepEqual(result.projects.map(p=>p.project_id),['P']);assert.equal(result.projects[0].deleted_at,m.deleted_at);});
+
+test('file pickup tools ask ChatGPT for file params; save_script takes text',async()=>{
+ const body=await (await gateway(rpc('tools/list'),deps)).json(),tool=n=>body.result.tools.find(t=>t.name===n);
+ for(const name of ['import_world_zip','import_image_file']){
+  const t=tool(name);assert.ok(t,name);
+  assert.deepEqual(t._meta['openai/fileParams'],['file']);
+  const file=t.inputSchema.properties.file;assert.equal(file.type,'object');
+  assert.ok(file.required.includes('download_url')&&file.required.includes('file_id'),name);
+  assert.equal(t.annotations.readOnlyHint,false);assert.equal(t.annotations.destructiveHint,false);
+ }
+ const s=tool('save_script');assert.ok(s);assert.equal(s._meta['openai/fileParams'],undefined);assert.equal(s.annotations.readOnlyHint,false);
+ assert.ok(s.inputSchema.required.includes('body'));
+ assert.ok(tool('import_world_zip').description.includes('Never overwrites saved text'));
+});
+
+test('save_script requests may carry a full 150k-character script',async()=>{
+ const make=name=>new Request('https://example.test/mcp',{method:'POST',body:JSON.stringify({method:'tools/call',params:{name,arguments:{body:'x'.repeat(150000)}}})});
+ assert.equal((await readToolRequest(make('save_script'))).params.name,'save_script');
+ await assert.rejects(readToolRequest(make('get_project')),e=>e.status===413);
+});

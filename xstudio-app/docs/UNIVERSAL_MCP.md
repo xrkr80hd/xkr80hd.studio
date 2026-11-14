@@ -165,3 +165,26 @@ The Supabase changelog markdown fetch was unavailable in the browsing tool. No S
 - Configured the dedicated secret as sensitive production Vercel environment data. It is not in source control or browser code. Its planned expiry is October 18, 2027; rotate before then. Delegation encryption uses this private credential with a purpose-specific derived encryption key.
 - Live checks passed: state put/read, atomic rotation, replay-marker retrieval, removal, shared rate limiting and anonymous 401. SQL privilege checks confirm anonymous roles cannot read or execute the state API. Security advisors report no new exposed-data warning; the existing leaked-password-protection warning remains.
 - The earlier Redis activation instructions describe the optional adapter, not the deployed path. Redis is NOT required for this release.
+
+## File pickup from ChatGPT (worlds, images, scripts)
+
+MCP tool arguments are text, so clients like ChatGPT cannot pass image bytes
+through the model. Three write tools (scope `asset:write`, `confirm: true`) avoid that:
+
+- `import_world_zip` — `file` is a ChatGPT file param (`_meta["openai/fileParams"]: ["file"]`).
+  ChatGPT sends `{download_url, file_id, mime_type?, file_name?}`; XStudio downloads the ZIP
+  server-side (https only, public addresses only, redirects re-checked, 40 MB cap, 20 s timeout)
+  and runs the same world-package importer as the website. **Fill-only:** new records, blank
+  fields, images not already stored (matched by SHA-256) and new script drafts. Saved text is
+  never overwritten; conflicts are listed in `report.kept`. Nothing is locked, approved or
+  deleted. Images are time-boxed (~45 s); `complete:false` with `images.remaining` means send
+  the same ZIP again to finish. Ambiguous world names return `mode:"ambiguous"` and
+  `candidates` without writing anything. Script, story and notes `.md`/`.txt` files (under
+  `scripts/`, `story/`, `notes/`, or with "script" in the name) become Story workspace drafts.
+- `import_image_file` — one attached PNG/JPEG/WebP (≤ 2.5 MB) as a draft or reference; the type
+  is sniffed from the bytes. An identical image already in the folder is reused.
+- `save_script` — text only: saves a `script`/`story`/`notes` draft into the world's Story
+  workspace. The same title (case-insensitive) updates that draft.
+
+Per OpenAI's docs, file params cover files attached to the chat or picked from the ChatGPT
+file library. Files surfaced by other connectors are not documented to qualify.
