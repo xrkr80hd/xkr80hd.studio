@@ -560,6 +560,7 @@ details[open] > .summary .readToggle {
 .lightboxClose,
 .lightboxNav {
   position: absolute;
+  z-index: 1;
   display: grid;
   place-items: center;
   width: 48px;
@@ -586,6 +587,7 @@ details[open] > .summary .readToggle {
 
 .lightboxCount {
   position: absolute;
+  pointer-events: none; /* spans the bottom edge; let taps reach the arrows under it */
   bottom: 16px;
   left: 0;
   right: 0;
