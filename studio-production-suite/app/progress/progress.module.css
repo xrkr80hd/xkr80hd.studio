@@ -618,6 +618,59 @@
   box-shadow: none;
 }
 
+/* Quick reactions */
+.reactions {
+  margin-top: 18px;
+}
+
+.reactionRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.reaction {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 6px 12px;
+  border: 1px solid rgba(255, 244, 79, 0.2);
+  border-radius: 999px;
+  background: rgba(255, 244, 79, 0.05);
+  color: var(--ink);
+  font: inherit;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  transition: transform 0.12s ease, background 0.15s ease, border-color 0.15s ease;
+}
+
+.reaction:hover {
+  background: rgba(255, 244, 79, 0.1);
+}
+
+.reaction:active {
+  transform: scale(0.94);
+}
+
+.reactionOn {
+  border-color: var(--lemon);
+  background: rgba(255, 244, 79, 0.18);
+  box-shadow: 0 0 14px rgba(255, 244, 79, 0.2);
+}
+
+.reaction:focus-visible {
+  outline: 3px solid var(--lemon);
+  outline-offset: 2px;
+}
+
+.reactionCount {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--lemon-soft);
+}
+
 /* Family notes */
 .notes {
   margin-top: 22px;

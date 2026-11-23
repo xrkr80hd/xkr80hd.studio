@@ -1,6 +1,7 @@
 import { cookies } from 'next/headers';
 import ProgressComments from '../../components/ProgressComments';
 import ProgressGallery from '../../components/ProgressGallery';
+import ProgressReactions from '../../components/ProgressReactions';
 import ProgressShareButton from '../../components/ProgressShareButton';
 import ProgressSignIn from '../../components/ProgressSignIn';
 import ProgressSignOut from '../../components/ProgressSignOut';
@@ -74,7 +75,7 @@ export default async function ProgressPage({ searchParams }) {
   let posts = [];
   let unavailable = false;
   if (canRead) {
-    try { posts = await listProgressPosts({ withComments: true }); } catch { unavailable = true; }
+    try { posts = await listProgressPosts({ withComments: true, viewerEmail: member?.email || '' }); } catch { unavailable = true; }
   }
   const latest = posts[0];
   const now = Date.now();
@@ -132,6 +133,7 @@ export default async function ProgressPage({ searchParams }) {
                   {post.title && <h2>{post.title}</h2>}
                   <ProgressGallery photos={post.photos} label={post.title ? `${post.title} photo` : 'Photo'} />
                   {post.body && <div className={styles.body}>{post.body}</div>}
+                  {post.reactions && <ProgressReactions postId={post.id} initial={post.reactions} canReact={Boolean(member)} signInHref={!member && !owner ? '#join' : ''} />}
                   <ProgressComments postId={post.id} initial={post.comments.map(({ member_email: author, ...note }) => ({ ...note, mine: Boolean(member) && author === member.email }))} canPost={Boolean(member)} owner={owner} signInHref={!member && !owner ? '#join' : ''} />
                 </article>
               </li>

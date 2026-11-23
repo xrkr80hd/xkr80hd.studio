@@ -71,7 +71,7 @@ export async function startFamilySession({ email, name }) {
   };
 }
 
-export async function listProgressPosts({ withComments = false } = {}) {
+export async function listProgressPosts({ withComments = false, viewerEmail = '' } = {}) {
   const db = getProgressDb();
   if (!db) throw new Error('Progress storage is unavailable.');
   const { data, error } = await db
@@ -99,7 +99,25 @@ export async function listProgressPosts({ withComments = false } = {}) {
       comments.get(row.post_id).push(row);
     }
   }
+  // Reactions are optional: if their table isn't set up yet, the page simply hides them.
+  let reactions = null;
+  if (withComments && posts.length) {
+    const { data: rows, error: reactionError } = await db
+      .from('progress_reactions')
+      .select('post_id, member_email, emoji')
+      .in('post_id', posts.map(post => post.id));
+    if (!reactionError) {
+      reactions = new Map();
+      for (const row of rows || []) {
+        const entry = reactions.get(row.post_id) || { counts: {}, mine: [] };
+        entry.counts[row.emoji] = (entry.counts[row.emoji] || 0) + 1;
+        if (viewerEmail && row.member_email === viewerEmail) entry.mine.push(row.emoji);
+        reactions.set(row.post_id, entry);
+      }
+    }
+  }
   return posts.map(post => ({
+    reactions: reactions ? reactions.get(post.id) || { counts: {}, mine: [] } : null,
     ...post,
     photos: (post.photo_paths || []).map(path => ({ path, url: urls.get(path) || '' })).filter(photo => photo.url),
     comments: comments.get(post.id) || [],
