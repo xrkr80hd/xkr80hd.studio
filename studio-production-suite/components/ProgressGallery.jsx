@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import styles from '../app/progress/progress.module.css';
 
 const CAROUSEL_AFTER = 3;
@@ -126,7 +127,9 @@ export default function ProgressGallery({ photos = [], label = 'Photo' }) {
         <div className={`${styles.photos} ${layout}`}>{thumbs}</div>
       )}
 
-      {open >= 0 && (
+      {/* The full-size view is drawn at the top of the page, outside the update card,
+          so phones size and place it against the whole screen. */}
+      {open >= 0 && typeof document !== 'undefined' && createPortal(
         <div
           className={styles.lightbox}
           role="dialog"
@@ -151,7 +154,8 @@ export default function ProgressGallery({ photos = [], label = 'Photo' }) {
               <p className={styles.lightboxCount}>{open + 1} / {count}</p>
             </>
           )}
-        </div>
+        </div>,
+        document.body,
       )}
     </>
   );

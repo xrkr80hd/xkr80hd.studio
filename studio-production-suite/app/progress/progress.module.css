@@ -521,21 +521,39 @@ details[open] > .summary .readToggle {
 
 /* Lightbox */
 .lightbox {
+  /* Drawn at the top of the page, outside .page, so it carries its own colors. */
+  --lemon: #fff44f;
+  --lemon-soft: #fffab0;
+  --lemon-line: rgba(255, 244, 79, 0.22);
   position: fixed;
-  z-index: 100;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  padding: 56px 16px;
-  background: rgba(5, 5, 4, 0.94);
+  z-index: 1000;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 64px 12px 72px;
+  box-sizing: border-box;
+  background: rgba(5, 5, 4, 0.96);
+  -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
+  overscroll-behavior: contain;
+  touch-action: pan-y pinch-zoom;
 }
 
 .lightbox > img {
+  display: block;
+  width: auto;
+  height: auto;
   max-width: 100%;
-  max-height: 100%;
+  max-height: calc(100vh - 136px);
+  max-height: calc(100dvh - 136px);
   border-radius: 10px;
   object-fit: contain;
+  image-orientation: from-image;
   box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
 }
 
