@@ -2,6 +2,7 @@ import { Space_Grotesk, Syne } from 'next/font/google';
 import { cookies } from 'next/headers';
 import { Suspense } from 'react';
 import BackgroundRotator from '../components/BackgroundRotator';
+import AuthHashForwarder from '../components/yourlocal/AuthHashForwarder';
 import GoogleAnalytics from '../components/GoogleAnalytics';
 import SiteHeader from '../components/SiteHeader';
 import { ADMIN_SESSION_COOKIE, ADMIN_SESSION_USER_COOKIE, isAdminSessionValid, isOwnerUsername, isVisitorView, getAdminSessionUser } from '../lib/admin-auth';
@@ -53,6 +54,7 @@ export default async function RootLayout({ children }) {
         <Suspense fallback={null}>
           <GoogleAnalytics />
         </Suspense>
+        <AuthHashForwarder />
         <BackgroundRotator />
         <SiteHeader adminMode={adminMode} ownerMode={ownerMode} adminUser={adminMode ? sessionUser : ''} visitorView={visitorView} hiddenPaths={hiddenPaths} signupOpen={isSignupOpen()} />
         <main>
