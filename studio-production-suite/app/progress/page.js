@@ -65,15 +65,15 @@ function previewSamplePosts() {
     title: 'Preview sample update',
     body: 'This sample only shows on preview links, so the layout can be checked without the live data.',
     created_at: at(30),
-    photos: [],
+    photos: ['/assets/progress/ashleys-progress-share.jpg', '/assets/progress/ashleys-progress-hero.jpg', '/assets/progress/ashleys-progress-share.jpg', '/assets/progress/ashleys-progress-hero.jpg', '/assets/progress/ashleys-progress-share.jpg'].map((url, index) => ({ path: `sample-${index}`, url })),
     reactions: { counts: { '❤️': 3, '🙏': 2 }, mine: [] },
     comments: notes.map((body, index) => ({ id: `sample-${index}`, post_id: 'sample', member_email: '', author_name: `Sample person ${index + 1}`, body, created_at: at(25 - index * 5) })),
   }];
 }
 
 const SIGNIN_NOTICES = {
-  expired: 'That sign-in link has expired. Enter your email for a fresh one.',
-  blocked: 'This email cannot sign in. Please contact Travis.',
+  expired: 'That link has expired. Just send a text to Trav for a new one.',
+  blocked: 'Just send a text to Trav.',
   error: 'Something went wrong signing you in. Please try again.',
 };
 
@@ -118,7 +118,7 @@ export default async function ProgressPage({ searchParams }) {
         </div>
         {member && <ProgressSignOut name={member.name || member.email} />}
         {owner && <p className={styles.who}>You're viewing as the owner · <a href="/admin/progress">Post an update</a></p>}
-        {member && signin === 'welcome' && <p className={styles.welcome}>Welcome{member.name ? `, ${member.name.split(' ')[0]}` : ''}! You're signed in on this device for 30 days.</p>}
+        {member && signin === 'welcome' && <p className={styles.welcome}>Welcome{member.name ? `, ${member.name.split(' ')[0]}` : ''}!</p>}
       </header>
 
       {!canRead && <ProgressSignIn invite={invite} emailReady={emailConfigured()} notice={SIGNIN_NOTICES[signin] || ''} />}

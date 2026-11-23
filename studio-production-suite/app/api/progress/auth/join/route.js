@@ -9,7 +9,7 @@ export const dynamic = 'force-dynamic';
 export async function POST(request) {
   if (!sameOrigin(request)) return NextResponse.json({ error: 'Not allowed.' }, { status: 403 });
   const raw = await request.json().catch(() => ({}));
-  if (!verifyToken(raw.invite, 'invite', progressSecret())) return NextResponse.json({ error: 'This invite link has expired. Ask Travis for a new one.' }, { status: 400 });
+  if (!verifyToken(raw.invite, 'invite', progressSecret())) return NextResponse.json({ error: 'This link has expired. Just send a text to Trav for a new one.' }, { status: 400 });
   const email = normalizeEmail(raw.email);
   const name = cleanName(raw.name);
   if (!email || !name) return NextResponse.json({ error: 'Enter your name and a valid email address.' }, { status: 400 });

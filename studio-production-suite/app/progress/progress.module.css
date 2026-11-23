@@ -367,6 +367,34 @@
   outline-offset: 2px;
 }
 
+/* Photo carousel (more than three photos) */
+.photoCarousel {
+  margin: 6px 0 18px;
+}
+
+.photoTrack {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
+
+.photoTrack::-webkit-scrollbar {
+  display: none;
+}
+
+.photoTrack > .photo {
+  flex: 0 0 calc((100% - 10px) / 2);
+  scroll-snap-align: start;
+}
+
+.photoCarousel .noteControls {
+  justify-content: center;
+}
+
 /* Lightbox */
 .lightbox {
   position: fixed;

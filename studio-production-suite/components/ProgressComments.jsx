@@ -122,7 +122,7 @@ export default function ProgressComments({ postId, initial = [], canPost = false
           {count > 1 && <button type="button" className={`${styles.linkButton} ${styles.noteBack}`} onClick={() => setShowAll(false)}>Show one at a time</button>}
         </>
       )}
-      {!canPost && signInHref && <a className={styles.noteOpen} href={signInHref}>💛 Sign in to leave a note</a>}
+      {!canPost && signInHref && <a className={styles.noteOpen} href={signInHref}>💛 Want to leave a note?</a>}
       {canPost && (open ? (
         <form className={styles.noteForm} onSubmit={submit}>
           <textarea value={text} onChange={event => setText(event.target.value)} rows={3} maxLength={2000} placeholder="Send some love…" aria-label="Your note" autoFocus />

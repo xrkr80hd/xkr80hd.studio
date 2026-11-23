@@ -10,7 +10,7 @@ const RESEND_WAIT_MS = 60 * 1000;
 // Emails a one-hour sign-in link to family who already joined.
 export async function POST(request) {
   if (!sameOrigin(request)) return NextResponse.json({ error: 'Not allowed.' }, { status: 403 });
-  if (!emailConfigured() || !progressSecret()) return NextResponse.json({ error: 'Email sign-in is not set up yet. Ask Travis for an invite link.' }, { status: 503 });
+  if (!emailConfigured() || !progressSecret()) return NextResponse.json({ error: 'Just send a text to Trav.' }, { status: 503 });
   const raw = await request.json().catch(() => ({}));
   const email = normalizeEmail(raw.email);
   const name = cleanName(raw.name);
@@ -21,7 +21,7 @@ export async function POST(request) {
   const { data: member } = await db.from('progress_members').select('blocked, last_link_sent_at, verified_at').eq('email', email).maybeSingle();
   if (member?.blocked) return NextResponse.json({ ok: true });
   // Invite-only: email links are for family who already joined through Travis's invite link (e.g. on a new device).
-  if (!member?.verified_at) return NextResponse.json({ error: "This email isn't on the family list yet. Ask Travis for an invite link." }, { status: 403 });
+  if (!member?.verified_at) return NextResponse.json({ error: 'Just send a text to Trav.' }, { status: 403 });
   if (member?.last_link_sent_at && Date.now() - new Date(member.last_link_sent_at).getTime() < RESEND_WAIT_MS) {
     return NextResponse.json({ error: 'A link was just sent. Check your inbox (and spam), or try again in a minute.' }, { status: 429 });
   }

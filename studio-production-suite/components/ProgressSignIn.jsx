@@ -36,7 +36,7 @@ export default function ProgressSignIn({ invite = '', emailReady = false, notice
     return (
       <section className={styles.gate}>
         <h2>Check your email</h2>
-        <p>We sent a sign-in link to <strong>{email}</strong>. Open it on this device within the hour and you'll stay signed in for 30 days.</p>
+        <p>We sent a link to <strong>{email}</strong>.</p>
         <p className={styles.gateHint}>Don't see it? Check your spam or promotions folder.</p>
         <button type="button" className={styles.linkButton} onClick={() => setSent(false)}>Use a different email</button>
       </section>
@@ -47,7 +47,7 @@ export default function ProgressSignIn({ invite = '', emailReady = false, notice
     return (
       <section className={styles.gate}>
         <h2>Want to leave a note?</h2>
-        <p>Notes are for family and close friends. Ask Travis for an invite link, and you'll stay signed in on this device for 30 days, no password needed.</p>
+        <p>Just send a text to Trav.</p>
         {status && <p role="status" className={styles.gateStatus}>{status}</p>}
       </section>
     );
@@ -57,7 +57,7 @@ export default function ProgressSignIn({ invite = '', emailReady = false, notice
     return (
       <section className={styles.gate}>
         <h2>This page is for family and friends</h2>
-        <p>Ask Travis for your invite link. It signs you in on this device for 30 days, no password needed.</p>
+        <p>Just send a text to Trav.</p>
         {status && <p role="status" className={styles.gateStatus}>{status}</p>}
       </section>
     );
@@ -67,8 +67,8 @@ export default function ProgressSignIn({ invite = '', emailReady = false, notice
     <form className={styles.gate} onSubmit={submit}>
       <h2>{viaInvite ? "You're invited" : compact ? 'Want to leave a note?' : 'Sign in to see updates'}</h2>
       <p>{viaInvite
-        ? "Add your name and email and you're in. You'll stay signed in on this device for 30 days."
-        : "Notes are for invited family and friends. New here? Ask Travis for an invite link. Already joined? Enter your email for a one-tap sign-in link."}</p>
+        ? 'Add your name and email to join.'
+        : 'Just send a text to Trav. Already joined? Enter your email below.'}</p>
       <label>
         Your name
         <input value={name} onChange={event => setName(event.target.value)} autoComplete="name" maxLength={80} required placeholder="First and last name" />
