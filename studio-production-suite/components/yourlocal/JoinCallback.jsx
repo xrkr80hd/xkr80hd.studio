@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 // The emailed link returns here with the sign-in code in the URL fragment
 // (#access_token=...). The fragment never reaches a server log; we post it
 // once to our own server, which checks it with Supabase and sets the cookie.
-export default function JoinCallback() {
+export default function JoinCallback({ joinHref = '/join', signInHref = '/signin' }) {
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -44,10 +44,10 @@ export default function JoinCallback() {
               {error}
             </p>
             <div className="yl-actions">
-              <Link className="yl-btn yl-btn--primary" href="/signin">
+              <Link className="yl-btn yl-btn--primary" href={signInHref}>
                 Get a new link
               </Link>
-              <Link className="yl-btn" href="/join">
+              <Link className="yl-btn" href={joinHref}>
                 Join free
               </Link>
             </div>

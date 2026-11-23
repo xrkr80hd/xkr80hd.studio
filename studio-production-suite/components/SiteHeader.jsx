@@ -33,7 +33,7 @@ function isActive(pathname, href) {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
-export default function SiteHeader({ adminMode = false, ownerMode = false, adminUser = '', visitorView = false, hiddenPaths = [] }) {
+export default function SiteHeader({ adminMode = false, ownerMode = false, adminUser = '', visitorView = false, hiddenPaths = [], signupOpen = false }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const headerRef = useRef(null);
@@ -42,6 +42,7 @@ export default function SiteHeader({ adminMode = false, ownerMode = false, admin
   const adminSeesOffPages = adminMode && !visitorView;
   const hidden = new Set(hiddenPaths);
   const visiblePublicItems = publicNavItems
+    .filter((item) => signupOpen || item.href !== '/join')
     .filter((item) => adminSeesOffPages || !hidden.has(item.href))
     .map((item) => (hidden.has(item.href) ? { ...item, label: `${item.label} (off)`, className: `${item.className || ''} nav-off`.trim() } : item));
   const navItems = visiblePublicItems;

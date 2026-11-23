@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { isSignupOpen } from '../../lib/community';
 import { getHiddenPaths } from '../../lib/page-visibility';
 import YLShell from './YLShell';
 
@@ -122,7 +123,7 @@ export default async function YLDirectory({
         {items.length ? items.map((item) => <Card key={item.key} item={item} />) : <p className="yl-empty">{totalCount ? 'Nothing matches that category.' : emptyText}</p>}
       </div>
 
-      {joinPrompt ? (
+      {joinPrompt && isSignupOpen() ? (
         <section className="yl-cta">
           <div>
             <h2>{joinPrompt.title}</h2>

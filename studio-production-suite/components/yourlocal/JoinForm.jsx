@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { MEMBER_TYPES, US_STATES } from '../../lib/community-rules.mjs';
 
-export default function JoinForm({ mode = 'join', initialType = '' }) {
+export default function JoinForm({ mode = 'join', initialType = '', joinHref = '/join', signInHref = '/signin' }) {
   const isJoin = mode === 'join';
   const [type, setType] = useState(MEMBER_TYPES.some((item) => item.key === initialType) ? initialType : '');
   const [status, setStatus] = useState('idle');
@@ -128,11 +128,11 @@ export default function JoinForm({ mode = 'join', initialType = '' }) {
       <p className="yl-small">
         {isJoin ? (
           <>
-            Already a member? <Link href="/signin">Sign in</Link>
+            Already a member? <Link href={signInHref}>Sign in</Link>
           </>
         ) : (
           <>
-            New here? <Link href="/join">Join free</Link>
+            New here? <Link href={joinHref}>Join free</Link>
           </>
         )}
       </p>

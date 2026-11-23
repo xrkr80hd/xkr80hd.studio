@@ -5,6 +5,7 @@ import BackgroundRotator from '../components/BackgroundRotator';
 import GoogleAnalytics from '../components/GoogleAnalytics';
 import SiteHeader from '../components/SiteHeader';
 import { ADMIN_SESSION_COOKIE, ADMIN_SESSION_USER_COOKIE, isAdminSessionValid, isOwnerUsername, isVisitorView, getAdminSessionUser } from '../lib/admin-auth';
+import { isSignupOpen } from '../lib/community';
 import { getHiddenPaths } from '../lib/page-visibility';
 import './globals.css';
 
@@ -53,7 +54,7 @@ export default async function RootLayout({ children }) {
           <GoogleAnalytics />
         </Suspense>
         <BackgroundRotator />
-        <SiteHeader adminMode={adminMode} ownerMode={ownerMode} adminUser={adminMode ? sessionUser : ''} visitorView={visitorView} hiddenPaths={hiddenPaths} />
+        <SiteHeader adminMode={adminMode} ownerMode={ownerMode} adminUser={adminMode ? sessionUser : ''} visitorView={visitorView} hiddenPaths={hiddenPaths} signupOpen={isSignupOpen()} />
         <main>
           <div className="container">{children}</div>
         </main>

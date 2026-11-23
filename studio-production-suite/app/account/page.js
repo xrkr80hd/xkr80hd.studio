@@ -2,10 +2,10 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import AccountManager from '../../components/yourlocal/AccountManager';
 import YLShell from '../../components/yourlocal/YLShell';
-import { getSignedInMember, listMemberMedia } from '../../lib/community';
+import { getSignedInMember, listMemberMedia, signInPath } from '../../lib/community';
 import { MEDIA_LIMITS, MEMBER_TYPES } from '../../lib/community-rules.mjs';
 
-export const metadata = { title: 'Your account | YourLocal' };
+export const metadata = { title: 'Your account | YourLocal', robots: { index: false, follow: false } };
 export const dynamic = 'force-dynamic';
 
 export default async function AccountPage({ searchParams = {} }) {
@@ -21,7 +21,7 @@ export default async function AccountPage({ searchParams = {} }) {
       </YLShell>
     );
   }
-  if (!member) redirect('/signin');
+  if (!member) redirect(signInPath());
 
   const media = await listMemberMedia(member.id, { withUrls: true });
 

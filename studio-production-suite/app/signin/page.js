@@ -1,13 +1,14 @@
 import { cookies } from 'next/headers';
-import { redirect } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import JoinForm from '../../components/yourlocal/JoinForm';
 import YLShell from '../../components/yourlocal/YLShell';
-import { getSignedInMember } from '../../lib/community';
+import { getSignedInMember, isSignupOpen } from '../../lib/community';
 
 export const metadata = { title: 'Sign in | YourLocal' };
 export const dynamic = 'force-dynamic';
 
 export default async function SignInPage() {
+  if (!isSignupOpen()) notFound();
   const { member } = await getSignedInMember(cookies());
   if (member) redirect('/account');
 

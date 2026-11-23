@@ -52,6 +52,23 @@ export function getCommunityAuthClient() {
   return createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false, flowType: 'implicit' } });
 }
 
+// Public sign-up stays hidden until YOURLOCAL_SIGNUP_OPEN=1 is set in Vercel.
+// While hidden, testing happens at the unlisted page /yourlocal-test.
+export const SIGNUP_TEST_PATH = '/yourlocal-test';
+
+export function isSignupOpen() {
+  return process.env.YOURLOCAL_SIGNUP_OPEN === '1';
+}
+
+export function joinPath(type = '') {
+  if (isSignupOpen()) return type ? `/join?type=${encodeURIComponent(type)}` : '/join';
+  return type ? `${SIGNUP_TEST_PATH}?type=${encodeURIComponent(type)}` : SIGNUP_TEST_PATH;
+}
+
+export function signInPath() {
+  return isSignupOpen() ? '/signin' : `${SIGNUP_TEST_PATH}?mode=signin`;
+}
+
 export function isCommunityConfigured() {
   return Boolean(getCommunityDb() && getCommunityAuthClient() && memberSecret());
 }
