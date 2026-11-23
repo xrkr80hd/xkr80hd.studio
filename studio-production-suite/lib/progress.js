@@ -124,6 +124,35 @@ export async function listProgressPosts({ withComments = false, viewerEmail = ''
   }));
 }
 
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+export function validPostId(id) {
+  return typeof id === 'string' && UUID.test(id);
+}
+
+// Updates are numbered in posting order: the first one is Update 1.
+export function numberPosts(posts) {
+  const total = posts.length;
+  return posts.map((post, index) => ({ ...post, number: total - index }));
+}
+
+// One update's title, text, first photo path and number, for its share link preview.
+export async function getProgressPostShare(id) {
+  if (!validPostId(id)) return null;
+  const db = getProgressDb();
+  if (!db) return null;
+  const { data: post, error } = await db
+    .from('progress_posts')
+    .select('id, title, body, photo_paths, created_at')
+    .eq('id', id)
+    .maybeSingle();
+  if (error || !post) return null;
+  const { count } = await db
+    .from('progress_posts')
+    .select('id', { count: 'exact', head: true })
+    .lte('created_at', post.created_at);
+  return { ...post, number: count || 1 };
+}
+
 export function emailConfigured() {
   return Boolean(process.env.RESEND_API_KEY && process.env.PROGRESS_EMAIL_FROM);
 }

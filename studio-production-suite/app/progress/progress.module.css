@@ -206,6 +206,48 @@
   overflow-wrap: anywhere;
 }
 
+/* Per-update share link */
+.postShareRow {
+  margin: 4px 0 14px;
+}
+
+.shareSmall {
+  min-height: 36px;
+  padding: 7px 16px;
+  border: 1px solid var(--lemon-line);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--lemon);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.shareSmall:hover {
+  border-color: var(--lemon);
+}
+
+.shareSmall:focus-visible {
+  outline: 3px solid var(--lemon-soft);
+  outline-offset: 2px;
+}
+
+.allUpdates {
+  margin: 8px 0 0;
+  text-align: center;
+}
+
+.allUpdates a {
+  display: inline-block;
+  padding: 11px 22px;
+  border: 1px solid var(--lemon);
+  border-radius: 999px;
+  color: var(--lemon);
+  font-weight: 700;
+  text-decoration: none;
+}
+
 /* Empty / error state */
 .notice {
   display: grid;
@@ -289,6 +331,17 @@
 .time {
   font-weight: 500;
   color: var(--ink-soft);
+}
+
+.updateNumber {
+  padding: 3px 10px;
+  border: 1px solid var(--lemon);
+  border-radius: 999px;
+  color: var(--lemon);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .badge {
