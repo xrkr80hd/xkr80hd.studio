@@ -37,3 +37,16 @@ test('tokens verify only for their own kind, secret and lifetime', () => {
   assert.ok(verifyToken(makeInviteToken(SECRET, now), 'invite', SECRET, now));
   assert.equal(verifyToken('', 'session', SECRET), null);
 });
+
+test('cleanJpeg keeps the picture and drops camera details', async () => {
+  const { cleanJpeg } = await import('../lib/jpeg-clean.mjs');
+  // SOI, APP1 "Exif" with a bogus payload, a COM segment, then SOS + data + EOI.
+  const exif = [0x45, 0x78, 0x69, 0x66, 0, 0, 0x4d, 0x4d, 0, 0x2a, 0, 0, 0, 8, 0, 0];
+  const input = Uint8Array.from([0xff, 0xd8, 0xff, 0xe1, 0, exif.length + 2, ...exif, 0xff, 0xfe, 0, 4, 0x68, 0x69, 0xff, 0xda, 0, 2, 1, 2, 3, 0xff, 0xd9]);
+  const out = cleanJpeg(input);
+  assert.equal(out[0], 0xff);
+  assert.equal(out[1], 0xd8);
+  assert.ok(!Buffer.from(out).includes(Buffer.from('hi')));
+  assert.deepEqual([...out.slice(-9)], [0xff, 0xda, 0, 2, 1, 2, 3, 0xff, 0xd9]);
+  assert.deepEqual([...out.slice(-2)], [0xff, 0xd9]);
+});

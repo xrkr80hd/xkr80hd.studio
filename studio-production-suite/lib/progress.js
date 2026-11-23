@@ -119,7 +119,8 @@ export async function listProgressPosts({ withComments = false, viewerEmail = ''
   return posts.map(post => ({
     reactions: reactions ? reactions.get(post.id) || { counts: {}, mine: [] } : null,
     ...post,
-    photos: (post.photo_paths || []).map(path => ({ path, url: urls.get(path) || '' })).filter(photo => photo.url),
+    // Photos go through our own route, which strips camera details such as location.
+    photos: (post.photo_paths || []).filter(path => urls.has(path)).map(path => ({ path, url: `/api/progress/photo/${post.id}?p=${encodeURIComponent(path)}` })),
     comments: comments.get(post.id) || [],
   }));
 }
