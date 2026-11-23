@@ -50,3 +50,17 @@ test('cleanJpeg keeps the picture and drops camera details', async () => {
   assert.deepEqual([...out.slice(-9)], [0xff, 0xda, 0, 2, 1, 2, 3, 0xff, 0xd9]);
   assert.deepEqual([...out.slice(-2)], [0xff, 0xd9]);
 });
+
+test('family table query is cleaned and bounded', async () => {
+  const { parseMemberQuery, membersCsv } = await import('../lib/progress-members.mjs');
+  const parsed = parseMemberQuery(new URLSearchParams({ q: 'ann%,(x)', status: 'bogus', sort: 'drop', dir: 'x', per: '9999', page: '-3' }));
+  assert.equal(parsed.q, 'ann x');
+  assert.equal(parsed.status, 'all');
+  assert.equal(parsed.sort, 'joined');
+  assert.equal(parsed.dir, 'desc');
+  assert.equal(parsed.per, 10);
+  assert.equal(parsed.page, 1);
+  const csv = membersCsv([{ name: '=HYPERLINK("x")', email: 'a@b.co', verified_at: 'x', blocked: false, created_at: 't', last_seen_at: null, notes: 2 }]);
+  assert.ok(csv.includes(`"'=HYPERLINK(""x"")"`));
+  assert.ok(csv.includes(',active,'));
+});

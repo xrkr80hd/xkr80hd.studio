@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import styles from '../app/admin/progress/admin-progress.module.css';
+import AdminFamilyTable from './AdminFamilyTable';
 
 const MAX_PHOTOS = 12;
 const MAX_BYTES = 20 * 1024 * 1024;
@@ -190,20 +191,14 @@ function Composer({ initial, onDone, onCancel }) {
 function FamilyAccess() {
   const [settings, setSettings] = useState(null);
   const [emailReady, setEmailReady] = useState(false);
-  const [members, setMembers] = useState([]);
   const [invite, setInvite] = useState('');
   const [copied, setCopied] = useState('');
   const [status, setStatus] = useState('');
 
   async function load() {
-    const [settingsResponse, membersResponse] = await Promise.all([
-      fetch('/api/admin/progress/settings', { cache: 'no-store' }),
-      fetch('/api/admin/progress/members', { cache: 'no-store' }),
-    ]);
+    const settingsResponse = await fetch('/api/admin/progress/settings', { cache: 'no-store' });
     const settingsBody = await settingsResponse.json().catch(() => ({}));
-    const membersBody = await membersResponse.json().catch(() => ({}));
     if (settingsResponse.ok) { setSettings(settingsBody.item); setEmailReady(Boolean(settingsBody.emailReady)); }
-    if (membersResponse.ok) setMembers(membersBody.items || []);
   }
 
   useEffect(() => { load().catch(() => setStatus('Could not load family access.')); }, []);
@@ -253,14 +248,6 @@ function FamilyAccess() {
     try { await navigator.share({ text: copied }); } catch {}
   }
 
-  async function setBlocked(member, blocked) {
-    if (blocked && !window.confirm(`Remove access for ${member.name || member.email}?`)) return;
-    const response = await fetch('/api/admin/progress/members', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: member.email, blocked }) });
-    if (response.ok) setMembers(list => list.map(item => (item.email === member.email ? { ...item, blocked } : item)));
-  }
-
-  const signedIn = members.filter(member => member.verified_at && !member.blocked);
-
   return (
     <section className={styles.list}>
       <h2>Family access</h2>
@@ -280,21 +267,7 @@ function FamilyAccess() {
       <p className={styles.help}>Invite links work for 7 days. Whoever opens one adds their name and email and stays signed in for 30 days on that phone or browser. A new browser or device needs a new link.</p>
       <p role="status" className={styles.status}>{status}</p>
 
-      <h3 className={styles.subhead}>Signed in <span>{signedIn.length}</span></h3>
-      {members.length === 0 && <p className={styles.empty}>No one has signed in yet.</p>}
-      {members.map(member => (
-        <article key={member.email} className={styles.item}>
-          <div>
-            <strong>{member.name || 'No name'}</strong>
-            <p className={styles.when}>{member.email} · {member.blocked ? 'removed' : member.verified_at ? 'signed in' : 'link sent'}</p>
-          </div>
-          <div className={styles.itemActions}>
-            {member.blocked
-              ? <button type="button" className={styles.secondary} onClick={() => setBlocked(member, false)}>Restore</button>
-              : <button type="button" className={styles.danger} onClick={() => setBlocked(member, true)}>Remove</button>}
-          </div>
-        </article>
-      ))}
+      <AdminFamilyTable />
     </section>
   );
 }
