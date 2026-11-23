@@ -7,6 +7,7 @@ import { useEffect, useRef, useState } from 'react';
 const publicNavItems = [
   { href: '/', label: 'Home', className: 'nav-cool' },
   { href: '/lets-gleaux', label: 'Lets Gleaux', className: 'nav-gleaux' },
+  { href: '/progress', label: "Ashley's Progress", className: 'nav-progress' },
   { href: '/hub', label: 'XRKR80HD Hub', className: 'nav-cool' },
   { href: '/local-legends-archive', label: 'Legends', className: 'nav-cool' },
   { href: '/your-local-scene', label: 'Scene', className: 'nav-cool' },
