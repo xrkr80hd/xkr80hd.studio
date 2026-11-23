@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
+import AdminViewBar from './AdminViewBar';
 
 const publicNavItems = [
   { href: '/', label: 'Home', className: 'nav-cool' },
@@ -54,13 +55,19 @@ function isActive(pathname, href) {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
-export default function SiteHeader({ adminMode = false, ownerMode = false, adminUser = '' }) {
+export default function SiteHeader({ adminMode = false, ownerMode = false, adminUser = '', visitorView = false, hiddenPaths = [] }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const headerRef = useRef(null);
   const isAdminRoute = pathname === '/admin' || pathname?.startsWith('/admin/');
   const showAdminMode = adminMode && isAdminRoute;
-  const navItems = showAdminMode ? getAdminNavItems(ownerMode) : publicNavItems;
+  const adminSeesOffPages = adminMode && !visitorView;
+  const hidden = new Set(hiddenPaths);
+  const visiblePublicItems = publicNavItems
+    .filter((item) => adminSeesOffPages || !hidden.has(item.href))
+    .map((item) => (hidden.has(item.href) ? { ...item, label: `${item.label} (off)`, className: `${item.className || ''} nav-off`.trim() } : item));
+  const navItems = showAdminMode ? getAdminNavItems(ownerMode) : visiblePublicItems;
+  const showViewBar = adminMode && !isAdminRoute;
 
   useEffect(() => {
     if (!open) {
@@ -92,6 +99,7 @@ export default function SiteHeader({ adminMode = false, ownerMode = false, admin
   }, [open]);
 
   return (
+    <>
     <header ref={headerRef} className={`nav ${showAdminMode ? 'admin-mode' : ''}`.trim()}>
       <div className="container nav-inner">
         <Link prefetch={false} href={showAdminMode ? '/admin' : '/'} className={`brand ${showAdminMode ? 'admin-brand' : ''}`.trim()} onClick={() => setOpen(false)}>
@@ -126,5 +134,7 @@ export default function SiteHeader({ adminMode = false, ownerMode = false, admin
         {showAdminMode && adminUser ? <span className="nav-admin-user nav-admin-user-desktop">Signed in: {adminUser}</span> : null}
       </div>
     </header>
+    {showViewBar ? <AdminViewBar visitorView={visitorView} /> : null}
+    </>
   );
 }

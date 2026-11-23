@@ -101,3 +101,12 @@ export function isOwnerUsername(username) {
 
   return safeUser === MASTER_OWNER_USERNAME || safeUser === getAdminOwnerUsername();
 }
+
+// "View as visitor": a signed-in admin can browse public pages exactly as the
+// public sees them. The cookie only ever hides admin extras, so it is safe to
+// set from the browser.
+export const VIEW_AS_COOKIE = 'xrkr_view_as';
+
+export function isVisitorView(jar) {
+  return jar?.get?.(VIEW_AS_COOKIE)?.value === 'visitor';
+}

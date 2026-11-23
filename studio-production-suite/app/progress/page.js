@@ -5,6 +5,7 @@ import ProgressReactions from '../../components/ProgressReactions';
 import ProgressShareButton from '../../components/ProgressShareButton';
 import ProgressSignIn from '../../components/ProgressSignIn';
 import ProgressSignOut from '../../components/ProgressSignOut';
+import { isVisitorView } from '../../lib/admin-auth';
 import { emailConfigured, getFamilyMember, getProgressSettings, isOwnerCookies, listProgressPosts } from '../../lib/progress';
 import styles from './progress.module.css';
 
@@ -64,7 +65,7 @@ const SIGNIN_NOTICES = {
 
 export default async function ProgressPage({ searchParams }) {
   const jar = cookies();
-  const owner = isOwnerCookies(jar);
+  const owner = isOwnerCookies(jar) && !isVisitorView(jar);
   const member = owner ? null : await getFamilyMember(jar).catch(() => null);
   let requireSignin = false;
   try { requireSignin = (await getProgressSettings()).require_signin; } catch { requireSignin = false; }
