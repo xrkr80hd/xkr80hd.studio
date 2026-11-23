@@ -671,6 +671,94 @@
   color: var(--lemon-soft);
 }
 
+/* Rotating notes: one note at a time, gently fading to the next */
+.noteCarousel {
+  margin: 0 0 14px;
+}
+
+.noteSlide {
+  display: grid;
+  align-content: center;
+  gap: 10px;
+  min-height: 132px;
+  margin: 0;
+  padding: 18px 20px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 244, 79, 0.16);
+  background: linear-gradient(150deg, rgba(255, 244, 79, 0.1), rgba(255, 244, 79, 0.03));
+  cursor: pointer;
+  animation: noteIn 0.7s ease both;
+}
+
+.noteSlide blockquote {
+  margin: 0;
+  font-size: 17px;
+  line-height: 1.6;
+}
+
+.noteSlide blockquote::before {
+  content: '\201C';
+  margin-right: 2px;
+  color: var(--lemon);
+  font-family: var(--font-syne), "Syne", sans-serif;
+  font-size: 22px;
+}
+
+.noteSlide figcaption {
+  margin: 0;
+}
+
+@keyframes noteIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+
+.noteControls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  margin-top: 10px;
+}
+
+.noteArrow {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--lemon-line);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--lemon);
+  font: inherit;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.noteArrow:focus-visible {
+  outline: 3px solid var(--lemon);
+  outline-offset: 2px;
+}
+
+.noteCount {
+  min-width: 52px;
+  font-size: 13px;
+  color: var(--ink-soft);
+  text-align: center;
+}
+
+.noteControls .linkButton {
+  margin-left: auto;
+  font-size: 14px;
+}
+
+.noteBack {
+  display: block;
+  margin: 0 0 14px;
+  font-size: 14px;
+}
+
 /* Family notes */
 .notes {
   margin-top: 22px;
@@ -762,7 +850,8 @@
 
 @media (prefers-reduced-motion: reduce) {
   .rays,
-  .pulse::after {
+  .pulse::after,
+  .noteSlide {
     animation: none;
   }
 

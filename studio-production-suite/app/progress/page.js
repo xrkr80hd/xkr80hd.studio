@@ -57,6 +57,20 @@ function Sun({ id = 'progressSun' }) {
   );
 }
 
+function previewSamplePosts() {
+  const at = minutes => new Date(Date.now() - minutes * 60000).toISOString();
+  const notes = ['Sample note one. Sending love!', 'Sample note two, a little longer, to show how a longer message wraps on a phone screen.', 'Sample note three.', 'Sample note four.'];
+  return [{
+    id: '00000000-0000-0000-0000-000000000000',
+    title: 'Preview sample update',
+    body: 'This sample only shows on preview links, so the layout can be checked without the live data.',
+    created_at: at(30),
+    photos: [],
+    reactions: { counts: { '❤️': 3, '🙏': 2 }, mine: [] },
+    comments: notes.map((body, index) => ({ id: `sample-${index}`, post_id: 'sample', member_email: '', author_name: `Sample person ${index + 1}`, body, created_at: at(25 - index * 5) })),
+  }];
+}
+
 const SIGNIN_NOTICES = {
   expired: 'That sign-in link has expired. Enter your email for a fresh one.',
   blocked: 'This email cannot sign in. Please contact Travis.',
@@ -77,6 +91,11 @@ export default async function ProgressPage({ searchParams }) {
   let unavailable = false;
   if (canRead) {
     try { posts = await listProgressPosts({ withComments: true, viewerEmail: member?.email || '' }); } catch { unavailable = true; }
+  }
+  // Preview builds have no database, so show sample content there to check the layout.
+  if (unavailable && process.env.VERCEL_ENV === 'preview') {
+    posts = previewSamplePosts();
+    unavailable = false;
   }
   const latest = posts[0];
   const now = Date.now();
