@@ -6,7 +6,46 @@ import styles from '../app/admin/progress/admin-progress.module.css';
 
 const MAX_PHOTOS = 12;
 const MAX_BYTES = 20 * 1024 * 1024;
+const MAX_PICK_BYTES = 60 * 1024 * 1024;
+const MAX_EDGE = 2400;
 const TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+
+async function decodeImage(file) {
+  if (typeof createImageBitmap === 'function') {
+    try { return await createImageBitmap(file, { imageOrientation: 'from-image' }); } catch {}
+  }
+  const url = URL.createObjectURL(file);
+  try {
+    const img = new Image();
+    img.decoding = 'async';
+    img.src = url;
+    await img.decode();
+    return img;
+  } finally {
+    URL.revokeObjectURL(url);
+  }
+}
+
+// Phone photos (including iPhone HEIC where the browser can read it) are turned into
+// a right-side-up JPEG no bigger than 2400px, so uploads are quick on a cell signal.
+async function preparePhoto(file, index) {
+  if (file.type === 'image/gif') return file.size <= MAX_BYTES ? file : null;
+  let image;
+  try { image = await decodeImage(file); } catch { image = null; }
+  if (!image) return TYPES.includes(file.type) && file.size <= MAX_BYTES ? file : null;
+  const width = image.width || image.naturalWidth;
+  const height = image.height || image.naturalHeight;
+  const scale = Math.min(1, MAX_EDGE / Math.max(width, height));
+  if (scale === 1 && file.type === 'image/jpeg' && file.size <= 4 * 1024 * 1024) return file;
+  const canvas = document.createElement('canvas');
+  canvas.width = Math.round(width * scale);
+  canvas.height = Math.round(height * scale);
+  canvas.getContext('2d').drawImage(image, 0, 0, canvas.width, canvas.height);
+  if (typeof image.close === 'function') image.close();
+  const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.86));
+  if (!blob || blob.size > MAX_BYTES) return null;
+  return new File([blob], `photo-${Date.now()}-${index}.jpg`, { type: 'image/jpeg' });
+}
 
 function putFile(url, file, contentType) {
   return new Promise((resolve, reject) => {
@@ -44,19 +83,28 @@ function Composer({ initial, onDone, onCancel }) {
   const [kept, setKept] = useState(initial?.photos || []);
   const [files, setFiles] = useState([]);
   const [busy, setBusy] = useState(false);
+  const [preparing, setPreparing] = useState(false);
   const [status, setStatus] = useState('');
   const input = useRef(null);
 
-  function addFiles(event) {
+  async function addFiles(event) {
+    const room = MAX_PHOTOS - kept.length - files.length;
     const picked = Array.from(event.target.files || []);
     event.target.value = '';
-    const ok = picked.filter(file => TYPES.includes(file.type) && file.size <= MAX_BYTES);
-    const skipped = picked.length - ok.length;
-    const room = MAX_PHOTOS - kept.length - files.length;
-    const next = ok.slice(0, Math.max(0, room)).map(file => ({ file, preview: URL.createObjectURL(file) }));
-    setFiles(current => [...current, ...next]);
-    if (skipped) setStatus(`${skipped} photo${skipped === 1 ? ' was' : 's were'} skipped (JPG, PNG, WEBP or GIF up to 20 MB).`);
-    else if (ok.length > next.length) setStatus(`Up to ${MAX_PHOTOS} photos per update.`);
+    const wanted = picked.slice(0, Math.max(0, room));
+    setPreparing(true);
+    setStatus(`Getting ${wanted.length === 1 ? 'your photo' : `${wanted.length} photos`} ready…`);
+    const ready = [];
+    let skipped = 0;
+    for (let index = 0; index < wanted.length; index += 1) {
+      const file = wanted[index];
+      const usable = file.size <= MAX_PICK_BYTES && (file.type.startsWith('image/') || /\.(heic|heif)$/i.test(file.name)) ? await preparePhoto(file, index) : null;
+      if (usable) ready.push({ file: usable, preview: URL.createObjectURL(usable) }); else skipped += 1;
+    }
+    setFiles(current => [...current, ...ready]);
+    setPreparing(false);
+    if (skipped) setStatus(`${skipped} photo${skipped === 1 ? " couldn't" : "s couldn't"} be read. Try a JPG or PNG, or take a screenshot of it.`);
+    else if (picked.length > wanted.length) setStatus(`Up to ${MAX_PHOTOS} photos per update.`);
     else setStatus('');
   }
 
@@ -126,11 +174,11 @@ function Composer({ initial, onDone, onCancel }) {
       )}
 
       <div className={styles.actions}>
-        <button type="button" className={styles.secondary} onClick={() => input.current?.click()} disabled={busy || photoCount >= MAX_PHOTOS}>
-          Add photos{photoCount ? ` (${photoCount}/${MAX_PHOTOS})` : ''}
+        <button type="button" className={styles.secondary} onClick={() => input.current?.click()} disabled={busy || preparing || photoCount >= MAX_PHOTOS}>
+          {preparing ? 'Preparing photos…' : `📷 Add photos${photoCount ? ` (${photoCount}/${MAX_PHOTOS})` : ''}`}
         </button>
-        <input ref={input} type="file" accept="image/jpeg,image/png,image/webp,image/gif" multiple hidden onChange={addFiles} />
-        <button type="submit" className={styles.primary} disabled={busy}>{busy ? 'Working…' : editing ? 'Save changes' : 'Post update'}</button>
+        <input ref={input} type="file" accept="image/*" multiple hidden onChange={addFiles} />
+        <button type="submit" className={styles.primary} disabled={busy || preparing}>{busy ? 'Working…' : editing ? 'Save changes' : 'Post update'}</button>
         {editing && <button type="button" className={styles.link} onClick={onCancel} disabled={busy}>Cancel</button>}
       </div>
       <p role="status" className={styles.status}>{status}</p>

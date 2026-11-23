@@ -7,12 +7,14 @@ import ProgressSignOut from '../../components/ProgressSignOut';
 import { emailConfigured, getFamilyMember, getProgressSettings, isOwnerCookies, listProgressPosts } from '../../lib/progress';
 import styles from './progress.module.css';
 
+const SHARE_IMAGE = { url: 'https://xrkr80hd.studio/assets/progress/ashleys-progress-share.jpg', width: 1200, height: 675, type: 'image/jpeg', alt: "Ashley's Progress" };
+
 export const metadata = {
-  title: 'Progress | Updates for family and friends',
+  title: "Ashley's Progress",
   description: 'Updates for family and friends. Check back any time.',
   robots: { index: false, follow: false, nocache: true, googleBot: { index: false, follow: false } },
-  openGraph: { title: 'Progress', description: 'Updates for family and friends. Check back any time.', url: 'https://xrkr80hd.studio/progress', type: 'website' },
-  twitter: { card: 'summary', title: 'Progress', description: 'Updates for family and friends. Check back any time.' },
+  openGraph: { title: "Ashley's Progress", description: 'Updates for family and friends. Check back any time.', url: 'https://xrkr80hd.studio/progress', type: 'website', images: [SHARE_IMAGE] },
+  twitter: { card: 'summary_large_image', title: "Ashley's Progress", description: 'Updates for family and friends. Check back any time.', images: [SHARE_IMAGE.url] },
 };
 
 export const dynamic = 'force-dynamic';
@@ -79,10 +81,13 @@ export default async function ProgressPage({ searchParams }) {
 
   return (
     <div className={styles.page}>
+      <figure className={styles.banner}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/assets/progress/ashleys-progress-hero.jpg" alt="Ashley's Progress, with photos of Ashley and Travis" width={1672} height={941} fetchPriority="high" />
+      </figure>
       <header className={styles.hero}>
-        <Sun />
         <p className={styles.kicker}><span className={styles.dot} aria-hidden="true" />UPDATES FOR FAMILY &amp; FRIENDS</p>
-        <h1>Progress</h1>
+        <h1 className={styles.srOnly}>Ashley&apos;s Progress</h1>
         <p className={styles.intro}>Thank you for checking in. Every update lands here, newest at the top, so you can come back any time and see how things are going.</p>
         <div className={styles.heroMeta}>
           {latest
@@ -120,8 +125,8 @@ export default async function ProgressPage({ searchParams }) {
                     {fresh && <span className={styles.badge}>Latest</span>}
                   </p>
                   {post.title && <h2>{post.title}</h2>}
-                  {post.body && <div className={styles.body}>{post.body}</div>}
                   <ProgressGallery photos={post.photos} label={post.title ? `${post.title} photo` : 'Photo'} />
+                  {post.body && <div className={styles.body}>{post.body}</div>}
                   <ProgressComments postId={post.id} initial={post.comments.map(({ member_email: author, ...note }) => ({ ...note, mine: Boolean(member) && author === member.email }))} canPost={Boolean(member)} owner={owner} />
                 </article>
               </li>

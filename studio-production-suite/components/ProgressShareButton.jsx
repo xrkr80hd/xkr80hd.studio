@@ -10,7 +10,7 @@ export default function ProgressShareButton() {
     const url = `${window.location.origin}/progress`;
     try {
       if (navigator.share) {
-        await navigator.share({ title: 'Progress', text: 'Updates for family and friends', url });
+        await navigator.share({ title: "Ashley's Progress", text: 'Updates for family and friends', url });
         return;
       }
       await navigator.clipboard.writeText(url);
