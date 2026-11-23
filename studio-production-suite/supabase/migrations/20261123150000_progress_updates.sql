@@ -12,10 +12,10 @@ create table public.progress_posts (
 );
 create index progress_posts_created_at_idx on public.progress_posts (created_at desc);
 
--- Single-row page settings. require_signin: only verified family can read when true.
+-- Single-row page settings. Anyone with the link can read by default; require_signin = true limits reading to signed-in family.
 create table public.progress_settings (
   id smallint primary key default 1 check (id = 1),
-  require_signin boolean not null default true,
+  require_signin boolean not null default false,
   updated_at timestamptz not null default now()
 );
 insert into public.progress_settings (id) values (1);

@@ -7,7 +7,7 @@ function when(value) {
   return new Intl.DateTimeFormat('en-US', { timeZone: 'America/Chicago', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }).format(new Date(value));
 }
 
-export default function ProgressComments({ postId, initial = [], canPost = false, owner = false }) {
+export default function ProgressComments({ postId, initial = [], canPost = false, owner = false, signInHref = '' }) {
   const [items, setItems] = useState(initial);
   const [text, setText] = useState('');
   const [open, setOpen] = useState(false);
@@ -39,7 +39,7 @@ export default function ProgressComments({ postId, initial = [], canPost = false
     if (response.ok) setItems(list => list.filter(item => item.id !== id));
   }
 
-  if (!items.length && !canPost) return null;
+  if (!items.length && !canPost && !signInHref) return null;
 
   return (
     <section className={styles.notes} aria-label="Notes from family">
@@ -55,6 +55,7 @@ export default function ProgressComments({ postId, initial = [], canPost = false
           ))}
         </ul>
       )}
+      {!canPost && signInHref && <a className={styles.noteOpen} href={signInHref}>💛 Sign in to leave a note</a>}
       {canPost && (open ? (
         <form className={styles.noteForm} onSubmit={submit}>
           <textarea value={text} onChange={event => setText(event.target.value)} rows={3} maxLength={2000} placeholder="Send some love…" aria-label="Your note" autoFocus />

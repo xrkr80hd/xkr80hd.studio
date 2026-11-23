@@ -43,7 +43,15 @@ export default function ProgressSignIn({ invite = '', emailReady = false, notice
     );
   }
 
-  if (compact && !viaInvite && !emailReady) return null;
+  if (compact && !viaInvite && !emailReady) {
+    return (
+      <section className={styles.gate}>
+        <h2>Want to leave a note?</h2>
+        <p>Notes are for family and close friends. Ask Travis for an invite link, and you'll stay signed in on this device for 30 days, no password needed.</p>
+        {status && <p role="status" className={styles.gateStatus}>{status}</p>}
+      </section>
+    );
+  }
 
   if (!viaInvite && !emailReady) {
     return (
@@ -60,7 +68,7 @@ export default function ProgressSignIn({ invite = '', emailReady = false, notice
       <h2>{viaInvite ? "You're invited" : compact ? 'Want to leave a note?' : 'Sign in to see updates'}</h2>
       <p>{viaInvite
         ? "Add your name and email and you're in. You'll stay signed in on this device for 30 days."
-        : "Enter your name and email. We'll send a one-tap link, no password needed, and you'll stay signed in for 30 days."}</p>
+        : "Notes are for invited family and friends. New here? Ask Travis for an invite link. Already joined? Enter your email for a one-tap sign-in link."}</p>
       <label>
         Your name
         <input value={name} onChange={event => setName(event.target.value)} autoComplete="name" maxLength={80} required placeholder="First and last name" />

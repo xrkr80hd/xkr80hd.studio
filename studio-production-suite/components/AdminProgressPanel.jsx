@@ -242,7 +242,7 @@ function FamilyAccess() {
         <button type="button" role="radio" aria-checked={settings?.require_signin === true} className={settings?.require_signin ? styles.primary : styles.secondary} onClick={() => setPrivacy(true)} disabled={!settings}>Family only (sign-in)</button>
         <button type="button" role="radio" aria-checked={settings?.require_signin === false} className={settings && !settings.require_signin ? styles.primary : styles.secondary} onClick={() => setPrivacy(false)} disabled={!settings}>Anyone with the link</button>
       </div>
-      <p className={styles.help}>{settings?.require_signin === false ? 'Anyone with the link can read. Signing in is only needed to leave notes.' : 'Only signed-in family can read updates and leave notes.'}</p>
+      <p className={styles.help}>{settings?.require_signin === false ? 'Anyone with the link can read. Only invited, signed-in family can leave notes.' : 'Only signed-in family can read updates and leave notes.'}</p>
       <p className={styles.help}>{emailReady ? 'Email sign-in is on: family can request a one-tap link by email.' : 'Email sign-in is not set up yet, so use an invite link for now.'}</p>
 
       <div className={styles.actions}>
@@ -299,7 +299,7 @@ export default function AdminProgressPanel({ initialItems = [] }) {
       <header className={styles.header}>
         <span className={styles.tag}>OWNER CONTROLS / FAMILY UPDATES</span>
         <h1>Progress</h1>
-        <p>Post updates and photos for family. Only you can post updates; signed-in family can leave notes.</p>
+        <p>Post updates and photos for family. Anyone with the link can read (unless you switch it below); only you post updates, and only invited family can leave notes.</p>
         <Link href="/progress" target="_blank">View the Progress page ↗</Link>
       </header>
 

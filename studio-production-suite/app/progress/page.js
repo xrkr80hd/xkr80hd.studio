@@ -65,8 +65,8 @@ export default async function ProgressPage({ searchParams }) {
   const jar = cookies();
   const owner = isOwnerCookies(jar);
   const member = owner ? null : await getFamilyMember(jar).catch(() => null);
-  let requireSignin = true;
-  try { requireSignin = (await getProgressSettings()).require_signin; } catch { requireSignin = true; }
+  let requireSignin = false;
+  try { requireSignin = (await getProgressSettings()).require_signin; } catch { requireSignin = false; }
   const canRead = owner || Boolean(member) || !requireSignin;
   const invite = !owner && !member && typeof searchParams?.invite === 'string' ? searchParams.invite.slice(0, 600) : '';
   const signin = String(searchParams?.signin || '');
@@ -102,7 +102,12 @@ export default async function ProgressPage({ searchParams }) {
 
       {!canRead && <ProgressSignIn invite={invite} emailReady={emailConfigured()} notice={SIGNIN_NOTICES[signin] || ''} />}
 
-      {unavailable && <section className={styles.notice}>Updates can't be loaded right now. Please refresh in a moment.</section>}
+      {unavailable && (
+        <section className={styles.notice}>
+          <strong>Updates will be posted here.</strong>
+          <span>Save this page and check back soon.</span>
+        </section>
+      )}
 
       {canRead && !unavailable && posts.length === 0 && (
         <section className={styles.notice}>
@@ -127,7 +132,7 @@ export default async function ProgressPage({ searchParams }) {
                   {post.title && <h2>{post.title}</h2>}
                   <ProgressGallery photos={post.photos} label={post.title ? `${post.title} photo` : 'Photo'} />
                   {post.body && <div className={styles.body}>{post.body}</div>}
-                  <ProgressComments postId={post.id} initial={post.comments.map(({ member_email: author, ...note }) => ({ ...note, mine: Boolean(member) && author === member.email }))} canPost={Boolean(member)} owner={owner} />
+                  <ProgressComments postId={post.id} initial={post.comments.map(({ member_email: author, ...note }) => ({ ...note, mine: Boolean(member) && author === member.email }))} canPost={Boolean(member)} owner={owner} signInHref={!member && !owner ? '#join' : ''} />
                 </article>
               </li>
             );
@@ -136,7 +141,7 @@ export default async function ProgressPage({ searchParams }) {
       )}
 
       {canRead && !owner && !member && (
-        <div className={styles.joinLater}>
+        <div className={styles.joinLater} id="join">
           <ProgressSignIn invite={invite} emailReady={emailConfigured()} notice={SIGNIN_NOTICES[signin] || ''} compact />
         </div>
       )}
