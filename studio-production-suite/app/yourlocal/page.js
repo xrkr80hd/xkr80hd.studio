@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import YLIcon from '../../components/yourlocal/YLIcon';
 import YLShell from '../../components/yourlocal/YLShell';
 import { joinPath, isSignupOpen } from '../../lib/community';
 import { MEMBER_TYPES } from '../../lib/community-rules.mjs';
@@ -30,12 +31,12 @@ export default async function YourLocalLandingPage() {
   const open = isSignupOpen();
 
   const sections = [
-    { label: 'Bands', href: '/your-local-scene', count: bands.length },
-    { label: 'Artists', href: '/your-local-artists', count: artists.length },
-    { label: 'Businesses', href: '/your-local-business', count: businesses.length },
-    { label: 'Podcasts', href: '/podcast', count: podcasts.length },
-    { label: 'Blogs', href: '/your-local-blog', count: null },
-    { label: 'Local Legends', href: '/local-legends-archive', count: legends.length },
+    { key: 'scene', label: 'Bands', href: '/your-local-scene', count: bands.length },
+    { key: 'artists', label: 'Artists', href: '/your-local-artists', count: artists.length },
+    { key: 'business', label: 'Businesses', href: '/your-local-business', count: businesses.length },
+    { key: 'podcast', label: 'Podcasts', href: '/podcast', count: podcasts.length },
+    { key: 'blog', label: 'Blogs', href: '/your-local-blog', count: null },
+    { key: 'legends', label: 'Local Legends', href: '/local-legends-archive', count: legends.length },
   ];
 
   const spotlight = [
@@ -70,6 +71,9 @@ export default async function YourLocalLandingPage() {
       <nav className="yl-explore" aria-label="Explore">
         {sections.map((section) => (
           <Link key={section.href} className="yl-explore-tile" href={section.href}>
+            <span className="yl-explore-icon">
+              <YLIcon name={section.key} size={22} />
+            </span>
             <strong>{section.label}</strong>
             <span>{section.count === null ? 'Read' : section.count ? `${section.count} listed` : 'Coming soon'}</span>
           </Link>

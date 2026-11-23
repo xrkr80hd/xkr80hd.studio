@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { isSignupOpen } from '../../lib/community';
 import { getHiddenPaths } from '../../lib/page-visibility';
+import YLIcon from './YLIcon';
 import YLShell from './YLShell';
 
 export const YL_SECTIONS = [
@@ -87,6 +88,7 @@ export default async function YLDirectory({
       <nav className="yl-tabs" aria-label="YourLocal sections">
         {tabs.map((section) => (
           <Link key={section.key} className="yl-tab" href={section.href} aria-current={section.key === sectionKey ? 'page' : undefined}>
+            <YLIcon name={section.key} size={18} />
             {section.label}
           </Link>
         ))}

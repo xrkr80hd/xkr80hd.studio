@@ -5882,7 +5882,7 @@ h4 {
 .nav-join {
   color: #0b1020 !important;
   background: #5eead4;
-  border-radius: 999px;
+  border-radius: 6px;
   padding-left: 0.75rem !important;
   padding-right: 0.75rem !important;
   font-weight: 700;

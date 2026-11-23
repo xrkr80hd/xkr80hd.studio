@@ -17,8 +17,8 @@
   --yl-danger-soft: #fdecea;
   --yl-ok-soft: #e8f6ee;
   --yl-ok: #1a7f45;
-  --yl-radius: 14px;
-  --yl-radius-sm: 10px;
+  --yl-radius: 8px;
+  --yl-radius-sm: 6px;
   --yl-shadow: 0 1px 2px rgba(16, 24, 40, 0.05), 0 1px 3px rgba(16, 24, 40, 0.06);
   --yl-shadow-hover: 0 8px 24px rgba(16, 24, 40, 0.1);
 
@@ -130,7 +130,7 @@ html:has(.yl) body {
 .yl-tab {
   flex: 0 0 auto;
   padding: 0.45rem 0.9rem;
-  border-radius: 999px;
+  border-radius: var(--yl-radius-sm);
   border: 1px solid var(--yl-line);
   background: var(--yl-surface);
   color: var(--yl-ink-2) !important;
@@ -220,7 +220,7 @@ html:has(.yl) body {
 
 .yl-chip {
   padding: 0.3rem 0.75rem;
-  border-radius: 999px;
+  border-radius: var(--yl-radius-sm);
   background: var(--yl-surface);
   border: 1px solid var(--yl-line);
   color: var(--yl-ink-2) !important;
@@ -247,7 +247,7 @@ html:has(.yl) body {
   color: var(--yl-muted);
   text-decoration: none;
   padding: 0.2rem 0.45rem;
-  border-radius: 6px;
+  border-radius: 4px;
 }
 
 .yl-sort a[aria-current="true"] {
@@ -305,7 +305,7 @@ a.yl-card:hover {
 .yl-initials {
   width: 72px;
   height: 72px;
-  border-radius: 50%;
+  border-radius: var(--yl-radius-sm);
   display: grid;
   place-items: center;
   background: var(--yl-accent-soft);
@@ -553,7 +553,7 @@ a.yl-card:hover {
 .yl-avatar {
   width: 64px;
   height: 64px;
-  border-radius: 50%;
+  border-radius: var(--yl-radius-sm);
   object-fit: cover;
   background: var(--yl-accent-soft);
   flex: 0 0 auto;
@@ -568,7 +568,7 @@ a.yl-card:hover {
 .yl-badge {
   display: inline-block;
   padding: 0.15rem 0.55rem;
-  border-radius: 999px;
+  border-radius: var(--yl-radius-sm);
   background: var(--yl-accent-soft);
   color: var(--yl-accent);
   font-size: 0.78rem;
@@ -672,7 +672,7 @@ a.yl-card:hover {
 
 .yl-progress {
   height: 6px;
-  border-radius: 999px;
+  border-radius: var(--yl-radius-sm);
   background: var(--yl-line);
   overflow: hidden;
 }
@@ -818,7 +818,7 @@ a.yl-card:hover {
 .yl-step-num {
   width: 32px;
   height: 32px;
-  border-radius: 50%;
+  border-radius: var(--yl-radius-sm);
   display: grid;
   place-items: center;
   background: var(--yl-accent);
@@ -870,4 +870,50 @@ a.yl-card:hover {
   .yl-steps {
     grid-template-columns: 1fr;
   }
+}
+
+
+/* Icons (Supabase-style: crisp line icons, square-ish controls, no pills) */
+.yl-icon {
+  flex: 0 0 auto;
+  display: block;
+}
+
+.yl-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.yl-tab .yl-icon {
+  color: var(--yl-muted);
+}
+
+.yl-tab[aria-current="page"] .yl-icon {
+  color: #fff;
+}
+
+.yl-explore-tile {
+  gap: 0.35rem;
+}
+
+.yl-explore-icon {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--yl-radius-sm);
+  border: 1px solid var(--yl-line);
+  background: var(--yl-bg);
+  color: var(--yl-accent);
+  margin-bottom: 0.35rem;
+}
+
+.yl-explore-tile:hover .yl-explore-icon {
+  border-color: var(--yl-accent);
+  background: var(--yl-accent-soft);
+}
+
+.yl-avatar {
+  border-radius: var(--yl-radius-sm);
 }
