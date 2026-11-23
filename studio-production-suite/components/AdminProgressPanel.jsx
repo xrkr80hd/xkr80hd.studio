@@ -192,6 +192,7 @@ function FamilyAccess() {
   const [emailReady, setEmailReady] = useState(false);
   const [members, setMembers] = useState([]);
   const [invite, setInvite] = useState('');
+  const [copied, setCopied] = useState('');
   const [status, setStatus] = useState('');
 
   async function load() {
@@ -213,18 +214,43 @@ function FamilyAccess() {
     if (response.ok) { setSettings({ require_signin: requireSignin }); setStatus('Saved.'); } else setStatus('Could not save.');
   }
 
-  async function makeInvite() {
-    setStatus('Making a link…');
+  function inviteMessage(link) {
+    const updates = `${window.location.origin}/progress`;
+    return [
+      "Hey everyone! I set up a page where I'll post updates and photos on how Ashley is doing.",
+      `Updates: ${updates}`,
+      `To leave her a note or a reaction, use this invite link: ${link}`,
+      "The invite link is good for 7 days. Once you sign in, it keeps you logged in for 30 days on that phone or browser. If you switch to another browser or device, you'll need a new link, so just ask me. Please don't pass the invite link around.",
+    ].join('\n');
+  }
+
+  async function getInvite() {
+    if (invite) return invite;
     const response = await fetch('/api/admin/progress/invite', { method: 'POST' });
     const body = await response.json().catch(() => ({}));
-    if (!response.ok) { setStatus(body.error || 'Could not make a link.'); return; }
+    if (!response.ok) throw new Error(body.error || 'Could not make a link.');
     setInvite(body.link);
-    try { await navigator.clipboard.writeText(body.link); setStatus('Invite link copied. Paste it in a text to family.'); }
-    catch { setStatus('Invite link ready below. Copy it and text it to family.'); }
+    return body.link;
+  }
+
+  // copy: 'message' copies the ready-to-text note with the link inside, 'link' copies the bare link.
+  async function copyInvite(kind) {
+    setStatus('Making a link…');
+    let link;
+    try { link = await getInvite(); } catch (error) { setStatus(error.message); return; }
+    const text = kind === 'message' ? inviteMessage(link) : link;
+    setCopied(text);
+    try {
+      await navigator.clipboard.writeText(text);
+      setStatus(kind === 'message' ? 'Invite message copied. Paste it in a text to family.' : 'Invite link copied.');
+    } catch {
+      setStatus('Ready below. Press and hold to copy it.');
+    }
   }
 
   async function shareInvite() {
-    if (navigator.share) { try { await navigator.share({ title: 'Progress', text: 'Updates for family and friends', url: invite }); } catch {} }
+    if (!navigator.share || !copied) return;
+    try { await navigator.share({ text: copied }); } catch {}
   }
 
   async function setBlocked(member, blocked) {
@@ -246,11 +272,12 @@ function FamilyAccess() {
       <p className={styles.help}>{emailReady ? 'Email sign-in is on: family can request a one-tap link by email.' : 'Email sign-in is not set up yet, so use an invite link for now.'}</p>
 
       <div className={styles.actions}>
-        <button type="button" className={styles.primary} onClick={makeInvite}>Copy invite link</button>
-        {invite && typeof navigator !== 'undefined' && navigator.share && <button type="button" className={styles.secondary} onClick={shareInvite}>Share…</button>}
+        <button type="button" className={styles.primary} onClick={() => copyInvite('message')}>Copy invite message</button>
+        <button type="button" className={styles.secondary} onClick={() => copyInvite('link')}>Copy link only</button>
+        {copied && typeof navigator !== 'undefined' && navigator.share && <button type="button" className={styles.secondary} onClick={shareInvite}>Share…</button>}
       </div>
-      {invite && <input className={styles.inviteBox} readOnly value={invite} onFocus={event => event.target.select()} aria-label="Invite link" />}
-      <p className={styles.help}>Invite links work for 7 days. Whoever opens one adds their name and email and stays signed in for 30 days.</p>
+      {copied && <textarea className={styles.inviteBox} readOnly rows={copied.includes('\n') ? 7 : 2} value={copied} onFocus={event => event.target.select()} aria-label="Invite to send" />}
+      <p className={styles.help}>Invite links work for 7 days. Whoever opens one adds their name and email and stays signed in for 30 days on that phone or browser. A new browser or device needs a new link.</p>
       <p role="status" className={styles.status}>{status}</p>
 
       <h3 className={styles.subhead}>Signed in <span>{signedIn.length}</span></h3>

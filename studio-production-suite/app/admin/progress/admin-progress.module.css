@@ -228,6 +228,8 @@
 }
 
 .inviteBox {
+  resize: vertical;
+  line-height: 1.5;
   display: block;
   width: 100%;
   margin-top: 12px;
