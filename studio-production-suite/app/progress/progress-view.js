@@ -147,14 +147,21 @@ export default async function ProgressView({ searchParams, focusId = '' }) {
             return (
               <li key={post.id} id={`update-${post.number}`} className={styles.post}>
                 <span className={styles.marker} aria-hidden="true" />
-                <article className={styles.card}>
+                <details className={styles.card} open={Boolean(focusId)}>
+                  <summary className={styles.summary}>
                   <p className={styles.date}>
                     <span className={styles.updateNumber}>Update {post.number}</span>
                     <time dateTime={post.created_at}>{formatDate(post.created_at)}<span className={styles.year}>, {formatYear(post.created_at)}</span></time>
                     <span className={styles.time}>{formatTime(post.created_at)}</span>
                     {fresh && <span className={styles.badge}>Latest</span>}
                   </p>
-                  {post.title && <h2>{post.title}</h2>}
+                  <h2>{post.title || `Update ${post.number}`}</h2>
+                  <span className={styles.summaryMeta}>
+                    {[post.photos.length ? `${post.photos.length} photo${post.photos.length === 1 ? '' : 's'}` : '', post.comments.length ? `${post.comments.length} note${post.comments.length === 1 ? '' : 's'}` : ''].filter(Boolean).join(' · ')}
+                  </span>
+                  <span className={styles.readToggle} aria-hidden="true"><span className={styles.readOpen}>Read update ▾</span><span className={styles.readClose}>Close ▴</span></span>
+                  </summary>
+                  <div className={styles.cardBody}>
                   <ProgressGallery photos={post.photos} label={post.title ? `${post.title} photo` : 'Photo'} />
                   {post.body && <div className={styles.body}>{post.body}</div>}
                   <div className={styles.postShareRow}>
@@ -162,7 +169,8 @@ export default async function ProgressView({ searchParams, focusId = '' }) {
                   </div>
                   {post.reactions && <ProgressReactions postId={post.id} initial={post.reactions} canReact={Boolean(member)} signInHref={!member && !owner ? '#join' : ''} />}
                   <ProgressComments postId={post.id} initial={post.comments.map(({ member_email: author, ...note }) => ({ ...note, mine: Boolean(member) && author === member.email }))} canPost={Boolean(member)} owner={owner} signInHref={!member && !owner ? '#join' : ''} />
-                </article>
+                  </div>
+                </details>
               </li>
             );
           })}

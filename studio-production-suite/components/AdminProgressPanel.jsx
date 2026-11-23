@@ -36,7 +36,7 @@ async function preparePhoto(file, index) {
   const width = image.width || image.naturalWidth;
   const height = image.height || image.naturalHeight;
   const scale = Math.min(1, MAX_EDGE / Math.max(width, height));
-  if (scale === 1 && file.type === 'image/jpeg' && file.size <= 4 * 1024 * 1024) return file;
+  // Always redraw, so camera details such as location never leave the phone.
   const canvas = document.createElement('canvas');
   canvas.width = Math.round(width * scale);
   canvas.height = Math.round(height * scale);

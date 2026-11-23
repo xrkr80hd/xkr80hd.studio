@@ -206,6 +206,77 @@
   overflow-wrap: anywhere;
 }
 
+/* Collapsed updates: tap the row to read */
+.summary {
+  display: block;
+  list-style: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.summary::-webkit-details-marker {
+  display: none;
+}
+
+.summary::marker {
+  content: '';
+}
+
+.summary h2 {
+  margin-bottom: 8px;
+}
+
+.summary:focus-visible {
+  outline: 3px solid var(--lemon);
+  outline-offset: 6px;
+  border-radius: 12px;
+}
+
+.summaryMeta {
+  display: block;
+  min-height: 1em;
+  font-size: 13px;
+  color: var(--ink-soft);
+}
+
+.readToggle {
+  display: inline-flex;
+  margin-top: 14px;
+  padding: 10px 20px;
+  border-radius: 999px;
+  background: var(--lemon);
+  color: #1a1700;
+  font-size: 14px;
+  font-weight: 800;
+  box-shadow: 0 6px 24px rgba(255, 244, 79, 0.22);
+}
+
+.readClose,
+details[open] > .summary .readOpen {
+  display: none;
+}
+
+details[open] > .summary .readClose {
+  display: inline;
+}
+
+details[open] > .summary .readToggle {
+  background: transparent;
+  color: var(--lemon);
+  border: 1px solid var(--lemon-line);
+  box-shadow: none;
+}
+
+.cardBody {
+  margin-top: 18px;
+  animation: cardOpen 0.28s ease;
+}
+
+@keyframes cardOpen {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: none; }
+}
+
 /* Per-update share link */
 .postShareRow {
   margin: 4px 0 14px;
@@ -932,7 +1003,8 @@
 @media (prefers-reduced-motion: reduce) {
   .rays,
   .pulse::after,
-  .noteSlide {
+  .noteSlide,
+  .cardBody {
     animation: none;
   }
 
