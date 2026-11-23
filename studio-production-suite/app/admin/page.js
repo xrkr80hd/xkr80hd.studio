@@ -1,11 +1,11 @@
 import { cookies } from 'next/headers';
 import Link from 'next/link';
 import AdminAmbientLibrary from '../../components/AdminAmbientLibrary';
-import AdminLogoutButton from '../../components/AdminLogoutButton';
 import { ViewAsVisitorButton } from '../../components/AdminViewBar';
 import AdminPageSwitches from '../../components/AdminPageSwitches';
 import { ADMIN_SESSION_USER_COOKIE, getAdminOwnerUsername, isOwnerUsername } from '../../lib/admin-auth';
 import { getSupabaseAdminLinks } from '../../lib/admin-links';
+import { getAdminGroups } from '../../lib/admin-nav';
 import { PAGE_SWITCHES, PAGE_VISIBILITY_SQL, readPageVisibility } from '../../lib/page-visibility';
 
 export const metadata = {
@@ -13,30 +13,6 @@ export const metadata = {
 };
 
 export const dynamic = 'force-dynamic';
-
-const specialPages = [
-  { href: '/admin/progress', label: "Ashley's Progress", detail: 'Post updates and photos, invite family.', owner: true },
-  { href: '/admin/gleaux', label: 'Lets Gleaux', detail: 'Player, free download, and counters.', owner: true },
-];
-
-const musicMedia = [
-  { href: '/admin/bands', label: 'Bands', detail: 'Bands, members, and their tracks.' },
-  { href: '/admin/podcasts', label: 'Podcasts', detail: 'Podcast profiles and episodes.' },
-  { href: '/admin/tracks', label: 'Hub Tracks', detail: 'Your own tracks for the Hub player.', owner: true },
-];
-
-const siteContent = [
-  { href: '/admin/blog', label: 'Blog', detail: 'Write and publish posts.' },
-  { href: '/admin/home', label: 'Homepage', detail: 'Profile, welcome message, card photos.', owner: true },
-  { href: '/admin/business', label: 'Businesses', detail: 'Local business cards and links.' },
-  { href: '/admin/submissions', label: 'Submissions', detail: 'What people sent in from the site.', owner: true },
-];
-
-const settingsHelp = [
-  { href: '/admin/users', label: 'Admin Accounts', detail: 'Who can sign in to admin.', owner: true },
-  { href: '/admin/password', label: 'My Password', detail: 'Change your login password.' },
-  { href: '/admin/guide', label: 'Image Size Guide', detail: 'Upload sizes and media rules.' },
-];
 
 const liveSite = [
   { href: '/', label: 'Home' },
@@ -92,10 +68,7 @@ export default async function AdminPage({ searchParams }) {
             Signed in as: <strong>{actingUser || 'unknown'}</strong>
             {ownerMode ? ' · Owner' : ' · Blog editor'}
           </p>
-          <div className="actions" style={{ margin: 0 }}>
-            <ViewAsVisitorButton />
-            <AdminLogoutButton />
-          </div>
+          <ViewAsVisitorButton />
         </div>
         <h1>Admin Dashboard</h1>
         <p>Tap a section to open it.</p>
@@ -121,23 +94,17 @@ export default async function AdminPage({ searchParams }) {
               />
             </Section>
 
-            <Section title="Special Pages" note="Progress, Lets Gleaux" open={!openPages}>
-              <Tiles items={specialPages} compact />
-            </Section>
-
-            <Section title="Music & Media" note="Bands, Podcasts, Tracks, Videos">
-              <Tiles items={musicMedia} />
-              <h3 className="admin-subhead">Ambient Video Library</h3>
-              <AdminAmbientLibrary />
-            </Section>
-
-            <Section title="Site Content" note="Blog, Homepage, Businesses, Submissions">
-              <Tiles items={siteContent} compact />
-            </Section>
-
-            <Section title="Settings & Help" note="Accounts, Password, Guide">
-              <Tiles items={settingsHelp} />
-            </Section>
+            {getAdminGroups(true).map((group) => (
+              <Section key={group.key} title={group.title} note={group.note} open={group.key === 'special' && !openPages}>
+                <Tiles items={group.items.filter((item) => !item.menuOnly)} compact={group.items.filter((item) => !item.menuOnly).length % 3 !== 0} />
+                {group.key === 'music' ? (
+                  <>
+                    <h3 className="admin-subhead">Ambient Video Library</h3>
+                    <AdminAmbientLibrary />
+                  </>
+                ) : null}
+              </Section>
+            ))}
 
             <Section title="Supabase (Schema & Data)" note="Table Editor, Storage, Project">
               <div className="admin-action-grid">
@@ -162,13 +129,7 @@ export default async function AdminPage({ searchParams }) {
           </>
         ) : (
           <Section title="My Blog" note="Posts, profile, password" open>
-            <Tiles
-              items={[
-                { href: '/admin/blog', label: 'My Blog Space', detail: 'Your posts, profile image, and channel name.' },
-                { href: '/admin/password', label: 'My Password', detail: 'Change your login password.' },
-              ]}
-              compact
-            />
+            <Tiles items={getAdminGroups(false).flatMap((group) => group.items)} compact />
           </Section>
         )}
       </section>

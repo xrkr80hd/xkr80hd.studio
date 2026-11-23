@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
+import AdminTopBar from './AdminTopBar';
 import AdminViewBar from './AdminViewBar';
 
 const publicNavItems = [
@@ -18,30 +19,6 @@ const publicNavItems = [
   { href: '/your-local-business', label: 'Business', className: 'nav-cool' },
   { href: '/contact', label: 'Contact', className: 'nav-cool' },
 ];
-
-function getAdminNavItems(ownerMode) {
-  const items = [
-    { href: '/admin', label: 'Dashboard', className: 'nav-admin-link' },
-    { href: '/admin/guide', label: 'Guide', className: 'nav-admin-link' },
-    { href: '/admin/blog', label: 'Blog', className: 'nav-admin-link' },
-    { href: '/admin/bands', label: 'Bands', className: 'nav-admin-link' },
-    { href: '/admin/podcasts', label: 'Podcasts', className: 'nav-admin-link' },
-    { href: '/admin/business', label: 'Business', className: 'nav-admin-link' },
-    { href: '/admin/password', label: 'Password', className: 'nav-admin-link' },
-    { href: '/hub', label: 'Hub', className: 'nav-admin-link nav-admin-secondary' },
-    { href: '/', label: 'Site', className: 'nav-admin-link nav-admin-secondary' },
-  ];
-
-  if (ownerMode) {
-    items.push({ href: '/admin/progress', label: 'Progress', className: 'nav-progress' });
-    items.push({ href: '/admin/gleaux', label: 'Lets Gleaux', className: 'nav-gleaux' });
-    items.push({ href: '/admin/home', label: 'Home', className: 'nav-admin-link' });
-    items.push({ href: '/admin/tracks', label: 'Hub Tracks', className: 'nav-admin-link' });
-    items.push({ href: '/admin/users', label: 'Users', className: 'nav-admin-link' });
-  }
-
-  return items;
-}
 
 function isActive(pathname, href) {
   if (href === '/') {
@@ -66,7 +43,7 @@ export default function SiteHeader({ adminMode = false, ownerMode = false, admin
   const visiblePublicItems = publicNavItems
     .filter((item) => adminSeesOffPages || !hidden.has(item.href))
     .map((item) => (hidden.has(item.href) ? { ...item, label: `${item.label} (off)`, className: `${item.className || ''} nav-off`.trim() } : item));
-  const navItems = showAdminMode ? getAdminNavItems(ownerMode) : visiblePublicItems;
+  const navItems = visiblePublicItems;
   const showViewBar = adminMode && !isAdminRoute;
 
   useEffect(() => {
@@ -98,17 +75,21 @@ export default function SiteHeader({ adminMode = false, ownerMode = false, admin
     };
   }, [open]);
 
+  if (showAdminMode) {
+    return <AdminTopBar ownerMode={ownerMode} adminUser={adminUser} />;
+  }
+
   return (
     <>
-    <header ref={headerRef} className={`nav ${showAdminMode ? 'admin-mode' : ''}`.trim()}>
+    <header ref={headerRef} className="nav">
       <div className="container nav-inner">
-        <Link prefetch={false} href={showAdminMode ? '/admin' : '/'} className={`brand ${showAdminMode ? 'admin-brand' : ''}`.trim()} onClick={() => setOpen(false)}>
+        <Link prefetch={false} href="/" className="brand" onClick={() => setOpen(false)}>
           xrkr80hd.studio
         </Link>
         <button
-          className={`nav-toggle ${showAdminMode ? 'admin-toggle' : ''}`.trim()}
+          className="nav-toggle"
           type="button"
-          aria-label={showAdminMode ? 'Toggle admin navigation' : 'Toggle navigation'}
+          aria-label="Toggle navigation"
           aria-expanded={open ? 'true' : 'false'}
           aria-controls="site-nav"
           onClick={() => setOpen((value) => !value)}
@@ -129,9 +110,7 @@ export default function SiteHeader({ adminMode = false, ownerMode = false, admin
               {item.label}
             </Link>
           ))}
-          {showAdminMode && adminUser ? <span className="nav-admin-user nav-admin-user-mobile">Signed in: {adminUser}</span> : null}
         </nav>
-        {showAdminMode && adminUser ? <span className="nav-admin-user nav-admin-user-desktop">Signed in: {adminUser}</span> : null}
       </div>
     </header>
     {showViewBar ? <AdminViewBar visitorView={visitorView} /> : null}

@@ -5595,3 +5595,249 @@ h4 {
   border-radius: 8px;
   background: rgba(0, 0, 0, 0.35);
 }
+
+/* Admin top bar */
+.admin-bar {
+  position: sticky;
+  top: 0;
+  z-index: 60;
+  border-bottom: 1px solid rgba(255, 122, 60, 0.36);
+  background: linear-gradient(100deg, rgba(7, 11, 18, 0.97), rgba(25, 16, 11, 0.97));
+}
+
+.admin-bar-inner {
+  position: relative;
+  min-height: 64px;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.admin-bar-brand {
+  flex: 0 0 auto;
+  font-size: 0.88rem;
+}
+
+.admin-bar-tag {
+  margin-left: 0.45rem;
+  padding: 0.05rem 0.4rem;
+  border-radius: 6px;
+  background: rgba(255, 122, 60, 0.28);
+  color: #ffe3d3;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+}
+
+.admin-bar-main {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.admin-bar-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 40px;
+  padding: 0 0.85rem;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: #ffd8c5;
+  font-family: "Syne", "Space Grotesk", sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.admin-bar-link:hover,
+.admin-bar-link.active {
+  border-color: rgba(255, 122, 60, 0.5);
+  background: rgba(255, 122, 60, 0.12);
+  color: #fff0e7;
+}
+
+.admin-bar-menu-btn {
+  border-color: rgba(255, 122, 60, 0.35);
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.admin-bar-account {
+  position: relative;
+  margin-left: auto;
+}
+
+.admin-bar-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 36px;
+  padding: 0 0.75rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 122, 60, 0.35);
+  background: rgba(255, 122, 60, 0.08);
+  color: #f2cfbd;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.admin-bar-pop {
+  position: absolute;
+  top: calc(100% + 6px);
+  z-index: 70;
+  border: 1px solid rgba(255, 122, 60, 0.35);
+  border-radius: 14px;
+  background: rgba(9, 13, 22, 0.98);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.55);
+}
+
+.admin-bar-account-pop {
+  right: 0;
+  width: 220px;
+  padding: 0.75rem;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.admin-bar-account-pop p {
+  margin: 0 0 0.2rem;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.admin-bar-account-pop a {
+  color: #eef7ff;
+  text-decoration: none;
+  padding: 0.45rem 0.2rem;
+}
+
+.admin-bar-signout {
+  min-height: 40px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 120, 120, 0.45);
+  background: rgba(255, 120, 120, 0.1);
+  color: #ffd0d0;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.admin-bar-menu {
+  left: 0;
+  right: 0;
+  padding: 1rem;
+}
+
+.admin-bar-groups {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.admin-bar-group {
+  display: grid;
+  align-content: start;
+  gap: 0.15rem;
+}
+
+.admin-bar-group-title {
+  margin: 0 0 0.35rem;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #ff9a6b;
+}
+
+.admin-bar-group a,
+.admin-bar-quick a {
+  display: block;
+  padding: 0.5rem 0.6rem;
+  border-radius: 8px;
+  color: #eef7ff;
+  text-decoration: none;
+  font-size: 0.95rem;
+}
+
+.admin-bar-group a:hover,
+.admin-bar-group a.active,
+.admin-bar-quick a:hover {
+  background: rgba(255, 122, 60, 0.14);
+  color: #fff0e7;
+}
+
+.admin-bar .show-sm {
+  display: none;
+}
+
+@media (max-width: 760px) {
+  .admin-bar .hide-sm {
+    display: none;
+  }
+
+  .admin-bar .show-sm {
+    display: flex;
+  }
+
+  .admin-bar-inner {
+    justify-content: space-between;
+  }
+
+  .admin-bar-main {
+    flex: 0 0 auto;
+  }
+
+  .admin-bar-menu {
+    position: fixed;
+    top: 64px;
+    left: 12px;
+    right: 12px;
+    max-height: calc(100vh - 80px);
+    overflow-y: auto;
+  }
+
+  .admin-bar-groups {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.9rem 0.6rem;
+  }
+
+  .admin-bar-quick {
+    gap: 0.5rem;
+    margin-bottom: 0.9rem;
+  }
+
+  .admin-bar-quick a {
+    flex: 1;
+    text-align: center;
+    border: 1px solid rgba(255, 122, 60, 0.4);
+    font-weight: 700;
+  }
+
+  .admin-bar-quick-account {
+    margin: 1rem 0 0;
+    padding-top: 0.8rem;
+    border-top: 1px solid rgba(255, 122, 60, 0.25);
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+
+  .admin-bar-quick-account .admin-bar-signout {
+    padding: 0 1rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .admin-bar-groups {
+    grid-template-columns: 1fr;
+  }
+}
