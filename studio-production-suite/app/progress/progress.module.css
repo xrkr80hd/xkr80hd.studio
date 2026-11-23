@@ -206,6 +206,119 @@
   overflow-wrap: anywhere;
 }
 
+/* Collapsed updates: tap the row to read */
+.summary {
+  display: block;
+  list-style: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.summary::-webkit-details-marker {
+  display: none;
+}
+
+.summary::marker {
+  content: '';
+}
+
+.summary h2 {
+  margin-bottom: 8px;
+}
+
+.summary:focus-visible {
+  outline: 3px solid var(--lemon);
+  outline-offset: 6px;
+  border-radius: 12px;
+}
+
+.summaryMeta {
+  display: block;
+  min-height: 1em;
+  font-size: 13px;
+  color: var(--ink-soft);
+}
+
+.readToggle {
+  display: inline-flex;
+  margin-top: 14px;
+  padding: 10px 20px;
+  border-radius: 999px;
+  background: var(--lemon);
+  color: #1a1700;
+  font-size: 14px;
+  font-weight: 800;
+  box-shadow: 0 6px 24px rgba(255, 244, 79, 0.22);
+}
+
+.readClose,
+details[open] > .summary .readOpen {
+  display: none;
+}
+
+details[open] > .summary .readClose {
+  display: inline;
+}
+
+details[open] > .summary .readToggle {
+  background: transparent;
+  color: var(--lemon);
+  border: 1px solid var(--lemon-line);
+  box-shadow: none;
+}
+
+.cardBody {
+  margin-top: 18px;
+  animation: cardOpen 0.28s ease;
+}
+
+@keyframes cardOpen {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* Per-update share link */
+.postShareRow {
+  margin: 4px 0 14px;
+}
+
+.shareSmall {
+  min-height: 36px;
+  padding: 7px 16px;
+  border: 1px solid var(--lemon-line);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--lemon);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.shareSmall:hover {
+  border-color: var(--lemon);
+}
+
+.shareSmall:focus-visible {
+  outline: 3px solid var(--lemon-soft);
+  outline-offset: 2px;
+}
+
+.allUpdates {
+  margin: 8px 0 0;
+  text-align: center;
+}
+
+.allUpdates a {
+  display: inline-block;
+  padding: 11px 22px;
+  border: 1px solid var(--lemon);
+  border-radius: 999px;
+  color: var(--lemon);
+  font-weight: 700;
+  text-decoration: none;
+}
+
 /* Empty / error state */
 .notice {
   display: grid;
@@ -291,6 +404,17 @@
   color: var(--ink-soft);
 }
 
+.updateNumber {
+  padding: 3px 10px;
+  border: 1px solid var(--lemon);
+  border-radius: 999px;
+  color: var(--lemon);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
 .badge {
   padding: 3px 10px;
   border-radius: 999px;
@@ -365,6 +489,34 @@
 .photo:focus-visible {
   outline: 3px solid var(--lemon);
   outline-offset: 2px;
+}
+
+/* Photo carousel (more than three photos) */
+.photoCarousel {
+  margin: 6px 0 18px;
+}
+
+.photoTrack {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
+
+.photoTrack::-webkit-scrollbar {
+  display: none;
+}
+
+.photoTrack > .photo {
+  flex: 0 0 calc((100% - 10px) / 2);
+  scroll-snap-align: start;
+}
+
+.photoCarousel .noteControls {
+  justify-content: center;
 }
 
 /* Lightbox */
@@ -671,6 +823,94 @@
   color: var(--lemon-soft);
 }
 
+/* Rotating notes: one note at a time, gently fading to the next */
+.noteCarousel {
+  margin: 0 0 14px;
+}
+
+.noteSlide {
+  display: grid;
+  align-content: center;
+  gap: 10px;
+  min-height: 132px;
+  margin: 0;
+  padding: 18px 20px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 244, 79, 0.16);
+  background: linear-gradient(150deg, rgba(255, 244, 79, 0.1), rgba(255, 244, 79, 0.03));
+  cursor: pointer;
+  animation: noteIn 0.7s ease both;
+}
+
+.noteSlide blockquote {
+  margin: 0;
+  font-size: 17px;
+  line-height: 1.6;
+}
+
+.noteSlide blockquote::before {
+  content: '\201C';
+  margin-right: 2px;
+  color: var(--lemon);
+  font-family: var(--font-syne), "Syne", sans-serif;
+  font-size: 22px;
+}
+
+.noteSlide figcaption {
+  margin: 0;
+}
+
+@keyframes noteIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+
+.noteControls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  margin-top: 10px;
+}
+
+.noteArrow {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--lemon-line);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--lemon);
+  font: inherit;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.noteArrow:focus-visible {
+  outline: 3px solid var(--lemon);
+  outline-offset: 2px;
+}
+
+.noteCount {
+  min-width: 52px;
+  font-size: 13px;
+  color: var(--ink-soft);
+  text-align: center;
+}
+
+.noteControls .linkButton {
+  margin-left: auto;
+  font-size: 14px;
+}
+
+.noteBack {
+  display: block;
+  margin: 0 0 14px;
+  font-size: 14px;
+}
+
 /* Family notes */
 .notes {
   margin-top: 22px;
@@ -762,7 +1002,9 @@
 
 @media (prefers-reduced-motion: reduce) {
   .rays,
-  .pulse::after {
+  .pulse::after,
+  .noteSlide,
+  .cardBody {
     animation: none;
   }
 

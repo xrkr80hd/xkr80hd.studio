@@ -36,7 +36,7 @@ async function preparePhoto(file, index) {
   const width = image.width || image.naturalWidth;
   const height = image.height || image.naturalHeight;
   const scale = Math.min(1, MAX_EDGE / Math.max(width, height));
-  if (scale === 1 && file.type === 'image/jpeg' && file.size <= 4 * 1024 * 1024) return file;
+  // Always redraw, so camera details such as location never leave the phone.
   const canvas = document.createElement('canvas');
   canvas.width = Math.round(width * scale);
   canvas.height = Math.round(height * scale);
@@ -310,6 +310,17 @@ export default function AdminProgressPanel({ initialItems = [] }) {
     if (response.ok) setItems(result.items || []);
   }
 
+  async function copyLink(item, number) {
+    const url = `${window.location.origin}/progress/${item.id}`;
+    try {
+      if (navigator.share) { await navigator.share({ title: `Ashley's Progress · Update ${number}`, url }); return; }
+      await navigator.clipboard.writeText(url);
+      setMessage(`Link to Update ${number} copied.`);
+    } catch (error) {
+      if (error?.name !== 'AbortError') setMessage(url);
+    }
+  }
+
   async function remove(item) {
     if (!window.confirm('Delete this update and its photos? This cannot be undone.')) return;
     setMessage('Deleting…');
@@ -338,13 +349,14 @@ export default function AdminProgressPanel({ initialItems = [] }) {
         <h2>Posted updates <span>{items.length}</span></h2>
         <p role="status" className={styles.status}>{message}</p>
         {items.length === 0 && <p className={styles.empty}>Nothing posted yet. Your first update will show at the top of the page.</p>}
-        {items.map(item => (
+        {items.map((item, index) => (
           <article key={item.id} className={styles.item}>
             <div>
-              <p className={styles.when}>{formatWhen(item.created_at)}{item.photos.length ? ` · ${item.photos.length} photo${item.photos.length === 1 ? '' : 's'}` : ''}</p>
+              <p className={styles.when}>Update {items.length - index} · {formatWhen(item.created_at)}{item.photos.length ? ` · ${item.photos.length} photo${item.photos.length === 1 ? '' : 's'}` : ''}</p>
               <strong>{item.title || (item.body ? item.body.slice(0, 80) + (item.body.length > 80 ? '…' : '') : 'Photos')}</strong>
             </div>
             <div className={styles.itemActions}>
+              <button type="button" className={styles.secondary} onClick={() => copyLink(item, items.length - index)}>Share link</button>
               <button type="button" className={styles.secondary} onClick={() => { setEditing(item); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>Edit</button>
               <button type="button" className={styles.danger} onClick={() => remove(item)}>Delete</button>
             </div>
