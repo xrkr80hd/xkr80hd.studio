@@ -13,7 +13,7 @@ export default function ProgressReactions({ postId, initial, canReact = false, s
   async function toggle(emoji) {
     if (!canReact) {
       if (signInHref) window.location.hash = signInHref.replace('#', '');
-      setStatus('Want to react? Just send a text to Trav.');
+      setStatus('Want to react? Just send a text to Trav, he’ll let you in.');
       return;
     }
     if (busy) return;

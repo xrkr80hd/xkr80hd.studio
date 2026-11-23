@@ -47,7 +47,7 @@ export default function ProgressSignIn({ invite = '', emailReady = false, notice
     return (
       <section className={styles.gate}>
         <h2>Want to leave a note?</h2>
-        <p>Just send a text to Trav.</p>
+        <p>Just send a text to Trav, he’ll let you in.</p>
         {status && <p role="status" className={styles.gateStatus}>{status}</p>}
       </section>
     );
@@ -57,7 +57,7 @@ export default function ProgressSignIn({ invite = '', emailReady = false, notice
     return (
       <section className={styles.gate}>
         <h2>This page is for family and friends</h2>
-        <p>Just send a text to Trav.</p>
+        <p>Just send a text to Trav, he’ll let you in.</p>
         {status && <p role="status" className={styles.gateStatus}>{status}</p>}
       </section>
     );
