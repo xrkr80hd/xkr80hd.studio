@@ -37,8 +37,7 @@ test('business page exposes public sort and category controls', async () => {
 
   assert.match(page, /filterAndSortBusinesses/);
   assert.match(page, /getBusinessCategories/);
-  assert.match(page, /value="az">A-Z/);
-  assert.match(page, /value="za">Z-A/);
-  assert.match(page, /value="category">Category/);
-  assert.match(page, /<option value="all">All categories<\/option>/);
+  assert.match(page, /<YLDirectory/);
+  assert.match(page, /categories=\{categories\}/);
+  assert.match(page, /sort=\{sort\}/);
 });

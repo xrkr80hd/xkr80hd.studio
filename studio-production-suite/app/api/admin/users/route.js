@@ -1,12 +1,12 @@
 import { NextResponse } from 'next/server';
-import { ADMIN_SESSION_USER_COOKIE, getConfiguredAdminUsernames, isOwnerUsername } from '../../../../lib/admin-auth';
+import { ADMIN_SESSION_USER_COOKIE, getConfiguredAdminUsernames, isOwnerUsername, ADMIN_SESSION_COOKIE, getAdminSessionUser } from '../../../../lib/admin-auth';
 import { isConfiguredManagedUsername } from '../../../../lib/admin-user-groups.mjs';
 import { adminUsersBootstrapSql, createAdminUser, listAdminUsers, normalizeAdminUsername } from '../../../../lib/admin-users';
 
 export const runtime = 'nodejs';
 
 function ownerGuard(request) {
-  const actingUser = request.cookies.get(ADMIN_SESSION_USER_COOKIE)?.value || '';
+  const actingUser = getAdminSessionUser(request.cookies.get(ADMIN_SESSION_COOKIE)?.value) || '';
   return isOwnerUsername(actingUser);
 }
 

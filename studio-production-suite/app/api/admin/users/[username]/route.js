@@ -1,11 +1,11 @@
 import { NextResponse } from 'next/server';
-import { ADMIN_SESSION_USER_COOKIE, isOwnerUsername } from '../../../../../lib/admin-auth';
+import { ADMIN_SESSION_USER_COOKIE, isOwnerUsername, ADMIN_SESSION_COOKIE, getAdminSessionUser } from '../../../../../lib/admin-auth';
 import { deleteAdminUser, normalizeAdminUsername, updateAdminUserPassword } from '../../../../../lib/admin-users';
 
 export const runtime = 'nodejs';
 
 function ownerGuard(request) {
-  const actingUser = request.cookies.get(ADMIN_SESSION_USER_COOKIE)?.value || '';
+  const actingUser = getAdminSessionUser(request.cookies.get(ADMIN_SESSION_COOKIE)?.value) || '';
   return isOwnerUsername(actingUser);
 }
 
@@ -15,7 +15,7 @@ export async function DELETE(request, { params }) {
   }
 
   const username = normalizeAdminUsername(params.username);
-  const actingUser = normalizeAdminUsername(request.cookies.get(ADMIN_SESSION_USER_COOKIE)?.value || '');
+  const actingUser = normalizeAdminUsername(getAdminSessionUser(request.cookies.get(ADMIN_SESSION_COOKIE)?.value) || '');
 
   if (!username) {
     return NextResponse.json({ error: 'Invalid username.' }, { status: 400 });

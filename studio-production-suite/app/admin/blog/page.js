@@ -1,7 +1,7 @@
 import { cookies } from 'next/headers';
 import Link from 'next/link';
 import AdminBlogChannelSettings from '../../../components/AdminBlogChannelSettings';
-import { ADMIN_SESSION_USER_COOKIE } from '../../../lib/admin-auth';
+import { ADMIN_SESSION_USER_COOKIE, ADMIN_SESSION_COOKIE, getAdminSessionUser } from '../../../lib/admin-auth';
 import { getPostsForAdminByUser } from '../../../lib/content';
 import { formatDate } from '../../../lib/format';
 
@@ -11,7 +11,7 @@ export const metadata = {
 export const dynamic = 'force-dynamic';
 
 export default async function AdminBlogPage() {
-  const actingUser = cookies().get(ADMIN_SESSION_USER_COOKIE)?.value || '';
+  const actingUser = getAdminSessionUser(cookies().get(ADMIN_SESSION_COOKIE)?.value) || '';
   const posts = await getPostsForAdminByUser(actingUser);
   const draftCount = posts.filter((post) => !post.is_published).length;
   const publishedCount = posts.filter((post) => post.is_published).length;

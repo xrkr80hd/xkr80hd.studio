@@ -27,7 +27,7 @@ function formatClock(value) {
   return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 }
 
-export default function HomeTracksPlayer({ tracks }) {
+export default function HomeTracksPlayer({ tracks, showCover = false }) {
   const items = useMemo(() => tracks || [], [tracks]);
   const [index, setIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -217,6 +217,15 @@ export default function HomeTracksPlayer({ tracks }) {
 
   return (
     <div className="xrkr-radio-shell">
+      {showCover ? (
+        <div className="xrkr-radio-cover">
+          {current?.cover_image_url ? (
+            <img key={current.cover_image_url} src={current.cover_image_url} alt={`${displayTrack} cover art`} />
+          ) : (
+            <span className="xrkr-radio-cover-empty">XRKR80HD</span>
+          )}
+        </div>
+      ) : null}
       <div className="xrkr-radio-skin">
         <img className="xrkr-radio-skin-image" src="/assets/player/xrkr-radio-skin-desktop-cropped.png" alt="XRKR Radio player skin" />
         <div className="xrkr-radio-display">

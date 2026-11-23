@@ -1,11 +1,11 @@
 import { NextResponse } from 'next/server';
-import { ADMIN_SESSION_USER_COOKIE } from '../../../../../lib/admin-auth';
+import { ADMIN_SESSION_USER_COOKIE, ADMIN_SESSION_COOKIE, getAdminSessionUser } from '../../../../../lib/admin-auth';
 import { findAdminUserByUsername, normalizeAdminUsername, updateAdminUserPassword, verifyDatabaseAdminCredentials } from '../../../../../lib/admin-users';
 
 export const runtime = 'nodejs';
 
 export async function PUT(request) {
-  const actingUser = normalizeAdminUsername(request.cookies.get(ADMIN_SESSION_USER_COOKIE)?.value || '');
+  const actingUser = normalizeAdminUsername(getAdminSessionUser(request.cookies.get(ADMIN_SESSION_COOKIE)?.value) || '');
   if (!actingUser) {
     return NextResponse.json({ error: 'Missing active admin session.' }, { status: 401 });
   }

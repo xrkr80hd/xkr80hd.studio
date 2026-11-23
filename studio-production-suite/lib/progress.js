@@ -1,4 +1,4 @@
-import { ADMIN_SESSION_COOKIE, ADMIN_SESSION_USER_COOKIE, isAdminSessionValid, isOwnerUsername } from './admin-auth';
+import { ADMIN_SESSION_COOKIE, ADMIN_SESSION_USER_COOKIE, isAdminSessionValid, isOwnerUsername, getAdminSessionUser } from './admin-auth';
 import { getGleauxDb } from './gleaux';
 import { PROGRESS_BUCKET } from './progress-validation.mjs';
 import { FAMILY_COOKIE, SESSION_SECONDS, makeSessionToken, verifyToken } from './progress-family.mjs';
@@ -12,7 +12,7 @@ export function progressSecret() {
 }
 
 export function isOwnerCookies(jar) {
-  return isAdminSessionValid(jar.get(ADMIN_SESSION_COOKIE)?.value) && isOwnerUsername(jar.get(ADMIN_SESSION_USER_COOKIE)?.value);
+  return isAdminSessionValid(jar.get(ADMIN_SESSION_COOKIE)?.value) && isOwnerUsername(getAdminSessionUser(jar.get(ADMIN_SESSION_COOKIE)?.value));
 }
 
 export function progressOwner(request) {

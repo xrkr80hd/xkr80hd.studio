@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { ADMIN_SESSION_USER_COOKIE, isOwnerUsername } from '../../../../../lib/admin-auth';
+import { ADMIN_SESSION_USER_COOKIE, isOwnerUsername, ADMIN_SESSION_COOKIE, getAdminSessionUser } from '../../../../../lib/admin-auth';
 import { isValidMediaUrl } from '../../../../../lib/admin-crud-utils';
 import { normalizeAdminUsername } from '../../../../../lib/admin-users';
 import { getDefaultBlogChannelName, normalizeBlogChannelName, toBlogChannelSlug } from '../../../../../lib/blog-channels';
@@ -11,7 +11,7 @@ const BLOG_CHANNEL_DEFAULT_CARD_IMAGE = '/assets/cards/local-blog.png';
 const OWNER_BLOG_CHANNEL_COVER_IMAGE = '/assets/blog/xrkr80hdblog.png';
 
 function getActingUser(request) {
-  return normalizeAdminUsername(request.cookies.get(ADMIN_SESSION_USER_COOKIE)?.value || '');
+  return normalizeAdminUsername(getAdminSessionUser(request.cookies.get(ADMIN_SESSION_COOKIE)?.value) || '');
 }
 
 function isMissingChannelTableError(error) {

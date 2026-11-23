@@ -18,6 +18,7 @@ const publicNavItems = [
   { href: '/podcast', label: 'Podcast', className: 'nav-cool' },
   { href: '/your-local-business', label: 'Business', className: 'nav-cool' },
   { href: '/contact', label: 'Contact', className: 'nav-cool' },
+  { href: '/join', label: 'Join free', className: 'nav-join' },
 ];
 
 function isActive(pathname, href) {

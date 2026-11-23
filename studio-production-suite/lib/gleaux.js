@@ -10,11 +10,11 @@ export function getGleauxDb() {
     global: { fetch: (input, init) => fetch(input, { ...init, cache: 'no-store' }) },
   });
 }
-import { ADMIN_SESSION_COOKIE, ADMIN_SESSION_USER_COOKIE, isAdminSessionValid, isOwnerUsername } from './admin-auth';
+import { ADMIN_SESSION_COOKIE, ADMIN_SESSION_USER_COOKIE, isAdminSessionValid, isOwnerUsername, getAdminSessionUser } from './admin-auth';
 export { GLEAUX_BUCKET } from './gleaux-validation.mjs';
 export const GLEAUX_DEFAULTS = { title: 'Lets Gleaux', description: 'The track inspired by the Gleaux for the Girls event. Presented By Christus Cabrini and Walker Toyota.', player_path: null, download_path: null, downloads_enabled: true };
 export function gleauxOwner(request) {
-  return isAdminSessionValid(request.cookies.get(ADMIN_SESSION_COOKIE)?.value) && isOwnerUsername(request.cookies.get(ADMIN_SESSION_USER_COOKIE)?.value);
+  return isAdminSessionValid(request.cookies.get(ADMIN_SESSION_COOKIE)?.value) && isOwnerUsername(getAdminSessionUser(request.cookies.get(ADMIN_SESSION_COOKIE)?.value));
 }
 export function sameOrigin(request) {
   const origin = request.headers.get('origin');

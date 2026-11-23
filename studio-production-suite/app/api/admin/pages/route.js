@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { ADMIN_SESSION_COOKIE, ADMIN_SESSION_USER_COOKIE, isAdminSessionValid, isOwnerUsername } from '../../../../lib/admin-auth';
+import { ADMIN_SESSION_COOKIE, ADMIN_SESSION_USER_COOKIE, isAdminSessionValid, isOwnerUsername, getAdminSessionUser } from '../../../../lib/admin-auth';
 import { getPageVisibilityDb, isKnownPageKey, PAGE_VISIBILITY_TABLE, readPageVisibility } from '../../../../lib/page-visibility';
 
 export const runtime = 'nodejs';
@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic';
 function isOwner(request) {
   return (
     isAdminSessionValid(request.cookies.get(ADMIN_SESSION_COOKIE)?.value || '') &&
-    isOwnerUsername(request.cookies.get(ADMIN_SESSION_USER_COOKIE)?.value || '')
+    isOwnerUsername(getAdminSessionUser(request.cookies.get(ADMIN_SESSION_COOKIE)?.value) || '')
   );
 }
 

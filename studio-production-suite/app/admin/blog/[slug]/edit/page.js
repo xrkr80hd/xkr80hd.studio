@@ -1,7 +1,7 @@
 import { cookies } from 'next/headers';
 import { notFound } from 'next/navigation';
 import AdminBlogCrudForm from '../../../../../components/AdminBlogCrudForm';
-import { ADMIN_SESSION_USER_COOKIE } from '../../../../../lib/admin-auth';
+import { ADMIN_SESSION_USER_COOKIE, ADMIN_SESSION_COOKIE, getAdminSessionUser } from '../../../../../lib/admin-auth';
 import { getPostBySlugForAdminByUser } from '../../../../../lib/content';
 
 export const metadata = {
@@ -9,7 +9,7 @@ export const metadata = {
 };
 
 export default async function AdminEditBlogPostPage({ params }) {
-  const actingUser = cookies().get(ADMIN_SESSION_USER_COOKIE)?.value || '';
+  const actingUser = getAdminSessionUser(cookies().get(ADMIN_SESSION_COOKIE)?.value) || '';
   const post = await getPostBySlugForAdminByUser(params.slug, actingUser);
   if (!post) {
     notFound();

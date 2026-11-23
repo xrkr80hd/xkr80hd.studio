@@ -4,7 +4,7 @@ import { Suspense } from 'react';
 import BackgroundRotator from '../components/BackgroundRotator';
 import GoogleAnalytics from '../components/GoogleAnalytics';
 import SiteHeader from '../components/SiteHeader';
-import { ADMIN_SESSION_COOKIE, ADMIN_SESSION_USER_COOKIE, isAdminSessionValid, isOwnerUsername, isVisitorView } from '../lib/admin-auth';
+import { ADMIN_SESSION_COOKIE, ADMIN_SESSION_USER_COOKIE, isAdminSessionValid, isOwnerUsername, isVisitorView, getAdminSessionUser } from '../lib/admin-auth';
 import { getHiddenPaths } from '../lib/page-visibility';
 import './globals.css';
 
@@ -40,7 +40,7 @@ export const dynamic = 'force-dynamic';
 export default async function RootLayout({ children }) {
   const cookieStore = cookies();
   const sessionValue = cookieStore.get(ADMIN_SESSION_COOKIE)?.value || '';
-  const sessionUser = cookieStore.get(ADMIN_SESSION_USER_COOKIE)?.value || '';
+  const sessionUser = getAdminSessionUser(cookieStore.get(ADMIN_SESSION_COOKIE)?.value) || '';
   const adminMode = isAdminSessionValid(sessionValue);
   const ownerMode = adminMode && isOwnerUsername(sessionUser);
   const visitorView = adminMode && isVisitorView(cookieStore);

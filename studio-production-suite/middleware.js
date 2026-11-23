@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { ADMIN_SESSION_COOKIE, ADMIN_SESSION_USER_COOKIE, isAdminConfigReady, isAdminSessionValid, isOwnerUsername } from './lib/admin-auth';
+import { ADMIN_SESSION_COOKIE, ADMIN_SESSION_USER_COOKIE, isAdminConfigReady, isAdminSessionValid, isOwnerUsername, getAdminSessionUser } from './lib/admin-auth';
 
 function isProtectedPath(pathname) {
   if (pathname === '/admin/login' || pathname.startsWith('/api/admin/session')) {
@@ -53,7 +53,7 @@ export function middleware(request) {
   const sessionCookie = request.cookies.get(ADMIN_SESSION_COOKIE)?.value || '';
 
   if (isAdminSessionValid(sessionCookie)) {
-    const sessionUser = request.cookies.get(ADMIN_SESSION_USER_COOKIE)?.value || '';
+    const sessionUser = getAdminSessionUser(request.cookies.get(ADMIN_SESSION_COOKIE)?.value) || '';
     if (!isOwnerUsername(sessionUser) && !isNonOwnerAllowedPath(pathname)) {
       if (pathname.startsWith('/api/')) {
         return NextResponse.json({ error: 'Only owner can access this route.' }, { status: 403 });

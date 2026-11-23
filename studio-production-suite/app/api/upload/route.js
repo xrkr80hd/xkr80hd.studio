@@ -1,6 +1,6 @@
 import { randomUUID } from 'crypto';
 import { NextResponse } from 'next/server';
-import { ADMIN_SESSION_USER_COOKIE, isOwnerUsername } from '../../../lib/admin-auth';
+import { ADMIN_SESSION_USER_COOKIE, isOwnerUsername, ADMIN_SESSION_COOKIE, getAdminSessionUser } from '../../../lib/admin-auth';
 import { normalizeAdminUsername } from '../../../lib/admin-users';
 import { STORAGE_FOLDER_PRESETS, isAllowedFolder, normalizeFolder } from '../../../lib/storage-folders';
 import { getSupabaseAdmin } from '../../../lib/supabase-admin';
@@ -86,7 +86,7 @@ function inferContentType(file) {
 }
 
 function getActingAdmin(request) {
-  const actingUser = normalizeAdminUsername(request.cookies.get(ADMIN_SESSION_USER_COOKIE)?.value || '');
+  const actingUser = normalizeAdminUsername(getAdminSessionUser(request.cookies.get(ADMIN_SESSION_COOKIE)?.value) || '');
   return {
     actingUser,
     ownerMode: isOwnerUsername(actingUser),

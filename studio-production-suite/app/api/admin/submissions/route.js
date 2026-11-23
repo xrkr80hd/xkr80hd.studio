@@ -1,12 +1,12 @@
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
-import { ADMIN_SESSION_USER_COOKIE, isOwnerUsername } from '../../../../lib/admin-auth';
+import { ADMIN_SESSION_USER_COOKIE, isOwnerUsername, ADMIN_SESSION_COOKIE, getAdminSessionUser } from '../../../../lib/admin-auth';
 import { getSupabaseAdmin } from '../../../../lib/supabase-admin';
 
 export const runtime = 'nodejs';
 
 function requireOwner() {
-  const actingUser = cookies().get(ADMIN_SESSION_USER_COOKIE)?.value || '';
+  const actingUser = getAdminSessionUser(cookies().get(ADMIN_SESSION_COOKIE)?.value) || '';
   if (!isOwnerUsername(actingUser)) {
     return NextResponse.json({ error: 'Owner only.' }, { status: 403 });
   }

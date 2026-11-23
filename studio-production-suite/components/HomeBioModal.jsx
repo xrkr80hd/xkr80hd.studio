@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 
-export default function HomeBioModal({ fullBio = '', avatarUrl = '', headline = '' }) {
+export default function HomeBioModal({ fullBio = '', headline = '' }) {
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
 
@@ -64,9 +64,6 @@ export default function HomeBioModal({ fullBio = '', avatarUrl = '', headline = 
               {title} Full Bio
             </h3>
             <div className="home-bio-sheet-content">
-              <div className="home-bio-sheet-photo">
-                {avatarUrl ? <img src={avatarUrl} alt={`${title} profile`} /> : <span>XR</span>}
-              </div>
               <div className="home-bio-sheet-text" id="home-bio-modal-text">
                 <p>{bio}</p>
               </div>

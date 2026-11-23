@@ -3,7 +3,7 @@ import Link from 'next/link';
 import AdminAmbientLibrary from '../../components/AdminAmbientLibrary';
 import { ViewAsVisitorButton } from '../../components/AdminViewBar';
 import AdminPageSwitches from '../../components/AdminPageSwitches';
-import { ADMIN_SESSION_USER_COOKIE, getAdminOwnerUsername, isOwnerUsername } from '../../lib/admin-auth';
+import { ADMIN_SESSION_USER_COOKIE, getAdminOwnerUsername, isOwnerUsername, ADMIN_SESSION_COOKIE, getAdminSessionUser } from '../../lib/admin-auth';
 import { getSupabaseAdminLinks } from '../../lib/admin-links';
 import { getAdminGroups } from '../../lib/admin-nav';
 import { PAGE_SWITCHES, PAGE_VISIBILITY_SQL, readPageVisibility } from '../../lib/page-visibility';
@@ -50,7 +50,7 @@ function Section({ id, title, note, open = false, children }) {
 
 export default async function AdminPage({ searchParams }) {
   const links = getSupabaseAdminLinks();
-  const actingUser = cookies().get(ADMIN_SESSION_USER_COOKIE)?.value || '';
+  const actingUser = getAdminSessionUser(cookies().get(ADMIN_SESSION_COOKIE)?.value) || '';
   const ownerMode = isOwnerUsername(actingUser);
   const ownerUsername = getAdminOwnerUsername();
   const error = String(searchParams?.error || '');

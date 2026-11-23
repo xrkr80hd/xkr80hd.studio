@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { ADMIN_SESSION_USER_COOKIE, getAdminOwnerUsername, isOwnerUsername } from '../../../../../lib/admin-auth';
+import { ADMIN_SESSION_USER_COOKIE, getAdminOwnerUsername, isOwnerUsername, ADMIN_SESSION_COOKIE, getAdminSessionUser } from '../../../../../lib/admin-auth';
 import { clampText, isValidMediaUrl, slugify, toBoolean } from '../../../../../lib/admin-crud-utils';
 import { normalizeAdminUsername } from '../../../../../lib/admin-users';
 import { getSupabaseAdmin } from '../../../../../lib/supabase-admin';
@@ -11,7 +11,7 @@ function isMissingAuthorColumnError(error) {
 }
 
 function getActingAdmin(request) {
-  const actingUser = normalizeAdminUsername(request.cookies.get(ADMIN_SESSION_USER_COOKIE)?.value || '');
+  const actingUser = normalizeAdminUsername(getAdminSessionUser(request.cookies.get(ADMIN_SESSION_COOKIE)?.value) || '');
   return { actingUser };
 }
 

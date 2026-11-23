@@ -1,3 +1,5 @@
+import { hmacSha256Hex, safeEqual } from './hmac-sha256.mjs';
+
 export const ADMIN_SESSION_COOKIE = 'xrkr_admin_session';
 export const ADMIN_SESSION_USER_COOKIE = 'xrkr_admin_user';
 const MASTER_OWNER_USERNAME = 'xrkr80hdadmin';
@@ -63,9 +65,45 @@ export function isAdminConfigReady() {
   return Boolean(sessionToken);
 }
 
-export function isAdminSessionValid(cookieValue) {
+// Session cookies are signed per user: "v2~<username>~<expiresAtSeconds>~<hmac>".
+// The old design gave every admin the same shared token and trusted a separate,
+// unsigned username cookie, so anyone signed in could edit that cookie to act as
+// the owner. Now the username lives inside the signed value and cannot be changed.
+const SESSION_VERSION = 'v2';
+const SEP = '~';
+export const ADMIN_SESSION_MAX_AGE_SECONDS = 60 * 60 * 24 * 7;
+
+function sessionSignature(sessionToken, username, expiresAt) {
+  return hmacSha256Hex(sessionToken, `admin-session:${SESSION_VERSION}:${username}:${expiresAt}`);
+}
+
+export function createAdminSessionValue(username, nowMs = Date.now()) {
   const { sessionToken } = getAdminConfig();
-  return Boolean(sessionToken) && cookieValue === sessionToken;
+  const safeUser = String(username || '').trim().toLowerCase();
+  if (!sessionToken || !safeUser || /[^a-z0-9._-]/.test(safeUser)) {
+    return '';
+  }
+  const expiresAt = Math.floor(nowMs / 1000) + ADMIN_SESSION_MAX_AGE_SECONDS;
+  return [SESSION_VERSION, safeUser, expiresAt, sessionSignature(sessionToken, safeUser, expiresAt)].join(SEP);
+}
+
+// The only trusted way to know who is signed in to admin.
+export function getAdminSessionUser(cookieValue, nowMs = Date.now()) {
+  const { sessionToken } = getAdminConfig();
+  const parts = String(cookieValue || '').split(SEP);
+  if (!sessionToken || parts.length !== 4 || parts[0] !== SESSION_VERSION) {
+    return '';
+  }
+  const [, username, expiresRaw, signature] = parts;
+  const expiresAt = Number.parseInt(expiresRaw, 10);
+  if (!username || /[^a-z0-9._-]/.test(username) || !Number.isFinite(expiresAt) || expiresAt * 1000 < nowMs) {
+    return '';
+  }
+  return safeEqual(signature, sessionSignature(sessionToken, username, expiresAt)) ? username : '';
+}
+
+export function isAdminSessionValid(cookieValue) {
+  return Boolean(getAdminSessionUser(cookieValue));
 }
 
 export function areAdminCredentialsValid(username, password) {

@@ -39,25 +39,24 @@ test('blog channel cards use a large 16:9 media lane without capped dead space',
   assert.match(mobileRule, /font-size:\s*0\.58rem/);
 });
 
-test('owner-managed public listings share compact horizontal cards with 1:1 media', async () => {
-  const [bands, artists, podcasts, business, css] = await Promise.all([
+test('YourLocal directories share one clean card layout', async () => {
+  const [bands, artists, podcasts, business, directory, css] = await Promise.all([
     source('components/BandGridPage.jsx'),
     source('app/your-local-artists/page.js'),
     source('app/podcast/page.js'),
     source('app/your-local-business/page.js'),
-    source('app/globals.css'),
+    source('components/yourlocal/YLDirectory.jsx'),
+    source('components/yourlocal/yourlocal.css'),
   ]);
 
   for (const page of [bands, artists, podcasts, business]) {
-    assert.match(page, /public-listing-card public-listing-card--square/);
-    assert.match(page, /public-listing-card-media/);
-    assert.match(page, /public-listing-card-content/);
+    assert.match(page, /<YLDirectory/);
   }
 
-  assert.match(css, /\.public-listing-card--square\s+\.public-listing-card-media\s*\{[^}]*aspect-ratio:\s*1/s);
-  assert.match(css, /\.public-listing-card\s*\{[^}]*display:\s*grid[^}]*overflow:\s*hidden/s);
-  assert.match(css, /@media\s*\(max-width:\s*620px\)[\s\S]*\.public-listing-card[\s\S]{0,260}grid-template-columns:\s*auto\s+minmax\(0,\s*1fr\)/);
-  assert.match(css, /@media\s*\(max-width:\s*620px\)[\s\S]*\.public-listing-card[\s\S]{0,320}height:\s*clamp\(104px,\s*31vw,\s*124px\)/);
+  assert.match(directory, /className="yl-card"/);
+  assert.match(directory, /yl-card-media/);
+  assert.match(css, /\.yl-grid\s*\{[^}]*grid-template-columns:\s*repeat\(auto-fill/s);
+  assert.match(css, /\.yl-card-media\s*\{[^}]*aspect-ratio:\s*4 \/ 3/s);
 });
 
 test('public listing grid is authoritatively one full-width horizontal card per row', async () => {
@@ -76,17 +75,9 @@ test('public listing grid is authoritatively one full-width horizontal card per 
   assert.match(sharedCardRule, /width:\s*100%/);
 });
 
-test('every public listing title is first in its content area', async () => {
-  const pages = await Promise.all([
-    source('components/BandGridPage.jsx'),
-    source('app/your-local-artists/page.js'),
-    source('app/podcast/page.js'),
-    source('app/your-local-business/page.js'),
-  ]);
-
-  for (const page of pages) {
-    assert.match(page, /public-listing-card-content[^>]*>\s*<h3/s);
-  }
+test('directory card titles come right after the category label', async () => {
+  const directory = await source('components/yourlocal/YLDirectory.jsx');
+  assert.match(directory, /yl-card-body[\s\S]{0,140}<h3>\{item\.title\}<\/h3>/);
 });
 
 test('podcast cards include a short what-it-is-about description', async () => {
@@ -94,7 +85,7 @@ test('podcast cards include a short what-it-is-about description', async () => {
 
   assert.match(page, /podcast\.description/);
   assert.match(page, /podcast\.summary/);
-  assert.match(page, /public-listing-card-description/);
+  assert.match(page, /text: podcast\.description \|\| podcast\.summary/);
 });
 
 test('admin upload guidance matches the 1:1 public card artwork contract', async () => {
@@ -125,10 +116,14 @@ test('public sharing pages expose business-style sort and category controls belo
     assert.match(page, /searchParams/);
   }
 
+  assert.match(blog, /PublicDirectoryControls/);
   for (const page of [artists, blog, podcast, bandGrid]) {
-    assert.match(page, /PublicDirectoryControls/);
     assert.match(page, /filterAndSortPublicListings/);
     assert.match(page, /getPublicListingCategories/);
+  }
+  for (const page of [artists, podcast, bandGrid]) {
+    assert.match(page, /categories=\{categories\}/);
+    assert.match(page, /sort=\{(controls\.)?sort\}/);
   }
 });
 

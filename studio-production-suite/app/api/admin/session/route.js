@@ -1,7 +1,7 @@
 import {GAME_COOKIE,signGameSession} from '../../../../lib/game-night-session.mjs';
 import {isGameOwner,gameOwnerCredentialVersion} from '../../../../lib/game-night-server';
 import { NextResponse } from 'next/server';
-import { ADMIN_SESSION_COOKIE, ADMIN_SESSION_USER_COOKIE, getAdminConfig, isAdminConfigReady, matchEnvAdminCredentials } from '../../../../lib/admin-auth';
+import { ADMIN_SESSION_COOKIE, ADMIN_SESSION_MAX_AGE_SECONDS, ADMIN_SESSION_USER_COOKIE, createAdminSessionValue, getAdminConfig, isAdminConfigReady, matchEnvAdminCredentials } from '../../../../lib/admin-auth';
 import { normalizeAdminUsername, verifyDatabaseAdminCredentials } from '../../../../lib/admin-users';
 
 export const runtime = 'nodejs';
@@ -37,23 +37,25 @@ export async function POST(request) {
   const response = NextResponse.json({ ok: true });
   if(isGameOwner(authenticatedUsername)){try{const credentialVersion=await gameOwnerCredentialVersion(authenticatedUsername);if(credentialVersion)response.cookies.set({name:GAME_COOKIE,value:signGameSession(authenticatedUsername,sessionToken,Date.now(),credentialVersion),httpOnly:true,secure:true,sameSite:'strict',path:'/',maxAge:7*86400});}catch{/* Game access must not interrupt a successful main-site login. */}}
 
+  // The username is sealed inside the signed session value. The old separate
+  // username cookie is cleared because it is no longer trusted for anything.
   response.cookies.set({
     name: ADMIN_SESSION_COOKIE,
-    value: sessionToken,
+    value: createAdminSessionValue(authenticatedUsername),
     httpOnly: true,
     secure: true,
     sameSite: 'lax',
     path: '/',
-    maxAge: 60 * 60 * 24 * 7,
+    maxAge: ADMIN_SESSION_MAX_AGE_SECONDS,
   });
   response.cookies.set({
     name: ADMIN_SESSION_USER_COOKIE,
-    value: authenticatedUsername,
+    value: '',
     httpOnly: true,
     secure: true,
     sameSite: 'lax',
     path: '/',
-    maxAge: 60 * 60 * 24 * 7,
+    maxAge: 0,
   });
 
   return response;

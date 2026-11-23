@@ -1,7 +1,7 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import AdminHomeSettingsForm from '../../../components/AdminHomeSettingsForm';
-import { ADMIN_SESSION_USER_COOKIE, isOwnerUsername } from '../../../lib/admin-auth';
+import { ADMIN_SESSION_USER_COOKIE, isOwnerUsername, ADMIN_SESSION_COOKIE, getAdminSessionUser } from '../../../lib/admin-auth';
 import { getSiteProfile } from '../../../lib/content';
 
 export const metadata = {
@@ -9,7 +9,7 @@ export const metadata = {
 };
 
 export default async function AdminHomeSettingsPage() {
-  const actingUser = cookies().get(ADMIN_SESSION_USER_COOKIE)?.value || '';
+  const actingUser = getAdminSessionUser(cookies().get(ADMIN_SESSION_COOKIE)?.value) || '';
   if (!isOwnerUsername(actingUser)) {
     redirect('/admin');
   }

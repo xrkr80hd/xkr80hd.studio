@@ -1,7 +1,7 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import AdminUsersManager from '../../../components/AdminUsersManager';
-import { ADMIN_SESSION_USER_COOKIE, getAdminOwnerUsername, getConfiguredAdminUsernames, isOwnerUsername } from '../../../lib/admin-auth';
+import { ADMIN_SESSION_USER_COOKIE, getAdminOwnerUsername, getConfiguredAdminUsernames, isOwnerUsername, ADMIN_SESSION_COOKIE, getAdminSessionUser } from '../../../lib/admin-auth';
 import { adminUsersBootstrapSql, listAdminUsers, normalizeAdminUsername } from '../../../lib/admin-users';
 
 export const metadata = {
@@ -9,7 +9,7 @@ export const metadata = {
 };
 
 export default async function AdminUsersPage() {
-  const actingUser = normalizeAdminUsername(cookies().get(ADMIN_SESSION_USER_COOKIE)?.value || '');
+  const actingUser = normalizeAdminUsername(getAdminSessionUser(cookies().get(ADMIN_SESSION_COOKIE)?.value) || '');
   const ownerUsername = getAdminOwnerUsername();
 
   if (!isOwnerUsername(actingUser)) {

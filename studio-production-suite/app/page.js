@@ -1,8 +1,7 @@
 import Link from 'next/link';
 import HomeBioModal from '../components/HomeBioModal';
 import HomeBlogNotice from '../components/HomeBlogNotice';
-import HomeTracksPlayer from '../components/HomeTracksPlayer';
-import { getHomeTracks, getLatestPublishedPost, getSiteProfile } from '../lib/content';
+import { getLatestPublishedPost, getSiteProfile } from '../lib/content';
 
 function Headline({ value }) {
   const text = String(value || 'XRKR80HD');
@@ -91,7 +90,7 @@ const guideCardDefaults = [
 ];
 
 export default async function HomePage() {
-  const [profile, homeTracks, latestPost] = await Promise.all([getSiteProfile(), getHomeTracks(12), getLatestPublishedPost()]);
+  const [profile, latestPost] = await Promise.all([getSiteProfile(), getLatestPublishedPost()]);
   const welcomeMessage = String(profile?.welcome_message || 'Welcome to XRKR80HD Studio.').trim();
   const showNewTracksAlert = Boolean(profile?.home_new_tracks_alert_enabled);
   const guideCards = guideCardDefaults.map((card) => {
@@ -121,14 +120,11 @@ export default async function HomePage() {
       <HomeBlogNotice latestPost={latestPost} message={profile?.blog_notice_message} />
 
       <section className="hero home-hero home-unboxed">
-        <div className="home-hero-profile">
-          <div className="home-hero-avatar">
-            {profile?.avatar_url ? <img src={profile.avatar_url} alt="XRKR80HD avatar" /> : <span>XR</span>}
-          </div>
+        <div className="home-hero-profile home-hero-profile--no-photo">
           <div>
             {welcomeMessage ? <p className="home-welcome-message">{welcomeMessage}</p> : null}
             {showNewTracksAlert ? (
-              <a className="home-track-alert-badge" href="#home-radio">
+              <a className="home-track-alert-badge" href="/hub#xrkr-radio">
                 <span className="home-track-alert-dot" aria-hidden="true" />
                 New tracks uploaded!
               </a>
@@ -137,19 +133,11 @@ export default async function HomePage() {
             {profile?.short_bio ? <p>{profile.short_bio}</p> : null}
             {profile?.full_bio ? (
               <div className="actions home-bio-actions">
-                <HomeBioModal fullBio={profile.full_bio} avatarUrl={profile?.avatar_url} headline={profile?.headline} />
+                <HomeBioModal fullBio={profile.full_bio} headline={profile?.headline} />
               </div>
             ) : null}
           </div>
         </div>
-      </section>
-
-      <section id="home-radio" className="section-space home-radio home-unboxed">
-        <div className="home-player-head">
-          <h3 className="section-title">XRKR Radio</h3>
-          <span className="meta">Local tracks and podcast audio</span>
-        </div>
-        <HomeTracksPlayer tracks={homeTracks} />
       </section>
 
       <section className="section-space home-guide home-unboxed">
