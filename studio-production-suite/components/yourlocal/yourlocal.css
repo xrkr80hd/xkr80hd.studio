@@ -724,3 +724,150 @@ a.yl-card:hover {
     grid-template-columns: 1fr;
   }
 }
+
+/* Landing page */
+.yl-landing-hero {
+  display: grid;
+  gap: 0.9rem;
+  padding: 2.5rem 0 2rem;
+  max-width: 760px;
+}
+
+.yl-landing-hero h1 {
+  font-size: clamp(2.3rem, 6vw, 3.8rem);
+  font-weight: 700;
+  line-height: 1.05;
+}
+
+.yl-soon {
+  display: inline-flex;
+  align-items: center;
+  min-height: 42px;
+  padding: 0 0.9rem;
+  border-radius: var(--yl-radius-sm);
+  background: var(--yl-accent-soft);
+  color: var(--yl-accent);
+  font-weight: 600;
+  font-size: 0.92rem;
+}
+
+.yl-explore {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0.6rem;
+  margin-bottom: 2.75rem;
+}
+
+.yl-explore-tile {
+  display: grid;
+  gap: 0.15rem;
+  padding: 0.9rem 1rem;
+  background: var(--yl-surface);
+  border: 1px solid var(--yl-line);
+  border-radius: var(--yl-radius-sm);
+  text-decoration: none;
+  color: var(--yl-ink) !important;
+  box-shadow: var(--yl-shadow);
+  transition: border-color 120ms ease;
+}
+
+.yl-explore-tile:hover {
+  border-color: var(--yl-accent);
+}
+
+.yl-explore-tile span {
+  font-size: 0.82rem;
+  color: var(--yl-muted);
+}
+
+.yl-section {
+  margin-bottom: 2.75rem;
+}
+
+.yl-section-title,
+.yl-section .yl-panel-head h2 {
+  font-size: 1.45rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.yl-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.yl-steps li {
+  background: var(--yl-surface);
+  border: 1px solid var(--yl-line);
+  border-radius: var(--yl-radius);
+  padding: 1.25rem;
+  display: grid;
+  gap: 0.4rem;
+  align-content: start;
+}
+
+.yl-steps h3 {
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.yl-step-num {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--yl-accent);
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.yl-who {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.6rem;
+}
+
+.yl-who-item {
+  display: grid;
+  gap: 0.25rem;
+  padding: 1rem;
+  border-radius: var(--yl-radius-sm);
+  background: var(--yl-surface);
+  border: 1px solid var(--yl-line);
+}
+
+.yl-who-item span {
+  font-size: 0.85rem;
+  color: var(--yl-muted);
+  line-height: 1.4;
+}
+
+@media (max-width: 900px) {
+  .yl-explore {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .yl-who {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .yl-landing-hero {
+    padding-top: 1.25rem;
+  }
+
+  .yl-explore {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .yl-steps {
+    grid-template-columns: 1fr;
+  }
+}
