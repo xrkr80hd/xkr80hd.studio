@@ -25,7 +25,7 @@
   position: relative;
   margin: -1.7rem calc(50% - 50vw) -3rem;
   padding: 2.5rem 0 4.5rem;
-  min-height: 70vh;
+  min-height: calc(100vh - 70px);
   background: var(--yl-bg);
   color: var(--yl-ink);
   font-family: var(--yl-font), "Inter", "Segoe UI", system-ui, sans-serif;
@@ -69,6 +69,19 @@ html:has(.yl) body {
 
 .yl a {
   color: var(--yl-accent);
+}
+
+.yl strong,
+.yl b {
+  color: inherit;
+}
+
+.yl-type strong {
+  color: var(--yl-ink);
+}
+
+.yl-hint {
+  font-weight: 400;
 }
 
 /* Hero */
@@ -418,7 +431,7 @@ a.yl-card:hover {
   gap: 0.35rem;
 }
 
-.yl-field > span,
+.yl-field > span:first-child,
 .yl-legend {
   font-size: 0.9rem;
   font-weight: 600;
