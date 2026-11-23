@@ -1,0 +1,268 @@
+.panel {
+  --lemon: #fff44f;
+  --lemon-soft: #fffab0;
+  --lemon-line: rgba(255, 244, 79, 0.25);
+  --card: linear-gradient(150deg, rgba(32, 30, 18, 0.95), rgba(12, 13, 18, 0.95));
+  max-width: 760px;
+  margin: 24px auto 48px;
+  color: #fbf8ea;
+}
+
+.header,
+.composer,
+.list {
+  padding: 26px;
+  border: 1px solid var(--lemon-line);
+  border-radius: 18px;
+  background: var(--card);
+}
+
+.header h1 {
+  margin: 8px 0;
+  font-size: 44px;
+  color: var(--lemon);
+}
+
+.header p {
+  color: #cfc9b4;
+}
+
+.header a {
+  color: var(--lemon-soft);
+  font-weight: 700;
+}
+
+.tag {
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--lemon-soft);
+}
+
+.composer,
+.list {
+  margin-top: 20px;
+}
+
+.composer h2,
+.list h2 {
+  margin: 0 0 14px;
+  font-size: 22px;
+}
+
+.list h2 span {
+  margin-left: 6px;
+  font-size: 14px;
+  color: var(--lemon);
+}
+
+.composer label {
+  display: block;
+  margin: 16px 0;
+  font-weight: 600;
+  color: #fff7cc;
+}
+
+.optional {
+  font-weight: 400;
+  color: #a9a38d;
+}
+
+.composer input,
+.composer textarea {
+  display: block;
+  width: 100%;
+  margin-top: 8px;
+  padding: 13px 14px;
+  border: 1px solid rgba(255, 244, 79, 0.3);
+  border-radius: 10px;
+  background: #0a0a08;
+  color: #fff;
+  font: inherit;
+  font-size: 16px; /* stops iOS zooming into the field */
+  line-height: 1.6;
+}
+
+.composer textarea {
+  resize: vertical;
+  min-height: 160px;
+}
+
+.composer input:focus,
+.composer textarea:focus {
+  outline: 2px solid var(--lemon);
+  outline-offset: 1px;
+}
+
+.thumbs {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(92px, 1fr));
+  gap: 8px;
+  margin: 8px 0 16px;
+}
+
+.thumbs figure {
+  position: relative;
+  margin: 0;
+}
+
+.thumbs img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 1px solid var(--lemon-line);
+}
+
+.thumbs button {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.75);
+  color: #fff;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.primary,
+.secondary,
+.danger,
+.link {
+  min-height: 44px;
+  padding: 11px 20px;
+  border-radius: 999px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.primary {
+  border: 1px solid var(--lemon);
+  background: var(--lemon);
+  color: #1a1700;
+}
+
+.secondary {
+  border: 1px solid var(--lemon-line);
+  background: transparent;
+  color: var(--lemon-soft);
+}
+
+.danger {
+  border: 1px solid rgba(255, 110, 110, 0.5);
+  background: transparent;
+  color: #ff9d9d;
+}
+
+.link {
+  border: 0;
+  background: none;
+  color: #cfc9b4;
+  text-decoration: underline;
+}
+
+.primary:disabled,
+.secondary:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.status {
+  min-height: 22px;
+  margin: 12px 0 0;
+  font-size: 14px;
+  color: var(--lemon-soft);
+}
+
+.empty {
+  color: #cfc9b4;
+}
+
+.item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 0;
+  border-top: 1px solid rgba(255, 244, 79, 0.12);
+}
+
+.item strong {
+  overflow-wrap: anywhere;
+}
+
+.when {
+  margin: 0 0 4px;
+  font-size: 12px;
+  color: var(--lemon);
+}
+
+.itemActions {
+  display: flex;
+  gap: 8px;
+}
+
+.toggleRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.help {
+  margin: 10px 0;
+  font-size: 14px;
+  color: #cfc9b4;
+}
+
+.inviteBox {
+  display: block;
+  width: 100%;
+  margin-top: 12px;
+  padding: 12px;
+  border: 1px solid rgba(255, 244, 79, 0.3);
+  border-radius: 10px;
+  background: #0a0a08;
+  color: #fffab0;
+  font: inherit;
+  font-size: 14px;
+}
+
+.subhead {
+  margin: 24px 0 6px;
+  font-size: 18px;
+}
+
+.subhead span {
+  margin-left: 6px;
+  font-size: 14px;
+  color: var(--lemon);
+}
+
+@media (max-width: 560px) {
+  .header,
+  .composer,
+  .list {
+    padding: 18px;
+  }
+
+  .header h1 {
+    font-size: 36px;
+  }
+
+  .actions > button {
+    flex: 1 1 auto;
+  }
+}

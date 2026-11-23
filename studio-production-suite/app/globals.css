@@ -5387,3 +5387,6 @@ h4 {
 /* Campaign navigation accent; page styling lives in gleaux.module.css. */
 .nav-links .nav-gleaux { color: #ff83b4; border-bottom: 2px solid #ff438d; text-shadow: 0 0 12px #ff438d55; }
 .nav-links .nav-gleaux:hover, .nav-links .nav-gleaux.active { color: #ffc6dd; border-color: #ff83b4; background: #ff438d14; }
+
+.nav-links .nav-progress { color: #fff44f; border-bottom: 2px solid #f5d90a; }
+.nav-links .nav-progress:hover, .nav-links .nav-progress.active { color: #fffab0; border-color: #fff44f; background: #fff44f14; }

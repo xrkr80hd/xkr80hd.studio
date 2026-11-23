@@ -31,6 +31,7 @@ function getAdminNavItems(ownerMode) {
   ];
 
   if (ownerMode) {
+    items.push({ href: '/admin/progress', label: 'Progress', className: 'nav-progress' });
     items.push({ href: '/admin/gleaux', label: 'Lets Gleaux', className: 'nav-gleaux' });
     items.push({ href: '/admin/home', label: 'Home', className: 'nav-admin-link' });
     items.push({ href: '/admin/tracks', label: 'Hub Tracks', className: 'nav-admin-link' });
