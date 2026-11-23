@@ -71,7 +71,7 @@ export default async function YourLocalLandingPage() {
         {sections.map((section) => (
           <Link key={section.href} className="yl-explore-tile" href={section.href}>
             <strong>{section.label}</strong>
-            <span>{section.count === null ? 'Read' : `${section.count} listed`}</span>
+            <span>{section.count === null ? 'Read' : section.count ? `${section.count} listed` : 'Coming soon'}</span>
           </Link>
         ))}
       </nav>
